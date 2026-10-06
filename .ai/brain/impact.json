@@ -1,146 +1,55 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "5ec233d77ae2a716b4798c7a22b58cdea9f8ab31",
-  "head": "78c4fcf6573401b854a852ef5ca30d22db7300cc",
+  "base": "78c4fcf6573401b854a852ef5ca30d22db7300cc",
+  "head": "e79bf561816aae5fec71374ff0d5bf58bdfb3311",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/differential_quality.py",
+      "path": ".env.example",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/orchestrator.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/repeat_validation.py",
       "status": "A"
     },
     {
-      "path": "backend/app/finding_intelligence.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/vulnerability_intelligence.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_differential_quality.py",
+      "path": "backend/tests/test_repeat_validation.py",
       "status": "A"
     },
     {
-      "path": "backend/tests/test_finding_intelligence.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_vulnerability_intelligence.py",
-      "status": "M"
+      "path": "backend/tests/test_repeat_validation_orchestrator.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/differential_quality.py",
-    "backend/app/finding_intelligence.py",
-    "backend/app/vulnerability_intelligence.py",
-    "backend/tests/test_differential_quality.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/app/orchestrator.py",
+    "backend/app/repeat_validation.py",
+    "backend/tests/test_repeat_validation.py",
+    "backend/tests/test_repeat_validation_orchestrator.py"
   ],
   "impacted_files": [
-    "backend/app/cve_evidence_verdict.py",
-    "backend/app/cve_risk_context.py",
-    "backend/app/differential_quality.py",
-    "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/app/vulnerability_intelligence.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_differential_quality.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/app/orchestrator.py",
+    "backend/app/repeat_validation.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_repeat_validation.py",
+    "backend/tests/test_repeat_validation_orchestrator.py",
+    "backend/tests/test_runtime_budget_config.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "CveEvidenceVerdict",
-      "kind": "class",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 13
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 26
-    },
-    {
-      "name": "build_cve_evidence_verdict",
-      "kind": "function",
-      "file": "backend/app/cve_evidence_verdict.py",
-      "line": 33
-    },
-    {
-      "name": "CveRiskContext",
-      "kind": "class",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 18
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 34
-    },
-    {
-      "name": "_unit_interval",
-      "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 41
-    },
-    {
-      "name": "_cvss",
-      "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 53
-    },
-    {
-      "name": "build_cve_risk_context",
-      "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 65
-    },
-    {
-      "name": "DifferentialQuality",
-      "kind": "class",
-      "file": "backend/app/differential_quality.py",
-      "line": 14
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/differential_quality.py",
-      "line": 39
-    },
-    {
-      "name": "_finding_id",
-      "kind": "function",
-      "file": "backend/app/differential_quality.py",
-      "line": 47
-    },
-    {
-      "name": "empty_differential_quality",
-      "kind": "function",
-      "file": "backend/app/differential_quality.py",
-      "line": 57
-    },
-    {
-      "name": "build_differential_quality",
-      "kind": "function",
-      "file": "backend/app/differential_quality.py",
-      "line": 85
-    },
-    {
-      "name": "build_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 32
-    },
-    {
-      "name": "campaign_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 336
-    },
     {
       "name": "authenticate_control_api",
       "kind": "function",
@@ -688,262 +597,1019 @@
       "line": 1876
     },
     {
-      "name": "VulnerabilitySignal",
+      "name": "_stable_id",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 57
+    },
+    {
+      "name": "_graph_fingerprint",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 62
+    },
+    {
+      "name": "_load_graph",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 79
+    },
+    {
+      "name": "_seed_primary_target",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 83
+    },
+    {
+      "name": "_minimum_enrichment_score",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 100
+    },
+    {
+      "name": "_surface_enrichment",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 111
+    },
+    {
+      "name": "_intelligence_context",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 135
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 146
+    },
+    {
+      "name": "_validation_saturated_cluster_ids",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 265
+    },
+    {
+      "name": "_pending_findings",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 305
+    },
+    {
+      "name": "_enqueue_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 351
+    },
+    {
+      "name": "_scan_engines",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 417
+    },
+    {
+      "name": "_enqueue_action",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 428
+    },
+    {
+      "name": "_decision_explanation",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 534
+    },
+    {
+      "name": "_record_decision",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 581
+    },
+    {
+      "name": "_result",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 624
+    },
+    {
+      "name": "advance_campaign",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 696
+    },
+    {
+      "name": "RepeatValidationConfigError",
       "kind": "class",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 19
+      "file": "backend/app/repeat_validation.py",
+      "line": 15
+    },
+    {
+      "name": "RepeatValidationCandidate",
+      "kind": "class",
+      "file": "backend/app/repeat_validation.py",
+      "line": 20
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 40
+      "file": "backend/app/repeat_validation.py",
+      "line": 31
     },
     {
-      "name": "_extract_cve_ids",
+      "name": "repeat_differential_validation_enabled",
       "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 47
+      "file": "backend/app/repeat_validation.py",
+      "line": 35
     },
     {
-      "name": "finding_cve_ids",
+      "name": "build_repeat_validation_candidates",
       "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 61
+      "file": "backend/app/repeat_validation.py",
+      "line": 49
     },
     {
-      "name": "build_vulnerability_signal",
-      "kind": "function",
-      "file": "backend/app/vulnerability_intelligence.py",
-      "line": 82
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 48
     },
     {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 10
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 52
     },
     {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 23
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 56
     },
     {
-      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
+      "name": "_save",
       "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 40
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 91
-    },
-    {
-      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 133
-    },
-    {
-      "name": "_graph",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 8
-    },
-    {
-      "name": "_add_validation",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 23
-    },
-    {
-      "name": "test_quality_defaults_to_high_false_positive_risk_without_observations",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 53
-    },
-    {
-      "name": "test_single_marker_reflection_is_specific_but_not_reproducible",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 65
-    },
-    {
-      "name": "test_repeated_same_parameter_signal_reduces_false_positive_risk",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 79
-    },
-    {
-      "name": "test_multi_validator_repeat_is_highest_reproducibility_level",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 95
-    },
-    {
-      "name": "test_mixed_signal_on_same_parameter_is_flagged_as_contradictory",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 108
-    },
-    {
-      "name": "test_quality_does_not_persist_parameter_values",
-      "kind": "function",
-      "file": "backend/tests/test_differential_quality.py",
-      "line": 129
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 9
-    },
-    {
-      "name": "_graph",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 21
-    },
-    {
-      "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 60
-    },
-    {
-      "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 95
-    },
-    {
-      "name": "test_finding_intelligence_does_not_expose_query_values",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 110
-    },
-    {
-      "name": "test_finding_intelligence_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 123
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 127
-    },
-    {
-      "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 157
-    },
-    {
-      "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 183
-    },
-    {
-      "name": "test_finding_intelligence_counts_verified_kev_candidates",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 209
-    },
-    {
-      "name": "test_finding_intelligence_exposes_bounded_cve_validation_plan",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 254
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_reproducible_differential_quality",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 269
+      "file": "backend/app/worker_service.py",
+      "line": 64
     },
     {
       "name": "_campaign",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 11
+      "file": "backend/app/worker_service.py",
+      "line": 69
     },
     {
-      "name": "_finding",
+      "name": "_append_event_once",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 25
+      "file": "backend/app/worker_service.py",
+      "line": 80
     },
     {
-      "name": "test_nuclei_classification_preserves_cve_as_stable_evidence",
+      "name": "_lease_heartbeat",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 44
+      "file": "backend/app/worker_service.py",
+      "line": 97
     },
     {
-      "name": "test_known_cve_candidate_never_confirms_exploitability",
+      "name": "renew",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "file": "backend/app/worker_service.py",
+      "line": 104
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 125
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 132
+    },
+    {
+      "name": "process_nuclei_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 136
+    },
+    {
+      "name": "process_validation",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 140
+    },
+    {
+      "name": "process_browser_flow",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 213
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 317
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 442
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 484
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 526
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 530
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 550
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 557
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 571
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 628
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 639
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 14
+    },
+    {
+      "name": "test_circuit_breaker_persists_and_resets",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 27
+    },
+    {
+      "name": "test_runtime_exhaustion_opens_breaker_and_future_advance_stays_blocked",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 55
+    },
+    {
+      "name": "test_control_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 90
+    },
+    {
+      "name": "test_control_status_reports_budget_blocker_consistently",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 98
+    },
+    {
+      "name": "test_control_status_exposes_scanner_stability_and_recon_telemetry",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 130
+    },
+    {
+      "name": "test_breaker_reset_endpoint_seals_requested_and_completed_audit_events",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 195
+    },
+    {
+      "name": "test_breaker_reset_reconciles_completion_after_reset_already_happened",
+      "kind": "function",
+      "file": "backend/tests/test_campaign_circuit_breaker.py",
+      "line": 236
+    },
+    {
+      "name": "_resource",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 17
+    },
+    {
+      "name": "_launch_payload",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 28
+    },
+    {
+      "name": "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 51
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
       "line": 70
     },
     {
-      "name": "test_strong_unknown_requires_independent_corroboration_for_novel_candidate",
+      "name": "test_hackerone_worker_automatically_advances_from_recon_to_nuclei",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 85
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 212
     },
     {
-      "name": "test_low_severity_unknown_is_not_promoted_to_novel_candidate",
+      "name": "fake_recon",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 110
+      "file": "backend/tests/test_hackerone_nuclei_e2e.py",
+      "line": 230
     },
     {
-      "name": "test_textual_cve_extraction_is_case_insensitive_and_deduplicated",
+      "name": "_resource",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 121
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 18
     },
     {
-      "name": "test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation",
+      "name": "_launch_payload",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 134
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 29
     },
     {
-      "name": "test_version_correlated_cve_raises_evidence_quality_not_confirmation",
+      "name": "_headers",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 162
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 52
     },
     {
-      "name": "test_reproducible_unknown_signal_gets_high_novelty_confidence_without_zero_day_claim",
+      "name": "test_hackerone_full_lifecycle_produces_downloadable_report",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 219
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 56
     },
     {
-      "name": "test_single_unknown_signal_requires_repeat_validation",
+      "name": "fake_execute",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 240
+      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+      "line": 78
     },
     {
-      "name": "test_known_cve_novelty_confidence_is_not_applicable",
+      "name": "_FakeQueue",
+      "kind": "class",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 22
+    },
+    {
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 255
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 23
+    },
+    {
+      "name": "enqueue",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 26
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 39
+    },
+    {
+      "name": "get_by_dedupe",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 42
+    },
+    {
+      "name": "test_htb_lab_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 53
+    },
+    {
+      "name": "test_htb_lab_rejects_public_targets",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 57
+    },
+    {
+      "name": "test_htb_lab_rejects_loopback_link_local_unspecified_and_multicast_ips",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 72
+    },
+    {
+      "name": "test_htb_lab_accepts_private_lab_ip_and_htb_hostname",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 90
+    },
+    {
+      "name": "test_htb_lab_requires_explicit_authorization_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 103
+    },
+    {
+      "name": "test_htb_lab_campaign_is_exact_scope_and_training_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 115
+    },
+    {
+      "name": "test_htb_lab_start_uses_bounded_planner",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 145
+    },
+    {
+      "name": "fake_advance",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 163
+    },
+    {
+      "name": "test_htb_outcome_feedback_becomes_learning_memory",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 192
+    },
+    {
+      "name": "test_htb_outcome_rejects_overlapping_techniques",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 231
+    },
+    {
+      "name": "test_htb_learning_routes_are_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 244
+    },
+    {
+      "name": "test_htb_global_learning_aggregates_authorized_labs_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 250
+    },
+    {
+      "name": "test_htb_global_learning_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 302
+    },
+    {
+      "name": "test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 307
+    },
+    {
+      "name": "test_non_htb_campaign_does_not_receive_htb_cross_lab_learning",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 387
+    },
+    {
+      "name": "test_htb_outcome_is_idempotent_for_identical_feedback",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 431
+    },
+    {
+      "name": "test_htb_corrected_feedback_replaces_prior_learning_revision",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 471
+    },
+    {
+      "name": "test_htb_benchmark_reports_objective_progress_metrics",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 514
+    },
+    {
+      "name": "test_htb_benchmark_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 567
+    },
+    {
+      "name": "test_htb_session_status_is_redacted_and_operational",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 572
+    },
+    {
+      "name": "test_htb_session_status_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 601
+    },
+    {
+      "name": "test_htb_duplicate_exact_active_target_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 606
+    },
+    {
+      "name": "test_htb_finish_records_learning_and_cancels_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 636
+    },
+    {
+      "name": "test_htb_finish_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 674
+    },
+    {
+      "name": "test_htb_training_end_to_end_create_start_learn_finish_and_benchmark",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 679
+    },
+    {
+      "name": "fake_advance",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 700
+    },
+    {
+      "name": "test_htb_focus_ranks_repeated_misses_without_automatic_execution",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 762
+    },
+    {
+      "name": "test_htb_focus_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 810
+    },
+    {
+      "name": "test_htb_readiness_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_htb_lab.py",
+      "line": 815
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 10
+    },
+    {
+      "name": "_assert_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 28
+    },
+    {
+      "name": "test_sanitized_scan_payload_is_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 36
+    },
+    {
+      "name": "test_orchestrator_scan_jobs_bind_each_engine_kind",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 48
+    },
+    {
+      "name": "test_orchestrator_recon_and_browser_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 68
+    },
+    {
+      "name": "test_orchestrator_validation_and_report_jobs_are_policy_bound",
+      "kind": "function",
+      "file": "backend/tests/test_job_provenance_integration.py",
+      "line": 102
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 13
+    },
+    {
+      "name": "test_scan_engines_default_preserves_strix",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 27
+    },
+    {
+      "name": "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 32
+    },
+    {
+      "name": "test_sqlite_queue_accepts_nuclei_scan",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 41
+    },
+    {
+      "name": "test_nuclei_worker_dry_run_preserves_safe_default",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 52
+    },
+    {
+      "name": "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 78
+    },
+    {
+      "name": "fake_execute",
+      "kind": "function",
+      "file": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "line": 90
+    },
+    {
+      "name": "make_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 13
+    },
+    {
+      "name": "test_advance_bootstraps_asset_and_queues_bounded_recon",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 29
+    },
+    {
+      "name": "test_advance_stops_when_automation_disabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 54
+    },
+    {
+      "name": "test_advance_stops_when_runtime_budget_is_exhausted",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 70
+    },
+    {
+      "name": "test_advance_queues_only_unvalidated_findings_then_waits_for_resolution_and_reports",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 92
+    },
+    {
+      "name": "test_validation_jobs_are_ordered_by_adaptive_priority",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 171
+    },
+    {
+      "name": "test_validation_priority_prefers_less_supported_hypothesis_on_tie",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 214
+    },
+    {
+      "name": "test_orchestrator_exposes_integrated_intelligence_context",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 272
+    },
+    {
+      "name": "test_orchestrator_gate_blocks_progress_after_failed_job",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 291
+    },
+    {
+      "name": "test_orchestrator_learning_memory_reaches_adaptive_cycle",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 317
+    },
+    {
+      "name": "test_orchestrator_blocks_scan_below_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 354
+    },
+    {
+      "name": "test_orchestrator_includes_browser_recon_only_when_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 382
+    },
+    {
+      "name": "test_orchestrator_allows_scan_after_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 410
+    },
+    {
+      "name": "test_orchestrator_rejects_invalid_surface_enrichment_threshold",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 451
+    },
+    {
+      "name": "test_orchestrator_halts_after_repeated_requeues_without_success",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 467
+    },
+    {
+      "name": "test_orchestrator_exposes_advisory_only_coverage_guidance",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 505
+    },
+    {
+      "name": "test_orchestrator_scanner_memory_can_only_reduce_configured_engines",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 521
+    },
+    {
+      "name": "test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 581
+    },
+    {
+      "name": "test_validation_scheduler_selects_one_representative_per_cluster",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 633
+    },
+    {
+      "name": "test_validation_scheduler_re_evaluates_cluster_after_representative_validation",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 697
+    },
+    {
+      "name": "test_validation_scheduler_stops_cluster_fanout_after_strong_representative_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 762
+    },
+    {
+      "name": "test_validation_scheduler_does_not_early_stop_on_observed_validation_without_quality_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 840
+    },
+    {
+      "name": "_seed_planner_decisions",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 901
+    },
+    {
+      "name": "test_critical_planner_oscillation_opens_circuit_breaker_before_new_work",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 927
+    },
+    {
+      "name": "test_action_after_stop_opens_circuit_breaker_before_new_work",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 953
+    },
+    {
+      "name": "test_single_planner_reversal_does_not_trip_breaker",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator.py",
+      "line": 975
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 6
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 30
+    },
+    {
+      "name": "test_dry_run_validation_does_not_remove_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 46
+    },
+    {
+      "name": "test_self_validation_does_not_remove_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 51
+    },
+    {
+      "name": "test_independent_observed_validation_removes_pending_finding",
+      "kind": "function",
+      "file": "backend/tests/test_orchestrator_validation_alignment.py",
+      "line": 56
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 13
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 28
+    },
+    {
+      "name": "test_repeat_validation_is_disabled_by_default",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 61
+    },
+    {
+      "name": "test_single_strong_unknown_candidate_gets_exactly_one_repeat_slot",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 75
+    },
+    {
+      "name": "test_known_cve_is_excluded_from_unknown_repeat_path",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 93
+    },
+    {
+      "name": "test_low_impact_candidate_is_not_automatically_repeated",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 101
+    },
+    {
+      "name": "test_second_differential_observation_exhausts_repeat_budget",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 117
+    },
+    {
+      "name": "test_invalid_repeat_gate_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation.py",
+      "line": 125
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 8
+    },
+    {
+      "name": "_seed_graph",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 34
+    },
+    {
+      "name": "test_repeat_gate_off_preserves_explicit_resolution_stop",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 96
+    },
+    {
+      "name": "test_repeat_gate_queues_one_distinct_bounded_validation",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 118
+    },
+    {
+      "name": "test_repeat_job_is_idempotent_for_same_graph",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 152
+    },
+    {
+      "name": "test_second_observation_exhausts_automatic_repeat_budget",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 175
+    },
+    {
+      "name": "test_invalid_repeat_gate_fails_closed_without_queueing",
+      "kind": "function",
+      "file": "backend/tests/test_repeat_validation_orchestrator.py",
+      "line": 198
+    },
+    {
+      "name": "_clear_planner_env",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 24
+    },
+    {
+      "name": "test_planner_budget_from_env_uses_safe_defaults",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 29
+    },
+    {
+      "name": "test_planner_budget_from_env_accepts_explicit_limits",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 43
+    },
+    {
+      "name": "test_planner_budget_from_env_rejects_invalid_values",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 74
+    },
+    {
+      "name": "test_planner_budget_from_env_rejects_batch_above_total",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 82
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_uses_default",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 91
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_accepts_explicit_value",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 99
+    },
+    {
+      "name": "test_campaign_runtime_limit_from_env_rejects_invalid_values",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 108
+    },
+    {
+      "name": "test_orchestrator_uses_runtime_limit_from_environment",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_budget_config.py",
+      "line": 116
     }
   ],
   "selected_tests": [
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_differential_quality.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/tests/test_campaign_circuit_breaker.py",
+    "backend/tests/test_hackerone_nuclei_e2e.py",
+    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
+    "backend/tests/test_htb_lab.py",
+    "backend/tests/test_job_provenance_integration.py",
+    "backend/tests/test_nuclei_queue_lifecycle.py",
+    "backend/tests/test_orchestrator.py",
+    "backend/tests/test_orchestrator_validation_alignment.py",
+    "backend/tests/test_repeat_validation.py",
+    "backend/tests/test_repeat_validation_orchestrator.py",
+    "backend/tests/test_runtime_budget_config.py"
   ]
 }

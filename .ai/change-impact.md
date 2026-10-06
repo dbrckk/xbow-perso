@@ -1,17 +1,17 @@
 # Change impact
 
-Base: 5eccccffcfd79088b6583378af65f6cbc59c4162
-Head: 78c4fcf6573401b854a852ef5ca30d22db7300cc
+Base: 17982715e1d1da26e1e1d713dcead1c08a1ac992
+Head: e79bf561816aae5fec71374ff0d5bf58bdfb3311
 
 ## Changed files
-- A backend/app/differential_quality.py
-- M backend/app/finding_intelligence.py
-- M backend/app/vulnerability_intelligence.py
-- A backend/tests/test_differential_quality.py
-- M backend/tests/test_finding_intelligence.py
-- M backend/tests/test_vulnerability_intelligence.py
+- M .env.example
+- M backend/app/orchestrator.py
+- A backend/app/repeat_validation.py
+- A backend/tests/test_repeat_validation.py
+- A backend/tests/test_repeat_validation_orchestrator.py
 
 ## Affected areas
+- (root)
 - backend
 
 ## Related test candidates

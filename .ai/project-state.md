@@ -39,16 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T19:31:13Z
+Generated: 2026-10-06T19:42:32Z
 
 ### Git
 - Branch: `main`
-- Head: `78c4fcf65734`
-- Commit date: 2026-10-06T21:31:02+02:00
-- Commit: feat(vuln): score unknown-vulnerability reproducibility
-- Tracked files: 662
+- Head: `e79bf561816a`
+- Commit date: 2026-10-06T21:42:21+02:00
+- Commit: feat(validation): add one bounded repeat for strong unknown signals
+- Tracked files: 665
 
 ### Recently changed files
+- `.env.example`
+- `backend/app/orchestrator.py`
+- `backend/app/repeat_validation.py`
+- `backend/tests/test_repeat_validation.py`
+- `backend/tests/test_repeat_validation_orchestrator.py`
 - `backend/app/differential_quality.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/vulnerability_intelligence.py`
@@ -61,8 +66,6 @@ Generated: 2026-10-06T19:31:13Z
 - `backend/tests/test_version_ambiguity.py`
 - `backend/app/cve_risk_context.py`
 - `backend/tests/test_cve_risk_context.py`
-- `backend/app/validator.py`
-- `backend/tests/test_validator.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -189,6 +189,7 @@ backend/
     red_team_coverage.py
     red_team_decision.py
     redis_jobqueue.py
+    repeat_validation.py
     report_approval_api.py
     report_approval.py
     report_readiness.py
@@ -441,6 +442,8 @@ backend/
     test_redis_integration.py
     test_redis_jobqueue_integration.py
     test_redis_jobqueue.py
+    test_repeat_validation_orchestrator.py
+    test_repeat_validation.py
     test_report_approval_api.py
     test_report_approval.py
     test_report_metadata_normalization.py
@@ -8455,9 +8458,18 @@ engines = scan_engines if scan_engines is not None else _scan_engines()
 kind = "strix_scan" if engine == "strix" else "nuclei_scan"
 payload = sanitized_scan_payload(
 ⋮----
+repeat_ordinals = dict(repeat_validation_ordinals or {})
+⋮----
 pending = _pending_findings(campaign, graph)
 ⋮----
 pending = pending[:validation_limit]
+⋮----
+finding_id = str(finding.id)
+repeat_ordinal = repeat_ordinals.get(finding_id)
+payload = {
+dedupe_key = f"validation:{finding.id}"
+⋮----
+dedupe_key = (
 ⋮----
 def _decision_explanation(intelligence: dict | None) -> dict | None
 ⋮----
@@ -8511,6 +8523,16 @@ graph = _load_graph(store, campaign.id)
 ⋮----
 planned_actions = planner.plan(campaign, graph)
 action = planned_actions[0]
+repeat_validation_ordinals: dict[str, int] = {}
+⋮----
+repeat_enabled = repeat_differential_validation_enabled()
+⋮----
+action = PlannedAction(
+repeat_candidates = []
+⋮----
+repeat_candidates = build_repeat_validation_candidates(
+⋮----
+repeat_validation_ordinals = {
 ⋮----
 intelligence = _intelligence_context(
 # Intelligence may raise metadata priority/reason only. It cannot
@@ -8537,13 +8559,13 @@ selected = intelligence["scanner_adaptation"].selected_engines
 coordination = coordinate_pipeline_action(
 scan_engines = selected[:coordination.allocated_items]
 ⋮----
-pending_count = len(_pending_findings(campaign, graph))
+pending_count = (
 ⋮----
 validation_limit = coordination.allocated_items
 ⋮----
 jobs = _enqueue_action(
 ⋮----
-action = PlannedAction(
+reason = (
 ⋮----
 action = planner.plan(campaign, graph)[0]
 ````
@@ -10712,6 +10734,51 @@ def heartbeat(self, job_id: str, worker_id: str) -> bool
 attempts = int(row["attempts"])
 max_attempts = int(row["max_attempts"])
 status = "completed" if success else ("queued" if attempts < max_attempts else "failed")
+````
+
+## File: backend/app/repeat_validation.py
+````python
+REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA = "repeat-differential-validation-v1"
+_MAX_DIFFERENTIAL_OBSERVATIONS = 2
+⋮----
+class RepeatValidationConfigError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class RepeatValidationCandidate
+⋮----
+schema: str
+finding_id: str
+next_observation_ordinal: int
+reason: str
+quality_score: float
+specificity_level: str
+non_destructive_only: bool
+exploit_execution_allowed: bool
+independent_validation_required: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def repeat_differential_validation_enabled() -> bool
+⋮----
+raw = os.getenv("XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION")
+⋮----
+value = raw.strip().lower()
+⋮----
+"""Select only one-repeat unknown-vulnerability candidates.
+
+    This function performs no network I/O and never confirms exploitability.
+    A candidate must have exactly one strong, high-specificity differential
+    observation, no CVE identifier, high/critical severity and no contradictory
+    evidence. A second differential observation exhausts the automatic repeat
+    budget regardless of its outcome.
+    """
+⋮----
+quality_by_id = build_differential_quality(graph)
+candidates: list[RepeatValidationCandidate] = []
+⋮----
+finding_id = str(getattr(finding, "id", ""))
+⋮----
+quality = quality_by_id.get(finding_id)
 ````
 
 ## File: backend/app/report_approval_api.py
@@ -22222,6 +22289,54 @@ def test_redis_recovery_snapshot_is_bounded_and_payload_free(monkeypatch)
 fake = RecoveryRedis()
 ⋮----
 snapshot = queue.recovery_snapshot(limit=1)
+````
+
+## File: backend/tests/test_repeat_validation_orchestrator.py
+````python
+def _campaign() -> Campaign
+⋮----
+validation_id = f"validation:{index}"
+⋮----
+db = str(tmp_path / "db.sqlite3")
+store = Storage(db, str(tmp_path / "artifacts"))
+queue = JobQueue(db)
+campaign = _campaign()
+⋮----
+result = advance_campaign(campaign, queue, store)
+⋮----
+job = queue.get(result["job_ids"][0])
+⋮----
+repeat = job["payload"]["repeat_validation"]
+⋮----
+first = advance_campaign(campaign, queue, store)
+second = advance_campaign(campaign, queue, store)
+````
+
+## File: backend/tests/test_repeat_validation.py
+````python
+def _finding(*, severity="high", cve_ids=None)
+⋮----
+finding = Finding(
+⋮----
+def _graph(*, signals=("strong",))
+⋮----
+graph = ObservationGraph()
+⋮----
+def test_repeat_validation_is_disabled_by_default(monkeypatch)
+⋮----
+def test_single_strong_unknown_candidate_gets_exactly_one_repeat_slot()
+⋮----
+candidates = build_repeat_validation_candidates(
+⋮----
+item = candidates[0]
+⋮----
+def test_known_cve_is_excluded_from_unknown_repeat_path()
+⋮----
+def test_low_impact_candidate_is_not_automatically_repeated()
+⋮----
+def test_second_differential_observation_exhausts_repeat_budget(signals)
+⋮----
+def test_invalid_repeat_gate_fails_closed(monkeypatch)
 ````
 
 ## File: backend/tests/test_report_approval_api.py
