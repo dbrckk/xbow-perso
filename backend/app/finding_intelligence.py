@@ -19,6 +19,7 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .repeat_validation_outcome import build_repeat_validation_outcome
 from .technology_fingerprint_intelligence import (
     build_technology_fingerprints,
     match_finding_technology,
@@ -86,6 +87,9 @@ def build_finding_intelligence(
         differential_quality_item = differential_quality.get(
             finding_id,
             empty_differential_quality(finding_id),
+        )
+        repeat_validation_outcome = build_repeat_validation_outcome(
+            differential_quality_item,
         )
         duplicate_similarity = rank_public_duplicate_risk(
             finding,
@@ -163,6 +167,9 @@ def build_finding_intelligence(
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
                 "differential_quality": differential_quality_item.to_dict(),
+                "repeat_validation_outcome": (
+                    repeat_validation_outcome.to_dict()
+                ),
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
@@ -244,6 +251,21 @@ def build_finding_intelligence(
             ),
             "contradictory_differential_findings": sum(
                 row["differential_quality"]["contradictory"]
+                for row in finding_rows
+            ),
+            "reproduced_repeat_signals": sum(
+                row["repeat_validation_outcome"]["state"]
+                == "reproduced_strong_signal"
+                for row in finding_rows
+            ),
+            "contradictory_repeat_outcomes": sum(
+                row["repeat_validation_outcome"]["state"]
+                == "contradictory"
+                for row in finding_rows
+            ),
+            "inconclusive_repeat_outcomes": sum(
+                row["repeat_validation_outcome"]["state"]
+                == "inconclusive"
                 for row in finding_rows
             ),
             "known_cve_candidates": sum(
