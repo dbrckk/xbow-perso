@@ -5,6 +5,7 @@ from typing import Any
 from fastapi import APIRouter
 
 from .cve_evidence_verdict import build_cve_evidence_verdict
+from .cve_risk_context import build_cve_risk_context
 from .differential_intelligence import DifferentialSignal, build_differential_signals
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_cluster_saturation import build_cluster_saturation
@@ -115,6 +116,7 @@ def build_finding_intelligence(
                 high_confidence_fingerprint_match_count
             ),
         )
+        cve_risk_context = build_cve_risk_context(finding)
         cluster_saturated = bool(
             cluster_id in saturation_by_cluster
             and saturation_by_cluster[cluster_id].saturated
@@ -125,6 +127,7 @@ def build_finding_intelligence(
             vulnerability_signal=vulnerability,
             differential_signal=differential_item.signal,
             triage_score=(triage_item.score if triage_item else 0.0),
+            cve_risk_score=cve_risk_context.risk_score,
             duplicate_candidate=bool(
                 triage_item and triage_item.duplicate_candidate
             ),
@@ -141,6 +144,7 @@ def build_finding_intelligence(
                 "differential": differential_item.to_dict(),
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
+                "cve_risk_context": cve_risk_context.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
                 "technology": {
                     "matched_fingerprints": [
@@ -224,6 +228,16 @@ def build_finding_intelligence(
             "high_confidence_version_correlated_cve_candidates": sum(
                 row["vulnerability"]["high_confidence_fingerprint_match_count"] > 0
                 and row["vulnerability"]["known_cve_candidate"]
+                for row in finding_rows
+            ),
+            "high_priority_cve_contexts": sum(
+                row["cve_risk_context"]["risk_band"]
+                in {"high_priority", "critical_priority"}
+                for row in finding_rows
+            ),
+            "scanner_tagged_kev_unverified": sum(
+                row["cve_risk_context"]["scanner_tagged_kev"]
+                and not row["cve_risk_context"]["authoritative_kev_verified"]
                 for row in finding_rows
             ),
             "novel_candidates": sum(
