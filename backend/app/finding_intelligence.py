@@ -23,6 +23,7 @@ from .repeat_validation_outcome import build_repeat_validation_outcome
 from .technology_fingerprint_intelligence import (
     build_technology_fingerprints,
     match_finding_technology,
+    fingerprint_ambiguity_reasons,
 )
 from .validation_priority import build_validation_priority
 from .vulnerability_intelligence import build_vulnerability_signal
@@ -114,6 +115,9 @@ def build_finding_intelligence(
             item.version is not None and item.confidence >= 0.75
             for item in matched_fingerprints
         )
+        fingerprint_ambiguity = fingerprint_ambiguity_reasons(
+            matched_fingerprints,
+        )
         vulnerability = build_vulnerability_signal(
             finding,
             differential_signal=differential_item.signal,
@@ -132,6 +136,7 @@ def build_finding_intelligence(
             high_confidence_fingerprint_match_count=(
                 high_confidence_fingerprint_match_count
             ),
+            ambiguity_reasons=fingerprint_ambiguity,
         )
         cve_risk_context = build_cve_risk_context(
             finding,
@@ -183,6 +188,7 @@ def build_finding_intelligence(
                     "high_confidence_match_count": (
                         high_confidence_fingerprint_match_count
                     ),
+                    "ambiguity_reasons": list(fingerprint_ambiguity),
                 },
                 "public_duplicate_similarity": duplicate_similarity,
                 "cluster_id": cluster_id,

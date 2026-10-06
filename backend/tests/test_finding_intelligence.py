@@ -439,3 +439,49 @@ def test_finding_intelligence_surfaces_contradictory_repeat_outcome():
     assert outcome["repeat_budget_exhausted"] is True
     assert outcome["exploitability_confirmed"] is False
     assert result["summary"]["contradictory_repeat_outcomes"] == 1
+
+
+def test_conflicting_product_versions_downgrade_cve_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "nginx request parsing issue"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:nginx-old",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={"confidence": 0.9},
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:nginx-new",
+            "technology",
+            "nginx/1.25.5",
+            "wappalyzer",
+            metadata={"confidence": 0.9},
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["technology"]["ambiguity_reasons"] == [
+        "conflicting_version_fingerprints",
+        "single_source_version_evidence",
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_evidence_verdict"]["confidence"] == "low"
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+    assert row["validation_priority"]["recommended_state"] == "passive_review"
