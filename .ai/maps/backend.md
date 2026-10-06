@@ -229,6 +229,7 @@ app/
   value_efficiency.py
   vault_cli.py
   vault_migration.py
+  version_ambiguity.py
   vulnerability_intelligence.py
   worker_audit.py
   worker_liveness.py
@@ -482,6 +483,7 @@ tests/
   test_validator.py
   test_value_efficiency.py
   test_vault_migration.py
+  test_version_ambiguity.py
   test_vulnerability_intelligence.py
   test_watchdog_observability.py
   test_worker_concurrency.py
@@ -13766,6 +13768,55 @@ result = apply_vault_migration(args.source_env_file)
 result = rewrite_env_file(
 ```
 
+## File: app/version_ambiguity.py
+```python
+VERSION_AMBIGUITY_SCHEMA = "version-ambiguity-v1"
+⋮----
+@dataclass(frozen=True)
+class VersionAmbiguity
+⋮----
+schema: str
+ambiguous: bool
+reasons: tuple[str, ...]
+versioned_fingerprint_count: int
+high_confidence_versioned_count: int
+conflicting_product_count: int
+wildcard_cpe_count: int
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _fingerprint_field(item: Any, name: str, default: Any = None) -> Any
+⋮----
+def _cpe_version(value: str) -> str | None
+⋮----
+parts = str(value).split(":")
+⋮----
+versioned: list[tuple[str, str, float]] = []
+versions_by_product: dict[str, set[str]] = {}
+⋮----
+product = str(
+version = str(_fingerprint_field(item, "version", "") or "").strip()
+⋮----
+confidence = float(_fingerprint_field(item, "confidence", 0.0))
+⋮----
+confidence = 0.0
+confidence = max(0.0, min(1.0, confidence))
+⋮----
+conflicting_products = sum(
+high_confidence_count = sum(
+⋮----
+cpe_values = getattr(finding, "cpe", None)
+⋮----
+cpe_values = ()
+wildcard_cpe_count = 0
+⋮----
+version = _cpe_version(str(raw))
+⋮----
+reasons: list[str] = []
+```
+
 ## File: app/vulnerability_intelligence.py
 ```python
 _CVE_RE = re.compile(r"\bCVE-(\d{4})-(\d{4,10})\b", re.IGNORECASE)
@@ -23956,6 +24007,30 @@ def test_source_env_file_requires_private_permissions(monkeypatch, tmp_path)
 def test_vault_migration_cli_plan_returns_nonzero_when_blocked(monkeypatch, capsys)
 ⋮----
 def test_vault_migration_cli_plan_returns_zero_when_ready(monkeypatch, capsys)
+```
+
+## File: tests/test_version_ambiguity.py
+```python
+def _finding(*, cpe=None)
+⋮----
+def _fp(product, version, confidence)
+⋮----
+def test_conflicting_versions_for_same_product_are_ambiguous()
+⋮----
+result = analyze_version_ambiguity(
+⋮----
+def test_single_high_confidence_version_is_not_ambiguous()
+⋮----
+def test_only_low_confidence_versions_are_ambiguous()
+⋮----
+def test_wildcard_cpe_is_ambiguous_even_with_high_confidence_banner()
+⋮----
+def test_cpe_without_versioned_fingerprint_is_ambiguous()
+⋮----
+def test_distinct_products_with_distinct_versions_are_not_conflicting()
+⋮----
+@pytest.mark.parametrize("threshold", (0.49, 1.01))
+def test_invalid_confidence_threshold_fails_closed(threshold)
 ```
 
 ## File: tests/test_vulnerability_intelligence.py

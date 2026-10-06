@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T18:04:24Z
+Generated: 2026-10-06T18:09:58Z
 
 ### Git
 - Branch: `main`
-- Head: `f56e31e12fd5`
-- Commit date: 2026-10-06T20:04:12+02:00
-- Commit: feat(vuln): bind verified KEV catalog to CVE risk
-- Tracked files: 656
+- Head: `d359de8edf6f`
+- Commit date: 2026-10-06T20:09:45+02:00
+- Commit: feat(vuln): detect ambiguous version evidence
+- Tracked files: 658
 
 ### Recently changed files
+- `backend/app/version_ambiguity.py`
+- `backend/tests/test_version_ambiguity.py`
 - `backend/app/cve_risk_context.py`
 - `backend/app/finding_intelligence.py`
 - `backend/tests/test_cve_risk_context.py`
@@ -59,8 +61,6 @@ Generated: 2026-10-06T18:04:24Z
 - `backend/tests/test_kev_catalog.py`
 - `backend/app/validation_priority.py`
 - `backend/tests/test_validation_priority.py`
-- `backend/app/active_validation.py`
-- `backend/tests/test_active_validation.py`
 
 ### Project signals
 - `pyproject.toml`

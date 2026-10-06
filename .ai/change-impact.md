@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 0eb4dc9bfda22b610a21a2d66e8198240f9ae1f0
-Head: f56e31e12fd57f26ee576fa6fc0811e8cb5e82b4
+Base: e011bb446462b80d36d2662566125140ea3b0ed9
+Head: d359de8edf6f7a320936b203939c12cbba81d3b5
 
 ## Changed files
-- M backend/app/cve_risk_context.py
-- M backend/app/finding_intelligence.py
-- M backend/tests/test_cve_risk_context.py
-- M backend/tests/test_finding_intelligence.py
+- A backend/app/version_ambiguity.py
+- A backend/tests/test_version_ambiguity.py
 
 ## Affected areas
 - backend

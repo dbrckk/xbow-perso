@@ -1,834 +1,114 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "d9a28aa650b319e94d7ef1da9c72792fb493f4ee",
-  "head": "f56e31e12fd57f26ee576fa6fc0811e8cb5e82b4",
+  "base": "f56e31e12fd57f26ee576fa6fc0811e8cb5e82b4",
+  "head": "d359de8edf6f7a320936b203939c12cbba81d3b5",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/cve_risk_context.py",
-      "status": "M"
+      "path": "backend/app/version_ambiguity.py",
+      "status": "A"
     },
     {
-      "path": "backend/app/finding_intelligence.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_cve_risk_context.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_finding_intelligence.py",
-      "status": "M"
+      "path": "backend/tests/test_version_ambiguity.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/cve_risk_context.py",
-    "backend/app/finding_intelligence.py",
-    "backend/tests/test_cve_risk_context.py",
-    "backend/tests/test_finding_intelligence.py"
+    "backend/app/version_ambiguity.py",
+    "backend/tests/test_version_ambiguity.py"
   ],
   "impacted_files": [
-    "backend/app/cve_risk_context.py",
-    "backend/app/finding_intelligence.py",
-    "backend/app/main.py",
-    "backend/tests/test_cve_risk_context.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/app/version_ambiguity.py",
+    "backend/tests/test_version_ambiguity.py"
   ],
   "impacted_symbols": [
     {
-      "name": "CveRiskContext",
+      "name": "VersionAmbiguity",
       "kind": "class",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 18
+      "file": "backend/app/version_ambiguity.py",
+      "line": 11
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 34
+      "file": "backend/app/version_ambiguity.py",
+      "line": 20
     },
     {
-      "name": "_unit_interval",
+      "name": "_fingerprint_field",
       "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 41
+      "file": "backend/app/version_ambiguity.py",
+      "line": 26
     },
     {
-      "name": "_cvss",
+      "name": "_cpe_version",
       "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 53
+      "file": "backend/app/version_ambiguity.py",
+      "line": 32
     },
     {
-      "name": "build_cve_risk_context",
+      "name": "analyze_version_ambiguity",
       "kind": "function",
-      "file": "backend/app/cve_risk_context.py",
-      "line": 65
-    },
-    {
-      "name": "build_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 27
-    },
-    {
-      "name": "campaign_finding_intelligence",
-      "kind": "function",
-      "file": "backend/app/finding_intelligence.py",
-      "line": 298
-    },
-    {
-      "name": "authenticate_control_api",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 35
-    },
-    {
-      "name": "utcnow",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 48
-    },
-    {
-      "name": "storage",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 52
-    },
-    {
-      "name": "queue",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 56
-    },
-    {
-      "name": "incident_store",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 60
-    },
-    {
-      "name": "_stable_key",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 68
-    },
-    {
-      "name": "CampaignState",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 73
-    },
-    {
-      "name": "ProgramRules",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 83
-    },
-    {
-      "name": "TargetInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 96
-    },
-    {
-      "name": "primary_target_must_be_allowed",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 103
-    },
-    {
-      "name": "Finding",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 117
-    },
-    {
-      "name": "FindingReviewMetadataInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 147
-    },
-    {
-      "name": "normalize_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 157
-    },
-    {
-      "name": "Campaign",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 172
-    },
-    {
-      "name": "EvidenceInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 182
-    },
-    {
-      "name": "HackerOneScopePreviewInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 189
-    },
-    {
-      "name": "OpenApiPreviewInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 193
-    },
-    {
-      "name": "IncidentAcknowledgeInput",
-      "kind": "class",
-      "file": "backend/app/main.py",
-      "line": 197
-    },
-    {
-      "name": "save_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 202
-    },
-    {
-      "name": "assert_campaign_record",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 209
-    },
-    {
-      "name": "assert_campaign_exists",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 217
-    },
-    {
-      "name": "_reject_cancelled_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 221
-    },
-    {
-      "name": "_reject_new_findings_for_closed_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 226
-    },
-    {
-      "name": "_campaign_graph",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 234
-    },
-    {
-      "name": "_has_evidence_backed_independent_validation",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 241
-    },
-    {
-      "name": "policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 246
-    },
-    {
-      "name": "sanitized_scan_payload",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 272
-    },
-    {
-      "name": "live",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 309
-    },
-    {
-      "name": "ready",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 314
-    },
-    {
-      "name": "auth_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 327
-    },
-    {
-      "name": "health",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 336
-    },
-    {
-      "name": "deployment_preflight",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 352
-    },
-    {
-      "name": "system_capabilities",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 359
-    },
-    {
-      "name": "preview_openapi_tests",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 446
-    },
-    {
-      "name": "get_offensive_expansion",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 456
-    },
-    {
-      "name": "get_observer_health",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 463
-    },
-    {
-      "name": "get_incidents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 468
-    },
-    {
-      "name": "acknowledge_incident",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 473
-    },
-    {
-      "name": "list_agents",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 488
-    },
-    {
-      "name": "preview_hackerone_scope",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 494
-    },
-    {
-      "name": "create_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 530
-    },
-    {
-      "name": "list_campaigns",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 538
-    },
-    {
-      "name": "get_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 543
-    },
-    {
-      "name": "get_campaign_target_memory",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 548
-    },
-    {
-      "name": "get_campaign_surface_diff",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 560
-    },
-    {
-      "name": "get_campaign_surface_temporal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 574
-    },
-    {
-      "name": "get_campaign_surface_confidence",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 586
-    },
-    {
-      "name": "campaign_outbox_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 603
-    },
-    {
-      "name": "campaign_outbox_recovery",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 617
-    },
-    {
-      "name": "_apply_local_outbox_repairs",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 638
-    },
-    {
-      "name": "reconcile_campaign_outbox_local",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 677
-    },
-    {
-      "name": "preview_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 735
-    },
-    {
-      "name": "_pentagi_dispatch_fingerprint",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 766
-    },
-    {
-      "name": "_record_pentagi_dispatch_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 770
-    },
-    {
-      "name": "_reconcile_pentagi_queued_event",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 796
-    },
-    {
-      "name": "dispatch_pentagi_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 843
-    },
-    {
-      "name": "pentagi_campaign_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 917
-    },
-    {
-      "name": "list_campaign_observations",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 947
-    },
-    {
-      "name": "campaign_decision_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 953
-    },
-    {
-      "name": "campaign_event_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 965
-    },
-    {
-      "name": "campaign_worker_audit",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 975
-    },
-    {
-      "name": "campaign_knowledge",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 987
-    },
-    {
-      "name": "campaign_finding_ranking",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1002
-    },
-    {
-      "name": "campaign_advisory_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1029
-    },
-    {
-      "name": "campaign_advisory_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1038
-    },
-    {
-      "name": "campaign_advisory_journal",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1049
-    },
-    {
-      "name": "campaign_hypothesis_history",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1061
-    },
-    {
-      "name": "campaign_hypothesis_delta",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1070
-    },
-    {
-      "name": "campaign_hypothesis_stability",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1081
-    },
-    {
-      "name": "campaign_plan",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1093
-    },
-    {
-      "name": "check_policy",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1143
-    },
-    {
-      "name": "verify_campaign_policy_receipt",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1153
-    },
-    {
-      "name": "_pending_campaign_start_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1158
-    },
-    {
-      "name": "_record_campaign_start_intent",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1166
-    },
-    {
-      "name": "_reconcile_campaign_started",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1192
-    },
-    {
-      "name": "start_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1256
-    },
-    {
-      "name": "cancel_campaign",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1342
-    },
-    {
-      "name": "get_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1375
-    },
-    {
-      "name": "get_job_provenance_status",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1383
-    },
-    {
-      "name": "_validation_request_id",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1400
-    },
-    {
-      "name": "_reconcile_validation_queued",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1404
-    },
-    {
-      "name": "add_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1453
-    },
-    {
-      "name": "_record_report_request",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1538
-    },
-    {
-      "name": "_reconcile_report_job",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1565
-    },
-    {
-      "name": "_ensure_completion_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1611
-    },
-    {
-      "name": "update_finding_review_metadata",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1679
-    },
-    {
-      "name": "validate_finding",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1730
-    },
-    {
-      "name": "queue_report",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1796
-    },
-    {
-      "name": "add_text_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1839
-    },
-    {
-      "name": "list_artifacts",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1870
-    },
-    {
-      "name": "download_artifact",
-      "kind": "function",
-      "file": "backend/app/main.py",
-      "line": 1876
+      "file": "backend/app/version_ambiguity.py",
+      "line": 39
     },
     {
       "name": "_finding",
       "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
+      "file": "backend/tests/test_version_ambiguity.py",
       "line": 11
     },
     {
-      "name": "test_risk_context_combines_structured_cve_metadata_without_confirmation",
+      "name": "_fp",
       "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 29
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 15
     },
     {
-      "name": "test_scanner_kev_tag_never_becomes_authoritative_automatically",
+      "name": "test_conflicting_versions_for_same_product_are_ambiguous",
       "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 41
-    },
-    {
-      "name": "test_explicit_authoritative_kev_verification_is_distinct",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 49
-    },
-    {
-      "name": "test_non_cve_finding_is_not_ranked_as_cve_risk",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 60
-    },
-    {
-      "name": "test_missing_external_metrics_remains_usable_and_conservative",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 78
-    },
-    {
-      "name": "test_invalid_metric_values_are_ignored",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 95
-    },
-    {
-      "name": "test_verified_kev_catalog_promotes_only_matching_cve",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 111
-    },
-    {
-      "name": "test_unverified_kev_catalog_cannot_promote_risk_context",
-      "kind": "function",
-      "file": "backend/tests/test_cve_risk_context.py",
-      "line": 148
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 10
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
+      "file": "backend/tests/test_version_ambiguity.py",
       "line": 23
     },
     {
-      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
+      "name": "test_single_high_confidence_version_is_not_ambiguous",
       "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 40
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 38
     },
     {
-      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
+      "name": "test_only_low_confidence_versions_are_ambiguous",
       "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 91
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 49
     },
     {
-      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
+      "name": "test_wildcard_cpe_is_ambiguous_even_with_high_confidence_banner",
       "kind": "function",
-      "file": "backend/tests/test_differential_evidence_integration.py",
-      "line": 133
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 59
     },
     {
-      "name": "_finding",
+      "name": "test_cpe_without_versioned_fingerprint_is_ambiguous",
       "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 9
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 72
     },
     {
-      "name": "_graph",
+      "name": "test_distinct_products_with_distinct_versions_are_not_conflicting",
       "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 21
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 84
     },
     {
-      "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
+      "name": "test_invalid_confidence_threshold_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 60
-    },
-    {
-      "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 95
-    },
-    {
-      "name": "test_finding_intelligence_does_not_expose_query_values",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 110
-    },
-    {
-      "name": "test_finding_intelligence_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 123
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 127
-    },
-    {
-      "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 157
-    },
-    {
-      "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 183
-    },
-    {
-      "name": "test_finding_intelligence_counts_verified_kev_candidates",
-      "kind": "function",
-      "file": "backend/tests/test_finding_intelligence.py",
-      "line": 209
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 11
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 25
-    },
-    {
-      "name": "test_nuclei_classification_preserves_cve_as_stable_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 44
-    },
-    {
-      "name": "test_known_cve_candidate_never_confirms_exploitability",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 70
-    },
-    {
-      "name": "test_strong_unknown_requires_independent_corroboration_for_novel_candidate",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 85
-    },
-    {
-      "name": "test_low_severity_unknown_is_not_promoted_to_novel_candidate",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 110
-    },
-    {
-      "name": "test_textual_cve_extraction_is_case_insensitive_and_deduplicated",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 121
-    },
-    {
-      "name": "test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 134
-    },
-    {
-      "name": "test_version_correlated_cve_raises_evidence_quality_not_confirmation",
-      "kind": "function",
-      "file": "backend/tests/test_vulnerability_intelligence.py",
-      "line": 162
+      "file": "backend/tests/test_version_ambiguity.py",
+      "line": 98
     }
   ],
   "selected_tests": [
-    "backend/tests/test_cve_risk_context.py",
-    "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_vulnerability_intelligence.py"
+    "backend/tests/test_version_ambiguity.py"
   ]
 }
