@@ -17,7 +17,10 @@ from .strix_broker_models import (
     BrokerContractDocument,
     BrokerHttpRequest,
     BrokerHttpResponse,
+    BrokerManifestTicketRequest,
+    BrokerManifestTicketResponse,
     BrokerRunnerExecTicketDocument,
+    BrokerRunnerManifestTicketDocument,
 )
 from .strix_command_admission import (
     StrixCommandAdmissionError,
@@ -27,12 +30,19 @@ from .strix_execution_contract import (
     STRIX_EXECUTION_CONTRACT_SCHEMA,
     StrixExecutionContractError,
     authorize_strix_contract_request,
+    verify_strix_contract_integrity,
 )
 from .strix_runner_exec_ticket import (
     STRIX_RUNNER_EXEC_TICKET_SCHEMA,
     StrixRunnerExecTicketError,
     build_strix_runner_exec_ticket,
     validate_strix_runner_exec_ticket_secret,
+)
+from .strix_runner_manifest_ticket import (
+    STRIX_RUNNER_MANIFEST_TICKET_SCHEMA,
+    StrixRunnerManifestTicketError,
+    build_strix_runner_manifest_ticket,
+    validate_strix_runner_manifest_ticket_secret,
 )
 
 
@@ -69,7 +79,8 @@ def _runner_admission_signing_secret() -> str:
         )
     try:
         validate_strix_runner_exec_ticket_secret(secret)
-    except StrixRunnerExecTicketError as exc:
+        validate_strix_runner_manifest_ticket_secret(secret)
+    except (StrixRunnerExecTicketError, StrixRunnerManifestTicketError) as exc:
         raise HTTPException(
             status_code=503,
             detail="Strix runner admission signing key is invalid",
@@ -130,6 +141,7 @@ def healthz() -> dict:
             os.getenv("XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY", "")
         ),
         "ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
+        "manifest_ticket_schema": STRIX_RUNNER_MANIFEST_TICKET_SCHEMA,
         "mode": (
             "read_only_http_proxy"
             if egress_enabled
@@ -165,6 +177,7 @@ def readyz() -> dict:
         "egress_enabled": egress_enabled,
         "contract_schema": STRIX_EXECUTION_CONTRACT_SCHEMA,
         "ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
+        "manifest_ticket_schema": STRIX_RUNNER_MANIFEST_TICKET_SCHEMA,
         "ticket_issuer_ready": True,
         "allowed_http_methods": ["GET", "HEAD"],
     }
@@ -222,6 +235,72 @@ def issue_command_ticket(
     )
 
 
+@app.post(
+    "/v1/manifest-ticket",
+    response_model=BrokerManifestTicketResponse,
+)
+def issue_manifest_ticket(
+    request: BrokerManifestTicketRequest,
+) -> BrokerManifestTicketResponse:
+    verification_secret = _broker_verification_secret()
+    contract = request.contract.to_contract()
+    try:
+        verify_strix_contract_integrity(
+            contract,
+            require_signature=True,
+            verification_secret=verification_secret,
+        )
+        if (
+            contract.schema != STRIX_EXECUTION_CONTRACT_SCHEMA
+            or contract.engine != "strix"
+            or contract.direct_egress_allowed
+            or contract.host_container_socket_allowed
+            or not contract.independent_validation_required
+        ):
+            raise StrixExecutionContractError(
+                "Strix manifest execution contract safety invariants changed"
+            )
+    except StrixExecutionContractError as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Strix manifest admission rejected",
+                "reason": str(exc),
+            },
+        ) from exc
+
+    manifest = request.manifest.model_dump(mode="json")
+    descriptor = {
+        **manifest,
+        "contract_hash": contract.contract_hash,
+        "request_id": request.request_id,
+        "image": request.image,
+        "exposed_ports": request.exposed_ports,
+        "active_execution_enabled": False,
+    }
+    signing_secret = _runner_admission_signing_secret()
+    try:
+        ticket = build_strix_runner_manifest_ticket(
+            descriptor,
+            signing_secret=signing_secret,
+        )
+    except StrixRunnerManifestTicketError as exc:
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Strix manifest admission rejected",
+                "reason": str(exc),
+            },
+        ) from exc
+
+    return BrokerManifestTicketResponse(
+        allowed=True,
+        ticket=BrokerRunnerManifestTicketDocument.model_validate(
+            ticket.to_dict()
+        ),
+    )
+
+
 @app.post("/v1/request", response_model=BrokerHttpResponse)
 def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse:
     if not _read_only_egress_enabled():
@@ -248,9 +327,12 @@ __all__ = [
     "BrokerContractDocument",
     "BrokerHttpRequest",
     "BrokerHttpResponse",
+    "BrokerManifestTicketRequest",
+    "BrokerManifestTicketResponse",
     "admit",
     "healthz",
     "issue_command_ticket",
+    "issue_manifest_ticket",
     "readyz",
     "request_http",
 ]
