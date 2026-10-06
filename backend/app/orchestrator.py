@@ -37,6 +37,11 @@ from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .repeat_validation import (
+    REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA,
+    build_repeat_validation_candidates,
+    repeat_differential_validation_enabled,
+)
 from .runtime_capabilities import safe_browser_runtime_capability
 from .surface_confidence import build_surface_confidence
 from .surface_diff import build_surface_diff_intelligence
@@ -427,6 +432,7 @@ def _enqueue_action(
     *,
     validation_limit: int | None = None,
     scan_engines: tuple[str, ...] | None = None,
+    repeat_validation_ordinals: dict[str, int] | None = None,
 ) -> list[dict]:
     fingerprint = _graph_fingerprint(graph)
 
@@ -458,22 +464,49 @@ def _enqueue_action(
 
     if action.kind == "validate":
         jobs = []
-        pending = _pending_findings(campaign, graph)
+        repeat_ordinals = dict(repeat_validation_ordinals or {})
+        if repeat_ordinals:
+            pending = [
+                finding
+                for finding in campaign.findings
+                if str(finding.id) in repeat_ordinals
+            ]
+        else:
+            pending = _pending_findings(campaign, graph)
         if validation_limit is not None:
             pending = pending[:validation_limit]
         for finding in pending:
+            finding_id = str(finding.id)
+            repeat_ordinal = repeat_ordinals.get(finding_id)
+            payload = {
+                "campaign_id": campaign.id,
+                "finding_id": finding.id,
+                "asset": finding.asset,
+            }
+            dedupe_key = f"validation:{finding.id}"
+            if repeat_ordinal is not None:
+                payload["repeat_validation"] = {
+                    "schema": REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA,
+                    "ordinal": repeat_ordinal,
+                    "reason": (
+                        "single_strong_unknown_differential_requires_repeat"
+                    ),
+                }
+                dedupe_key = (
+                    f"validation:{finding.id}:repeat:{repeat_ordinal}"
+                )
             jobs.append(
                 queue.enqueue(
                     campaign.id,
                     "independent_validation",
                     attach_job_provenance(
-                        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+                        payload,
                         campaign,
                         job_kind="independent_validation",
                         action="validate",
                     ),
                     max_attempts=2,
-                    dedupe_key=f"validation:{finding.id}",
+                    dedupe_key=dedupe_key,
                 )
             )
         return jobs
