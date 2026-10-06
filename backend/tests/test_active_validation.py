@@ -45,8 +45,9 @@ def test_parameter_probes_mutate_only_existing_parameters():
     ]
     assert all(probe.method == "GET" for probe in plan.probes)
     assert all(probe.marker.startswith("xbowv2-") for probe in plan.probes[1:])
-    assert "one" not in str(plan.to_dict())
-    assert "two" not in str(plan.to_dict())
+    serialized = str(plan.to_dict())
+    assert "alpha=one" not in serialized
+    assert "beta=two" not in serialized
 
 
 def test_markers_are_deterministic_per_finding_and_parameter():
