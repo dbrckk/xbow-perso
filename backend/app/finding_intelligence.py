@@ -32,6 +32,7 @@ def build_finding_intelligence(
     threshold: float = 0.75,
     public_reports: list[dict[str, Any]] | None = None,
     program_handle: str | None = None,
+    kev_catalog: Any | None = None,
 ) -> dict[str, Any]:
     readiness = build_finding_readiness(
         findings,
@@ -116,7 +117,10 @@ def build_finding_intelligence(
                 high_confidence_fingerprint_match_count
             ),
         )
-        cve_risk_context = build_cve_risk_context(finding)
+        cve_risk_context = build_cve_risk_context(
+            finding,
+            kev_catalog=kev_catalog,
+        )
         cluster_saturated = bool(
             cluster_id in saturation_by_cluster
             and saturation_by_cluster[cluster_id].saturated
@@ -238,6 +242,10 @@ def build_finding_intelligence(
             "scanner_tagged_kev_unverified": sum(
                 row["cve_risk_context"]["scanner_tagged_kev"]
                 and not row["cve_risk_context"]["authoritative_kev_verified"]
+                for row in finding_rows
+            ),
+            "authoritative_kev_candidates": sum(
+                row["cve_risk_context"]["authoritative_kev_verified"]
                 for row in finding_rows
             ),
             "novel_candidates": sum(
