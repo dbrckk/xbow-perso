@@ -1,17 +1,19 @@
 # Change impact
 
-Base: 89b1ddf9bd5d70e87cb713207130ac987117a072
-Head: 212ae90db177a8391dc0893a4b7819143bba0555
+Base: e17d8e86dcd1fc3beb7c46e6dd00e2a6c7e1a692
+Head: 4b57a506d640f5377e154d97aec750d15ff10588
 
 ## Changed files
+- M backend/Dockerfile.strix-runner
 - M backend/app/runtime_capabilities.py
-- M backend/app/strix_backend_hook.py
-- A backend/app/strix_manifest_admission.py
-- M backend/app/strix_remote_session.py
+- M backend/app/strix_broker.py
+- M backend/app/strix_broker_models.py
+- A backend/app/strix_runner_manifest_ticket.py
+- M backend/app/strix_runner_rpc.py
 - M backend/tests/test_runtime_capabilities.py
-- M backend/tests/test_strix_backend_hook.py
-- A backend/tests/test_strix_manifest_admission.py
-- M backend/tests/test_strix_remote_session.py
+- M backend/tests/test_strix_broker.py
+- A backend/tests/test_strix_runner_manifest_ticket.py
+- M backend/tests/test_strix_runner_rpc.py
 
 ## Affected areas
 - backend

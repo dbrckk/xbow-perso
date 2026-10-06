@@ -39,36 +39,36 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T10:26:40Z
+Generated: 2026-10-06T10:37:50Z
 
 ### Git
 - Branch: `main`
-- Head: `212ae90db177`
-- Commit date: 2026-10-06T12:26:27+02:00
-- Commit: feat(strix): gate remote sessions on bounded manifest admission
-- Tracked files: 641
+- Head: `4b57a506d640`
+- Commit date: 2026-10-06T12:37:40+02:00
+- Commit: feat(strix): require signed manifest tickets for session creation
+- Tracked files: 643
 
 ### Recently changed files
+- `backend/Dockerfile.strix-runner`
 - `backend/app/runtime_capabilities.py`
+- `backend/app/strix_broker.py`
+- `backend/app/strix_broker_models.py`
+- `backend/app/strix_runner_manifest_ticket.py`
+- `backend/app/strix_runner_rpc.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_broker.py`
+- `backend/tests/test_strix_runner_manifest_ticket.py`
+- `backend/tests/test_strix_runner_rpc.py`
 - `backend/app/strix_backend_hook.py`
 - `backend/app/strix_manifest_admission.py`
 - `backend/app/strix_remote_session.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_backend_hook.py`
 - `backend/tests/test_strix_manifest_admission.py`
 - `backend/tests/test_strix_remote_session.py`
 - `README.md`
-- `backend/app/strix_broker.py`
-- `backend/app/strix_broker_models.py`
-- `backend/tests/test_strix_broker.py`
 - `backend/tests/test_strix_broker_runtime.py`
 - `docker-compose.yml`
 - `.github/workflows/ci.yml`
-- `backend/Dockerfile.strix-runner`
-- `backend/app/strix_runner_exec_ticket.py`
-- `backend/app/strix_runner_rpc.py`
-- `backend/tests/test_strix_runner_exec_ticket.py`
-- `backend/tests/test_strix_runner_rpc.py`
 
 ### Project signals
 - `pyproject.toml`

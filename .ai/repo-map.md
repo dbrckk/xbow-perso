@@ -225,6 +225,7 @@ backend/
     strix_run_status.py
     strix_runner_attestation.py
     strix_runner_exec_ticket.py
+    strix_runner_manifest_ticket.py
     strix_runner_rpc.py
     submission_api.py
     submission_state.py
@@ -471,6 +472,7 @@ backend/
     test_strix_run_status.py
     test_strix_runner_attestation.py
     test_strix_runner_exec_ticket.py
+    test_strix_runner_manifest_ticket.py
     test_strix_runner_rpc.py
     test_submission_api.py
     test_submission_state.py
@@ -11616,6 +11618,44 @@ mode: Literal["ticket_issuer_only"] = "ticket_issuer_only"
 ⋮----
 process_execution_performed: Literal[False] = False
 ⋮----
+class BrokerManifestAdmissionDocument(BaseModel)
+⋮----
+schema: Literal["strix-manifest-admission-v1"]
+manifest_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+entry_count: int = Field(ge=0, le=128)
+inline_file_count: int = Field(ge=0, le=128)
+local_dir_count: int = Field(ge=0, le=128)
+inline_file_bytes: int = Field(ge=0, le=4 * 1024 * 1024)
+environment_value_bytes: int = Field(ge=0, le=16 * 1024)
+host_paths_included: Literal[False]
+raw_file_content_included: Literal[False]
+filesystem_io_performed: Literal[False]
+manifest_materialized: Literal[False]
+upload_enabled: Literal[False]
+⋮----
+@model_validator(mode="after")
+    def validate_counts(self)
+⋮----
+class BrokerManifestTicketRequest(BaseModel)
+⋮----
+image: str = Field(min_length=1, max_length=512)
+exposed_ports: list[int] = Field(default_factory=list, max_length=16)
+manifest: BrokerManifestAdmissionDocument
+⋮----
+@model_validator(mode="after")
+    def validate_ports(self)
+⋮----
+class BrokerRunnerManifestTicketDocument(BaseModel)
+⋮----
+schema: Literal["strix-runner-manifest-ticket-v1"]
+manifest_schema: Literal["strix-manifest-admission-v1"]
+⋮----
+class BrokerManifestTicketResponse(BaseModel)
+⋮----
+ticket: BrokerRunnerManifestTicketDocument
+⋮----
+manifest_materialized: Literal[False] = False
+⋮----
 class BrokerHttpRequest(BaseModel)
 ⋮----
 method: Literal["GET", "HEAD"] = "GET"
@@ -11681,6 +11721,13 @@ authorized = authorize_strix_command(
 ⋮----
 signing_secret = _runner_admission_signing_secret()
 ticket = build_strix_runner_exec_ticket(
+⋮----
+contract = request.contract.to_contract()
+⋮----
+manifest = request.manifest.model_dump(mode="json")
+descriptor = {
+⋮----
+ticket = build_strix_runner_manifest_ticket(
 ⋮----
 @app.post("/v1/request", response_model=BrokerHttpResponse)
 def request_http(request: BrokerHttpRequest) -> BrokerHttpResponse
@@ -12751,6 +12798,101 @@ expected_signature = hmac.new(
 timeout = float(timeout_seconds)
 ````
 
+## File: backend/app/strix_runner_manifest_ticket.py
+````python
+STRIX_MANIFEST_ADMISSION_SCHEMA = "strix-manifest-admission-v1"
+⋮----
+STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v1"
+STRIX_RUNNER_MANIFEST_TICKET_MIN_SECRET_BYTES = 32
+STRIX_RUNNER_MANIFEST_TICKET_MAX_SECRET_BYTES = 4096
+⋮----
+_SIGNATURE_DOMAIN = b"xbow:strix-runner-manifest-ticket:v1\x00"
+_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+⋮----
+_MAX_ENTRIES = 128
+_MAX_INLINE_FILE_BYTES = 4 * 1024 * 1024
+_MAX_ENVIRONMENT_VALUE_BYTES = 16 * 1024
+⋮----
+class StrixRunnerManifestTicketError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixRunnerManifestTicket
+⋮----
+schema: str
+manifest_schema: str
+contract_hash: str
+request_id: str
+image: str
+exposed_ports: tuple[int, ...]
+manifest_digest: str
+entry_count: int
+inline_file_count: int
+local_dir_count: int
+inline_file_bytes: int
+environment_value_bytes: int
+host_paths_included: bool
+raw_file_content_included: bool
+filesystem_io_performed: bool
+manifest_materialized: bool
+upload_enabled: bool
+active_execution_enabled: bool
+signature_alg: str
+signature: str
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _secret_bytes(secret: str) -> bytes
+⋮----
+encoded = secret.encode("utf-8")
+⋮----
+def validate_strix_runner_manifest_ticket_secret(secret: str) -> None
+⋮----
+def _valid_image(value: object) -> str
+⋮----
+def _valid_ports(value: Sequence[int]) -> tuple[int, ...]
+⋮----
+ports: list[int] = []
+⋮----
+def _validate_descriptor(values: Mapping[str, Any]) -> dict[str, Any]
+⋮----
+contract_hash = values.get("contract_hash")
+⋮----
+request_id = values.get("request_id")
+⋮----
+image = _valid_image(values.get("image"))
+ports = _valid_ports(values.get("exposed_ports", ()))
+digest = values.get("manifest_digest")
+⋮----
+entry_count = values.get("entry_count")
+inline_file_count = values.get("inline_file_count")
+local_dir_count = values.get("local_dir_count")
+inline_file_bytes = values.get("inline_file_bytes")
+environment_value_bytes = values.get("environment_value_bytes")
+⋮----
+def _canonical_bytes(values: Mapping[str, Any]) -> bytes
+⋮----
+payload = {
+⋮----
+unsigned = _validate_descriptor(manifest_descriptor)
+secret = _secret_bytes(signing_secret)
+signature = hmac.new(
+⋮----
+expected_keys = {
+⋮----
+signature = ticket_payload.get("signature")
+⋮----
+descriptor = {
+unsigned = _validate_descriptor(descriptor)
+⋮----
+secret = _secret_bytes(verification_secret)
+expected_signature = hmac.new(
+⋮----
+expected_ports = _valid_ports(exposed_ports)
+````
+
 ## File: backend/app/strix_runner_rpc.py
 ````python
 RUNNER_RPC_PROTOCOL = "strix-runner-rpc-v1"
@@ -12828,10 +12970,10 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool
 ⋮----
 image = payload.get("image")
 ports = payload.get("exposed_ports")
+admission = payload.get("admission")
 ⋮----
 argv = payload.get("argv")
 timeout = payload.get("timeout_seconds")
-admission = payload.get("admission")
 ⋮----
 class BoundedThreadingHTTPServer(ThreadingHTTPServer)
 ⋮----
@@ -22360,6 +22502,19 @@ result = issue_command_ticket(
 ⋮----
 verified = verify_strix_runner_exec_ticket(
 ⋮----
+def test_broker_issues_manifest_ticket_only_after_contract_verification(monkeypatch)
+⋮----
+image = "ghcr.io/example/sandbox@sha256:" + "b" * 64
+manifest_digest = "c" * 64
+⋮----
+result = issue_manifest_ticket(
+⋮----
+verified = verify_strix_runner_manifest_ticket(
+⋮----
+def test_broker_manifest_ticket_rejects_wrong_contract_key(monkeypatch)
+⋮----
+def test_broker_manifest_model_rejects_materialization_or_inconsistent_counts(monkeypatch)
+⋮----
 def test_broker_command_ticket_rejects_wrong_contract_key(monkeypatch)
 ⋮----
 def test_broker_command_ticket_rejects_unreviewed_command(monkeypatch, profile, argv)
@@ -23036,6 +23191,35 @@ def test_runner_ticket_rejects_executable_outside_selected_profile()
 descriptor = _descriptor(argv=["nuclei", "-version"])
 ````
 
+## File: backend/tests/test_strix_runner_manifest_ticket.py
+````python
+SECRET = "fixture-manifest-ticket-secret-at-least-32-bytes"
+⋮----
+def _descriptor(**overrides)
+⋮----
+values = {
+⋮----
+def test_manifest_ticket_binds_create_request_without_enabling_execution()
+⋮----
+ticket = build_strix_runner_manifest_ticket(
+⋮----
+verified = verify_strix_runner_manifest_ticket(
+⋮----
+def test_manifest_ticket_rejects_tampering()
+⋮----
+def test_manifest_ticket_rejects_request_digest_mismatch()
+⋮----
+def test_manifest_ticket_rejects_unsafe_invariant(field)
+⋮----
+def test_manifest_ticket_rejects_inconsistent_counts()
+⋮----
+def test_manifest_ticket_rejects_oversized_manifest_summary()
+⋮----
+def test_manifest_ticket_requires_strong_secret()
+⋮----
+def test_manifest_ticket_rejects_extra_fields()
+````
+
 ## File: backend/tests/test_strix_runner_rpc.py
 ````python
 ROOT = Path(__file__).resolve().parents[2]
@@ -23050,12 +23234,17 @@ signature = sign_runner_rpc_request(
 ⋮----
 def _payload(path: str) -> dict
 ⋮----
+request_id = "req-create-1"
+image = "ghcr.io/example/sandbox@sha256:" + "a" * 64
+exposed_ports = [48080]
+manifest_digest = "b" * 64
+descriptor = {
+⋮----
 argv = [
 timeout_seconds = 10.0
 request_id = "req-exec-1"
 session_id = "sess-1"
 canonical = chr(0).join(argv).encode("utf-8")
-descriptor = {
 ⋮----
 def _request(service: RunnerRpcService, path: str, payload: dict)
 ⋮----
@@ -23086,11 +23275,17 @@ def test_valid_exec_ticket_still_cannot_enable_execution()
 ⋮----
 path = "/v1/session/exec"
 ⋮----
-def test_exec_rejects_tampered_admission_ticket_before_execution_gate()
+def test_valid_manifest_ticket_still_cannot_enable_session_creation()
+⋮----
+def test_create_rejects_tampered_manifest_ticket_before_execution_gate()
 ⋮----
 payload = _payload(path)
 ⋮----
 result = _request(_service(), path, payload)
+⋮----
+def test_create_rejects_manifest_ticket_bound_to_different_digest()
+⋮----
+def test_exec_rejects_tampered_admission_ticket_before_execution_gate()
 ⋮----
 def test_exec_rejects_ticket_bound_to_different_argv()
 ⋮----

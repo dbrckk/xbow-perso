@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 6,
+    "score_margin": 1,
     "tier": "bounded",
     "top_score": 27
   },
   "cache": {
-    "fingerprint": "ec6cd4ee43769ca635fa139037c9c3ed3dda8a1064b93088fabdad704deb45ac",
+    "fingerprint": "c1fff60344a111abd3355fa10757121aed5519dc795b2c4725c057d92f3a8310",
     "hit": false
   },
-  "candidate_count": 53,
+  "candidate_count": 56,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -44,6 +44,63 @@
         "_validation_saturated_cluster_ids",
         "advance_campaign",
         "scope_checker"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/strix_broker.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "_authorize",
+        "_broker_verification_secret",
+        "_read_only_egress_enabled",
+        "_runner_admission_signing_secret",
+        "admit",
+        "healthz",
+        "issue_command_ticket",
+        "issue_manifest_ticket",
+        "readyz",
+        "request_http"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/strix_broker_models.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "BrokerAdmissionRequest",
+        "BrokerAdmissionResponse",
+        "BrokerCommandTicketRequest",
+        "BrokerCommandTicketResponse",
+        "BrokerContractDocument",
+        "BrokerHeader",
+        "BrokerHttpRequest",
+        "BrokerHttpResponse",
+        "BrokerManifestAdmissionDocument",
+        "BrokerManifestTicketRequest",
+        "BrokerManifestTicketResponse",
+        "BrokerRunnerExecTicketDocument",
+        "BrokerRunnerManifestTicketDocument",
+        "normalize_scope",
+        "to_contract",
+        "validate_counts",
+        "validate_ports"
       ]
     },
     {
@@ -103,52 +160,6 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_normalization.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "test_normalized_ids_are_engine_scoped_and_stable",
-        "test_normalizers_fail_closed_outside_scope",
-        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
-        "test_nuclei_jsonl_parser_rejects_invalid_line",
-        "test_nuclei_jsonl_parser_rejects_oversized_file",
-        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
-        "test_scanner_registry_dispatches_nuclei_parser",
-        "test_scanner_registry_dispatches_strix_parser",
-        "test_scanner_registry_exposes_supported_engines",
-        "test_scanner_registry_missing_run_directory_is_empty",
-        "test_scanner_registry_rejects_symlinked_artifacts",
-        "test_scanner_registry_rejects_unknown_engine",
-        "test_scanner_registry_selects_latest_artifact",
-        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],
