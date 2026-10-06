@@ -9,15 +9,18 @@ from app.strix_broker import (
     BrokerContractDocument,
     BrokerHttpRequest,
     BrokerHttpResponse,
+    BrokerManifestTicketRequest,
     admit,
     healthz,
     issue_command_ticket,
+    issue_manifest_ticket,
     readyz,
     request_http,
 )
 from app.strix_broker_client import StrixBrokerClientError
 from app.strix_execution_contract import build_strix_execution_contract
 from app.strix_runner_exec_ticket import verify_strix_runner_exec_ticket
+from app.strix_runner_manifest_ticket import verify_strix_runner_manifest_ticket
 
 
 def _campaign():
@@ -229,6 +232,115 @@ def test_broker_issues_runner_ticket_only_after_command_admission(monkeypatch):
     assert verified.contract_hash == contract.contract_hash
     assert verified.profile == "bootstrap-v1"
     assert verified.active_execution_enabled is False
+
+
+def test_broker_issues_manifest_ticket_only_after_contract_verification(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    _configure_broker_keys(monkeypatch)
+    image = "ghcr.io/example/sandbox@sha256:" + "b" * 64
+    manifest_digest = "c" * 64
+
+    result = issue_manifest_ticket(
+        BrokerManifestTicketRequest(
+            contract=contract,
+            request_id="req-create-1",
+            image=image,
+            exposed_ports=[48080],
+            manifest={
+                "schema": "strix-manifest-admission-v1",
+                "manifest_digest": manifest_digest,
+                "entry_count": 2,
+                "inline_file_count": 1,
+                "local_dir_count": 1,
+                "inline_file_bytes": 1024,
+                "environment_value_bytes": 128,
+                "host_paths_included": False,
+                "raw_file_content_included": False,
+                "filesystem_io_performed": False,
+                "manifest_materialized": False,
+                "upload_enabled": False,
+            },
+        )
+    )
+
+    assert result.allowed is True
+    assert result.mode == "ticket_issuer_only"
+    assert result.network_io_performed is False
+    assert result.process_execution_performed is False
+    assert result.manifest_materialized is False
+    verified = verify_strix_runner_manifest_ticket(
+        result.ticket.model_dump(mode="json"),
+        request_id="req-create-1",
+        image=image,
+        exposed_ports=[48080],
+        manifest_digest=manifest_digest,
+        verification_secret=ADMISSION_SECRET,
+    )
+    assert verified.contract_hash == contract.contract_hash
+    assert verified.manifest_materialized is False
+    assert verified.upload_enabled is False
+    assert verified.active_execution_enabled is False
+
+
+def test_broker_manifest_ticket_rejects_wrong_contract_key(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+    monkeypatch.setenv("XBOW_STRIX_BROKER_HMAC_KEY", "different-secret")
+    monkeypatch.setenv(
+        "XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY",
+        ADMISSION_SECRET,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        issue_manifest_ticket(
+            BrokerManifestTicketRequest(
+                contract=contract,
+                request_id="req-create-1",
+                image="fixture",
+                exposed_ports=[],
+                manifest={
+                    "schema": "strix-manifest-admission-v1",
+                    "manifest_digest": "c" * 64,
+                    "entry_count": 0,
+                    "inline_file_count": 0,
+                    "local_dir_count": 0,
+                    "inline_file_bytes": 0,
+                    "environment_value_bytes": 0,
+                    "host_paths_included": False,
+                    "raw_file_content_included": False,
+                    "filesystem_io_performed": False,
+                    "manifest_materialized": False,
+                    "upload_enabled": False,
+                },
+            )
+        )
+
+    assert exc_info.value.status_code == 403
+
+
+def test_broker_manifest_model_rejects_materialization_or_inconsistent_counts(monkeypatch):
+    contract = _signed_contract(monkeypatch)
+
+    with pytest.raises(ValidationError):
+        BrokerManifestTicketRequest(
+            contract=contract,
+            request_id="req-create-1",
+            image="fixture",
+            exposed_ports=[],
+            manifest={
+                "schema": "strix-manifest-admission-v1",
+                "manifest_digest": "c" * 64,
+                "entry_count": 1,
+                "inline_file_count": 0,
+                "local_dir_count": 0,
+                "inline_file_bytes": 0,
+                "environment_value_bytes": 0,
+                "host_paths_included": False,
+                "raw_file_content_included": False,
+                "filesystem_io_performed": False,
+                "manifest_materialized": True,
+                "upload_enabled": False,
+            },
+        )
 
 
 def test_broker_command_ticket_rejects_wrong_contract_key(monkeypatch):
