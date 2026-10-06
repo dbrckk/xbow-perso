@@ -1943,11 +1943,11 @@ cpe_present = bool(
 template_verified = getattr(finding, "template_verified", None) is True
 tags = {
 scanner_tagged_kev = "kev" in tags
+catalog_authoritative = bool(
+authoritative = bool(
 ⋮----
 score = 0.0
 reasons: list[str] = []
-⋮----
-authoritative = bool(authoritative_kev_verified)
 ⋮----
 score = round(max(0.0, min(1.0, score)), 4)
 ⋮----
@@ -2987,7 +2987,7 @@ versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
-cve_risk_context = build_cve_risk_context(finding)
+cve_risk_context = build_cve_risk_context(
 cluster_saturated = bool(
 validation_priority = build_validation_priority(
 ⋮----
@@ -15325,6 +15325,15 @@ result = build_cve_risk_context(finding)
 def test_missing_external_metrics_remains_usable_and_conservative()
 ⋮----
 def test_invalid_metric_values_are_ignored()
+⋮----
+def test_verified_kev_catalog_promotes_only_matching_cve()
+⋮----
+catalog = build_kev_catalog(
+⋮----
+matched = build_cve_risk_context(
+unmatched = build_cve_risk_context(
+⋮----
+def test_unverified_kev_catalog_cannot_promote_risk_context()
 ```
 
 ## File: tests/test_decision_audit.py
@@ -16126,6 +16135,10 @@ priority = row["validation_priority"]
 def test_finding_intelligence_exposes_cve_risk_context_without_confirmation()
 ⋮----
 risk = row["cve_risk_context"]
+⋮----
+def test_finding_intelligence_counts_verified_kev_candidates()
+⋮----
+catalog = build_kev_catalog(
 ```
 
 ## File: tests/test_finding_lifecycle.py

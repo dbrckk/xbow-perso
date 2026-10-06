@@ -1,307 +1,684 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e28bb1be3c4955613fa453ab318de6416541ab1a",
-  "head": "d9a28aa650b319e94d7ef1da9c72792fb493f4ee",
+  "base": "d9a28aa650b319e94d7ef1da9c72792fb493f4ee",
+  "head": "f56e31e12fd57f26ee576fa6fc0811e8cb5e82b4",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/validator.py",
+      "path": "backend/app/cve_risk_context.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_validator.py",
+      "path": "backend/app/finding_intelligence.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_cve_risk_context.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/validator.py",
-    "backend/tests/test_validator.py"
+    "backend/app/cve_risk_context.py",
+    "backend/app/finding_intelligence.py",
+    "backend/tests/test_cve_risk_context.py",
+    "backend/tests/test_finding_intelligence.py"
   ],
   "impacted_files": [
-    "backend/app/validator.py",
-    "backend/app/worker_service.py",
+    "backend/app/cve_risk_context.py",
+    "backend/app/finding_intelligence.py",
+    "backend/app/main.py",
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-    "backend/tests/test_validator.py",
-    "backend/tests/test_worker_concurrency.py"
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
     {
-      "name": "ValidationPolicyError",
+      "name": "CveRiskContext",
       "kind": "class",
-      "file": "backend/app/validator.py",
-      "line": 16
+      "file": "backend/app/cve_risk_context.py",
+      "line": 18
     },
     {
-      "name": "_NoRedirect",
-      "kind": "class",
-      "file": "backend/app/validator.py",
-      "line": 20
-    },
-    {
-      "name": "redirect_request",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 21
+      "file": "backend/app/cve_risk_context.py",
+      "line": 34
     },
     {
-      "name": "ProbeResult",
-      "kind": "class",
-      "file": "backend/app/validator.py",
-      "line": 26
-    },
-    {
-      "name": "json_bytes",
+      "name": "_unit_interval",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 36
-    },
-    {
-      "name": "_HttpObservation",
-      "kind": "class",
-      "file": "backend/app/validator.py",
+      "file": "backend/app/cve_risk_context.py",
       "line": 41
     },
     {
-      "name": "_bool_env",
+      "name": "_cvss",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 49
+      "file": "backend/app/cve_risk_context.py",
+      "line": 53
     },
     {
-      "name": "_validation_timeout_seconds",
+      "name": "build_cve_risk_context",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 61
+      "file": "backend/app/cve_risk_context.py",
+      "line": 65
     },
     {
-      "name": "_validation_preview_chars",
+      "name": "build_finding_intelligence",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 74
+      "file": "backend/app/finding_intelligence.py",
+      "line": 27
     },
     {
-      "name": "_preview_body",
+      "name": "campaign_finding_intelligence",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 85
+      "file": "backend/app/finding_intelligence.py",
+      "line": 298
     },
     {
-      "name": "_redact_query_values",
+      "name": "authenticate_control_api",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 100
+      "file": "backend/app/main.py",
+      "line": 35
     },
     {
-      "name": "_validation_max_bytes",
+      "name": "utcnow",
       "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 120
-    },
-    {
-      "name": "_validation_max_parameters_v2",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 131
-    },
-    {
-      "name": "_validation_max_requests_v2",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 146
-    },
-    {
-      "name": "_validation_rps",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 161
-    },
-    {
-      "name": "_evidence_url",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 171
-    },
-    {
-      "name": "_request_get",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 180
-    },
-    {
-      "name": "_differential_marker",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 217
-    },
-    {
-      "name": "_marker_url",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 222
-    },
-    {
-      "name": "build_probe_url",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 233
-    },
-    {
-      "name": "build_safe_http_probe_plan_v2",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 258
-    },
-    {
-      "name": "safe_http_probe",
-      "kind": "function",
-      "file": "backend/app/validator.py",
-      "line": 287
-    },
-    {
-      "name": "CampaignCancelledError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
+      "file": "backend/app/main.py",
       "line": 48
     },
     {
-      "name": "StaleValidationJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
+      "name": "storage",
+      "kind": "function",
+      "file": "backend/app/main.py",
       "line": 52
     },
     {
-      "name": "StaleBrowserJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
+      "name": "queue",
+      "kind": "function",
+      "file": "backend/app/main.py",
       "line": 56
     },
     {
-      "name": "_save",
+      "name": "incident_store",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 64
+      "file": "backend/app/main.py",
+      "line": 60
     },
     {
-      "name": "_campaign",
+      "name": "_stable_key",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 69
+      "file": "backend/app/main.py",
+      "line": 68
     },
     {
-      "name": "_append_event_once",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 80
+      "name": "CampaignState",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 73
     },
     {
-      "name": "_lease_heartbeat",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 97
+      "name": "ProgramRules",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 83
     },
     {
-      "name": "renew",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 104
+      "name": "TargetInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 96
     },
     {
-      "name": "_process_scanner_job",
+      "name": "primary_target_must_be_allowed",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 125
+      "file": "backend/app/main.py",
+      "line": 103
     },
     {
-      "name": "process_strix_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 132
+      "name": "Finding",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 117
     },
     {
-      "name": "process_nuclei_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 136
+      "name": "FindingReviewMetadataInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 147
     },
     {
-      "name": "process_validation",
+      "name": "normalize_review_metadata",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 140
+      "file": "backend/app/main.py",
+      "line": 157
     },
     {
-      "name": "process_browser_flow",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 213
+      "name": "Campaign",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 172
     },
     {
-      "name": "process_recon_task",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 317
+      "name": "EvidenceInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 182
     },
     {
-      "name": "process_report",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 442
+      "name": "HackerOneScopePreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 189
     },
     {
-      "name": "_record_worker_outcome",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 484
+      "name": "OpenApiPreviewInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 193
     },
     {
-      "name": "_worker_bool",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 514
+      "name": "IncidentAcknowledgeInput",
+      "kind": "class",
+      "file": "backend/app/main.py",
+      "line": 197
     },
     {
-      "name": "_legacy_unprovenanced_jobs_allowed",
+      "name": "save_campaign",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 526
+      "file": "backend/app/main.py",
+      "line": 202
     },
     {
-      "name": "_verify_policy_bound_job",
+      "name": "assert_campaign_record",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
+      "file": "backend/app/main.py",
+      "line": 209
+    },
+    {
+      "name": "assert_campaign_exists",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 217
+    },
+    {
+      "name": "_reject_cancelled_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 221
+    },
+    {
+      "name": "_reject_new_findings_for_closed_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 226
+    },
+    {
+      "name": "_campaign_graph",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 234
+    },
+    {
+      "name": "_has_evidence_backed_independent_validation",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 241
+    },
+    {
+      "name": "policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 246
+    },
+    {
+      "name": "sanitized_scan_payload",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 272
+    },
+    {
+      "name": "live",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 309
+    },
+    {
+      "name": "ready",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 314
+    },
+    {
+      "name": "auth_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 327
+    },
+    {
+      "name": "health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 336
+    },
+    {
+      "name": "deployment_preflight",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 352
+    },
+    {
+      "name": "system_capabilities",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 359
+    },
+    {
+      "name": "preview_openapi_tests",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 446
+    },
+    {
+      "name": "get_offensive_expansion",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 456
+    },
+    {
+      "name": "get_observer_health",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 463
+    },
+    {
+      "name": "get_incidents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 468
+    },
+    {
+      "name": "acknowledge_incident",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 473
+    },
+    {
+      "name": "list_agents",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 488
+    },
+    {
+      "name": "preview_hackerone_scope",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 494
+    },
+    {
+      "name": "create_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
       "line": 530
     },
     {
-      "name": "_active_scanner_execution_requested",
+      "name": "list_campaigns",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 550
+      "file": "backend/app/main.py",
+      "line": 538
     },
     {
-      "name": "_claim_for_role",
+      "name": "get_campaign",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 557
+      "file": "backend/app/main.py",
+      "line": 543
     },
     {
-      "name": "process_one",
+      "name": "get_campaign_target_memory",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 571
+      "file": "backend/app/main.py",
+      "line": 548
     },
     {
-      "name": "_worker_poll_seconds",
+      "name": "get_campaign_surface_diff",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 628
+      "file": "backend/app/main.py",
+      "line": 560
     },
     {
-      "name": "main",
+      "name": "get_campaign_surface_temporal",
       "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 639
+      "file": "backend/app/main.py",
+      "line": 574
+    },
+    {
+      "name": "get_campaign_surface_confidence",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 586
+    },
+    {
+      "name": "campaign_outbox_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 603
+    },
+    {
+      "name": "campaign_outbox_recovery",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 617
+    },
+    {
+      "name": "_apply_local_outbox_repairs",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 638
+    },
+    {
+      "name": "reconcile_campaign_outbox_local",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 677
+    },
+    {
+      "name": "preview_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 735
+    },
+    {
+      "name": "_pentagi_dispatch_fingerprint",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 766
+    },
+    {
+      "name": "_record_pentagi_dispatch_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 770
+    },
+    {
+      "name": "_reconcile_pentagi_queued_event",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 796
+    },
+    {
+      "name": "dispatch_pentagi_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 843
+    },
+    {
+      "name": "pentagi_campaign_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 917
+    },
+    {
+      "name": "list_campaign_observations",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 947
+    },
+    {
+      "name": "campaign_decision_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 953
+    },
+    {
+      "name": "campaign_event_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 965
+    },
+    {
+      "name": "campaign_worker_audit",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 975
+    },
+    {
+      "name": "campaign_knowledge",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 987
+    },
+    {
+      "name": "campaign_finding_ranking",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1002
+    },
+    {
+      "name": "campaign_advisory_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1029
+    },
+    {
+      "name": "campaign_advisory_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1038
+    },
+    {
+      "name": "campaign_advisory_journal",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1049
+    },
+    {
+      "name": "campaign_hypothesis_history",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1061
+    },
+    {
+      "name": "campaign_hypothesis_delta",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1070
+    },
+    {
+      "name": "campaign_hypothesis_stability",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1081
+    },
+    {
+      "name": "campaign_plan",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1093
+    },
+    {
+      "name": "check_policy",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1143
+    },
+    {
+      "name": "verify_campaign_policy_receipt",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1153
+    },
+    {
+      "name": "_pending_campaign_start_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1158
+    },
+    {
+      "name": "_record_campaign_start_intent",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1166
+    },
+    {
+      "name": "_reconcile_campaign_started",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1192
+    },
+    {
+      "name": "start_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1256
+    },
+    {
+      "name": "cancel_campaign",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1342
+    },
+    {
+      "name": "get_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1375
+    },
+    {
+      "name": "get_job_provenance_status",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1383
+    },
+    {
+      "name": "_validation_request_id",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1400
+    },
+    {
+      "name": "_reconcile_validation_queued",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1404
+    },
+    {
+      "name": "add_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1453
+    },
+    {
+      "name": "_record_report_request",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1538
+    },
+    {
+      "name": "_reconcile_report_job",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1565
+    },
+    {
+      "name": "_ensure_completion_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1611
+    },
+    {
+      "name": "update_finding_review_metadata",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1679
+    },
+    {
+      "name": "validate_finding",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1730
+    },
+    {
+      "name": "queue_report",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1796
+    },
+    {
+      "name": "add_text_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1839
+    },
+    {
+      "name": "list_artifacts",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1870
+    },
+    {
+      "name": "download_artifact",
+      "kind": "function",
+      "file": "backend/app/main.py",
+      "line": 1876
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 11
+    },
+    {
+      "name": "test_risk_context_combines_structured_cve_metadata_without_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 29
+    },
+    {
+      "name": "test_scanner_kev_tag_never_becomes_authoritative_automatically",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 41
+    },
+    {
+      "name": "test_explicit_authoritative_kev_verification_is_distinct",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 49
+    },
+    {
+      "name": "test_non_cve_finding_is_not_ranked_as_cve_risk",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 60
+    },
+    {
+      "name": "test_missing_external_metrics_remains_usable_and_conservative",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 78
+    },
+    {
+      "name": "test_invalid_metric_values_are_ignored",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 95
+    },
+    {
+      "name": "test_verified_kev_catalog_promotes_only_matching_cve",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 111
+    },
+    {
+      "name": "test_unverified_kev_catalog_cannot_promote_risk_context",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 148
     },
     {
       "name": "_finding",
@@ -334,268 +711,124 @@
       "line": 133
     },
     {
-      "name": "_resource",
+      "name": "_finding",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-      "line": 18
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 9
     },
     {
-      "name": "_launch_payload",
+      "name": "_graph",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-      "line": 29
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 21
     },
     {
-      "name": "_headers",
+      "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-      "line": 52
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 60
     },
     {
-      "name": "test_hackerone_full_lifecycle_produces_downloadable_report",
+      "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-      "line": 56
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 95
     },
     {
-      "name": "fake_execute",
+      "name": "test_finding_intelligence_does_not_expose_query_values",
       "kind": "function",
-      "file": "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-      "line": 78
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 110
     },
     {
-      "name": "campaign",
+      "name": "test_finding_intelligence_route_is_exposed",
       "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 18
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 123
     },
     {
-      "name": "finding",
+      "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
       "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 33
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 127
     },
     {
-      "name": "_Response",
-      "kind": "class",
-      "file": "backend/tests/test_validator.py",
-      "line": 46
-    },
-    {
-      "name": "__init__",
+      "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
       "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 47
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 157
     },
     {
-      "name": "__enter__",
+      "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
       "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 52
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 183
     },
     {
-      "name": "__exit__",
+      "name": "test_finding_intelligence_counts_verified_kev_candidates",
       "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 55
-    },
-    {
-      "name": "read",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 58
-    },
-    {
-      "name": "_EchoingOpener",
-      "kind": "class",
-      "file": "backend/tests/test_validator.py",
-      "line": 62
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 63
-    },
-    {
-      "name": "open",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 67
-    },
-    {
-      "name": "test_probe_resolves_relative_endpoint_inside_scope",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 77
-    },
-    {
-      "name": "test_probe_rejects_out_of_scope_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 81
-    },
-    {
-      "name": "test_probe_rejects_denied_host_even_if_related",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 86
-    },
-    {
-      "name": "test_http_validation_is_dry_run_by_default",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 91
-    },
-    {
-      "name": "test_invalid_http_validation_flag_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 100
-    },
-    {
-      "name": "test_invalid_http_validator_limits_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 116
-    },
-    {
-      "name": "test_explicit_false_http_validation_flag_remains_dry_run",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 124
-    },
-    {
-      "name": "test_validation_evidence_redacts_query_values",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 132
-    },
-    {
-      "name": "test_validation_preview_is_text_only_and_bounded",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 148
-    },
-    {
-      "name": "test_invalid_validation_preview_limit_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 156
-    },
-    {
-      "name": "test_differential_validation_uses_inert_marker_on_existing_query_parameter",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 163
-    },
-    {
-      "name": "test_active_validation_redacts_query_values_reflected_in_body_preview",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 198
-    },
-    {
-      "name": "test_differential_validation_does_not_invent_query_parameters",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 216
-    },
-    {
-      "name": "test_invalid_differential_validation_gate_fails_closed_before_network",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 232
-    },
-    {
-      "name": "test_v2_plan_is_disabled_by_default_and_performs_no_network",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 248
-    },
-    {
-      "name": "test_v2_parameter_plan_requires_http_gate_and_feature_gate",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 272
-    },
-    {
-      "name": "test_v2_feature_gate_alone_cannot_enable_plan",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 293
-    },
-    {
-      "name": "test_v2_plan_limits_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 326
-    },
-    {
-      "name": "test_invalid_v2_gate_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 338
-    },
-    {
-      "name": "test_v2_plan_reuses_scope_checker",
-      "kind": "function",
-      "file": "backend/tests/test_validator.py",
-      "line": 352
-    },
-    {
-      "name": "make_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 17
-    },
-    {
-      "name": "test_worker_save_rejects_stale_campaign_snapshot",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 32
-    },
-    {
-      "name": "test_worker_poll_interval_is_bounded",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 53
-    },
-    {
-      "name": "test_validation_worker_rejects_resolved_finding_before_probe",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 66
-    },
-    {
-      "name": "test_validation_worker_rejects_completed_campaign_before_probe",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 93
-    },
-    {
-      "name": "test_stale_validation_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 120
-    },
-    {
-      "name": "test_completed_campaign_validation_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
-      "line": 165
-    },
-    {
-      "name": "test_completed_campaign_browser_job_is_cancelled_without_retry",
-      "kind": "function",
-      "file": "backend/tests/test_worker_concurrency.py",
+      "file": "backend/tests/test_finding_intelligence.py",
       "line": 209
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 11
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 25
+    },
+    {
+      "name": "test_nuclei_classification_preserves_cve_as_stable_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 44
+    },
+    {
+      "name": "test_known_cve_candidate_never_confirms_exploitability",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 70
+    },
+    {
+      "name": "test_strong_unknown_requires_independent_corroboration_for_novel_candidate",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 85
+    },
+    {
+      "name": "test_low_severity_unknown_is_not_promoted_to_novel_candidate",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 110
+    },
+    {
+      "name": "test_textual_cve_extraction_is_case_insensitive_and_deduplicated",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 121
+    },
+    {
+      "name": "test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 134
+    },
+    {
+      "name": "test_version_correlated_cve_raises_evidence_quality_not_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 162
     }
   ],
   "selected_tests": [
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
-    "backend/tests/test_hackerone_report_lifecycle_e2e.py",
-    "backend/tests/test_validator.py",
-    "backend/tests/test_worker_concurrency.py"
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

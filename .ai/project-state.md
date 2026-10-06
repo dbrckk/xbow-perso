@@ -39,25 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T18:02:59Z
+Generated: 2026-10-06T18:04:24Z
 
 ### Git
 - Branch: `main`
-- Head: `d9a28aa650b3`
-- Commit date: 2026-10-06T20:02:47+02:00
-- Commit: feat(validation): bind v2 planner to scoped validator gates
+- Head: `f56e31e12fd5`
+- Commit date: 2026-10-06T20:04:12+02:00
+- Commit: feat(vuln): bind verified KEV catalog to CVE risk
 - Tracked files: 656
 
 ### Recently changed files
+- `backend/app/cve_risk_context.py`
+- `backend/app/finding_intelligence.py`
+- `backend/tests/test_cve_risk_context.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/validator.py`
 - `backend/tests/test_validator.py`
 - `backend/app/kev_catalog.py`
 - `backend/tests/test_kev_catalog.py`
-- `backend/app/cve_risk_context.py`
-- `backend/app/finding_intelligence.py`
 - `backend/app/validation_priority.py`
-- `backend/tests/test_cve_risk_context.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_validation_priority.py`
 - `backend/app/active_validation.py`
 - `backend/tests/test_active_validation.py`

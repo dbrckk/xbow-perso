@@ -1,11 +1,13 @@
 # Change impact
 
-Base: 1e65a8b00f4dc2ff25dc887315e8e9e369af7eb3
-Head: d9a28aa650b319e94d7ef1da9c72792fb493f4ee
+Base: 0eb4dc9bfda22b610a21a2d66e8198240f9ae1f0
+Head: f56e31e12fd57f26ee576fa6fc0811e8cb5e82b4
 
 ## Changed files
-- M backend/app/validator.py
-- M backend/tests/test_validator.py
+- M backend/app/cve_risk_context.py
+- M backend/app/finding_intelligence.py
+- M backend/tests/test_cve_risk_context.py
+- M backend/tests/test_finding_intelligence.py
 
 ## Affected areas
 - backend

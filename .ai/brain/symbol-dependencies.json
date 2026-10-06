@@ -5,28 +5,19 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "ValidationPolicyError": {
+    "CveRiskContext": {
       "source": {
-        "file": "backend/app/validator.py",
-        "start": 16,
-        "end": 17
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_NoRedirect": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 20,
-        "end": 22
+        "file": "backend/app/cve_risk_context.py",
+        "start": 18,
+        "end": 38
       },
       "symbol_dependencies": [
         {
-          "symbol": "redirect_request",
+          "symbol": "to_dict",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 21,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
@@ -36,337 +27,31 @@
       ],
       "dependency_count": 1
     },
-    "redirect_request": {
+    "to_dict": {
       "source": {
-        "file": "backend/app/validator.py",
-        "start": 21,
-        "end": 22
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "ProbeResult": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 26,
-        "end": 37
+        "file": "backend/app/cve_risk_context.py",
+        "start": 34,
+        "end": 154
       },
       "symbol_dependencies": [
         {
-          "symbol": "json_bytes",
+          "symbol": "CveRiskContext",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "json_bytes": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 36,
-        "end": 37
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_HttpObservation": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 41,
-        "end": 46
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_bool_env": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 49,
-        "end": 58
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 18,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validation_timeout_seconds": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 61,
-        "end": 71
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "ValidationPolicyError",
+          "symbol": "KevCatalog",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validation_preview_chars": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 74,
-        "end": 82
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_preview_body": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 85,
-        "end": 97
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_validation_preview_chars",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 74,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_redact_query_values": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 100,
-        "end": 117
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_validation_max_bytes": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 120,
-        "end": 128
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validation_max_parameters_v2": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 131,
-        "end": 143
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validation_max_requests_v2": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 146,
-        "end": 158
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validation_rps": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 161,
-        "end": 168
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_evidence_url": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 171,
-        "end": 177
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_request_get": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 180,
-        "end": 214
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_HttpObservation",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 41,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_differential_marker": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 217,
-        "end": 219
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_marker_url": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 222,
-        "end": 230
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_differential_marker",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_probe_url": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 233,
-        "end": 255
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_safe_http_probe_plan_v2": {
-      "source": {
-        "file": "backend/app/validator.py",
-        "start": 258,
-        "end": 284
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "SafeProbePlan",
-          "definitions": [
-            {
-              "file": "backend/app/active_validation.py",
-              "line": 55,
+              "file": "backend/app/kev_catalog.py",
+              "line": 34,
               "kind": "class",
               "language": "python"
             }
@@ -374,11 +59,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_bool_env",
+          "symbol": "_cvss",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 49,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -386,11 +71,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_validation_max_parameters_v2",
+          "symbol": "_unit_interval",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 131,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
@@ -398,11 +83,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_validation_max_requests_v2",
+          "symbol": "build_cve_risk_context",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 146,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -410,11 +95,87 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_probe_url",
+          "symbol": "finding_cve_ids",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 233,
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finding_has_authoritative_kev",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 183,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_unit_interval": {
+      "source": {
+        "file": "backend/app/cve_risk_context.py",
+        "start": 41,
+        "end": 50
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_cvss": {
+      "source": {
+        "file": "backend/app/cve_risk_context.py",
+        "start": 53,
+        "end": 62
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_cve_risk_context": {
+      "source": {
+        "file": "backend/app/cve_risk_context.py",
+        "start": 65,
+        "end": 175
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CveRiskContext",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "KevCatalog",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 34,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_cvss",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -422,11 +183,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_safe_probe_plan",
+          "symbol": "_unit_interval",
           "definitions": [
             {
-              "file": "backend/app/active_validation.py",
-              "line": 138,
+              "file": "backend/app/cve_risk_context.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "finding_cve_ids",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finding_has_authoritative_kev",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 183,
               "kind": "function",
               "language": "python"
             }
@@ -436,173 +221,596 @@
       ],
       "dependency_count": 6
     },
-    "safe_http_probe": {
+    "build_finding_intelligence": {
       "source": {
-        "file": "backend/app/validator.py",
-        "start": 287,
-        "end": 362
+        "file": "backend/app/finding_intelligence.py",
+        "start": 27,
+        "end": 294
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProbeResult",
+          "symbol": "DifferentialSignal",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
+              "file": "backend/app/differential_intelligence.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cluster_consensus",
+          "definitions": [
+            {
+              "file": "backend/app/finding_cluster_consensus.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cluster_saturation",
+          "definitions": [
+            {
+              "file": "backend/app/finding_cluster_saturation.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cve_evidence_verdict",
+          "definitions": [
+            {
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_differential_signals",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_readiness",
+          "definitions": [
+            {
+              "file": "backend/app/finding_readiness.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_triage",
+          "definitions": [
+            {
+              "file": "backend/app/finding_triage.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cluster_findings",
+          "definitions": [
+            {
+              "file": "backend/app/finding_correlation.py",
+              "line": 238,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_public_duplicate_risk",
+          "definitions": [
+            {
+              "file": "backend/app/public_duplicate_intelligence.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/cve_evidence_verdict.py",
               "line": 26,
-              "kind": "class",
+              "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_NoRedirect",
-          "definitions": [
+            },
             {
-              "file": "backend/app/validator.py",
-              "line": 20,
-              "kind": "class",
+              "file": "backend/app/cve_risk_context.py",
+              "line": 34,
+              "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_bool_env",
-          "definitions": [
+            },
             {
-              "file": "backend/app/validator.py",
-              "line": 49,
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/finding_cluster_consensus.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/finding_cluster_saturation.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_evidence_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 171,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_marker_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_preview_body",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_redact_query_values",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 100,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_request_get",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 180,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_validation_max_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 120,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_validation_rps",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_validation_timeout_seconds",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_probe_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 12
+      "dependency_count": 15
     },
-    "campaign": {
+    "campaign_finding_intelligence": {
       "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 18,
-        "end": 30
+        "file": "backend/app/finding_intelligence.py",
+        "start": 298,
+        "end": 339
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 172,
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_finding": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 11,
+        "end": 26
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_risk_context_combines_structured_cve_metadata_without_confirmation": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 29,
+        "end": 38
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_scanner_kev_tag_never_becomes_authoritative_automatically": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 41,
+        "end": 46
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_explicit_authoritative_kev_verification_is_distinct": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 49,
+        "end": 57
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_non_cve_finding_is_not_ranked_as_cve_risk": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 60,
+        "end": 75
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_missing_external_metrics_remains_usable_and_conservative": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 78,
+        "end": 92
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_metric_values_are_ignored": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 95,
+        "end": 108
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_verified_kev_catalog_promotes_only_matching_cve": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 111,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_kev_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_unverified_kev_catalog_cannot_promote_risk_context": {
+      "source": {
+        "file": "backend/tests/test_cve_risk_context.py",
+        "start": 148,
+        "end": 174
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_risk_context.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_kev_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_graph": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 21,
+        "end": 57
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
               "kind": "class",
               "language": "python"
             }
@@ -610,11 +818,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ProgramRules",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 83,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
               "kind": "class",
               "language": "python"
             }
@@ -622,17 +830,165 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "TargetInput",
+          "symbol": "add",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_consolidates_member_and_cluster_views": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 60,
+        "end": 92
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_summary_reflects_cluster_saturation": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 95,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_does_not_expose_query_values": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 110,
+        "end": 120
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 123,
+        "end": 124
+      },
+      "symbol_dependencies": [
         {
           "symbol": "api",
           "definitions": [
@@ -646,43 +1002,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
-    },
-    "finding": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 33,
-        "end": 43
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Finding",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 117,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
       "dependency_count": 1
     },
-    "_Response": {
+    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
       "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 46,
-        "end": 59
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 127,
+        "end": 154
       },
       "symbol_dependencies": [
         {
-          "symbol": "__enter__",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 52,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
               "kind": "function",
               "language": "python"
             }
@@ -690,11 +1024,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "__exit__",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 55,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -702,485 +1036,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "read",
+          "symbol": "build_finding_intelligence",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "__init__": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 47,
-        "end": 50
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "__enter__": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 52,
-        "end": 53
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "__exit__": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 55,
-        "end": 56
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "read": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 58,
-        "end": 59
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_EchoingOpener": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 62,
-        "end": 74
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "open",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "open": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 67,
-        "end": 74
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_Response",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 46,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_probe_resolves_relative_endpoint_inside_scope": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 77,
-        "end": 78
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_probe_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_probe_rejects_out_of_scope_endpoint": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 81,
-        "end": 83
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_probe_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_probe_rejects_denied_host_even_if_related": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 86,
-        "end": 88
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_probe_url",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_http_validation_is_dry_run_by_default": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 91,
-        "end": 97
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_http_validation_flag_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 100,
-        "end": 104
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_http_validator_limits_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 116,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_explicit_false_http_validation_flag_remains_dry_run": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 124,
-        "end": 129
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -1190,19 +1050,19 @@
       ],
       "dependency_count": 3
     },
-    "test_validation_evidence_redacts_query_values": {
+    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
       "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 132,
-        "end": 145
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 157,
+        "end": 180
       },
       "symbol_dependencies": [
         {
-          "symbol": "campaign",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
               "kind": "function",
               "language": "python"
             }
@@ -1210,11 +1070,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "finding",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -1222,473 +1082,103 @@
           "relation": "same_file"
         },
         {
-          "symbol": "json_bytes",
+          "symbol": "build_finding_intelligence",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 36,
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_validation_preview_is_text_only_and_bounded": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 148,
-        "end": 153
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_preview_body",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invalid_validation_preview_limit_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 156,
-        "end": 160
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_preview_body",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 85,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_differential_validation_uses_inert_marker_on_existing_query_parameter": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 163,
-        "end": 195
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_EchoingOpener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 62,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_active_validation_redacts_query_values_reflected_in_body_preview": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 198,
-        "end": 213
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_EchoingOpener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 62,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_differential_validation_does_not_invent_query_parameters": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 216,
-        "end": 229
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_EchoingOpener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 62,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "json_bytes",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_invalid_differential_validation_gate_fails_closed_before_network": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 232,
-        "end": 244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_EchoingOpener",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 62,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "safe_http_probe",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 287,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_v2_plan_is_disabled_by_default_and_performs_no_network": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 248,
-        "end": 269
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_safe_http_probe_plan_v2",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 258,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
       "dependency_count": 3
     },
-    "test_v2_parameter_plan_requires_http_gate_and_feature_gate": {
+    "test_finding_intelligence_exposes_cve_risk_context_without_confirmation": {
       "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 272,
-        "end": 290
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 183,
+        "end": 206
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_safe_http_probe_plan_v2",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 258,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
       "dependency_count": 3
     },
-    "test_v2_feature_gate_alone_cannot_enable_plan": {
+    "test_finding_intelligence_counts_verified_kev_candidates": {
       "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 293,
-        "end": 303
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 209,
+        "end": 251
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_safe_http_probe_plan_v2",
+          "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/app/validator.py",
-              "line": 258,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -1696,202 +1186,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "campaign",
+          "symbol": "build_kev_catalog",
           "definitions": [
             {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_v2_plan_limits_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 326,
-        "end": 335
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_safe_http_probe_plan_v2",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 258,
+              "file": "backend/app/kev_catalog.py",
+              "line": 84,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_v2_gate_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 338,
-        "end": 349
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_safe_http_probe_plan_v2",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 258,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_v2_plan_reuses_scope_checker": {
-      "source": {
-        "file": "backend/tests/test_validator.py",
-        "start": 352,
-        "end": 360
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ValidationPolicyError",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_safe_http_probe_plan_v2",
-          "definitions": [
-            {
-              "file": "backend/app/validator.py",
-              "line": 258,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 18,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_validator.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
       "dependency_count": 4

@@ -390,6 +390,7 @@
     },
     "backend/app/cve_risk_context.py": {
       "dependencies": [
+        "backend/app/kev_catalog.py",
         "backend/app/main.py",
         "backend/app/vulnerability_intelligence.py"
       ],
@@ -398,7 +399,7 @@
         "backend/tests/test_cve_risk_context.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "backend/app/decision_audit.py": {
       "dependencies": [
@@ -1255,9 +1256,12 @@
     "backend/app/kev_catalog.py": {
       "dependencies": [],
       "dependents": [
+        "backend/app/cve_risk_context.py",
+        "backend/tests/test_cve_risk_context.py",
+        "backend/tests/test_finding_intelligence.py",
         "backend/tests/test_kev_catalog.py"
       ],
-      "in_degree": 1,
+      "in_degree": 4,
       "out_degree": 0
     },
     "backend/app/knowledge_memory.py": {
@@ -3892,11 +3896,12 @@
     "backend/tests/test_cve_risk_context.py": {
       "dependencies": [
         "backend/app/cve_risk_context.py",
+        "backend/app/kev_catalog.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "backend/tests/test_decision_audit.py": {
       "dependencies": [
@@ -4124,13 +4129,14 @@
     "backend/tests/test_finding_intelligence.py": {
       "dependencies": [
         "backend/app/finding_intelligence.py",
+        "backend/app/kev_catalog.py",
         "backend/app/main.py",
         "backend/app/observation_graph.py",
         "frontend/app.js"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "backend/tests/test_finding_lifecycle.py": {
       "dependencies": [
