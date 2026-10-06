@@ -12,6 +12,10 @@ from .finding_readiness import build_finding_readiness
 from .finding_triage import build_finding_triage
 from .observation_graph import load_observation_graph
 from .public_duplicate_intelligence import rank_public_duplicate_risk
+from .technology_fingerprint_intelligence import (
+    build_technology_fingerprints,
+    match_finding_technology,
+)
 from .vulnerability_intelligence import build_vulnerability_signal
 
 router = APIRouter()
@@ -45,6 +49,7 @@ def build_finding_intelligence(
         threshold=threshold,
     )
     differential_signals = build_differential_signals(graph)
+    technology_fingerprints = build_technology_fingerprints(graph)
 
     readiness_by_id = {item.finding_id: item for item in readiness}
     triage_by_id = {item.finding_id: item for item in triage}
@@ -80,10 +85,25 @@ def build_finding_intelligence(
             for member_id in member_ids
             if member_id in finding_by_id
         }
+        matched_fingerprints = match_finding_technology(
+            finding,
+            technology_fingerprints,
+        )
+        versioned_fingerprint_match_count = sum(
+            item.version is not None for item in matched_fingerprints
+        )
+        high_confidence_fingerprint_match_count = sum(
+            item.version is not None and item.confidence >= 0.75
+            for item in matched_fingerprints
+        )
         vulnerability = build_vulnerability_signal(
             finding,
             differential_signal=differential_item.signal,
             corroborating_sources=corroborating_sources,
+            versioned_fingerprint_match_count=versioned_fingerprint_match_count,
+            high_confidence_fingerprint_match_count=(
+                high_confidence_fingerprint_match_count
+            ),
         )
 
         finding_rows.append(
@@ -95,6 +115,15 @@ def build_finding_intelligence(
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
                 "vulnerability": vulnerability.to_dict(),
+                "technology": {
+                    "matched_fingerprints": [
+                        item.to_dict() for item in matched_fingerprints
+                    ],
+                    "versioned_match_count": versioned_fingerprint_match_count,
+                    "high_confidence_match_count": (
+                        high_confidence_fingerprint_match_count
+                    ),
+                },
                 "public_duplicate_similarity": duplicate_similarity,
                 "cluster_id": cluster_id,
                 "cluster_status": (
@@ -163,6 +192,15 @@ def build_finding_intelligence(
             "multi_scanner_cve_candidates": sum(
                 row["vulnerability"]["cve_signal"]
                 == "multi_scanner_cve_candidate"
+                for row in finding_rows
+            ),
+            "version_correlated_cve_candidates": sum(
+                row["vulnerability"]["version_correlated"]
+                for row in finding_rows
+            ),
+            "high_confidence_version_correlated_cve_candidates": sum(
+                row["vulnerability"]["high_confidence_fingerprint_match_count"] > 0
+                and row["vulnerability"]["known_cve_candidate"]
                 for row in finding_rows
             ),
             "novel_candidates": sum(
