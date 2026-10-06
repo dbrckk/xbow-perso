@@ -8,6 +8,10 @@ from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
 from .cve_validation_priority import build_cve_validation_plan
 from .differential_intelligence import DifferentialSignal, build_differential_signals
+from .differential_quality import (
+    build_differential_quality,
+    empty_differential_quality,
+)
 from .finding_cluster_consensus import build_cluster_consensus
 from .finding_cluster_saturation import build_cluster_saturation
 from .finding_correlation import cluster_findings
@@ -54,6 +58,7 @@ def build_finding_intelligence(
         threshold=threshold,
     )
     differential_signals = build_differential_signals(graph)
+    differential_quality = build_differential_quality(graph)
     technology_fingerprints = build_technology_fingerprints(graph)
 
     readiness_by_id = {item.finding_id: item for item in readiness}
@@ -77,6 +82,10 @@ def build_finding_intelligence(
         differential_item = differential_signals.get(
             finding_id,
             DifferentialSignal(finding_id=finding_id, signal="none"),
+        )
+        differential_quality_item = differential_quality.get(
+            finding_id,
+            empty_differential_quality(finding_id),
         )
         duplicate_similarity = rank_public_duplicate_risk(
             finding,
@@ -109,6 +118,8 @@ def build_finding_intelligence(
             high_confidence_fingerprint_match_count=(
                 high_confidence_fingerprint_match_count
             ),
+            differential_reproducible=differential_quality_item.reproducible,
+            differential_quality_score=differential_quality_item.quality_score,
         )
         cve_evidence_verdict = build_cve_evidence_verdict(
             finding,
@@ -151,6 +162,7 @@ def build_finding_intelligence(
                 "readiness": readiness_item.to_dict() if readiness_item else None,
                 "triage": triage_item.to_dict() if triage_item else None,
                 "differential": differential_item.to_dict(),
+                "differential_quality": differential_quality_item.to_dict(),
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
@@ -222,6 +234,18 @@ def build_finding_intelligence(
                 row["differential"]["signal"] == "weak"
                 for row in finding_rows
             ),
+            "reproducible_differential_findings": sum(
+                row["differential_quality"]["reproducible"]
+                for row in finding_rows
+            ),
+            "low_false_positive_differential_findings": sum(
+                row["differential_quality"]["false_positive_risk"] == "low"
+                for row in finding_rows
+            ),
+            "contradictory_differential_findings": sum(
+                row["differential_quality"]["contradictory"]
+                for row in finding_rows
+            ),
             "known_cve_candidates": sum(
                 row["vulnerability"]["known_cve_candidate"]
                 for row in finding_rows
@@ -256,6 +280,14 @@ def build_finding_intelligence(
             ),
             "novel_candidates": sum(
                 row["vulnerability"]["novel_candidate"]
+                for row in finding_rows
+            ),
+            "high_confidence_novel_candidates": sum(
+                row["vulnerability"]["novelty_confidence"] == "high"
+                for row in finding_rows
+            ),
+            "novel_candidates_requiring_repeat_validation": sum(
+                row["vulnerability"]["repeat_validation_required"]
                 for row in finding_rows
             ),
             "novel_candidates_needing_corroboration": sum(
