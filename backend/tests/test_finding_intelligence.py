@@ -320,3 +320,111 @@ def test_finding_intelligence_surfaces_reproducible_differential_quality():
     assert result["summary"]["reproducible_differential_findings"] == 1
     assert result["summary"]["low_false_positive_differential_findings"] == 1
     assert result["summary"]["contradictory_differential_findings"] == 0
+
+
+def test_version_ambiguity_downgrades_cve_verdict_and_validation_plan():
+    finding = _finding(
+        "f1",
+        "https://example.test/widget",
+        severity="critical",
+    )
+    finding.title = "Widget remote vulnerability"
+    finding.cve_ids = ["CVE-2026-55555"]
+    finding.evidence = ["cve-id:CVE-2026-55555"]
+    finding.cpe = []
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:one",
+            "technology",
+            "Widget 1.2.3",
+            "recon-a",
+            parent_ids=("asset:a",),
+            metadata={"confidence": 0.95},
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:two",
+            "technology",
+            "Widget 1.2.4",
+            "recon-b",
+            parent_ids=("asset:a",),
+            metadata={"confidence": 0.95},
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["version_ambiguity"]["ambiguous"] is True
+    assert "conflicting_version_fingerprints" in row[
+        "version_ambiguity"
+    ]["reasons"]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_evidence_verdict"]["confidence"] == "low"
+    assert row["cve_validation_plan"]["validation_mode"] == (
+        "passive_recheck"
+    )
+    assert row["validation_priority"]["recommended_state"] == (
+        "passive_review"
+    )
+    assert result["summary"]["ambiguous_version_candidates"] == 1
+    assert row["cve_evidence_verdict"]["exploitability_confirmed"] is False
+
+
+def test_clean_high_confidence_version_remains_non_confirming_candidate():
+    finding = _finding(
+        "f1",
+        "https://example.test/widget",
+        severity="high",
+    )
+    finding.title = "Widget remote vulnerability"
+    finding.cve_ids = ["CVE-2026-44444"]
+    finding.evidence = ["cve-id:CVE-2026-44444"]
+    finding.cpe = []
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:one",
+            "technology",
+            "Widget 1.2.3",
+            "recon-a",
+            parent_ids=("asset:a",),
+            metadata={"confidence": 0.95},
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["version_ambiguity"]["ambiguous"] is False
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "high_confidence_version_candidate"
+    )
+    assert row["cve_evidence_verdict"]["exploitability_confirmed"] is False
+    assert result["summary"]["ambiguous_version_candidates"] == 0
