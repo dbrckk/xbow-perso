@@ -6,6 +6,7 @@ from app.technology_fingerprint_intelligence import (
     build_technology_fingerprints,
     match_finding_technology,
     fingerprint_ambiguity_reasons,
+    finding_product_ambiguity_reasons,
 )
 
 
@@ -143,3 +144,29 @@ def test_multi_source_same_version_is_not_ambiguous():
     )
 
     assert fingerprint_ambiguity_reasons(matched) == ()
+
+
+def test_declared_product_is_matched_even_when_title_is_generic():
+    finding = _finding("generic parsing discrepancy")
+    finding.product = "nginx"
+    matched = match_finding_technology(
+        finding,
+        build_technology_fingerprints(_graph()),
+    )
+
+    assert any(item.normalized_product == "nginx" for item in matched)
+    assert finding_product_ambiguity_reasons(
+        finding,
+        build_technology_fingerprints(_graph()),
+    ) == ()
+
+
+def test_unobserved_declared_product_is_marked_ambiguous():
+    finding = _finding("generic parsing discrepancy")
+    finding.product = "apache"
+    fingerprints = build_technology_fingerprints(_graph())
+
+    assert finding_product_ambiguity_reasons(
+        finding,
+        fingerprints,
+    ) == ("declared_product_not_observed",)
