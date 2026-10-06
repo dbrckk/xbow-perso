@@ -54,7 +54,7 @@ def _finding_id(observation: Any) -> str | None:
     return None
 
 
-def _empty_quality(finding_id: str) -> DifferentialQuality:
+def empty_differential_quality(finding_id: str) -> DifferentialQuality:
     return DifferentialQuality(
         schema=DIFFERENTIAL_QUALITY_SCHEMA,
         finding_id=finding_id,
@@ -108,7 +108,7 @@ def build_differential_quality(
     for finding_id in sorted(finding_ids):
         observations = rows.get(finding_id, [])
         if not observations:
-            result[finding_id] = _empty_quality(finding_id)
+            result[finding_id] = empty_differential_quality(finding_id)
             continue
 
         levels = [
