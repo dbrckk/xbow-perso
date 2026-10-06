@@ -1,11 +1,13 @@
 # Change impact
 
-Base: e011bb446462b80d36d2662566125140ea3b0ed9
-Head: d359de8edf6f7a320936b203939c12cbba81d3b5
+Base: a29d2d4ac6dcc43fb7bc8cf5bf0c6c09b1a5d71b
+Head: 5ec233d77ae2a716b4798c7a22b58cdea9f8ab31
 
 ## Changed files
-- A backend/app/version_ambiguity.py
-- A backend/tests/test_version_ambiguity.py
+- A backend/app/cve_validation_priority.py
+- M backend/app/finding_intelligence.py
+- A backend/tests/test_cve_validation_priority.py
+- M backend/tests/test_finding_intelligence.py
 
 ## Affected areas
 - backend

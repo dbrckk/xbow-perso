@@ -39,28 +39,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T18:09:58Z
+Generated: 2026-10-06T19:24:08Z
 
 ### Git
 - Branch: `main`
-- Head: `d359de8edf6f`
-- Commit date: 2026-10-06T20:09:45+02:00
-- Commit: feat(vuln): detect ambiguous version evidence
-- Tracked files: 658
+- Head: `5ec233d77ae2`
+- Commit date: 2026-10-06T21:23:54+02:00
+- Commit: feat(vuln): add bounded CVE validation plans
+- Tracked files: 660
 
 ### Recently changed files
+- `backend/app/cve_validation_priority.py`
+- `backend/app/finding_intelligence.py`
+- `backend/tests/test_cve_validation_priority.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/version_ambiguity.py`
 - `backend/tests/test_version_ambiguity.py`
 - `backend/app/cve_risk_context.py`
-- `backend/app/finding_intelligence.py`
 - `backend/tests/test_cve_risk_context.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/app/validator.py`
 - `backend/tests/test_validator.py`
 - `backend/app/kev_catalog.py`
 - `backend/tests/test_kev_catalog.py`
-- `backend/app/validation_priority.py`
-- `backend/tests/test_validation_priority.py`
 
 ### Project signals
 - `pyproject.toml`

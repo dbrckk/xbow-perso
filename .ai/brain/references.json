@@ -5,30 +5,30 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "VersionAmbiguity": {
+    "CveValidationPlan": {
       "definition": {
-        "file": "backend/app/version_ambiguity.py",
+        "file": "backend/app/cve_validation_priority.py",
         "line": 11,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/version_ambiguity.py",
+          "file": "backend/app/cve_validation_priority.py",
           "line": 11,
-          "preview": "class VersionAmbiguity:",
+          "preview": "class CveValidationPlan:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 44,
-          "preview": ") -> VersionAmbiguity:",
+          "file": "backend/app/cve_validation_priority.py",
+          "line": 32,
+          "preview": ") -> CveValidationPlan:",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 93,
-          "preview": "return VersionAmbiguity(",
+          "file": "backend/app/cve_validation_priority.py",
+          "line": 80,
+          "preview": "return CveValidationPlan(",
           "definition_candidate": false
         }
       ],
@@ -36,8 +36,8 @@
     },
     "to_dict": {
       "definition": {
-        "file": "backend/app/version_ambiguity.py",
-        "line": 20,
+        "file": "backend/app/cve_validation_priority.py",
+        "line": 22,
         "kind": "function",
         "language": "python"
       },
@@ -223,6 +223,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/app/cve_validation_priority.py",
+          "line": 22,
+          "preview": "def to_dict(self) -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
           "file": "backend/app/decision_consensus.py",
           "line": 31,
           "preview": "def to_dict(self) -> dict[str, Any]:",
@@ -338,73 +344,79 @@
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 146,
+          "line": 151,
           "preview": "\"readiness\": readiness_item.to_dict() if readiness_item else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 147,
+          "line": 152,
           "preview": "\"triage\": triage_item.to_dict() if triage_item else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 148,
+          "line": 153,
           "preview": "\"differential\": differential_item.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 149,
+          "line": 154,
           "preview": "\"vulnerability\": vulnerability.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 150,
+          "line": 155,
           "preview": "\"cve_evidence_verdict\": cve_evidence_verdict.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 151,
+          "line": 156,
           "preview": "\"cve_risk_context\": cve_risk_context.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 152,
+          "line": 157,
+          "preview": "\"cve_validation_plan\": cve_validation_plan.to_dict(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/finding_intelligence.py",
+          "line": 158,
           "preview": "\"validation_priority\": validation_priority.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 155,
+          "line": 161,
           "preview": "item.to_dict() for item in matched_fingerprints",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 179,
+          "line": 185,
           "preview": "\"cluster\": cluster.to_dict(),",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 180,
+          "line": 186,
           "preview": "\"consensus\": consensus.to_dict() if consensus else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 181,
+          "line": 187,
           "preview": "\"saturation\": saturated.to_dict() if saturated else None,",
           "definition_candidate": false
         },
         {
           "file": "backend/app/finding_intelligence.py",
-          "line": 189,
+          "line": 195,
           "preview": "item.to_dict()",
           "definition_candidate": false
         },
@@ -749,149 +761,203 @@
           "line": 505,
           "preview": "consensus = intelligence[\"consensus\"].to_dict()",
           "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 506,
-          "preview": "cycle = intelligence[\"cycle\"].to_dict()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 587,
-          "preview": "store.put_observation(campaign.id, observation.to_dict())",
-          "definition_candidate": false
         }
       ],
       "occurrence_count": 120
     },
-    "_fingerprint_field": {
+    "build_cve_validation_plan": {
       "definition": {
-        "file": "backend/app/version_ambiguity.py",
-        "line": 26,
+        "file": "backend/app/cve_validation_priority.py",
+        "line": 28,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 26,
-          "preview": "def _fingerprint_field(item: Any, name: str, default: Any = None) -> Any:",
+          "file": "backend/app/cve_validation_priority.py",
+          "line": 28,
+          "preview": "def build_cve_validation_plan(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 52,
-          "preview": "_fingerprint_field(item, \"normalized_product\", \"\") or \"\"",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 9,
+          "preview": "from .cve_validation_priority import build_cve_validation_plan",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 54,
-          "preview": "version = str(_fingerprint_field(item, \"version\", \"\") or \"\").strip()",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 125,
+          "preview": "cve_validation_plan = build_cve_validation_plan(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 58,
-          "preview": "confidence = float(_fingerprint_field(item, \"confidence\", 0.0))",
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 6,
+          "preview": "build_cve_validation_plan,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 29,
+          "preview": "result = build_cve_validation_plan(finding, verdict=verdict)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 51,
+          "preview": "result = build_cve_validation_plan(finding, verdict=verdict)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 62,
+          "preview": "result = build_cve_validation_plan(finding, verdict=verdict)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 82,
+          "preview": "result = build_cve_validation_plan(finding, verdict=verdict)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 8
     },
-    "_cpe_version": {
+    "build_finding_intelligence": {
       "definition": {
-        "file": "backend/app/version_ambiguity.py",
-        "line": 32,
+        "file": "backend/app/finding_intelligence.py",
+        "line": 28,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 32,
-          "preview": "def _cpe_version(value: str) -> str | None:",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 28,
+          "preview": "def build_finding_intelligence(",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 79,
-          "preview": "version = _cpe_version(str(raw))",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 328,
+          "preview": "payload = build_finding_intelligence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 2,
+          "preview": "from app.finding_intelligence import build_finding_intelligence",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_differential_evidence_integration.py",
+          "line": 122,
+          "preview": "result = build_finding_intelligence(persisted.findings, graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 3,
+          "preview": "from app.finding_intelligence import build_finding_intelligence",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 76,
+          "preview": "result = build_finding_intelligence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 101,
+          "preview": "result = build_finding_intelligence(findings, _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 116,
+          "preview": "result = build_finding_intelligence(findings, _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 143,
+          "preview": "result = build_finding_intelligence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 167,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 198,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 239,
+          "preview": "result = build_finding_intelligence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 259,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_vulnerability_intelligence.py",
+          "line": 135,
+          "preview": "from app.finding_intelligence import build_finding_intelligence",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_vulnerability_intelligence.py",
+          "line": 151,
+          "preview": "result = build_finding_intelligence([finding], ObservationGraph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_vulnerability_intelligence.py",
+          "line": 163,
+          "preview": "from app.finding_intelligence import build_finding_intelligence",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_vulnerability_intelligence.py",
+          "line": 200,
+          "preview": "result = build_finding_intelligence([finding], graph)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 17
     },
-    "analyze_version_ambiguity": {
+    "campaign_finding_intelligence": {
       "definition": {
-        "file": "backend/app/version_ambiguity.py",
-        "line": 39,
+        "file": "backend/app/finding_intelligence.py",
+        "line": 304,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/version_ambiguity.py",
-          "line": 39,
-          "preview": "def analyze_version_ambiguity(",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 304,
+          "preview": "def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):",
           "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 7,
-          "preview": "analyze_version_ambiguity,",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 24,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 39,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 50,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 60,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 73,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 85,
-          "preview": "result = analyze_version_ambiguity(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 100,
-          "preview": "analyze_version_ambiguity(",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 9
+      "occurrence_count": 1
     },
     "_finding": {
       "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 11,
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "line": 10,
         "kind": "function",
         "language": "python"
       },
@@ -1002,6 +1068,30 @@
           "file": "backend/tests/test_cve_risk_context.py",
           "line": 169,
           "preview": "_finding(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 10,
+          "preview": "def _finding():",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 21,
+          "preview": "finding = _finding()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 42,
+          "preview": "finding = _finding()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 59,
+          "preview": "finding = _finding()",
           "definition_candidate": false
         },
         {
@@ -1305,6 +1395,12 @@
           "definition_candidate": false
         },
         {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 255,
+          "preview": "finding = _finding(\"f1\", \"https://example.test/a\")",
+          "definition_candidate": false
+        },
+        {
           "file": "backend/tests/test_finding_lifecycle.py",
           "line": 8,
           "preview": "def _finding(finding_id: str, status: str):",
@@ -1585,219 +1681,591 @@
           "line": 75,
           "preview": "_finding(severity=\"critical\"),",
           "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_validation_priority.py",
-          "line": 91,
-          "preview": "_finding(severity=\"critical\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_validation_priority.py",
-          "line": 106,
-          "preview": "_finding(severity=\"critical\", status=status),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_validation_priority.py",
-          "line": 119,
-          "preview": "_finding(severity=\"high\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_validation_priority.py",
-          "line": 126,
-          "preview": "_finding(severity=\"high\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 11,
-          "preview": "def _finding(*, cpe=None):",
-          "definition_candidate": true
         }
       ],
       "occurrence_count": 120
     },
-    "_fp": {
+    "test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan": {
       "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 15,
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "line": 20,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 15,
-          "preview": "def _fp(product, version, confidence):",
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 20,
+          "preview": "def test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan():",
           "definition_candidate": true
-        },
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_ambiguous_backport_candidate_is_forced_to_passive_recheck": {
+      "definition": {
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 27,
-          "preview": "_fp(\"nginx\", \"1.24.0\", 0.9),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 28,
-          "preview": "_fp(\"nginx\", \"1.25.1\", 0.9),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
+          "file": "backend/tests/test_cve_validation_priority.py",
           "line": 41,
-          "preview": "[_fp(\"nginx\", \"1.24.0\", 0.9)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 52,
-          "preview": "[_fp(\"nginx\", \"1.24.0\", 0.6)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 64,
-          "preview": "[_fp(\"product\", \"1.2.3\", 0.9)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 88,
-          "preview": "_fp(\"nginx\", \"1.24.0\", 0.9),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 89,
-          "preview": "_fp(\"openssl\", \"3.0.12\", 0.9),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 102,
-          "preview": "[_fp(\"nginx\", \"1.24.0\", 0.9)],",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "test_conflicting_versions_for_same_product_are_ambiguous": {
-      "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 23,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 23,
-          "preview": "def test_conflicting_versions_for_same_product_are_ambiguous():",
+          "preview": "def test_ambiguous_backport_candidate_is_forced_to_passive_recheck():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_single_high_confidence_version_is_not_ambiguous": {
+    "test_identifier_only_candidate_gets_metadata_recheck": {
       "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 38,
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "line": 58,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 38,
-          "preview": "def test_single_high_confidence_version_is_not_ambiguous():",
+          "file": "backend/tests/test_cve_validation_priority.py",
+          "line": 58,
+          "preview": "def test_identifier_only_candidate_gets_metadata_recheck():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_only_low_confidence_versions_are_ambiguous": {
+    "test_non_cve_low_signal_path_is_deferred": {
       "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 49,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 49,
-          "preview": "def test_only_low_confidence_versions_are_ambiguous():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_wildcard_cpe_is_ambiguous_even_with_high_confidence_banner": {
-      "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 59,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 59,
-          "preview": "def test_wildcard_cpe_is_ambiguous_even_with_high_confidence_banner():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_cpe_without_versioned_fingerprint_is_ambiguous": {
-      "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
+        "file": "backend/tests/test_cve_validation_priority.py",
         "line": 72,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_version_ambiguity.py",
+          "file": "backend/tests/test_cve_validation_priority.py",
           "line": 72,
-          "preview": "def test_cpe_without_versioned_fingerprint_is_ambiguous():",
+          "preview": "def test_non_cve_low_signal_path_is_deferred():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_distinct_products_with_distinct_versions_are_not_conflicting": {
+    "_graph": {
       "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 84,
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 21,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_version_ambiguity.py",
-          "line": 84,
-          "preview": "def test_distinct_products_with_distinct_versions_are_not_conflicting():",
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 26,
+          "preview": "def _graph():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 52,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 55,
+          "preview": "lambda _graph: {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 80,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 85,
+          "preview": "lambda _graph: {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 106,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 129,
+          "preview": "lambda _graph: {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 149,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 190,
+          "preview": "lambda _graph: {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 214,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 262,
+          "preview": "lambda _graph: {",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 313,
+          "preview": "lambda _graph: {\"valid\": True, \"checked\": 4, \"sealed_decisions\": 4, \"legacy_unsealed\": [], \"reason\": None},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 335,
+          "preview": "lambda _graph: {\"valid\": True, \"checked\": 5, \"sealed_decisions\": 5, \"legacy_unsealed\": [], \"reason\": None},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_decision_timeline.py",
+          "line": 354,
+          "preview": "lambda _graph: {\"valid\": True, \"checked\": 3, \"sealed_decisions\": 3, \"legacy_unsealed\": [], \"reason\": None},",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 6,
+          "preview": "def _graph() -> ObservationGraph:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 14,
+          "preview": "result = build_finding_consensus(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 28,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 61,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 81,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_consensus.py",
+          "line": 111,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 21,
+          "preview": "def _graph():",
           "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_invalid_confidence_threshold_fails_closed": {
-      "definition": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "line": 98,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "backend/tests/test_version_ambiguity.py",
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 78,
+          "preview": "_graph(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 101,
+          "preview": "result = build_finding_intelligence(findings, _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 116,
+          "preview": "result = build_finding_intelligence(findings, _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 145,
+          "preview": "_graph(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 167,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 198,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 241,
+          "preview": "_graph(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 259,
+          "preview": "result = build_finding_intelligence([finding], _graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 7,
+          "preview": "def _graph() -> ObservationGraph:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 43,
+          "preview": "hypotheses = build_hypotheses(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 54,
+          "preview": "tasks = build_review_queue(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 64,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 10,
+          "preview": "def _graph():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 18,
+          "preview": "hypotheses = build_hypotheses(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 29,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 47,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 80,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 108,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 127,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 148,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 30,
+          "preview": "def _graph(validation_value: str, validation_source: str) -> ObservationGraph:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 47,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"dry_run\", \"independent-validator\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 52,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"scanner\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_orchestrator_validation_alignment.py",
+          "line": 57,
+          "preview": "pending = _pending_findings(_campaign(), _graph(\"observed\", \"independent-validator\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 11,
+          "preview": "def _graph():",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 54,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 67,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 75,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+          "line": 87,
+          "preview": "fingerprints = build_technology_fingerprints(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_technology_fingerprint_intelligence.py",
           "line": 98,
-          "preview": "def test_invalid_confidence_threshold_fails_closed(threshold):",
+          "preview": "_graph(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 12,
+          "preview": "def _graph(validation_value=\"observed\", validation_source=\"validator\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 28,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 34,
+          "preview": "graph = _graph(validation_source=\"scanner\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 40,
+          "preview": "graph = _graph(validation_value=\"dry_run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 149,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 160,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 179,
+          "preview": "graph = _graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_validation_state.py",
+          "line": 194,
+          "preview": "graph = _graph(validation_source=\"scanner\")",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 59
+    },
+    "test_finding_intelligence_consolidates_member_and_cluster_views": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 60,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 60,
+          "preview": "def test_finding_intelligence_consolidates_member_and_cluster_views():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_summary_reflects_cluster_saturation": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 95,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 95,
+          "preview": "def test_finding_intelligence_summary_reflects_cluster_saturation():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_does_not_expose_query_values": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 110,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 110,
+          "preview": "def test_finding_intelligence_does_not_expose_query_values():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_route_is_exposed": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 123,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 123,
+          "preview": "def test_finding_intelligence_route_is_exposed():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 127,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 127,
+          "preview": "def test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 157,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 157,
+          "preview": "def test_finding_intelligence_exposes_advisory_validation_priority_only():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_exposes_cve_risk_context_without_confirmation": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 183,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 183,
+          "preview": "def test_finding_intelligence_exposes_cve_risk_context_without_confirmation():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_counts_verified_kev_candidates": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 209,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 209,
+          "preview": "def test_finding_intelligence_counts_verified_kev_candidates():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_finding_intelligence_exposes_bounded_cve_validation_plan": {
+      "definition": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "line": 254,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_finding_intelligence.py",
+          "line": 254,
+          "preview": "def test_finding_intelligence_exposes_bounded_cve_validation_plan():",
           "definition_candidate": true
         }
       ],

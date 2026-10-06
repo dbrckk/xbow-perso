@@ -383,9 +383,10 @@
       ],
       "dependents": [
         "backend/app/finding_intelligence.py",
-        "backend/tests/test_cve_evidence_verdict.py"
+        "backend/tests/test_cve_evidence_verdict.py",
+        "backend/tests/test_cve_validation_priority.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 2
     },
     "backend/app/cve_risk_context.py": {
@@ -400,6 +401,17 @@
       ],
       "in_degree": 2,
       "out_degree": 3
+    },
+    "backend/app/cve_validation_priority.py": {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/finding_intelligence.py",
+        "backend/tests/test_cve_validation_priority.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "backend/app/decision_audit.py": {
       "dependencies": [
@@ -644,6 +656,7 @@
       "dependencies": [
         "backend/app/cve_evidence_verdict.py",
         "backend/app/cve_risk_context.py",
+        "backend/app/cve_validation_priority.py",
         "backend/app/differential_intelligence.py",
         "backend/app/finding_cluster_consensus.py",
         "backend/app/finding_cluster_saturation.py",
@@ -664,7 +677,7 @@
         "backend/tests/test_vulnerability_intelligence.py"
       ],
       "in_degree": 4,
-      "out_degree": 14
+      "out_degree": 15
     },
     "backend/app/finding_lifecycle.py": {
       "dependencies": [
@@ -1398,6 +1411,7 @@
         "backend/app/coverage.py",
         "backend/app/cve_evidence_verdict.py",
         "backend/app/cve_risk_context.py",
+        "backend/app/cve_validation_priority.py",
         "backend/app/decision_consensus.py",
         "backend/app/decision_timeline.py",
         "backend/app/differential_intelligence.py",
@@ -1586,7 +1600,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 206,
+      "in_degree": 207,
       "out_degree": 60
     },
     "backend/app/metrics.py": {
@@ -3906,6 +3920,16 @@
       "dependencies": [
         "backend/app/cve_risk_context.py",
         "backend/app/kev_catalog.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "backend/tests/test_cve_validation_priority.py": {
+      "dependencies": [
+        "backend/app/cve_evidence_verdict.py",
+        "backend/app/cve_validation_priority.py",
         "frontend/app.js"
       ],
       "dependents": [],
@@ -6429,6 +6453,7 @@
         "backend/tests/test_cve_evidence_verdict.py",
         "backend/tests/test_cve_metadata_normalization.py",
         "backend/tests/test_cve_risk_context.py",
+        "backend/tests/test_cve_validation_priority.py",
         "backend/tests/test_decision_audit.py",
         "backend/tests/test_decision_consensus.py",
         "backend/tests/test_decision_timeline.py",
@@ -6650,7 +6675,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 249,
+      "in_degree": 250,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

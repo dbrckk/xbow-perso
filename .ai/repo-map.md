@@ -79,6 +79,7 @@ backend/
     coverage.py
     cve_evidence_verdict.py
     cve_risk_context.py
+    cve_validation_priority.py
     decision_audit.py
     decision_consensus.py
     decision_timeline.py
@@ -283,6 +284,7 @@ backend/
     test_cve_evidence_verdict.py
     test_cve_metadata_normalization.py
     test_cve_risk_context.py
+    test_cve_validation_priority.py
     test_decision_audit.py
     test_decision_consensus.py
     test_decision_timeline.py
@@ -2570,6 +2572,43 @@ band = "medium_priority"
 band = "low_priority"
 ````
 
+## File: backend/app/cve_validation_priority.py
+````python
+CVE_VALIDATION_PLAN_SCHEMA = "cve-validation-plan-v1"
+⋮----
+@dataclass(frozen=True)
+class CveValidationPlan
+⋮----
+schema: str
+finding_id: str
+validation_mode: str
+recommended_checks: tuple[str, ...]
+destructive_testing_allowed: bool
+state_changing_validation_allowed: bool
+exploit_execution_allowed: bool
+automatic_execution_authorized: bool
+independent_validation_required: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+finding_id = str(getattr(finding, "id", ""))
+verdict_name = str(getattr(verdict, "verdict", ""))
+behavioral = bool(getattr(verdict, "behavioral_evidence", False))
+version = bool(getattr(verdict, "version_evidence", False))
+high_version = bool(
+ambiguity = tuple(getattr(verdict, "ambiguity_reasons", ()) or ())
+⋮----
+mode = "passive_recheck"
+checks = (
+⋮----
+mode = "safe_active"
+⋮----
+mode = "defer"
+checks = ("collect_more_evidence",)
+````
+
 ## File: backend/app/decision_audit.py
 ````python
 _AUDIT_FIELDS = {
@@ -3598,6 +3637,7 @@ high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
 cve_risk_context = build_cve_risk_context(
+cve_validation_plan = build_cve_validation_plan(
 cluster_saturated = bool(
 validation_priority = build_validation_priority(
 ⋮----
@@ -15995,6 +16035,28 @@ unmatched = build_cve_risk_context(
 def test_unverified_kev_catalog_cannot_promote_risk_context()
 ````
 
+## File: backend/tests/test_cve_validation_priority.py
+````python
+def _finding()
+⋮----
+def test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan()
+⋮----
+finding = _finding()
+verdict = build_cve_evidence_verdict(
+⋮----
+result = build_cve_validation_plan(finding, verdict=verdict)
+⋮----
+def test_ambiguous_backport_candidate_is_forced_to_passive_recheck()
+⋮----
+def test_identifier_only_candidate_gets_metadata_recheck()
+⋮----
+verdict = build_cve_evidence_verdict(finding)
+⋮----
+def test_non_cve_low_signal_path_is_deferred()
+⋮----
+finding = SimpleNamespace(
+````
+
 ## File: backend/tests/test_decision_audit.py
 ````python
 def _decision(seq, previous_hash, *, observation_id=None, action="scan")
@@ -16798,6 +16860,12 @@ risk = row["cve_risk_context"]
 def test_finding_intelligence_counts_verified_kev_candidates()
 ⋮----
 catalog = build_kev_catalog(
+⋮----
+def test_finding_intelligence_exposes_bounded_cve_validation_plan()
+⋮----
+finding = _finding("f1", "https://example.test/a")
+⋮----
+plan = result["findings"][0]["cve_validation_plan"]
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py

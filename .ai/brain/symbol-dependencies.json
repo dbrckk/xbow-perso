@@ -5,27 +5,40 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "VersionAmbiguity": {
+    "CveValidationPlan": {
       "source": {
-        "file": "backend/app/version_ambiguity.py",
+        "file": "backend/app/cve_validation_priority.py",
         "start": 11,
-        "end": 23
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/version_ambiguity.py",
-        "start": 20,
-        "end": 140
+        "end": 25
       },
       "symbol_dependencies": [
         {
-          "symbol": "VersionAmbiguity",
+          "symbol": "to_dict",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "to_dict": {
+      "source": {
+        "file": "backend/app/cve_validation_priority.py",
+        "start": 22,
+        "end": 142
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CveValidationPlan",
+          "definitions": [
+            {
+              "file": "backend/app/cve_validation_priority.py",
               "line": 11,
               "kind": "class",
               "language": "python"
@@ -34,139 +47,348 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_cpe_version",
+          "symbol": "build_cve_validation_plan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 32,
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
+        }
+      ],
+      "dependency_count": 2
+    },
+    "build_cve_validation_plan": {
+      "source": {
+        "file": "backend/app/cve_validation_priority.py",
+        "start": 28,
+        "end": 90
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_fingerprint_field",
+          "symbol": "CveValidationPlan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "build_finding_intelligence": {
+      "source": {
+        "file": "backend/app/finding_intelligence.py",
+        "start": 28,
+        "end": 300
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "DifferentialSignal",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cluster_consensus",
+          "definitions": [
+            {
+              "file": "backend/app/finding_cluster_consensus.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cluster_saturation",
+          "definitions": [
+            {
+              "file": "backend/app/finding_cluster_saturation.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cve_evidence_verdict",
+          "definitions": [
+            {
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cve_risk_context",
+          "definitions": [
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_cve_validation_plan",
+          "definitions": [
+            {
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_differential_signals",
+          "definitions": [
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_readiness",
+          "definitions": [
+            {
+              "file": "backend/app/finding_readiness.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_triage",
+          "definitions": [
+            {
+              "file": "backend/app/finding_triage.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_technology_fingerprints",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_validation_priority",
+          "definitions": [
+            {
+              "file": "backend/app/validation_priority.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_vulnerability_signal",
+          "definitions": [
+            {
+              "file": "backend/app/vulnerability_intelligence.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "cluster_findings",
+          "definitions": [
+            {
+              "file": "backend/app/finding_correlation.py",
+              "line": 238,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "match_finding_technology",
+          "definitions": [
+            {
+              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "line": 111,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_public_duplicate_risk",
+          "definitions": [
+            {
+              "file": "backend/app/public_duplicate_intelligence.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/cve_evidence_verdict.py",
               "line": 26,
               "kind": "function",
               "language": "python"
+            },
+            {
+              "file": "backend/app/cve_risk_context.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/differential_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/finding_cluster_consensus.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "campaign_finding_intelligence": {
+      "source": {
+        "file": "backend/app/finding_intelligence.py",
+        "start": 304,
+        "end": 345
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/main.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 4
     },
-    "_fingerprint_field": {
-      "source": {
-        "file": "backend/app/version_ambiguity.py",
-        "start": 26,
-        "end": 29
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_cpe_version": {
-      "source": {
-        "file": "backend/app/version_ambiguity.py",
-        "start": 32,
-        "end": 36
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "analyze_version_ambiguity": {
-      "source": {
-        "file": "backend/app/version_ambiguity.py",
-        "start": 39,
-        "end": 101
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "VersionAmbiguity",
-          "definitions": [
-            {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_cpe_version",
-          "definitions": [
-            {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_fingerprint_field",
-          "definitions": [
-            {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 26,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
     "_finding": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 11,
-        "end": 12
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "start": 10,
+        "end": 17
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_fp": {
+    "test_behaviorally_supported_candidate_gets_safe_active_non_destructive_plan": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 15,
-        "end": 20
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_conflicting_versions_for_same_product_are_ambiguous": {
-      "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 23,
-        "end": 35
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "start": 20,
+        "end": 38
       },
       "symbol_dependencies": [
         {
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
+              "file": "backend/tests/test_cve_validation_priority.py",
+              "line": 10,
               "kind": "function",
               "language": "python"
             }
@@ -174,23 +396,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_fp",
+          "symbol": "build_cve_evidence_verdict",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "build_cve_validation_plan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -200,19 +422,19 @@
       ],
       "dependency_count": 3
     },
-    "test_single_high_confidence_version_is_not_ambiguous": {
+    "test_ambiguous_backport_candidate_is_forced_to_passive_recheck": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 38,
-        "end": 46
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "start": 41,
+        "end": 55
       },
       "symbol_dependencies": [
         {
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
+              "file": "backend/tests/test_cve_validation_priority.py",
+              "line": 10,
               "kind": "function",
               "language": "python"
             }
@@ -220,23 +442,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_fp",
+          "symbol": "build_cve_evidence_verdict",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "build_cve_validation_plan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -246,56 +468,10 @@
       ],
       "dependency_count": 3
     },
-    "test_only_low_confidence_versions_are_ambiguous": {
+    "test_identifier_only_candidate_gets_metadata_recheck": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 49,
-        "end": 56
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_fp",
-          "definitions": [
-            {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "analyze_version_ambiguity",
-          "definitions": [
-            {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_wildcard_cpe_is_ambiguous_even_with_high_confidence_banner": {
-      "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 59,
+        "file": "backend/tests/test_cve_validation_priority.py",
+        "start": 58,
         "end": 69
       },
       "symbol_dependencies": [
@@ -303,8 +479,8 @@
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
+              "file": "backend/tests/test_cve_validation_priority.py",
+              "line": 10,
               "kind": "function",
               "language": "python"
             }
@@ -312,23 +488,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_fp",
+          "symbol": "build_cve_evidence_verdict",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "build_cve_validation_plan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -338,31 +514,31 @@
       ],
       "dependency_count": 3
     },
-    "test_cpe_without_versioned_fingerprint_is_ambiguous": {
+    "test_non_cve_low_signal_path_is_deferred": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
+        "file": "backend/tests/test_cve_validation_priority.py",
         "start": 72,
-        "end": 81
+        "end": 86
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "build_cve_evidence_verdict",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
+              "file": "backend/app/cve_evidence_verdict.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "build_cve_validation_plan",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/cve_validation_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -372,43 +548,43 @@
       ],
       "dependency_count": 2
     },
-    "test_distinct_products_with_distinct_versions_are_not_conflicting": {
+    "_graph": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 84,
-        "end": 94
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 21,
+        "end": 57
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_fp",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "add",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
@@ -418,19 +594,19 @@
       ],
       "dependency_count": 3
     },
-    "test_invalid_confidence_threshold_fails_closed": {
+    "test_finding_intelligence_consolidates_member_and_cluster_views": {
       "source": {
-        "file": "backend/tests/test_version_ambiguity.py",
-        "start": 98,
-        "end": 104
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 60,
+        "end": 92
       },
       "symbol_dependencies": [
         {
           "symbol": "_finding",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 11,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
               "kind": "function",
               "language": "python"
             }
@@ -438,11 +614,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_fp",
+          "symbol": "_graph",
           "definitions": [
             {
-              "file": "backend/tests/test_version_ambiguity.py",
-              "line": 15,
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -450,11 +626,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "analyze_version_ambiguity",
+          "symbol": "build_finding_intelligence",
           "definitions": [
             {
-              "file": "backend/app/version_ambiguity.py",
-              "line": 39,
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -463,6 +639,374 @@
         }
       ],
       "dependency_count": 3
+    },
+    "test_finding_intelligence_summary_reflects_cluster_saturation": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 95,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_does_not_expose_query_values": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 110,
+        "end": 120
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 123,
+        "end": 124
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 127,
+        "end": 154
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 157,
+        "end": 180
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_exposes_cve_risk_context_without_confirmation": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 183,
+        "end": 206
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_finding_intelligence_counts_verified_kev_candidates": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 209,
+        "end": 251
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_kev_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/kev_catalog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_finding_intelligence_exposes_bounded_cve_validation_plan": {
+      "source": {
+        "file": "backend/tests/test_finding_intelligence.py",
+        "start": 254,
+        "end": 266
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_finding",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_finding_intelligence.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_finding_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/finding_intelligence.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
     }
   }
 }
