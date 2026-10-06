@@ -39,16 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T19:51:59Z
+Generated: 2026-10-06T19:57:11Z
 
 ### Git
 - Branch: `main`
-- Head: `1b349fcdd88c`
-- Commit date: 2026-10-06T21:51:42+02:00
-- Commit: feat(validation): consolidate bounded validation capability state
-- Tracked files: 665
+- Head: `c617b2e44ad5`
+- Commit date: 2026-10-06T21:56:47+02:00
+- Commit: feat(validation): classify repeat differential outcomes
+- Tracked files: 667
 
 ### Recently changed files
+- `backend/app/finding_intelligence.py`
+- `backend/app/repeat_validation_outcome.py`
+- `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_repeat_validation_outcome.py`
 - `backend/app/main.py`
 - `backend/app/runtime_capabilities.py`
 - `backend/tests/test_runtime_capabilities.py`
@@ -58,15 +62,11 @@ Generated: 2026-10-06T19:51:59Z
 - `backend/tests/test_repeat_validation.py`
 - `backend/tests/test_repeat_validation_orchestrator.py`
 - `backend/app/differential_quality.py`
-- `backend/app/finding_intelligence.py`
 - `backend/app/vulnerability_intelligence.py`
 - `backend/tests/test_differential_quality.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_vulnerability_intelligence.py`
 - `backend/app/cve_validation_priority.py`
 - `backend/tests/test_cve_validation_priority.py`
-- `backend/app/version_ambiguity.py`
-- `backend/tests/test_version_ambiguity.py`
 
 ### Project signals
 - `pyproject.toml`

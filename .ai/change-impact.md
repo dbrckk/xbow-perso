@@ -1,12 +1,13 @@
 # Change impact
 
-Base: aa1bfa5958273db5ec33b810baa3fedf668e46fe
-Head: 1b349fcdd88c3d045f40b4c1140ccdb5619cbfb0
+Base: 1364d6cfd42490bb9daf3c3f2fdd3bf7a46e0640
+Head: c617b2e44ad5e9dcfeb94c2039fb610a1529ff3a
 
 ## Changed files
-- M backend/app/main.py
-- M backend/app/runtime_capabilities.py
-- M backend/tests/test_runtime_capabilities.py
+- M backend/app/finding_intelligence.py
+- A backend/app/repeat_validation_outcome.py
+- M backend/tests/test_finding_intelligence.py
+- A backend/tests/test_repeat_validation_outcome.py
 
 ## Affected areas
 - backend

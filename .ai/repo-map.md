@@ -189,6 +189,7 @@ backend/
     red_team_coverage.py
     red_team_decision.py
     redis_jobqueue.py
+    repeat_validation_outcome.py
     repeat_validation.py
     report_approval_api.py
     report_approval.py
@@ -443,6 +444,7 @@ backend/
     test_redis_jobqueue_integration.py
     test_redis_jobqueue.py
     test_repeat_validation_orchestrator.py
+    test_repeat_validation_outcome.py
     test_repeat_validation.py
     test_report_approval_api.py
     test_report_approval.py
@@ -3738,6 +3740,7 @@ cluster = cluster_by_member.get(finding_id)
 cluster_id = cluster.cluster_id if cluster else None
 differential_item = differential_signals.get(
 differential_quality_item = differential_quality.get(
+repeat_validation_outcome = build_repeat_validation_outcome(
 duplicate_similarity = rank_public_duplicate_risk(
 ⋮----
 member_ids = cluster.finding_ids if cluster else (finding_id,)
@@ -10737,6 +10740,49 @@ max_attempts = int(row["max_attempts"])
 status = "completed" if success else ("queued" if attempts < max_attempts else "failed")
 ````
 
+## File: backend/app/repeat_validation_outcome.py
+````python
+REPEAT_VALIDATION_OUTCOME_SCHEMA = "repeat-validation-outcome-v1"
+⋮----
+@dataclass(frozen=True)
+class RepeatValidationOutcome
+⋮----
+schema: str
+finding_id: str
+state: str
+observation_count: int
+confidence: str
+human_review_required: bool
+repeat_budget_exhausted: bool
+reasons: tuple[str, ...]
+exploitability_confirmed: bool
+zero_day_claim: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+observations = max(0, int(quality.observation_count))
+repeat_budget_exhausted = observations >= 2
+reasons: list[str] = []
+⋮----
+state = "repeat_not_completed"
+confidence = "insufficient"
+human_review_required = False
+⋮----
+state = "contradictory"
+confidence = "low"
+human_review_required = True
+⋮----
+state = "reproduced_strong_signal"
+confidence = "high"
+⋮----
+state = "inconclusive"
+confidence = "medium"
+⋮----
+state = "not_reproduced"
+````
+
 ## File: backend/app/repeat_validation.py
 ````python
 REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA = "repeat-differential-validation-v1"
@@ -17128,6 +17174,12 @@ plan = result["findings"][0]["cve_validation_plan"]
 def test_finding_intelligence_surfaces_reproducible_differential_quality()
 ⋮----
 result = build_finding_intelligence([finding], graph)
+⋮----
+def test_finding_intelligence_surfaces_reproduced_repeat_outcome()
+⋮----
+outcome = result["findings"][0]["repeat_validation_outcome"]
+⋮----
+def test_finding_intelligence_surfaces_contradictory_repeat_outcome()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
@@ -22343,6 +22395,23 @@ repeat = job["payload"]["repeat_validation"]
 ⋮----
 first = advance_campaign(campaign, queue, store)
 second = advance_campaign(campaign, queue, store)
+````
+
+## File: backend/tests/test_repeat_validation_outcome.py
+````python
+def test_repeat_outcome_waits_for_second_observation()
+⋮----
+result = build_repeat_validation_outcome(
+⋮----
+def test_two_consistent_strong_observations_are_reproduced_not_confirmed()
+⋮----
+result = build_repeat_validation_outcome(_quality())
+⋮----
+def test_conflicting_repeat_is_explicitly_contradictory()
+⋮----
+def test_unreproduced_strong_signal_is_inconclusive()
+⋮----
+def test_two_non_strong_observations_are_not_reproduced()
 ````
 
 ## File: backend/tests/test_repeat_validation.py
