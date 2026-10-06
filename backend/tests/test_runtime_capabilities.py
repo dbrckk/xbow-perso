@@ -312,6 +312,9 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_broker_command_ticket_endpoint_defined"] is True
     assert result["strix_broker_command_ticket_requires_verified_contract"] is True
     assert result["strix_broker_command_admission_enforced"] is True
+    assert result["strix_broker_manifest_ticket_endpoint_defined"] is True
+    assert result["strix_broker_manifest_ticket_requires_verified_contract"] is True
+    assert result["strix_runner_manifest_ticket_producer_wired_to_session"] is False
     assert result["strix_runner_exec_ticket_producer_wired_to_session"] is False
     assert result["strix_broker_read_only_egress_available"] is True
     assert result["strix_broker_egress_enforced"] is False
@@ -328,6 +331,9 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_runner_exec_ticket_schema"] == "strix-runner-exec-ticket-v1"
     assert result["strix_runner_exec_ticket_required"] is True
     assert result["strix_runner_exec_ticket_enforced"] is True
+    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v1"
+    assert result["strix_runner_manifest_ticket_required"] is True
+    assert result["strix_runner_manifest_ticket_enforced"] is True
     assert result["strix_runner_exec_process_launch_enabled"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_profiles"] == ["bootstrap-v1", "web-active-v1"]
@@ -431,9 +437,15 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
 
     assert result["strix_runner_exec_ticket_required"] is True
     assert result["strix_runner_exec_ticket_enforced"] is True
+    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v1"
+    assert result["strix_runner_manifest_ticket_required"] is True
+    assert result["strix_runner_manifest_ticket_enforced"] is True
     assert result["strix_runner_exec_process_launch_enabled"] is False
     assert result["strix_broker_command_ticket_endpoint_defined"] is True
     assert result["strix_broker_command_admission_enforced"] is True
+    assert result["strix_broker_manifest_ticket_endpoint_defined"] is True
+    assert result["strix_broker_manifest_ticket_requires_verified_contract"] is True
+    assert result["strix_runner_manifest_ticket_producer_wired_to_session"] is False
     assert result["strix_runner_exec_ticket_producer_wired_to_session"] is False
     assert result["strix_command_admission_contract_defined"] is True
     assert result["strix_command_admission_enforced"] is False

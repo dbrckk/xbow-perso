@@ -13,6 +13,7 @@ from app.strix_runner_rpc import (
     sign_runner_rpc_request,
 )
 from app.strix_runner_exec_ticket import build_strix_runner_exec_ticket
+from app.strix_runner_manifest_ticket import build_strix_runner_manifest_ticket
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -55,12 +56,39 @@ def _service(
 
 def _payload(path: str) -> dict:
     if path == "/v1/session/create":
+        request_id = "req-create-1"
+        image = "ghcr.io/example/sandbox@sha256:" + "a" * 64
+        exposed_ports = [48080]
+        manifest_digest = "b" * 64
+        descriptor = {
+            "schema": "strix-manifest-admission-v1",
+            "contract_hash": "c" * 64,
+            "request_id": request_id,
+            "image": image,
+            "exposed_ports": exposed_ports,
+            "manifest_digest": manifest_digest,
+            "entry_count": 2,
+            "inline_file_count": 1,
+            "local_dir_count": 1,
+            "inline_file_bytes": 1024,
+            "environment_value_bytes": 128,
+            "host_paths_included": False,
+            "raw_file_content_included": False,
+            "filesystem_io_performed": False,
+            "manifest_materialized": False,
+            "upload_enabled": False,
+            "active_execution_enabled": False,
+        }
         return {
             "schema": RUNNER_RPC_PROTOCOL,
-            "request_id": "req-create-1",
-            "image": "ghcr.io/example/sandbox@sha256:" + "a" * 64,
-            "exposed_ports": [48080],
-            "manifest_digest": "b" * 64,
+            "request_id": request_id,
+            "image": image,
+            "exposed_ports": exposed_ports,
+            "manifest_digest": manifest_digest,
+            "admission": build_strix_runner_manifest_ticket(
+                descriptor,
+                signing_secret=ADMISSION_SECRET,
+            ).to_dict(),
         }
     if path == "/v1/session/exec":
         argv = [
@@ -143,6 +171,7 @@ def test_health_is_non_secret_and_execution_stays_disabled():
         "protocol": RUNNER_RPC_PROTOCOL,
         "active_execution_enabled": False,
         "exec_admission_required": True,
+        "manifest_admission_required": True,
         "implemented_operations": [],
     }
 
@@ -209,6 +238,40 @@ def test_valid_exec_ticket_still_cannot_enable_execution():
 
     assert result.status == 501
     assert result.json_body["error"] == "rpc_operation_not_implemented"
+
+
+def test_valid_manifest_ticket_still_cannot_enable_session_creation():
+    path = "/v1/session/create"
+    result = _request(
+        _service(active_execution=True),
+        path,
+        _payload(path),
+    )
+
+    assert result.status == 501
+    assert result.json_body["error"] == "rpc_operation_not_implemented"
+
+
+def test_create_rejects_tampered_manifest_ticket_before_execution_gate():
+    path = "/v1/session/create"
+    payload = _payload(path)
+    payload["admission"]["signature"] = "0" * 64
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 403
+    assert result.json_body["error"] == "manifest_admission_rejected"
+
+
+def test_create_rejects_manifest_ticket_bound_to_different_digest():
+    path = "/v1/session/create"
+    payload = _payload(path)
+    payload["manifest_digest"] = "d" * 64
+
+    result = _request(_service(), path, payload)
+
+    assert result.status == 403
+    assert result.json_body["error"] == "manifest_admission_rejected"
 
 
 def test_exec_rejects_tampered_admission_ticket_before_execution_gate():
@@ -445,6 +508,7 @@ def test_runner_image_contains_only_required_runner_modules():
     assert "COPY app/strix_runner_attestation.py" in dockerfile
     assert "COPY app/strix_runner_rpc.py" in dockerfile
     assert "COPY app/strix_runner_exec_ticket.py" in dockerfile
+    assert "COPY app/strix_runner_manifest_ticket.py" in dockerfile
     assert "COPY app/strix_backend_hook.py" not in dockerfile
 
 
