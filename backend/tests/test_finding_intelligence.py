@@ -320,3 +320,122 @@ def test_finding_intelligence_surfaces_reproducible_differential_quality():
     assert result["summary"]["reproducible_differential_findings"] == 1
     assert result["summary"]["low_false_positive_differential_findings"] == 1
     assert result["summary"]["contradictory_differential_findings"] == 0
+
+
+def test_finding_intelligence_surfaces_reproduced_repeat_outcome():
+    finding = _finding(
+        "f1",
+        "https://example.test/search?q=redacted",
+        severity="critical",
+    )
+    finding.evidence = []
+    finding.discovered_by = "scanner-a"
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner-a",
+            parent_ids=("asset:a",),
+        )
+    )
+    for observation_id, source in (
+        ("validation:one", "validator-a"),
+        ("validation:two", "validator-b"),
+    ):
+        graph.add(
+            Observation(
+                observation_id,
+                "validation",
+                "observed",
+                source,
+                parent_ids=("finding:f1",),
+                metadata={
+                    "finding_id": "f1",
+                    "differential_signal": "strong",
+                    "differential_parameter": "q",
+                    "differential_marker_reflected": True,
+                    "differential_status_changed": False,
+                    "differential_body_changed": True,
+                },
+            )
+        )
+
+    result = build_finding_intelligence([finding], graph)
+    outcome = result["findings"][0]["repeat_validation_outcome"]
+
+    assert outcome["state"] == "reproduced_strong_signal"
+    assert outcome["confidence"] == "high"
+    assert outcome["repeat_budget_exhausted"] is True
+    assert outcome["human_review_required"] is True
+    assert outcome["exploitability_confirmed"] is False
+    assert outcome["zero_day_claim"] is False
+    assert result["summary"]["reproduced_repeat_signals"] == 1
+
+
+def test_finding_intelligence_surfaces_contradictory_repeat_outcome():
+    finding = _finding(
+        "f1",
+        "https://example.test/search?q=redacted",
+        severity="critical",
+    )
+    finding.evidence = []
+    finding.discovered_by = "scanner-a"
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner-a",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:strong",
+            "validation",
+            "observed",
+            "validator-a",
+            parent_ids=("finding:f1",),
+            metadata={
+                "finding_id": "f1",
+                "differential_signal": "strong",
+                "differential_parameter": "q",
+                "differential_marker_reflected": True,
+                "differential_status_changed": False,
+                "differential_body_changed": True,
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "validation:weak",
+            "validation",
+            "observed",
+            "validator-b",
+            parent_ids=("finding:f1",),
+            metadata={
+                "finding_id": "f1",
+                "differential_signal": "weak",
+                "differential_parameter": "q",
+                "differential_marker_reflected": False,
+                "differential_status_changed": False,
+                "differential_body_changed": True,
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    outcome = result["findings"][0]["repeat_validation_outcome"]
+
+    assert outcome["state"] == "contradictory"
+    assert outcome["human_review_required"] is True
+    assert outcome["repeat_budget_exhausted"] is True
+    assert outcome["exploitability_confirmed"] is False
+    assert result["summary"]["contradictory_repeat_outcomes"] == 1
