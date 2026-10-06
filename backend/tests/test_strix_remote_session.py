@@ -1,5 +1,6 @@
 import asyncio
 import inspect
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,11 +15,23 @@ from app.strix_remote_session import (
 )
 
 
+def _manifest():
+    return SimpleNamespace(
+        version=1,
+        root="/workspace",
+        entries={},
+        environment=SimpleNamespace(value={}),
+        users=[],
+        groups=[],
+        extra_path_grants=(),
+    )
+
+
 def _prepared(*, ports=(48080,)):
     return asyncio.run(
         prepare_strix_remote_session(
             image="ghcr.io/example/strix-sandbox:fixture",
-            manifest=object(),
+            manifest=_manifest(),
             exposed_ports=ports,
             bind_mounts=[],
         )
@@ -172,3 +185,18 @@ def test_self_test_reports_non_executing_interface():
     assert result["network_io_performed"] is False
     assert result["process_execution_performed"] is False
     assert result["active_execution_enabled"] is False
+
+
+def test_prepared_backend_rejects_manifest_before_session_creation():
+    unsafe = _manifest()
+    unsafe.root = "/tmp"
+
+    with pytest.raises(StrixRemoteSessionError, match="manifest rejected"):
+        asyncio.run(
+            prepare_strix_remote_session(
+                image="fixture",
+                manifest=unsafe,
+                exposed_ports=(48080,),
+                bind_mounts=[],
+            )
+        )
