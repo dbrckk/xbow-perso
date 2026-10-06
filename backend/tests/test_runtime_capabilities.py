@@ -8,7 +8,9 @@ from app.runtime_capabilities import (
     recon_runtime_capability,
     safe_pentagi_runtime_capability,
     safe_recon_runtime_capability,
+    safe_validation_runtime_capability,
     scanner_runtime_capability,
+    validation_runtime_capability,
 )
 
 
@@ -471,3 +473,128 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
     assert result["strix_python_bootstrap_ready"] is False
     assert result["strix_runtime_contract_enforceable"] is False
     assert result["strix_upstream_docker_preflight_required"] is True
+
+
+_VALIDATION_FLAGS = (
+    "XBOW_ENABLE_HTTP_VALIDATION",
+    "XBOW_ENABLE_DIFFERENTIAL_VALIDATION",
+    "XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION",
+    "XBOW_ENABLE_PARAMETER_VALIDATION_V2",
+    "XBOW_ENABLE_CORS_VALIDATION",
+    "XBOW_ENABLE_REDIRECT_VALIDATION",
+    "XBOW_VALIDATION_MAX_PARAMETERS",
+    "XBOW_VALIDATION_MAX_REQUESTS",
+)
+
+
+def _clear_validation(monkeypatch):
+    for name in _VALIDATION_FLAGS:
+        monkeypatch.delenv(name, raising=False)
+
+
+def test_validation_capability_defaults_fail_closed(monkeypatch):
+    _clear_validation(monkeypatch)
+
+    result = validation_runtime_capability()
+
+    assert result["mode"] == "disabled"
+    assert result["http_validation_enabled"] is False
+    assert result["differential_validation_enabled"] is False
+    assert result["repeat_validation_ready"] is False
+    assert result["repeat_validation_max_observations"] == 2
+    assert result["repeat_validation_unknown_cve_only"] is True
+    assert result["v2_network_execution_implemented"] is False
+    assert result["legacy_bounded_get_execution_implemented"] is True
+    assert result["allowed_methods"] == ["GET"]
+    assert result["redirects_followed"] is False
+    assert result["automatic_execution_authorized"] is False
+    assert result["exploit_execution_allowed"] is False
+
+
+def test_repeat_validation_readiness_requires_http_and_differential(monkeypatch):
+    _clear_validation(monkeypatch)
+    monkeypatch.setenv("XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION", "true")
+
+    gated = validation_runtime_capability()
+    assert gated["repeat_differential_validation_enabled"] is True
+    assert gated["repeat_validation_ready"] is False
+
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "true")
+
+    ready = validation_runtime_capability()
+    assert ready["mode"] == "bounded_repeat_enabled"
+    assert ready["repeat_validation_ready"] is True
+    assert ready["repeat_validation_schema"] == (
+        "repeat-differential-validation-v1"
+    )
+    assert ready["automatic_execution_authorized"] is False
+
+
+def test_v2_planner_state_does_not_claim_network_execution(monkeypatch):
+    _clear_validation(monkeypatch)
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_PARAMETER_VALIDATION_V2", "true")
+    monkeypatch.setenv("XBOW_ENABLE_CORS_VALIDATION", "true")
+
+    result = validation_runtime_capability()
+
+    assert result["v2_planning_enabled"] is True
+    assert result["v2_network_execution_implemented"] is False
+    assert result["max_parameters"] == 5
+    assert result["max_requests"] == 8
+    assert result["scope_revalidation_required"] is True
+    assert result["planner_budget_authoritative"] is True
+    assert result["campaign_rate_limit_authoritative"] is True
+
+
+def test_invalid_validation_configuration_fails_closed(monkeypatch):
+    _clear_validation(monkeypatch)
+    monkeypatch.setenv(
+        "XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION",
+        "sometimes",
+    )
+
+    with pytest.raises(
+        CapabilityConfigError,
+        match="XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION",
+    ):
+        validation_runtime_capability()
+
+    safe = safe_validation_runtime_capability()
+    assert safe["mode"] == "configuration_error"
+    assert safe["configuration_error"] is True
+    assert safe["repeat_validation_ready"] is False
+    assert safe["automatic_execution_authorized"] is False
+
+
+def test_validation_limits_fail_closed(monkeypatch):
+    _clear_validation(monkeypatch)
+    monkeypatch.setenv("XBOW_VALIDATION_MAX_REQUESTS", "17")
+
+    with pytest.raises(
+        CapabilityConfigError,
+        match="XBOW_VALIDATION_MAX_REQUESTS",
+    ):
+        validation_runtime_capability()
+
+    safe = safe_validation_runtime_capability()
+    assert safe["mode"] == "configuration_error"
+    assert safe["max_requests"] == 0
+
+
+def test_capabilities_api_exposes_validation_state(monkeypatch):
+    _clear_validation(monkeypatch)
+    monkeypatch.setenv("XBOW_ENABLE_HTTP_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", "true")
+    monkeypatch.setenv("XBOW_ENABLE_REPEAT_DIFFERENTIAL_VALIDATION", "true")
+
+    result = main.system_capabilities()
+    execution = result["execution"]
+    detail = execution["http_validation_detail"]
+
+    assert execution["http_validation"] == "bounded_repeat_enabled"
+    assert detail["repeat_validation_ready"] is True
+    assert detail["repeat_validation_max_observations"] == 2
+    assert detail["automatic_execution_authorized"] is False
+    assert detail["exploit_execution_allowed"] is False
