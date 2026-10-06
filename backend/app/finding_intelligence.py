@@ -203,6 +203,16 @@ def build_finding_intelligence(
                 and row["vulnerability"]["known_cve_candidate"]
                 for row in finding_rows
             ),
+            "urgent_validation_review": sum(
+                row["vulnerability"]["validation_priority_band"]
+                == "urgent_review"
+                for row in finding_rows
+            ),
+            "high_priority_validation": sum(
+                row["vulnerability"]["validation_priority_band"]
+                == "high_priority"
+                for row in finding_rows
+            ),
             "novel_candidates": sum(
                 row["vulnerability"]["novel_candidate"]
                 for row in finding_rows
