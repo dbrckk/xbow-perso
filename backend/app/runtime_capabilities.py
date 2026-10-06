@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from .active_validation import SAFE_PROBE_PLAN_SCHEMA
 from .scanner_sandbox import strix_runtime_contract_enforceable
 from .strix_execution_contract import STRIX_EXECUTION_CONTRACT_SCHEMA
 from .strix_manifest_admission import STRIX_MANIFEST_ADMISSION_SCHEMA
@@ -28,6 +29,25 @@ def _strict_bool(name: str, default: bool = False) -> bool:
     if value in {"0", "false", "no", "off"}:
         return False
     raise CapabilityConfigError(f"{name} must be a boolean")
+
+
+def _bounded_int_env(
+    name: str,
+    *,
+    default: int,
+    minimum: int,
+    maximum: int,
+) -> int:
+    raw = os.getenv(name, str(default))
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise CapabilityConfigError(f"{name} must be an integer") from exc
+    if not minimum <= value <= maximum:
+        raise CapabilityConfigError(
+            f"{name} must be between {minimum} and {maximum}"
+        )
+    return value
 
 
 def pentagi_runtime_capability() -> dict[str, Any]:
@@ -103,6 +123,76 @@ def safe_pentagi_runtime_capability() -> dict[str, Any]:
                 "worker_enabled": False,
                 "available": False,
             },
+            "contains_secrets": False,
+            "configuration_error": True,
+        }
+
+
+def validation_runtime_capability() -> dict[str, Any]:
+    http_enabled = _strict_bool("XBOW_ENABLE_HTTP_VALIDATION", False)
+    parameter_enabled = _strict_bool(
+        "XBOW_ENABLE_PARAMETER_VALIDATION_V2",
+        False,
+    )
+    cors_enabled = _strict_bool("XBOW_ENABLE_CORS_VALIDATION", False)
+    redirect_enabled = _strict_bool(
+        "XBOW_ENABLE_REDIRECT_VALIDATION",
+        False,
+    )
+    max_parameters = _bounded_int_env(
+        "XBOW_VALIDATION_MAX_PARAMETERS",
+        default=5,
+        minimum=0,
+        maximum=10,
+    )
+    max_requests = _bounded_int_env(
+        "XBOW_VALIDATION_MAX_REQUESTS",
+        default=8,
+        minimum=1,
+        maximum=16,
+    )
+    feature_enabled = bool(
+        parameter_enabled or cors_enabled or redirect_enabled
+    )
+    planning_enabled = bool(http_enabled and feature_enabled)
+    return {
+        "mode": "planning_only" if planning_enabled else "disabled",
+        "http_validation_enabled": http_enabled,
+        "parameter_validation_v2_enabled": parameter_enabled,
+        "cors_validation_enabled": cors_enabled,
+        "redirect_validation_enabled": redirect_enabled,
+        "safe_probe_plan_schema": SAFE_PROBE_PLAN_SCHEMA,
+        "planning_enabled": planning_enabled,
+        "max_parameters": max_parameters,
+        "max_requests": max_requests,
+        "allowed_methods": ["GET"],
+        "redirects_followed": False,
+        "scope_revalidation_required": True,
+        "automatic_execution_authorized": False,
+        "v2_network_execution_implemented": False,
+        "contains_secrets": False,
+    }
+
+
+def safe_validation_runtime_capability() -> dict[str, Any]:
+    try:
+        return validation_runtime_capability()
+    except CapabilityConfigError:
+        return {
+            "mode": "configuration_error",
+            "http_validation_enabled": False,
+            "parameter_validation_v2_enabled": False,
+            "cors_validation_enabled": False,
+            "redirect_validation_enabled": False,
+            "safe_probe_plan_schema": SAFE_PROBE_PLAN_SCHEMA,
+            "planning_enabled": False,
+            "max_parameters": 0,
+            "max_requests": 0,
+            "allowed_methods": ["GET"],
+            "redirects_followed": False,
+            "scope_revalidation_required": True,
+            "automatic_execution_authorized": False,
+            "v2_network_execution_implemented": False,
             "contains_secrets": False,
             "configuration_error": True,
         }
