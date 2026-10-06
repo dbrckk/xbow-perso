@@ -167,7 +167,8 @@ def test_repeat_job_is_idempotent_for_same_graph(
     first = advance_campaign(campaign, queue, store)
     second = advance_campaign(campaign, queue, store)
 
-    assert second["job_ids"] == first["job_ids"]
+    assert len(first["job_ids"]) == 1
+    assert second["job_ids"] == []
     assert queue.stats()["total"] == 1
 
 
@@ -189,7 +190,7 @@ def test_second_observation_exhausts_automatic_repeat_budget(
     result = advance_campaign(campaign, queue, store)
 
     assert result["action"]["kind"] == "stop"
-    assert "explicit confirmation or rejection" in result["action"]["reason"]
+    assert "human review required" in result["action"]["reason"]
     assert result["job_ids"] == []
     assert queue.stats()["total"] == 0
 
