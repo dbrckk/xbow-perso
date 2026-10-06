@@ -195,6 +195,7 @@ app/
   strix_egress_transport.py
   strix_egress.py
   strix_execution_contract.py
+  strix_manifest_admission.py
   strix_parser.py
   strix_python_bootstrap_plan.py
   strix_python_bootstrap_runtime.py
@@ -441,6 +442,7 @@ tests/
   test_strix_egress_transport.py
   test_strix_egress.py
   test_strix_execution_contract.py
+  test_strix_manifest_admission.py
   test_strix_python_bootstrap_plan.py
   test_strix_python_bootstrap_runtime.py
   test_strix_python_compat_probe.py
@@ -10854,6 +10856,7 @@ selected = get_backend(STRIX_BACKEND_NAME)
 async def _assert_backend_fails_closed() -> dict[str, Any]
 ⋮----
 backend = get_backend(STRIX_BACKEND_NAME)
+manifest = SimpleNamespace(
 ⋮----
 blocked = []
 ⋮----
@@ -11394,6 +11397,140 @@ port = parsed.port
 rate = float(requested_rps)
 ```
 
+## File: app/strix_manifest_admission.py
+```python
+STRIX_MANIFEST_ADMISSION_SCHEMA = "strix-manifest-admission-v1"
+⋮----
+_MAX_ENTRIES = 128
+_MAX_ENTRY_PATH_BYTES = 512
+_MAX_INLINE_FILE_BYTES = 1024 * 1024
+_MAX_TOTAL_INLINE_FILE_BYTES = 4 * 1024 * 1024
+_MAX_ENV_VARS = 64
+_MAX_ENV_KEY_BYTES = 128
+_MAX_ENV_VALUE_BYTES = 4096
+_MAX_TOTAL_ENV_VALUE_BYTES = 16 * 1024
+_MAX_LOCAL_SOURCE_PATH_BYTES = 4096
+⋮----
+_ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+⋮----
+class StrixManifestAdmissionError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class StrixManifestEntryPlan
+⋮----
+path: str
+kind: str
+content_bytes: int | None
+content_sha256: str | None
+local_source_present: bool
+local_source_path_redacted: bool
+local_source_path_sha256: str | None
+local_source_content_sha256: str | None
+local_source_content_inspected: bool
+content_uploaded: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+@dataclass(frozen=True)
+class StrixManifestEnvironmentPlan
+⋮----
+key: str
+value_bytes: int
+value_sha256: str
+⋮----
+@dataclass(frozen=True)
+class StrixManifestAdmissionPlan
+⋮----
+schema: str
+manifest_version: int
+root: str
+entries: tuple[StrixManifestEntryPlan, ...]
+environment: tuple[StrixManifestEnvironmentPlan, ...]
+entry_count: int
+inline_file_count: int
+local_dir_count: int
+inline_file_bytes: int
+environment_value_bytes: int
+host_paths_included: bool
+raw_file_content_included: bool
+filesystem_io_performed: bool
+manifest_materialized: bool
+upload_enabled: bool
+manifest_digest: str
+⋮----
+payload = asdict(self)
+⋮----
+def _safe_text(value: object, *, name: str, max_bytes: int) -> str
+⋮----
+encoded = value.encode("utf-8")
+⋮----
+def _normalize_entry_path(value: object) -> str
+⋮----
+raw_value = value.as_posix()
+⋮----
+raw_value = value
+⋮----
+raw = _safe_text(
+⋮----
+path = PurePosixPath(raw)
+⋮----
+parts = path.parts
+⋮----
+def _entry_kind(entry: object) -> str
+⋮----
+kind = getattr(entry, "type", None)
+⋮----
+def _plan_file(path: str, entry: object) -> StrixManifestEntryPlan
+⋮----
+content = getattr(entry, "content", None)
+⋮----
+payload = bytes(content)
+⋮----
+def _plan_local_dir(path: str, entry: object) -> StrixManifestEntryPlan
+⋮----
+source = getattr(entry, "src", None)
+⋮----
+source_text = str(source)
+⋮----
+def _plan_entries(entries: object) -> tuple[StrixManifestEntryPlan, ...]
+⋮----
+planned: list[StrixManifestEntryPlan] = []
+seen: set[str] = set()
+total_inline_bytes = 0
+⋮----
+path = _normalize_entry_path(raw_path)
+⋮----
+kind = _entry_kind(entry)
+⋮----
+item = _plan_file(path, entry)
+⋮----
+item = _plan_local_dir(path, entry)
+⋮----
+values = getattr(environment, "value", None)
+⋮----
+planned: list[StrixManifestEnvironmentPlan] = []
+total_bytes = 0
+⋮----
+key = _safe_text(
+⋮----
+value_bytes = raw_value.encode("utf-8")
+⋮----
+def _assert_empty_collection(manifest: object, name: str) -> None
+⋮----
+value = getattr(manifest, name, ())
+⋮----
+payload = {
+⋮----
+version = getattr(manifest, "version", None)
+root = getattr(manifest, "root", None)
+⋮----
+entries = _plan_entries(getattr(manifest, "entries", None))
+environment = _plan_environment(
+inline_file_bytes = sum(
+environment_value_bytes = sum(
+canonical = _canonical_payload(
+```
+
 ## File: app/strix_parser.py
 ```python
 class StrixParserError(RuntimeError)
@@ -11815,6 +11952,8 @@ def __init__(self, session: PreparedStrixRemoteSession) -> None
 def plan_delete(self, session: PreparedStrixRemoteSession) -> PreparedRemoteOperation
 ⋮----
 async def delete(self, session: PreparedStrixRemoteSession) -> Any
+⋮----
+manifest_plan = build_strix_manifest_admission_plan(manifest)
 ⋮----
 descriptor = PreparedRemoteSessionDescriptor(
 session = PreparedStrixRemoteSession(descriptor)
@@ -21460,6 +21599,8 @@ def test_registered_backend_returns_prepared_non_executing_client_session(monkey
 ⋮----
 backend = registry[STRIX_BACKEND_NAME]
 ⋮----
+manifest = SimpleNamespace(
+⋮----
 def test_self_test_requires_exact_strix_version(monkeypatch)
 ⋮----
 def test_self_test_proves_fail_closed_backend(monkeypatch)
@@ -21851,6 +21992,77 @@ def test_unsafe_campaign_flags_block_contract_issuance(monkeypatch, flag)
 def test_automated_scanning_must_remain_enabled(monkeypatch)
 ```
 
+## File: tests/test_strix_manifest_admission.py
+```python
+def _file(content: bytes)
+⋮----
+def _local_dir(path: str)
+⋮----
+def _manifest(*, entries=None, environment=None, **overrides)
+⋮----
+values = {
+⋮----
+def test_manifest_plan_admits_strix_local_dir_and_inline_file_without_raw_content()
+⋮----
+manifest = _manifest(
+⋮----
+plan = build_strix_manifest_admission_plan(manifest)
+payload = plan.to_dict()
+serialized = str(payload)
+⋮----
+by_path = {item.path: item for item in plan.entries}
+local = by_path["repo"]
+⋮----
+inline = by_path[".strix/dependency-issues.jsonl"]
+⋮----
+def test_manifest_digest_is_order_independent()
+⋮----
+first = _manifest(
+second = _manifest(
+⋮----
+left = build_strix_manifest_admission_plan(first)
+right = build_strix_manifest_admission_plan(second)
+⋮----
+def test_manifest_digest_binds_redacted_local_source_path_identity()
+⋮----
+left = build_strix_manifest_admission_plan(
+right = build_strix_manifest_admission_plan(
+⋮----
+def test_manifest_digest_changes_when_inline_file_changes()
+⋮----
+def test_manifest_rejects_unsafe_entry_paths(path)
+⋮----
+def test_manifest_rejects_non_path_entry_key()
+⋮----
+@pytest.mark.parametrize("kind", ("mount", "local_file", "dir", "secret"))
+def test_manifest_rejects_unreviewed_entry_types(kind)
+⋮----
+def test_manifest_rejects_inline_file_above_per_file_limit()
+⋮----
+def test_manifest_rejects_total_inline_content_above_limit()
+⋮----
+chunk = b"x" * (1024 * 1024)
+entries = {f"{index}.bin": _file(chunk) for index in range(5)}
+⋮----
+def test_manifest_rejects_dynamic_environment_values()
+⋮----
+dynamic = SimpleNamespace(value="secret-provider")
+⋮----
+def test_manifest_environment_hides_raw_values()
+⋮----
+plan = build_strix_manifest_admission_plan(
+⋮----
+serialized = str(plan.to_dict())
+⋮----
+def test_manifest_rejects_unsupported_manifest_surface(field, value, message)
+⋮----
+def test_manifest_local_dir_path_is_never_resolved_or_read(monkeypatch)
+⋮----
+source = Path("/definitely/not/present/private/repository")
+⋮----
+def forbidden(*_args, **_kwargs)
+```
+
 ## File: tests/test_strix_python_bootstrap_plan.py
 ```python
 def _compat() -> dict
@@ -22080,6 +22292,8 @@ workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 
 ## File: tests/test_strix_remote_session.py
 ```python
+def _manifest()
+⋮----
 def _prepared(*, ports=(48080,))
 ⋮----
 def test_prepared_backend_returns_client_and_session_without_side_effects()
@@ -22110,6 +22324,10 @@ def test_prepared_backend_rejects_duplicate_or_invalid_ports()
 def test_self_test_reports_non_executing_interface()
 ⋮----
 result = prepared_remote_session_self_test()
+⋮----
+def test_prepared_backend_rejects_manifest_before_session_creation()
+⋮----
+unsafe = _manifest()
 ```
 
 ## File: tests/test_strix_run_status.py

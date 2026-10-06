@@ -1,19 +1,19 @@
 # Change impact
 
-Base: 9902a1d0a79abac56df22a29d641c69921ad82c2
-Head: 121fc4cd8ad2f19c750c3c73ecb8dae602b41592
+Base: 89b1ddf9bd5d70e87cb713207130ac987117a072
+Head: 212ae90db177a8391dc0893a4b7819143bba0555
 
 ## Changed files
-- M README.md
 - M backend/app/runtime_capabilities.py
 - M backend/app/strix_backend_hook.py
-- A backend/app/strix_remote_session.py
+- A backend/app/strix_manifest_admission.py
+- M backend/app/strix_remote_session.py
 - M backend/tests/test_runtime_capabilities.py
 - M backend/tests/test_strix_backend_hook.py
-- A backend/tests/test_strix_remote_session.py
+- A backend/tests/test_strix_manifest_admission.py
+- M backend/tests/test_strix_remote_session.py
 
 ## Affected areas
-- (root)
 - backend
 
 ## Related test candidates

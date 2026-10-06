@@ -39,23 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T22:25:36Z
+Generated: 2026-10-06T10:26:40Z
 
 ### Git
 - Branch: `main`
-- Head: `121fc4cd8ad2`
-- Commit date: 2026-10-06T00:25:24+02:00
-- Commit: feat(strix): add prepared remote client session interface
-- Tracked files: 639
+- Head: `212ae90db177`
+- Commit date: 2026-10-06T12:26:27+02:00
+- Commit: feat(strix): gate remote sessions on bounded manifest admission
+- Tracked files: 641
 
 ### Recently changed files
-- `README.md`
 - `backend/app/runtime_capabilities.py`
 - `backend/app/strix_backend_hook.py`
+- `backend/app/strix_manifest_admission.py`
 - `backend/app/strix_remote_session.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/tests/test_strix_backend_hook.py`
+- `backend/tests/test_strix_manifest_admission.py`
 - `backend/tests/test_strix_remote_session.py`
+- `README.md`
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_models.py`
 - `backend/tests/test_strix_broker.py`
@@ -67,8 +69,6 @@ Generated: 2026-10-05T22:25:36Z
 - `backend/app/strix_runner_rpc.py`
 - `backend/tests/test_strix_runner_exec_ticket.py`
 - `backend/tests/test_strix_runner_rpc.py`
-- `backend/app/finding_intelligence.py`
-- `backend/app/scanner_normalization.py`
 
 ### Project signals
 - `pyproject.toml`
