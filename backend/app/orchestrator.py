@@ -39,6 +39,7 @@ from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
 from .repeat_validation import (
     REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA,
+    RepeatValidationConfigError,
     build_repeat_validation_candidates,
     repeat_differential_validation_enabled,
 )
@@ -761,6 +762,39 @@ def advance_campaign(
         graph = _load_graph(store, campaign.id)
         planned_actions = planner.plan(campaign, graph)
         action = planned_actions[0]
+        repeat_validation_ordinals: dict[str, int] = {}
+        try:
+            repeat_enabled = repeat_differential_validation_enabled()
+        except RepeatValidationConfigError:
+            action = PlannedAction(
+                "stop",
+                str(campaign.target.primary_url),
+                "invalid repeat differential validation configuration",
+                100,
+            )
+            repeat_candidates = []
+        else:
+            repeat_candidates = build_repeat_validation_candidates(
+                campaign.findings,
+                graph,
+                enabled=repeat_enabled,
+            )
+        if (
+            action.kind == "stop"
+            and action.reason
+            == "observed findings await explicit confirmation or rejection"
+            and repeat_candidates
+        ):
+            repeat_validation_ordinals = {
+                item.finding_id: item.next_observation_ordinal
+                for item in repeat_candidates
+            }
+            action = PlannedAction(
+                "validate",
+                str(campaign.target.primary_url),
+                "bounded repeat differential validation required",
+                100,
+            )
         action, usage = apply_budget(action, graph, queue, campaign.id, limits)
         if usage.exhausted and action.kind == "stop":
             record_circuit_open(store, campaign.id, action.reason, at=utcnow())
@@ -877,7 +911,11 @@ def advance_campaign(
             scan_engines = selected[:coordination.allocated_items]
             intelligence["pipeline_coordination"] = coordination
         elif action.kind == "validate":
-            pending_count = len(_pending_findings(campaign, graph))
+            pending_count = (
+                len(repeat_validation_ordinals)
+                if repeat_validation_ordinals
+                else len(_pending_findings(campaign, graph))
+            )
             coordination = coordinate_pipeline_action(
                 "validate",
                 pending_count,
@@ -901,12 +939,18 @@ def advance_campaign(
             queue,
             validation_limit=validation_limit,
             scan_engines=scan_engines,
+            repeat_validation_ordinals=repeat_validation_ordinals,
         )
         if action.kind == "validate" and not jobs:
+            reason = (
+                "repeat differential validation budget unavailable"
+                if repeat_validation_ordinals
+                else "cluster validation saturated by strong representative evidence"
+            )
             action = PlannedAction(
                 "stop",
                 str(campaign.target.primary_url),
-                "cluster validation saturated by strong representative evidence",
+                reason,
                 100,
             )
         return _result(
