@@ -39,6 +39,7 @@ The content is organized as follows:
 # Directory Structure
 ```
 app/
+  active_validation.py
   adaptive_cycle.py
   agent_registry.py
   alert_delivery.py
@@ -233,6 +234,7 @@ app/
   worker_watchdog.py
   worker.py
 tests/
+  test_active_validation.py
   test_adaptive_cycle.py
   test_agent_registry.py
   test_alert_delivery.py
@@ -492,6 +494,116 @@ strix-python-runtime.lock.json
 ```
 
 # Files
+
+## File: app/active_validation.py
+```python
+SAFE_PROBE_PLAN_SCHEMA = "safe-probe-plan-v1"
+_RESERVED_ORIGIN = "https://xbow.invalid"
+_RESERVED_REDIRECT = "https://xbow.invalid/redirect-check"
+_REDIRECT_PARAMETER_NAMES = frozenset(
+_HARD_MAX_PARAMETERS = 10
+_HARD_MAX_REQUESTS = 16
+⋮----
+class ActiveValidationPlanError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class SafeProbe
+⋮----
+kind: str
+method: str
+request_url: str
+headers: tuple[tuple[str, str], ...] = ()
+parameter: str | None = None
+marker: str | None = None
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+parsed = urlparse(self.request_url)
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class SafeProbePlan
+⋮----
+schema: str
+finding_id: str
+target_url: str
+parameter_names: tuple[str, ...]
+probes: tuple[SafeProbe, ...]
+max_requests: int
+max_parameters: int
+skipped_probe_count: int
+enabled: bool
+automatic_execution_authorized: bool
+non_destructive_only: bool
+redirects_followed: bool
+⋮----
+def _validate_target_url(value: str) -> str
+⋮----
+parsed = urlparse(value)
+⋮----
+def _bounded_int(value: int, *, name: str, minimum: int, maximum: int) -> int
+⋮----
+def _parameter_names(url: str) -> tuple[str, ...]
+⋮----
+parsed = urlparse(url)
+seen: set[str] = set()
+names: list[str] = []
+⋮----
+def _marker(finding_id: str, parameter: str) -> str
+⋮----
+digest = hashlib.sha256(
+⋮----
+def _replace_first_parameter(url: str, parameter: str, value: str) -> str
+⋮----
+pairs = parse_qsl(parsed.query, keep_blank_values=True)
+replaced = False
+updated: list[tuple[str, str]] = []
+⋮----
+replaced = True
+⋮----
+"""Build bounded inert GET probes without performing network I/O.
+
+    The plan never authorizes execution. A future executor must independently
+    re-check scope, feature gates, request budgets and rate limits immediately
+    before each request.
+    """
+⋮----
+target = _validate_target_url(target_url)
+max_parameters = _bounded_int(
+max_requests = _bounded_int(
+names = _parameter_names(target)
+safe_target = urlparse(target)._replace(query="", fragment="").geturl()
+⋮----
+candidates: list[SafeProbe] = [
+⋮----
+selected_names = names[:max_parameters]
+⋮----
+marker = _marker(finding_id, parameter)
+⋮----
+probes = tuple(candidates[:max_requests])
+skipped = max(0, len(candidates) - len(probes))
+⋮----
+@dataclass(frozen=True)
+class ValidationSignal
+⋮----
+strength: str
+reason: str
+⋮----
+evidence: dict[str, Any] | None = None
+exploitability_confirmed: bool = False
+⋮----
+normalized = {
+allow_origin = normalized.get("access-control-allow-origin", "")
+allow_credentials = (
+vary_tokens = {
+⋮----
+evidence = {
+⋮----
+evidence: dict[str, Any] = {
+⋮----
+parsed = urlparse(location.strip())
+exact = (
+```
 
 ## File: app/adaptive_cycle.py
 ```python

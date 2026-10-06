@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T17:47:08Z
+Generated: 2026-10-06T17:54:27Z
 
 ### Git
 - Branch: `main`
-- Head: `30c6befff67f`
-- Commit date: 2026-10-06T19:46:55+02:00
-- Commit: feat(vuln): prioritize bounded non-destructive validation
-- Tracked files: 650
+- Head: `1bb0ad68531d`
+- Commit date: 2026-10-06T19:54:12+02:00
+- Commit: feat(validation): add bounded inert active-validation planner
+- Tracked files: 652
 
 ### Recently changed files
+- `backend/app/active_validation.py`
+- `backend/tests/test_active_validation.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/validation_priority.py`
 - `backend/tests/test_finding_intelligence.py`
@@ -67,8 +69,6 @@ Generated: 2026-10-06T17:47:08Z
 - `backend/app/strix_broker.py`
 - `backend/app/strix_broker_models.py`
 - `backend/app/strix_runner_manifest_ticket.py`
-- `backend/app/strix_runner_rpc.py`
-- `backend/tests/test_runtime_capabilities.py`
 
 ### Project signals
 - `pyproject.toml`

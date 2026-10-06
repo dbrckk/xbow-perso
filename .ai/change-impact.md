@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 9fdcdac0227769f7e4bc82d23482e25ab26aa2bd
-Head: 30c6befff67f7a3b0c82992b3309548011a30b81
+Base: fc25067a7e27b00615eb34403c84b4ab334b95ff
+Head: 1bb0ad68531de0bb49ac347a1ad7df242ac177b3
 
 ## Changed files
-- M backend/app/finding_intelligence.py
-- A backend/app/validation_priority.py
-- M backend/tests/test_finding_intelligence.py
-- A backend/tests/test_validation_priority.py
+- A backend/app/active_validation.py
+- A backend/tests/test_active_validation.py
 
 ## Affected areas
 - backend
