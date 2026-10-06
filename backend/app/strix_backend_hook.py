@@ -5,6 +5,7 @@ import asyncio
 import json
 import os
 from importlib import metadata
+from types import SimpleNamespace
 from typing import Any
 
 from .strix_remote_session import (
@@ -115,9 +116,18 @@ def register_xbow_backend() -> dict[str, Any]:
 async def _assert_backend_fails_closed() -> dict[str, Any]:
     _, get_backend, _, _ = _backend_api()
     backend = get_backend(STRIX_BACKEND_NAME)
+    manifest = SimpleNamespace(
+        version=1,
+        root="/workspace",
+        entries={},
+        environment=SimpleNamespace(value={}),
+        users=[],
+        groups=[],
+        extra_path_grants=(),
+    )
     client, session = await backend(
         image="fixture",
-        manifest=object(),
+        manifest=manifest,
         exposed_ports=(48080,),
         bind_mounts=[],
     )
