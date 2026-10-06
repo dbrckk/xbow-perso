@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import asdict, dataclass
+from collections.abc import Mapping
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlparse
 
@@ -255,4 +256,132 @@ def build_safe_probe_plan(
         automatic_execution_authorized=False,
         non_destructive_only=True,
         redirects_followed=False,
+    )
+
+
+
+@dataclass(frozen=True)
+class ValidationSignal:
+    kind: str
+    strength: str
+    reason: str
+    parameter: str | None = None
+    evidence: dict[str, Any] | None = None
+    exploitability_confirmed: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def analyze_cors_response(
+    headers: Mapping[str, object],
+    *,
+    parameter: str | None = None,
+) -> ValidationSignal:
+    normalized = {
+        str(name).strip().lower(): str(value).strip()
+        for name, value in headers.items()
+    }
+    allow_origin = normalized.get("access-control-allow-origin", "")
+    allow_credentials = (
+        normalized.get("access-control-allow-credentials", "").lower()
+        == "true"
+    )
+    vary_tokens = {
+        item.strip().lower()
+        for item in normalized.get("vary", "").split(",")
+        if item.strip()
+    }
+
+    evidence = {
+        "allow_origin": allow_origin,
+        "allow_credentials": allow_credentials,
+        "vary_origin": "origin" in vary_tokens,
+        "synthetic_origin": _RESERVED_ORIGIN,
+    }
+    if allow_origin == _RESERVED_ORIGIN and allow_credentials:
+        return ValidationSignal(
+            kind="cors",
+            strength="strong",
+            reason="synthetic_origin_reflected_with_credentials",
+            parameter=parameter,
+            evidence=evidence,
+        )
+    if allow_origin == _RESERVED_ORIGIN:
+        return ValidationSignal(
+            kind="cors",
+            strength="weak",
+            reason="synthetic_origin_reflected",
+            parameter=parameter,
+            evidence=evidence,
+        )
+    if allow_origin == "*":
+        return ValidationSignal(
+            kind="cors",
+            strength="weak",
+            reason="wildcard_origin_observed",
+            parameter=parameter,
+            evidence=evidence,
+        )
+    return ValidationSignal(
+        kind="cors",
+        strength="none",
+        reason="no_cors_signal",
+        parameter=parameter,
+        evidence=evidence,
+    )
+
+
+def analyze_redirect_response(
+    *,
+    http_status: int | None,
+    location: str | None,
+    parameter: str | None = None,
+) -> ValidationSignal:
+    evidence: dict[str, Any] = {
+        "http_status": http_status,
+        "location_exact_reserved_match": False,
+    }
+    if (
+        not isinstance(http_status, int)
+        or isinstance(http_status, bool)
+        or not 300 <= http_status <= 399
+        or not isinstance(location, str)
+        or not location.strip()
+    ):
+        return ValidationSignal(
+            kind="redirect",
+            strength="none",
+            reason="not_exact_reserved_redirect",
+            parameter=parameter,
+            evidence=evidence,
+        )
+
+    parsed = urlparse(location.strip())
+    exact = (
+        parsed.scheme == "https"
+        and (parsed.hostname or "").lower() == "xbow.invalid"
+        and parsed.port is None
+        and parsed.path == "/redirect-check"
+        and not parsed.params
+        and not parsed.query
+        and not parsed.fragment
+        and not parsed.username
+        and not parsed.password
+    )
+    evidence["location_exact_reserved_match"] = exact
+    if exact:
+        return ValidationSignal(
+            kind="redirect",
+            strength="strong",
+            reason="exact_reserved_destination_returned",
+            parameter=parameter,
+            evidence=evidence,
+        )
+    return ValidationSignal(
+        kind="redirect",
+        strength="none",
+        reason="not_exact_reserved_redirect",
+        parameter=parameter,
+        evidence=evidence,
     )
