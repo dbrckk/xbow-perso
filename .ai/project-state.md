@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T17:59:49Z
+Generated: 2026-10-06T18:02:59Z
 
 ### Git
 - Branch: `main`
-- Head: `e28bb1be3c49`
-- Commit date: 2026-10-06T19:59:37+02:00
-- Commit: feat(vuln): add provenance-gated CISA KEV catalog
+- Head: `d9a28aa650b3`
+- Commit date: 2026-10-06T20:02:47+02:00
+- Commit: feat(validation): bind v2 planner to scoped validator gates
 - Tracked files: 656
 
 ### Recently changed files
+- `backend/app/validator.py`
+- `backend/tests/test_validator.py`
 - `backend/app/kev_catalog.py`
 - `backend/tests/test_kev_catalog.py`
 - `backend/app/cve_risk_context.py`
@@ -59,8 +61,6 @@ Generated: 2026-10-06T17:59:49Z
 - `backend/tests/test_validation_priority.py`
 - `backend/app/active_validation.py`
 - `backend/tests/test_active_validation.py`
-- `backend/app/cve_evidence_verdict.py`
-- `backend/tests/test_cve_evidence_verdict.py`
 
 ### Project signals
 - `pyproject.toml`

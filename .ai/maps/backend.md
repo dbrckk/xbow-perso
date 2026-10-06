@@ -13482,6 +13482,16 @@ raw = os.getenv("XBOW_VALIDATION_MAX_BYTES", "262144")
 ⋮----
 max_bytes = int(raw)
 ⋮----
+def _validation_max_parameters_v2() -> int
+⋮----
+raw = os.getenv("XBOW_VALIDATION_MAX_PARAMETERS", "5")
+⋮----
+value = int(raw)
+⋮----
+def _validation_max_requests_v2() -> int
+⋮----
+raw = os.getenv("XBOW_VALIDATION_MAX_REQUESTS", "8")
+⋮----
 def _validation_rps(campaign) -> float
 ⋮----
 rps = float(campaign.target.rules.max_requests_per_second)
@@ -13529,6 +13539,16 @@ parsed = urlparse(candidate)
 host = parsed.hostname.lower().rstrip(".")
 rules = campaign.target.rules
 ⋮----
+def build_safe_http_probe_plan_v2(campaign, finding) -> SafeProbePlan
+⋮----
+"""Build a scope-checked v2 plan without performing network I/O."""
+url = build_probe_url(campaign, finding)
+parameter_enabled = _bool_env(
+cors_enabled = _bool_env("XBOW_ENABLE_CORS_VALIDATION", False)
+redirect_enabled = _bool_env(
+http_enabled = _bool_env("XBOW_ENABLE_HTTP_VALIDATION", False)
+enabled = bool(
+⋮----
 def safe_http_probe(campaign, finding) -> ProbeResult
 ⋮----
 """Capture bounded HTTP evidence and optionally one inert differential sample.
@@ -13538,7 +13558,6 @@ def safe_http_probe(campaign, finding) -> ProbeResult
     request may replace only an already-present query value with an inert marker.
     The result is evidence only; it never confirms a vulnerability.
     """
-url = build_probe_url(campaign, finding)
 ⋮----
 differential_enabled = _bool_env("XBOW_ENABLE_DIFFERENTIAL_VALIDATION", False)
 timeout = _validation_timeout_seconds()
@@ -23816,6 +23835,20 @@ def test_differential_validation_does_not_invent_query_parameters(monkeypatch)
 result = safe_http_probe(campaign(), finding(endpoint="/account"))
 ⋮----
 def test_invalid_differential_validation_gate_fails_closed_before_network(monkeypatch)
+⋮----
+def test_v2_plan_is_disabled_by_default_and_performs_no_network(monkeypatch)
+⋮----
+plan = build_safe_http_probe_plan_v2(
+⋮----
+def test_v2_parameter_plan_requires_http_gate_and_feature_gate(monkeypatch)
+⋮----
+def test_v2_feature_gate_alone_cannot_enable_plan(monkeypatch)
+⋮----
+def test_v2_plan_limits_fail_closed(monkeypatch, name, value, message)
+⋮----
+def test_invalid_v2_gate_fails_closed(monkeypatch)
+⋮----
+def test_v2_plan_reuses_scope_checker(monkeypatch)
 ```
 
 ## File: tests/test_value_efficiency.py
