@@ -29,14 +29,27 @@ class NormalizedScannerFinding:
     cwe: str | None = None
     cvss: float | None = None
     cve_ids: tuple[str, ...] = ()
+    cpe: tuple[str, ...] = ()
+    cvss_vector: str | None = None
+    epss_score: float | None = None
+    epss_percentile: float | None = None
+    references: tuple[str, ...] = ()
+    tags: tuple[str, ...] = ()
     template_id: str | None = None
     matcher_name: str | None = None
+    template_verified: bool | None = None
+    template_max_requests: int | None = None
+    vendor: str | None = None
+    product: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["evidence"] = list(self.evidence)
         payload["reproduction_steps"] = list(self.reproduction_steps)
         payload["cve_ids"] = list(self.cve_ids)
+        payload["cpe"] = list(self.cpe)
+        payload["references"] = list(self.references)
+        payload["tags"] = list(self.tags)
         return payload
 
 
@@ -55,6 +68,39 @@ def _optional_cvss(value: Any) -> float | None:
 def _severity(value: Any) -> str:
     normalized = str(value or "info").lower().strip()
     return normalized if normalized in _ALLOWED_SEVERITIES else "info"
+
+
+def _optional_unit_interval(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        return None
+    return score if 0 <= score <= 1 else None
+
+
+def _optional_nonnegative_int(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        result = int(value)
+    except (TypeError, ValueError):
+        return None
+    return result if 0 <= result <= 10000 else None
+
+
+def _identifier_list(value: Any, *, limit: int = 50) -> tuple[str, ...]:
+    values = _string_list(value, limit=limit)
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in values:
+        normalized = item.strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return tuple(result)
 
 
 def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]:
@@ -130,6 +176,20 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         cwe=_optional_str(cwe),
         cvss=_optional_cvss(item.get("cvss")),
         cve_ids=cve_ids,
+        cpe=_identifier_list(item.get("cpe")),
+        cvss_vector=_optional_str(item.get("cvss_vector")),
+        epss_score=_optional_unit_interval(item.get("epss_score")),
+        epss_percentile=_optional_unit_interval(item.get("epss_percentile")),
+        references=_string_list(item.get("references") or item.get("reference")),
+        tags=_identifier_list(item.get("tags")),
+        template_verified=(
+            item.get("template_verified")
+            if isinstance(item.get("template_verified"), bool)
+            else None
+        ),
+        template_max_requests=_optional_nonnegative_int(item.get("template_max_requests")),
+        vendor=_optional_str(item.get("vendor")),
+        product=_optional_str(item.get("product")),
     )
 
 
@@ -159,6 +219,9 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
     )
     matcher = item.get("matcher-name") or item.get("matcher_name")
     template_id = item.get("template-id") or item.get("template_id")
+    metadata = info.get("metadata") if isinstance(info.get("metadata"), dict) else {}
+    references = info.get("reference") or info.get("references") or []
+    cpe = _identifier_list(classification.get("cpe"))
 
     return NormalizedScannerFinding(
         engine="nuclei",
@@ -177,8 +240,33 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
             or classification.get("cvss_score")
         ),
         cve_ids=cve_ids,
+        cpe=cpe,
+        cvss_vector=_optional_str(
+            classification.get("cvss-metrics")
+            or classification.get("cvss_metrics")
+        ),
+        epss_score=_optional_unit_interval(
+            classification.get("epss-score")
+            or classification.get("epss_score")
+        ),
+        epss_percentile=_optional_unit_interval(
+            classification.get("epss-percentile")
+            or classification.get("epss_percentile")
+        ),
+        references=_string_list(references),
+        tags=_identifier_list(info.get("tags")),
         template_id=_optional_str(template_id),
         matcher_name=_optional_str(matcher),
+        template_verified=(
+            metadata.get("verified")
+            if isinstance(metadata.get("verified"), bool)
+            else None
+        ),
+        template_max_requests=_optional_nonnegative_int(
+            metadata.get("max-request") or metadata.get("max_request")
+        ),
+        vendor=_optional_str(metadata.get("vendor")),
+        product=_optional_str(metadata.get("product")),
     )
 
 
@@ -216,6 +304,18 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding:
         remediation=item.remediation,
         cwe=item.cwe,
         cvss=item.cvss,
+        cve_ids=list(item.cve_ids),
+        cpe=list(item.cpe),
+        cvss_vector=item.cvss_vector,
+        epss_score=item.epss_score,
+        epss_percentile=item.epss_percentile,
+        references=list(item.references),
+        tags=list(item.tags),
+        template_id=item.template_id,
+        template_verified=item.template_verified,
+        template_max_requests=item.template_max_requests,
+        vendor=item.vendor,
+        product=item.product,
         status="validation_required",
         discovered_by=item.engine,
     )
