@@ -3,6 +3,8 @@ import pytest
 from app.active_validation import (
     SAFE_PROBE_PLAN_SCHEMA,
     ActiveValidationPlanError,
+    analyze_cors_response,
+    analyze_redirect_response,
     build_safe_probe_plan,
 )
 
@@ -184,3 +186,83 @@ def test_hard_caps_fail_closed(field, value):
 
     with pytest.raises(ActiveValidationPlanError):
         build_safe_probe_plan(**kwargs)
+
+
+
+def test_cors_reflected_synthetic_origin_with_credentials_is_strong_review_signal():
+    signal = analyze_cors_response(
+        {
+            "Access-Control-Allow-Origin": "https://xbow.invalid",
+            "Access-Control-Allow-Credentials": "true",
+            "Vary": "Origin",
+        }
+    )
+
+    assert signal.strength == "strong"
+    assert signal.reason == "synthetic_origin_reflected_with_credentials"
+    assert signal.exploitability_confirmed is False
+    assert signal.evidence["vary_origin"] is True
+
+
+def test_cors_wildcard_is_weak_not_confirmed():
+    signal = analyze_cors_response(
+        {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
+
+    assert signal.strength == "weak"
+    assert signal.reason == "wildcard_origin_observed"
+    assert signal.exploitability_confirmed is False
+
+
+def test_absent_cors_headers_yield_no_signal():
+    signal = analyze_cors_response({})
+
+    assert signal.strength == "none"
+    assert signal.reason == "no_cors_signal"
+
+
+def test_redirect_requires_exact_reserved_destination():
+    signal = analyze_redirect_response(
+        http_status=302,
+        location="https://xbow.invalid/redirect-check",
+        parameter="next",
+    )
+
+    assert signal.strength == "strong"
+    assert signal.reason == "exact_reserved_destination_returned"
+    assert signal.parameter == "next"
+    assert signal.exploitability_confirmed is False
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        "https://xbow.invalid/redirect-check.evil",
+        "https://xbow.invalid.evil/redirect-check",
+        "/redirect-check",
+        "https://xbow.invalid/redirect-check?extra=1",
+        "https://xbow.invalid/redirect-check#fragment",
+    ),
+)
+def test_redirect_substring_or_non_exact_locations_do_not_promote(location):
+    signal = analyze_redirect_response(
+        http_status=302,
+        location=location,
+        parameter="next",
+    )
+
+    assert signal.strength == "none"
+    assert signal.evidence["location_exact_reserved_match"] is False
+
+
+def test_redirect_non_3xx_status_never_promotes():
+    signal = analyze_redirect_response(
+        http_status=200,
+        location="https://xbow.invalid/redirect-check",
+        parameter="next",
+    )
+
+    assert signal.strength == "none"
