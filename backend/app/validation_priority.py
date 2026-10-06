@@ -55,6 +55,7 @@ def build_validation_priority(
     vulnerability_signal: Any,
     differential_signal: str = "none",
     triage_score: float = 0.0,
+    cve_risk_score: float = 0.0,
     duplicate_candidate: bool = False,
     cluster_saturated: bool = False,
 ) -> ValidationPriority:
@@ -79,12 +80,17 @@ def build_validation_priority(
         triage = max(0.0, min(1.0, float(triage_score)))
     except (TypeError, ValueError):
         triage = 0.0
+    try:
+        cve_risk = max(0.0, min(1.0, float(cve_risk_score)))
+    except (TypeError, ValueError):
+        cve_risk = 0.0
 
     score = (
         severity_weight * 0.40
         + cve_weight * 0.30
         + differential_weight
         + triage * 0.15
+        + cve_risk * 0.10
     )
     if novel_candidate:
         score += 0.12
@@ -101,6 +107,10 @@ def build_validation_priority(
         reasons.append("high_impact")
     if known_cve_candidate:
         reasons.append("known_cve_candidate")
+    if cve_risk >= 0.75:
+        reasons.append("high_cve_risk_context")
+    elif cve_risk >= 0.55:
+        reasons.append("elevated_cve_risk_context")
     if novel_candidate:
         reasons.append("corroborated_unknown_candidate")
     if differential == "strong":
