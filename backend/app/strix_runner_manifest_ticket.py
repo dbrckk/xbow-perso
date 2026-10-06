@@ -91,7 +91,11 @@ def _valid_image(value: object) -> str:
 
 
 def _valid_ports(value: Sequence[int]) -> tuple[int, ...]:
-    if isinstance(value, (str, bytes)) or len(value) > 16:
+    if (
+        isinstance(value, (str, bytes))
+        or not isinstance(value, Sequence)
+        or len(value) > 16
+    ):
         raise StrixRunnerManifestTicketError(
             "runner manifest exposed ports are invalid"
         )
