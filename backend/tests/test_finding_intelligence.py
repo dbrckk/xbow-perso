@@ -151,3 +151,29 @@ def test_finding_intelligence_surfaces_public_duplicate_similarity_without_block
     assert duplicate["automatic_report_block"] is False
     assert result["findings"][0]["status"] == "validation_required"
     assert result["summary"]["high_public_similarity_findings"] == 1
+
+
+def test_finding_intelligence_exposes_advisory_validation_priority_only():
+    finding = _finding(
+        "f1",
+        "https://example.test/a?id=one",
+        severity="critical",
+    )
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    result = build_finding_intelligence([finding], _graph())
+    row = result["findings"][0]
+    priority = row["validation_priority"]
+
+    assert priority["automatic_execution_authorized"] is False
+    assert priority["non_destructive_only"] is True
+    assert priority["independent_validation_required"] is True
+    assert priority["recommended_state"] in {
+        "safe_active_validation",
+        "passive_review",
+        "defer_low_signal",
+        "defer_duplicate_validation",
+        "no_action",
+    }
