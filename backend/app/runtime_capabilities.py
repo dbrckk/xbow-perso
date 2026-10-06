@@ -11,6 +11,7 @@ from .strix_manifest_admission import STRIX_MANIFEST_ADMISSION_SCHEMA
 from .strix_runner_rpc import RUNNER_RPC_PROTOCOL
 from .strix_remote_session import STRIX_REMOTE_SESSION_SCHEMA
 from .strix_runner_exec_ticket import STRIX_RUNNER_EXEC_TICKET_SCHEMA
+from .strix_runner_manifest_ticket import STRIX_RUNNER_MANIFEST_TICKET_SCHEMA
 
 
 class CapabilityConfigError(ValueError):
@@ -191,6 +192,9 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_broker_command_ticket_endpoint_defined": True,
         "strix_broker_command_ticket_requires_verified_contract": True,
         "strix_broker_command_admission_enforced": True,
+        "strix_broker_manifest_ticket_endpoint_defined": True,
+        "strix_broker_manifest_ticket_requires_verified_contract": True,
+        "strix_runner_manifest_ticket_producer_wired_to_session": False,
         "strix_runner_exec_ticket_producer_wired_to_session": False,
         "strix_broker_read_only_egress_available": True,
         "strix_broker_egress_enforced": False,
@@ -207,6 +211,9 @@ def scanner_runtime_capability() -> dict[str, Any]:
         "strix_runner_exec_ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
         "strix_runner_exec_ticket_required": True,
         "strix_runner_exec_ticket_enforced": True,
+        "strix_runner_manifest_ticket_schema": STRIX_RUNNER_MANIFEST_TICKET_SCHEMA,
+        "strix_runner_manifest_ticket_required": True,
+        "strix_runner_manifest_ticket_enforced": True,
         "strix_runner_exec_process_launch_enabled": False,
         "strix_command_admission_contract_defined": True,
         "strix_command_profiles": ["bootstrap-v1", "web-active-v1"],
@@ -275,6 +282,9 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_broker_command_ticket_endpoint_defined": True,
             "strix_broker_command_ticket_requires_verified_contract": True,
             "strix_broker_command_admission_enforced": True,
+            "strix_broker_manifest_ticket_endpoint_defined": True,
+            "strix_broker_manifest_ticket_requires_verified_contract": True,
+            "strix_runner_manifest_ticket_producer_wired_to_session": False,
             "strix_runner_exec_ticket_producer_wired_to_session": False,
             "strix_broker_read_only_egress_available": True,
             "strix_broker_egress_enforced": False,
@@ -291,6 +301,9 @@ def safe_scanner_runtime_capability() -> dict[str, Any]:
             "strix_runner_exec_ticket_schema": STRIX_RUNNER_EXEC_TICKET_SCHEMA,
             "strix_runner_exec_ticket_required": True,
             "strix_runner_exec_ticket_enforced": True,
+            "strix_runner_manifest_ticket_schema": STRIX_RUNNER_MANIFEST_TICKET_SCHEMA,
+            "strix_runner_manifest_ticket_required": True,
+            "strix_runner_manifest_ticket_enforced": True,
             "strix_runner_exec_process_launch_enabled": False,
             "strix_command_admission_contract_defined": True,
             "strix_command_profiles": ["bootstrap-v1", "web-active-v1"],
