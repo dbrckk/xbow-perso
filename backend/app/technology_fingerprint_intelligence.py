@@ -130,6 +130,27 @@ def match_finding_technology(
     return tuple(matches)
 
 
+
+def fingerprint_ambiguity_reasons(
+    fingerprints: tuple[TechnologyFingerprint, ...],
+) -> tuple[str, ...]:
+    """Return conservative ambiguity markers for conflicting matched versions."""
+    versions_by_product: dict[str, set[str]] = {}
+    for item in fingerprints:
+        if not item.version:
+            continue
+        versions_by_product.setdefault(item.normalized_product, set()).add(item.version)
+
+    reasons: set[str] = set()
+    if any(len(versions) > 1 for versions in versions_by_product.values()):
+        reasons.add("conflicting_version_fingerprints")
+
+    versioned = [item for item in fingerprints if item.version]
+    if versioned and all(len(item.sources) < 2 for item in versioned):
+        reasons.add("single_source_version_evidence")
+
+    return tuple(sorted(reasons))
+
 def build_finding_fingerprint_intelligence(
     findings: list[Any],
     graph: ObservationGraph,
