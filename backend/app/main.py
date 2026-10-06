@@ -362,12 +362,14 @@ def system_capabilities():
         safe_pentagi_runtime_capability,
         safe_recon_runtime_capability,
         safe_scanner_runtime_capability,
+        safe_validation_runtime_capability,
     )
 
     pentagi = safe_pentagi_runtime_capability()
     scanners = safe_scanner_runtime_capability()
     browser = safe_browser_runtime_capability()
     recon = safe_recon_runtime_capability()
+    validation = safe_validation_runtime_capability()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -386,7 +388,8 @@ def system_capabilities():
             "strix_scanning": "gated",
             "scanner_worker": scanners["mode"],
             "scanner_worker_detail": scanners,
-            "http_validation": "gated",
+            "http_validation": validation["mode"],
+            "http_validation_detail": validation,
             "browser_automation": browser["mode"],
             "browser_detail": browser,
             "recon": recon["mode"],
@@ -431,6 +434,12 @@ def system_capabilities():
             "social_engineering": False,
             "credential_attacks": False,
             "exploit_execution": False,
+            "validation_automatic_execution_authorized": bool(
+                validation["automatic_execution_authorized"]
+            ),
+            "validation_scope_revalidation_required": bool(
+                validation["scope_revalidation_required"]
+            ),
             "out_of_scope_execution": False,
             "pentagi_remote_execution_enforceable": bool(
                 pentagi["execution_transport_enforceable"]
