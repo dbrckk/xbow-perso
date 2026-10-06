@@ -264,3 +264,59 @@ def test_finding_intelligence_exposes_bounded_cve_validation_plan():
     assert plan["state_changing_validation_allowed"] is False
     assert plan["exploit_execution_allowed"] is False
     assert plan["independent_validation_required"] is True
+
+
+def test_finding_intelligence_surfaces_reproducible_differential_quality():
+    finding = _finding(
+        "f1",
+        "https://example.test/search?q=redacted",
+        severity="critical",
+    )
+    finding.evidence = []
+    finding.discovered_by = "scanner-a"
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner-a",
+            parent_ids=("asset:a",),
+        )
+    )
+    for observation_id, source in (
+        ("validation:one", "validator-a"),
+        ("validation:two", "validator-b"),
+    ):
+        graph.add(
+            Observation(
+                observation_id,
+                "validation",
+                "observed",
+                source,
+                parent_ids=("finding:f1",),
+                metadata={
+                    "finding_id": "f1",
+                    "differential_signal": "strong",
+                    "differential_parameter": "q",
+                    "differential_marker_reflected": True,
+                    "differential_status_changed": False,
+                    "differential_body_changed": True,
+                },
+            )
+        )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["differential"]["signal"] == "strong"
+    assert row["differential_quality"]["reproducible"] is True
+    assert row["differential_quality"]["reproducibility_level"] == (
+        "multi_source_repeated"
+    )
+    assert row["differential_quality"]["false_positive_risk"] == "low"
+    assert result["summary"]["reproducible_differential_findings"] == 1
+    assert result["summary"]["low_false_positive_differential_findings"] == 1
+    assert result["summary"]["contradictory_differential_findings"] == 0
