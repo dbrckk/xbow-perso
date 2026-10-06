@@ -37,6 +37,12 @@ from .pipeline_swarm import coordinate_pipeline_action
 from .recon_priority import prioritize_recon_tasks
 from .recon_swarm import build_recon_plan
 from .red_team_decision import build_red_team_decisions
+from .repeat_validation import (
+    REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA,
+    RepeatValidationConfigError,
+    build_repeat_validation_candidates,
+    repeat_differential_validation_enabled,
+)
 from .runtime_capabilities import safe_browser_runtime_capability
 from .surface_confidence import build_surface_confidence
 from .surface_diff import build_surface_diff_intelligence
@@ -427,6 +433,7 @@ def _enqueue_action(
     *,
     validation_limit: int | None = None,
     scan_engines: tuple[str, ...] | None = None,
+    repeat_validation_ordinals: dict[str, int] | None = None,
 ) -> list[dict]:
     fingerprint = _graph_fingerprint(graph)
 
@@ -458,22 +465,49 @@ def _enqueue_action(
 
     if action.kind == "validate":
         jobs = []
-        pending = _pending_findings(campaign, graph)
+        repeat_ordinals = dict(repeat_validation_ordinals or {})
+        if repeat_ordinals:
+            pending = [
+                finding
+                for finding in campaign.findings
+                if str(finding.id) in repeat_ordinals
+            ]
+        else:
+            pending = _pending_findings(campaign, graph)
         if validation_limit is not None:
             pending = pending[:validation_limit]
         for finding in pending:
+            finding_id = str(finding.id)
+            repeat_ordinal = repeat_ordinals.get(finding_id)
+            payload = {
+                "campaign_id": campaign.id,
+                "finding_id": finding.id,
+                "asset": finding.asset,
+            }
+            dedupe_key = f"validation:{finding.id}"
+            if repeat_ordinal is not None:
+                payload["repeat_validation"] = {
+                    "schema": REPEAT_DIFFERENTIAL_VALIDATION_SCHEMA,
+                    "ordinal": repeat_ordinal,
+                    "reason": (
+                        "single_strong_unknown_differential_requires_repeat"
+                    ),
+                }
+                dedupe_key = (
+                    f"validation:{finding.id}:repeat:{repeat_ordinal}"
+                )
             jobs.append(
                 queue.enqueue(
                     campaign.id,
                     "independent_validation",
                     attach_job_provenance(
-                        {"campaign_id": campaign.id, "finding_id": finding.id, "asset": finding.asset},
+                        payload,
                         campaign,
                         job_kind="independent_validation",
                         action="validate",
                     ),
                     max_attempts=2,
-                    dedupe_key=f"validation:{finding.id}",
+                    dedupe_key=dedupe_key,
                 )
             )
         return jobs
@@ -728,6 +762,39 @@ def advance_campaign(
         graph = _load_graph(store, campaign.id)
         planned_actions = planner.plan(campaign, graph)
         action = planned_actions[0]
+        repeat_validation_ordinals: dict[str, int] = {}
+        try:
+            repeat_enabled = repeat_differential_validation_enabled()
+        except RepeatValidationConfigError:
+            action = PlannedAction(
+                "stop",
+                str(campaign.target.primary_url),
+                "invalid repeat differential validation configuration",
+                100,
+            )
+            repeat_candidates = []
+        else:
+            repeat_candidates = build_repeat_validation_candidates(
+                campaign.findings,
+                graph,
+                enabled=repeat_enabled,
+            )
+        if (
+            action.kind == "stop"
+            and action.reason
+            == "observed findings await explicit confirmation or rejection"
+            and repeat_candidates
+        ):
+            repeat_validation_ordinals = {
+                item.finding_id: item.next_observation_ordinal
+                for item in repeat_candidates
+            }
+            action = PlannedAction(
+                "validate",
+                str(campaign.target.primary_url),
+                "bounded repeat differential validation required",
+                100,
+            )
         action, usage = apply_budget(action, graph, queue, campaign.id, limits)
         if usage.exhausted and action.kind == "stop":
             record_circuit_open(store, campaign.id, action.reason, at=utcnow())
@@ -844,7 +911,11 @@ def advance_campaign(
             scan_engines = selected[:coordination.allocated_items]
             intelligence["pipeline_coordination"] = coordination
         elif action.kind == "validate":
-            pending_count = len(_pending_findings(campaign, graph))
+            pending_count = (
+                len(repeat_validation_ordinals)
+                if repeat_validation_ordinals
+                else len(_pending_findings(campaign, graph))
+            )
             coordination = coordinate_pipeline_action(
                 "validate",
                 pending_count,
@@ -868,12 +939,18 @@ def advance_campaign(
             queue,
             validation_limit=validation_limit,
             scan_engines=scan_engines,
+            repeat_validation_ordinals=repeat_validation_ordinals,
         )
         if action.kind == "validate" and not jobs:
+            reason = (
+                "repeat differential validation budget unavailable"
+                if repeat_validation_ordinals
+                else "cluster validation saturated by strong representative evidence"
+            )
             action = PlannedAction(
                 "stop",
                 str(campaign.target.primary_url),
-                "cluster validation saturated by strong representative evidence",
+                reason,
                 100,
             )
         return _result(
