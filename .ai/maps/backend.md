@@ -60,6 +60,7 @@ app/
   circuit_breaker.py
   control_plane_health.py
   coverage.py
+  cve_evidence_verdict.py
   decision_audit.py
   decision_consensus.py
   decision_timeline.py
@@ -257,6 +258,7 @@ tests/
   test_control_plane_health.py
   test_control_views.py
   test_coverage.py
+  test_cve_evidence_verdict.py
   test_cve_metadata_normalization.py
   test_decision_audit.py
   test_decision_consensus.py
@@ -1736,6 +1738,52 @@ penalty = min(15, max(5, int(round(diminishing * 15))))
 adjusted = PlannedAction(
 ```
 
+## File: app/cve_evidence_verdict.py
+```python
+CVE_EVIDENCE_VERDICT_SCHEMA = "cve-evidence-verdict-v1"
+⋮----
+@dataclass(frozen=True)
+class CveEvidenceVerdict
+⋮----
+schema: str
+finding_id: str
+cve_ids: tuple[str, ...]
+verdict: str
+confidence: str
+behavioral_evidence: bool
+version_evidence: bool
+high_confidence_version_evidence: bool
+ambiguity_reasons: tuple[str, ...]
+exploitability_confirmed: bool
+independent_validation_required: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+cve_ids = finding_cve_ids(finding)
+versioned = max(0, int(versioned_fingerprint_match_count))
+high_confidence = max(0, int(high_confidence_fingerprint_match_count))
+reasons = tuple(
+behavioral = str(differential_signal).lower() == "strong"
+⋮----
+verdict = "not_a_cve_candidate"
+confidence = "none"
+⋮----
+verdict = "ambiguous_version_candidate"
+confidence = "low"
+⋮----
+verdict = "behaviorally_supported_cve_candidate"
+confidence = "high"
+⋮----
+verdict = "high_confidence_version_candidate"
+confidence = "medium"
+⋮----
+verdict = "version_candidate"
+⋮----
+verdict = "identifier_only_candidate"
+```
+
 ## File: app/decision_audit.py
 ```python
 _AUDIT_FIELDS = {
@@ -2762,6 +2810,7 @@ matched_fingerprints = match_finding_technology(
 versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 vulnerability = build_vulnerability_signal(
+cve_evidence_verdict = build_cve_evidence_verdict(
 ⋮----
 cluster_rows = []
 ⋮----
@@ -14865,6 +14914,27 @@ def test_low_yield_scan_deprioritization_preserves_kind_and_target()
 action = PlannedAction(
 ⋮----
 def test_coverage_priority_never_changes_non_scan_action()
+```
+
+## File: tests/test_cve_evidence_verdict.py
+```python
+def _finding(*, evidence=None)
+⋮----
+def test_identifier_only_never_confirms_exploitability()
+⋮----
+result = build_cve_evidence_verdict(_finding())
+⋮----
+def test_version_match_is_candidate_not_confirmation()
+⋮----
+result = build_cve_evidence_verdict(
+⋮----
+def test_strong_behavior_plus_high_confidence_version_is_high_confidence_candidate()
+⋮----
+def test_backport_or_banner_ambiguity_downgrades_even_strong_candidate()
+⋮----
+def test_non_cve_finding_is_not_promoted()
+⋮----
+finding = SimpleNamespace(
 ```
 
 ## File: tests/test_cve_metadata_normalization.py

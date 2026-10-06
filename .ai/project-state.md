@@ -39,17 +39,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T10:46:10Z
+Generated: 2026-10-06T17:42:58Z
 
 ### Git
 - Branch: `main`
-- Head: `cf3abac124e8`
-- Commit date: 2026-10-06T12:45:58+02:00
-- Commit: feat(vuln): correlate CVEs with product/version evidence
-- Tracked files: 646
+- Head: `b5f57a6c1d5d`
+- Commit date: 2026-10-06T19:42:46+02:00
+- Commit: feat(vuln): add conservative CVE evidence verdicts
+- Tracked files: 648
 
 ### Recently changed files
+- `backend/app/cve_evidence_verdict.py`
 - `backend/app/finding_intelligence.py`
+- `backend/tests/test_cve_evidence_verdict.py`
 - `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
 - `backend/app/technology_fingerprint_intelligence.py`
@@ -67,8 +69,6 @@ Generated: 2026-10-06T10:46:10Z
 - `backend/tests/test_strix_broker.py`
 - `backend/tests/test_strix_runner_manifest_ticket.py`
 - `backend/tests/test_strix_runner_rpc.py`
-- `backend/app/strix_backend_hook.py`
-- `backend/app/strix_manifest_admission.py`
 
 ### Project signals
 - `pyproject.toml`
