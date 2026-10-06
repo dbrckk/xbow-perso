@@ -10,6 +10,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl, quote, quote_plus, urlencode, urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
+from .active_validation import SafeProbePlan, build_safe_probe_plan
+
 
 class ValidationPolicyError(RuntimeError):
     pass
@@ -126,6 +128,36 @@ def _validation_max_bytes() -> int:
     return max_bytes
 
 
+def _validation_max_parameters_v2() -> int:
+    raw = os.getenv("XBOW_VALIDATION_MAX_PARAMETERS", "5")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValidationPolicyError(
+            "XBOW_VALIDATION_MAX_PARAMETERS must be an integer"
+        ) from exc
+    if not 0 <= value <= 10:
+        raise ValidationPolicyError(
+            "XBOW_VALIDATION_MAX_PARAMETERS must be between 0 and 10"
+        )
+    return value
+
+
+def _validation_max_requests_v2() -> int:
+    raw = os.getenv("XBOW_VALIDATION_MAX_REQUESTS", "8")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValidationPolicyError(
+            "XBOW_VALIDATION_MAX_REQUESTS must be an integer"
+        ) from exc
+    if not 1 <= value <= 16:
+        raise ValidationPolicyError(
+            "XBOW_VALIDATION_MAX_REQUESTS must be between 1 and 16"
+        )
+    return value
+
+
 def _validation_rps(campaign) -> float:
     try:
         rps = float(campaign.target.rules.max_requests_per_second)
@@ -221,6 +253,35 @@ def build_probe_url(campaign, finding) -> str:
     if parsed.username or parsed.password:
         raise ValidationPolicyError("userinfo in validation URLs is forbidden")
     return candidate
+
+
+def build_safe_http_probe_plan_v2(campaign, finding) -> SafeProbePlan:
+    """Build a scope-checked v2 plan without performing network I/O."""
+    url = build_probe_url(campaign, finding)
+    parameter_enabled = _bool_env(
+        "XBOW_ENABLE_PARAMETER_VALIDATION_V2",
+        False,
+    )
+    cors_enabled = _bool_env("XBOW_ENABLE_CORS_VALIDATION", False)
+    redirect_enabled = _bool_env(
+        "XBOW_ENABLE_REDIRECT_VALIDATION",
+        False,
+    )
+    http_enabled = _bool_env("XBOW_ENABLE_HTTP_VALIDATION", False)
+    enabled = bool(
+        http_enabled
+        and (parameter_enabled or cors_enabled or redirect_enabled)
+    )
+    return build_safe_probe_plan(
+        finding_id=str(finding.id),
+        target_url=url,
+        enabled=enabled,
+        parameter_validation_enabled=parameter_enabled,
+        cors_validation_enabled=cors_enabled,
+        redirect_validation_enabled=redirect_enabled,
+        max_parameters=_validation_max_parameters_v2(),
+        max_requests=_validation_max_requests_v2(),
+    )
 
 
 def safe_http_probe(campaign, finding) -> ProbeResult:
