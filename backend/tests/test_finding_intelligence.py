@@ -249,3 +249,18 @@ def test_finding_intelligence_counts_verified_kev_candidates():
     assert result["findings"][0]["validation_priority"][
         "automatic_execution_authorized"
     ] is False
+
+
+def test_finding_intelligence_exposes_bounded_cve_validation_plan():
+    finding = _finding("f1", "https://example.test/a")
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+
+    result = build_finding_intelligence([finding], _graph())
+
+    plan = result["findings"][0]["cve_validation_plan"]
+    assert plan["automatic_execution_authorized"] is False
+    assert plan["destructive_testing_allowed"] is False
+    assert plan["state_changing_validation_allowed"] is False
+    assert plan["exploit_execution_allowed"] is False
+    assert plan["independent_validation_required"] is True
