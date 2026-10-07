@@ -141,6 +141,7 @@ def build_finding_intelligence(
             for reason in cpe_consistency.reasons
             if reason in {
                 "cpe_product_mismatch",
+                "cpe_vendor_mismatch",
                 "unparseable_cpe",
                 "cpe_version_mismatch",
             }
