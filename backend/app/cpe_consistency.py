@@ -1,0 +1,98 @@
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from typing import Any, Iterable
+
+
+CPE_CONSISTENCY_SCHEMA = "cpe-consistency-v1"
+
+
+@dataclass(frozen=True)
+class CpeConsistency:
+    schema: str
+    finding_id: str
+    cpe_count: int
+    parsed_cpe_count: int
+    product_match_count: int
+    generic_product_count: int
+    mismatch_count: int
+    reasons: tuple[str, ...]
+    cpe_supports_product_identity: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["reasons"] = list(self.reasons)
+        return payload
+
+
+def _normalize_token(value: object) -> str:
+    return str(value or "").strip().lower().replace("_", " ").replace("-", " ")
+
+
+def _parse_cpe23(value: object) -> tuple[str, str, str] | None:
+    raw = str(value or "").strip()
+    if not raw.startswith("cpe:2.3:"):
+        return None
+    parts = raw.split(":")
+    if len(parts) != 13:
+        return None
+    vendor = parts[3].strip()
+    product = parts[4].strip()
+    version = parts[5].strip()
+    return vendor, product, version
+
+
+def build_cpe_consistency(finding: Any) -> CpeConsistency:
+    raw_cpes = getattr(finding, "cpe", None)
+    if isinstance(raw_cpes, str):
+        cpes: tuple[object, ...] = (raw_cpes,)
+    elif isinstance(raw_cpes, Iterable):
+        cpes = tuple(raw_cpes)
+    else:
+        cpes = ()
+
+    declared_product = _normalize_token(getattr(finding, "product", ""))
+    parsed = [item for item in (_parse_cpe23(value) for value in cpes) if item]
+
+    matches = 0
+    generic = 0
+    mismatches = 0
+    for _vendor, product, _version in parsed:
+        normalized_product = _normalize_token(product)
+        if normalized_product in {"", "*", "-"}:
+            generic += 1
+            continue
+        if declared_product and normalized_product == declared_product:
+            matches += 1
+        elif declared_product:
+            mismatches += 1
+
+    reasons: set[str] = set()
+    if cpes and len(parsed) != len(cpes):
+        reasons.add("unparseable_cpe")
+    if generic:
+        reasons.add("generic_cpe_product")
+    if mismatches:
+        reasons.add("cpe_product_mismatch")
+    if cpes and not declared_product:
+        reasons.add("declared_product_missing")
+
+    supports = bool(
+        declared_product
+        and matches > 0
+        and mismatches == 0
+        and generic == 0
+        and len(parsed) == len(cpes)
+    )
+
+    return CpeConsistency(
+        schema=CPE_CONSISTENCY_SCHEMA,
+        finding_id=str(getattr(finding, "id", "")),
+        cpe_count=len(cpes),
+        parsed_cpe_count=len(parsed),
+        product_match_count=matches,
+        generic_product_count=generic,
+        mismatch_count=mismatches,
+        reasons=tuple(sorted(reasons)),
+        cpe_supports_product_identity=supports,
+    )

@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .cpe_consistency import build_cpe_consistency
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
 from .cve_validation_priority import build_cve_validation_plan
@@ -127,11 +128,18 @@ def build_finding_intelligence(
         freshness_ambiguity = fingerprint_staleness_reasons(
             matched_fingerprints,
         )
+        cpe_consistency = build_cpe_consistency(finding)
+        cpe_ambiguity = tuple(
+            reason
+            for reason in cpe_consistency.reasons
+            if reason in {"cpe_product_mismatch", "unparseable_cpe"}
+        )
         combined_fingerprint_ambiguity = tuple(
             sorted(
                 set(fingerprint_ambiguity)
                 | set(product_ambiguity)
                 | set(freshness_ambiguity)
+                | set(cpe_ambiguity)
             )
         )
         vulnerability = build_vulnerability_signal(
@@ -194,6 +202,7 @@ def build_finding_intelligence(
                 "vulnerability": vulnerability.to_dict(),
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
+                "cpe_consistency": cpe_consistency.to_dict(),
                 "cve_validation_plan": cve_validation_plan.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
                 "technology": {

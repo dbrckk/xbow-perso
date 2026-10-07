@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING, Any
 
+from .cpe_consistency import build_cpe_consistency
 from .kev_catalog import finding_has_authoritative_kev
 
 if TYPE_CHECKING:
@@ -23,6 +24,8 @@ class CveRiskContext:
     epss_score: float | None
     epss_percentile: float | None
     cpe_present: bool
+    cpe_supports_product_identity: bool
+    cpe_consistency_reasons: tuple[str, ...]
     template_verified: bool
     scanner_tagged_kev: bool
     authoritative_kev_verified: bool
@@ -35,6 +38,7 @@ class CveRiskContext:
         payload = asdict(self)
         payload["cve_ids"] = list(self.cve_ids)
         payload["reasons"] = list(self.reasons)
+        payload["cpe_consistency_reasons"] = list(self.cpe_consistency_reasons)
         return payload
 
 
@@ -79,6 +83,7 @@ def build_cve_risk_context(
         isinstance(cpe, (list, tuple, set))
         and any(str(item).strip() for item in cpe)
     )
+    cpe_consistency = build_cpe_consistency(finding)
     template_verified = getattr(finding, "template_verified", None) is True
     tags = {
         str(tag).strip().lower()
@@ -103,6 +108,8 @@ def build_cve_risk_context(
             epss_score=epss_score,
             epss_percentile=epss_percentile,
             cpe_present=cpe_present,
+            cpe_supports_product_identity=cpe_consistency.cpe_supports_product_identity,
+            cpe_consistency_reasons=cpe_consistency.reasons,
             template_verified=template_verified,
             scanner_tagged_kev=scanner_tagged_kev,
             authoritative_kev_verified=False,
@@ -132,9 +139,11 @@ def build_cve_risk_context(
         if epss_percentile >= 0.90:
             reasons.append("high_epss_percentile")
 
-    if cpe_present:
+    if cpe_consistency.cpe_supports_product_identity:
         score += 0.05
-        reasons.append("cpe_present")
+        reasons.append("cpe_product_consistent")
+    elif cpe_present:
+        reasons.append("cpe_untrusted")
 
     if template_verified:
         score += 0.05
@@ -165,6 +174,8 @@ def build_cve_risk_context(
         epss_score=epss_score,
         epss_percentile=epss_percentile,
         cpe_present=cpe_present,
+        cpe_supports_product_identity=cpe_consistency.cpe_supports_product_identity,
+        cpe_consistency_reasons=cpe_consistency.reasons,
         template_verified=template_verified,
         scanner_tagged_kev=scanner_tagged_kev,
         authoritative_kev_verified=authoritative,
