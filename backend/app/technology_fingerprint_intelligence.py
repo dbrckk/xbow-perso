@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -22,6 +23,7 @@ class TechnologyFingerprint:
     confidence: float
     sources: tuple[str, ...]
     observation_ids: tuple[str, ...]
+    latest_observed_at: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -63,10 +65,28 @@ def build_technology_fingerprints(
                 "sources": set(),
                 "observation_ids": set(),
                 "explicit_confidences": [],
+                "observed_at": [],
             },
         )
         current["sources"].add(str(observation.source))
         current["observation_ids"].add(str(observation.id))
+        for timestamp_key in ("observed_at", "collected_at", "timestamp"):
+            raw_timestamp = observation.metadata.get(timestamp_key)
+            if not raw_timestamp:
+                continue
+            try:
+                parsed_timestamp = datetime.fromisoformat(
+                    str(raw_timestamp).replace("Z", "+00:00")
+                )
+            except ValueError:
+                break
+            if parsed_timestamp.tzinfo is None:
+                parsed_timestamp = parsed_timestamp.replace(tzinfo=timezone.utc)
+            current["observed_at"].append(
+                parsed_timestamp.astimezone(timezone.utc)
+            )
+            break
+
         raw_confidence = observation.metadata.get("confidence")
         try:
             confidence = float(raw_confidence)
@@ -95,6 +115,11 @@ def build_technology_fingerprints(
                 confidence=confidence,
                 sources=sources,
                 observation_ids=tuple(sorted(payload["observation_ids"])),
+                latest_observed_at=(
+                    max(payload["observed_at"]).isoformat()
+                    if payload["observed_at"]
+                    else None
+                ),
             )
         )
 
@@ -169,6 +194,50 @@ def fingerprint_ambiguity_reasons(
         reasons.add("single_source_version_evidence")
 
     return tuple(sorted(reasons))
+
+
+def fingerprint_staleness_reasons(
+    fingerprints: tuple[TechnologyFingerprint, ...],
+    *,
+    now: datetime | None = None,
+    max_age_days: int = 30,
+) -> tuple[str, ...]:
+    if max_age_days < 1:
+        raise ValueError("max_age_days must be positive")
+
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+    current = current.astimezone(timezone.utc)
+
+    versioned = [item for item in fingerprints if item.version]
+    timestamped = [item for item in versioned if item.latest_observed_at]
+    if not timestamped:
+        return ()
+
+    fresh = False
+    for item in timestamped:
+        try:
+            observed = datetime.fromisoformat(
+                str(item.latest_observed_at).replace("Z", "+00:00")
+            )
+        except ValueError:
+            continue
+        if observed.tzinfo is None:
+            observed = observed.replace(tzinfo=timezone.utc)
+        age_seconds = (current - observed.astimezone(timezone.utc)).total_seconds()
+        if age_seconds < 0:
+            continue
+        if age_seconds <= max_age_days * 86400:
+            fresh = True
+            break
+
+    if fresh:
+        return ()
+
+    if len(timestamped) == len(versioned):
+        return ("stale_version_fingerprints",)
+    return ("partially_stale_version_fingerprints",)
 
 def build_finding_fingerprint_intelligence(
     findings: list[Any],
