@@ -25,6 +25,7 @@ class CveRiskContext:
     epss_percentile: float | None
     cpe_present: bool
     cpe_supports_product_identity: bool
+    cpe_supports_vendor_identity: bool
     cpe_consistency_reasons: tuple[str, ...]
     template_verified: bool
     scanner_tagged_kev: bool
@@ -84,6 +85,14 @@ def build_cve_risk_context(
         and any(str(item).strip() for item in cpe)
     )
     cpe_consistency = build_cpe_consistency(finding)
+    declared_vendor = bool(str(getattr(finding, "vendor", "") or "").strip())
+    trusted_cpe_identity = bool(
+        cpe_consistency.cpe_supports_product_identity
+        and (
+            not declared_vendor
+            or cpe_consistency.cpe_supports_vendor_identity
+        )
+    )
     template_verified = getattr(finding, "template_verified", None) is True
     tags = {
         str(tag).strip().lower()
@@ -109,6 +118,7 @@ def build_cve_risk_context(
             epss_percentile=epss_percentile,
             cpe_present=cpe_present,
             cpe_supports_product_identity=cpe_consistency.cpe_supports_product_identity,
+            cpe_supports_vendor_identity=cpe_consistency.cpe_supports_vendor_identity,
             cpe_consistency_reasons=cpe_consistency.reasons,
             template_verified=template_verified,
             scanner_tagged_kev=scanner_tagged_kev,
@@ -139,9 +149,9 @@ def build_cve_risk_context(
         if epss_percentile >= 0.90:
             reasons.append("high_epss_percentile")
 
-    if cpe_consistency.cpe_supports_product_identity:
+    if trusted_cpe_identity:
         score += 0.05
-        reasons.append("cpe_product_consistent")
+        reasons.append("cpe_identity_consistent")
     elif cpe_present:
         reasons.append("cpe_untrusted")
 
@@ -175,6 +185,7 @@ def build_cve_risk_context(
         epss_percentile=epss_percentile,
         cpe_present=cpe_present,
         cpe_supports_product_identity=cpe_consistency.cpe_supports_product_identity,
+        cpe_supports_vendor_identity=cpe_consistency.cpe_supports_vendor_identity,
         cpe_consistency_reasons=cpe_consistency.reasons,
         template_verified=template_verified,
         scanner_tagged_kev=scanner_tagged_kev,
