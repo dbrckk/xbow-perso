@@ -16,11 +16,15 @@ class CpeConsistency:
     product_match_count: int
     generic_product_count: int
     mismatch_count: int
+    vendor_match_count: int
+    generic_vendor_count: int
+    vendor_mismatch_count: int
     version_match_count: int
     generic_version_count: int
     version_mismatch_count: int
     reasons: tuple[str, ...]
     cpe_supports_product_identity: bool
+    cpe_supports_vendor_identity: bool
     cpe_supports_version_identity: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -60,6 +64,7 @@ def build_cpe_consistency(
         cpes = ()
 
     declared_product = _normalize_token(getattr(finding, "product", ""))
+    declared_vendor = _normalize_token(getattr(finding, "vendor", ""))
     parsed = [item for item in (_parse_cpe23(value) for value in cpes) if item]
 
     normalized_observed_versions = {
@@ -71,10 +76,21 @@ def build_cpe_consistency(
     matches = 0
     generic = 0
     mismatches = 0
+    vendor_matches = 0
+    generic_vendors = 0
+    vendor_mismatches = 0
     version_matches = 0
     generic_versions = 0
     version_mismatches = 0
-    for _vendor, product, version in parsed:
+    for vendor, product, version in parsed:
+        normalized_vendor = _normalize_token(vendor)
+        if normalized_vendor in {"", "*", "-"}:
+            generic_vendors += 1
+        elif declared_vendor and normalized_vendor == declared_vendor:
+            vendor_matches += 1
+        elif declared_vendor:
+            vendor_mismatches += 1
+
         normalized_product = _normalize_token(product)
         if normalized_product in {"", "*", "-"}:
             generic += 1
@@ -101,6 +117,12 @@ def build_cpe_consistency(
         reasons.add("cpe_product_mismatch")
     if cpes and not declared_product:
         reasons.add("declared_product_missing")
+    if generic_vendors and declared_vendor:
+        reasons.add("generic_cpe_vendor")
+    if vendor_mismatches:
+        reasons.add("cpe_vendor_mismatch")
+    if cpes and not declared_vendor:
+        reasons.add("declared_vendor_missing")
     if generic_versions and normalized_observed_versions:
         reasons.add("generic_cpe_version")
     if version_mismatches:
@@ -111,6 +133,14 @@ def build_cpe_consistency(
         and matches > 0
         and mismatches == 0
         and generic == 0
+        and len(parsed) == len(cpes)
+    )
+
+    supports_vendor = bool(
+        declared_vendor
+        and vendor_matches > 0
+        and vendor_mismatches == 0
+        and generic_vendors == 0
         and len(parsed) == len(cpes)
     )
 
@@ -130,10 +160,14 @@ def build_cpe_consistency(
         product_match_count=matches,
         generic_product_count=generic,
         mismatch_count=mismatches,
+        vendor_match_count=vendor_matches,
+        generic_vendor_count=generic_vendors,
+        vendor_mismatch_count=vendor_mismatches,
         version_match_count=version_matches,
         generic_version_count=generic_versions,
         version_mismatch_count=version_mismatches,
         reasons=tuple(sorted(reasons)),
         cpe_supports_product_identity=supports,
+        cpe_supports_vendor_identity=supports_vendor,
         cpe_supports_version_identity=supports_version,
     )
