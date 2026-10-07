@@ -51,6 +51,7 @@ class NormalizedScannerFinding:
         payload["cpe"] = list(self.cpe)
         payload["references"] = list(self.references)
         payload["tags"] = list(self.tags)
+        payload["affected_version_ranges"] = list(self.affected_version_ranges)
         return payload
 
 
