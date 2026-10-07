@@ -39,16 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:17:00Z
+Generated: 2026-10-07T20:21:52Z
 
 ### Git
 - Branch: `main`
-- Head: `7c0a19bc804b`
-- Commit date: 2026-10-07T22:16:46+02:00
-- Commit: feat(vuln): load pinned verified CVE advisory catalog
+- Head: `2c83a0e2542c`
+- Commit date: 2026-10-07T22:21:40+02:00
+- Commit: feat(vuln): expose CVE advisory catalog deployment state
 - Tracked files: 675
 
 ### Recently changed files
+- `backend/app/deployment_preflight.py`
+- `backend/app/main.py`
+- `backend/tests/test_deployment_preflight.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `backend/app/cve_advisory_loader.py`
 - `backend/app/finding_intelligence.py`
 - `backend/tests/test_cve_advisory_loader.py`
@@ -56,7 +60,6 @@ Generated: 2026-10-07T20:17:00Z
 - `backend/app/cve_advisory_catalog.py`
 - `backend/tests/test_cve_advisory_catalog.py`
 - `backend/tests/test_finding_intelligence.py`
-- `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
 - `backend/tests/test_affected_version_range.py`
 - `backend/tests/test_cve_metadata_normalization.py`

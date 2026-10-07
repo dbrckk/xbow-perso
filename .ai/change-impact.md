@@ -1,12 +1,13 @@
 # Change impact
 
-Base: 55c019a97af8920369f8b79f2fba8298fe2a1541
-Head: 7c0a19bc804b8e2e672c555d2b72a021e9b5e0e8
+Base: aa1adb926be91cdbc06eee46b9f93c20eaf3ff0e
+Head: 2c83a0e2542c7f883287ae4975d6f63929999103
 
 ## Changed files
-- A backend/app/cve_advisory_loader.py
-- M backend/app/finding_intelligence.py
-- A backend/tests/test_cve_advisory_loader.py
+- M backend/app/deployment_preflight.py
+- M backend/app/main.py
+- M backend/tests/test_deployment_preflight.py
+- M backend/tests/test_runtime_capabilities.py
 
 ## Affected areas
 - backend

@@ -2522,6 +2522,7 @@ value = (os.getenv(name) or "").strip()
 ⋮----
 pentagi = safe_pentagi_runtime_capability()
 scanner = safe_scanner_runtime_capability()
+cve_advisory_catalog = cve_advisory_catalog_runtime_status()
 issues: list[dict[str, Any]] = []
 production = _production_mode()
 ⋮----
@@ -6953,6 +6954,7 @@ scanners = safe_scanner_runtime_capability()
 browser = safe_browser_runtime_capability()
 recon = safe_recon_runtime_capability()
 validation = safe_validation_runtime_capability()
+cve_advisory_catalog = cve_advisory_catalog_runtime_status()
 ⋮----
 @app.post("/api/testing/openapi/preview")
 def preview_openapi_tests(payload: OpenApiPreviewInput)
@@ -16402,6 +16404,10 @@ def test_production_preflight_rejects_inline_vault_master_key(monkeypatch)
 def test_production_preflight_requires_redis_rate_limit_backend(monkeypatch)
 ⋮----
 def test_production_preflight_requires_vault_key_file(monkeypatch)
+⋮----
+def test_preflight_allows_unconfigured_optional_cve_advisory_catalog(monkeypatch)
+⋮----
+status = result["cve_advisory_catalog"]
 ```
 
 ## File: tests/test_differential_evidence_integration.py
@@ -22790,6 +22796,12 @@ def test_validation_limits_fail_closed(monkeypatch)
 def test_capabilities_api_exposes_validation_state(monkeypatch)
 ⋮----
 detail = execution["http_validation_detail"]
+⋮----
+def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch)
+⋮----
+def test_capabilities_expose_invalid_cve_catalog_without_path_leak(monkeypatch)
+⋮----
+status = result["reasoning"]["cve_advisory_catalog"]
 ```
 
 ## File: tests/test_runtime_gap_analysis.py

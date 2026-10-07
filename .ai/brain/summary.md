@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 477
-- Files reparsed this run: 3
-- Symbols: 4704
-- Internal import edges: 1488
-- Impacted files: 7
-- Selected tests: 4
+- Files reparsed this run: 4
+- Symbols: 4708
+- Internal import edges: 1490
+- Impacted files: 174
+- Selected tests: 113
 
 ## Languages
 - python: 473 files
@@ -31,7 +31,7 @@
 - backend/app/storage_backend.py: 32 symbols
 - backend/tests/test_auth.py: 32 symbols
 - backend/tests/test_browser.py: 32 symbols
-- backend/tests/test_runtime_capabilities.py: 30 symbols
+- backend/tests/test_runtime_capabilities.py: 32 symbols
 - backend/tests/test_validator.py: 30 symbols
 
 ## Agent routing
@@ -43,9 +43,9 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 3
+- AST files reparsed this run: 4
 - outline files retained: 475
-- top-level items retained: 6454
+- top-level items retained: 6459
 - direct members retained: 1703
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
