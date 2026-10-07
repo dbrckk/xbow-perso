@@ -1,12 +1,16 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "9e2e3c73c174a10ff775f7f95b34606fc8f196c9",
-  "head": "2d625cdd8e494c376bbc464283497d653c61c887",
+  "base": "2d625cdd8e494c376bbc464283497d653c61c887",
+  "head": "69d54d9378f356c2c0f3c45b834eb419c221e413",
   "index_mode": "incremental",
   "changed_files": [
     {
       "path": "backend/app/cpe_consistency.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/cve_risk_context.py",
       "status": "M"
     },
     {
@@ -24,6 +28,7 @@
   ],
   "changed_source_files": [
     "backend/app/cpe_consistency.py",
+    "backend/app/cve_risk_context.py",
     "backend/app/finding_intelligence.py",
     "backend/tests/test_cpe_consistency.py",
     "backend/tests/test_finding_intelligence.py"
@@ -34,6 +39,7 @@
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
     "backend/tests/test_cpe_consistency.py",
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
@@ -49,25 +55,25 @@
       "name": "to_dict",
       "kind": "function",
       "file": "backend/app/cpe_consistency.py",
-      "line": 26
+      "line": 30
     },
     {
       "name": "_normalize_token",
       "kind": "function",
       "file": "backend/app/cpe_consistency.py",
-      "line": 32
+      "line": 36
     },
     {
       "name": "_parse_cpe23",
       "kind": "function",
       "file": "backend/app/cpe_consistency.py",
-      "line": 36
+      "line": 40
     },
     {
       "name": "build_cpe_consistency",
       "kind": "function",
       "file": "backend/app/cpe_consistency.py",
-      "line": 49
+      "line": 53
     },
     {
       "name": "CveRiskContext",
@@ -79,25 +85,25 @@
       "name": "to_dict",
       "kind": "function",
       "file": "backend/app/cve_risk_context.py",
-      "line": 37
+      "line": 38
     },
     {
       "name": "_unit_interval",
       "kind": "function",
       "file": "backend/app/cve_risk_context.py",
-      "line": 45
+      "line": 46
     },
     {
       "name": "_cvss",
       "kind": "function",
       "file": "backend/app/cve_risk_context.py",
-      "line": 57
+      "line": 58
     },
     {
       "name": "build_cve_risk_context",
       "kind": "function",
       "file": "backend/app/cve_risk_context.py",
-      "line": 69
+      "line": 70
     },
     {
       "name": "build_finding_intelligence",
@@ -109,7 +115,7 @@
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 405
+      "line": 406
     },
     {
       "name": "authenticate_control_api",
@@ -718,6 +724,78 @@
       "line": 140
     },
     {
+      "name": "test_matching_cpe_vendor_supports_vendor_identity",
+      "kind": "function",
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 153
+    },
+    {
+      "name": "test_mismatched_cpe_vendor_is_flagged",
+      "kind": "function",
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 168
+    },
+    {
+      "name": "test_risk_context_does_not_reward_vendor_mismatch",
+      "kind": "function",
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 183
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 11
+    },
+    {
+      "name": "test_risk_context_combines_structured_cve_metadata_without_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 29
+    },
+    {
+      "name": "test_scanner_kev_tag_never_becomes_authoritative_automatically",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 41
+    },
+    {
+      "name": "test_explicit_authoritative_kev_verification_is_distinct",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 49
+    },
+    {
+      "name": "test_non_cve_finding_is_not_ranked_as_cve_risk",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 60
+    },
+    {
+      "name": "test_missing_external_metrics_remains_usable_and_conservative",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 78
+    },
+    {
+      "name": "test_invalid_metric_values_are_ignored",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 95
+    },
+    {
+      "name": "test_verified_kev_catalog_promotes_only_matching_cve",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 111
+    },
+    {
+      "name": "test_unverified_kev_catalog_cannot_promote_risk_context",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 148
+    },
+    {
       "name": "_finding",
       "kind": "function",
       "file": "backend/tests/test_differential_evidence_integration.py",
@@ -862,6 +940,12 @@
       "line": 618
     },
     {
+      "name": "test_cpe_vendor_mismatch_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 660
+    },
+    {
       "name": "_campaign",
       "kind": "function",
       "file": "backend/tests/test_vulnerability_intelligence.py",
@@ -936,6 +1020,7 @@
   ],
   "selected_tests": [
     "backend/tests/test_cpe_consistency.py",
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"

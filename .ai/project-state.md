@@ -39,21 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T13:24:11Z
+Generated: 2026-10-07T13:50:49Z
 
 ### Git
 - Branch: `main`
-- Head: `2d625cdd8e49`
-- Commit date: 2026-10-07T15:23:14+02:00
-- Commit: feat(vuln): downgrade CVEs on CPE version mismatch
+- Head: `69d54d9378f3`
+- Commit date: 2026-10-07T15:50:36+02:00
+- Commit: feat(vuln): downgrade CVEs on CPE vendor mismatch
 - Tracked files: 669
 
 ### Recently changed files
 - `backend/app/cpe_consistency.py`
+- `backend/app/cve_risk_context.py`
 - `backend/app/finding_intelligence.py`
 - `backend/tests/test_cpe_consistency.py`
 - `backend/tests/test_finding_intelligence.py`
-- `backend/app/cve_risk_context.py`
 - `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
 

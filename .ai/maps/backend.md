@@ -1883,11 +1883,15 @@ parsed_cpe_count: int
 product_match_count: int
 generic_product_count: int
 mismatch_count: int
+vendor_match_count: int
+generic_vendor_count: int
+vendor_mismatch_count: int
 version_match_count: int
 generic_version_count: int
 version_mismatch_count: int
 reasons: tuple[str, ...]
 cpe_supports_product_identity: bool
+cpe_supports_vendor_identity: bool
 cpe_supports_version_identity: bool
 ⋮----
 def to_dict(self) -> dict[str, Any]
@@ -1915,6 +1919,7 @@ cpes = tuple(raw_cpes)
 cpes = ()
 ⋮----
 declared_product = _normalize_token(getattr(finding, "product", ""))
+declared_vendor = _normalize_token(getattr(finding, "vendor", ""))
 parsed = [item for item in (_parse_cpe23(value) for value in cpes) if item]
 ⋮----
 normalized_observed_versions = {
@@ -1922,9 +1927,14 @@ normalized_observed_versions = {
 matches = 0
 generic = 0
 mismatches = 0
+vendor_matches = 0
+generic_vendors = 0
+vendor_mismatches = 0
 version_matches = 0
 generic_versions = 0
 version_mismatches = 0
+⋮----
+normalized_vendor = _normalize_token(vendor)
 ⋮----
 normalized_product = _normalize_token(product)
 ⋮----
@@ -1933,6 +1943,8 @@ normalized_version = str(version or "").strip().lower()
 reasons: set[str] = set()
 ⋮----
 supports = bool(
+⋮----
+supports_vendor = bool(
 ⋮----
 supports_version = bool(
 ```
@@ -1998,6 +2010,7 @@ epss_score: float | None
 epss_percentile: float | None
 cpe_present: bool
 cpe_supports_product_identity: bool
+cpe_supports_vendor_identity: bool
 cpe_consistency_reasons: tuple[str, ...]
 template_verified: bool
 scanner_tagged_kev: bool
@@ -2024,6 +2037,8 @@ epss_percentile = _unit_interval(
 cpe = getattr(finding, "cpe", None)
 cpe_present = bool(
 cpe_consistency = build_cpe_consistency(finding)
+declared_vendor = bool(str(getattr(finding, "vendor", "") or "").strip())
+trusted_cpe_identity = bool(
 template_verified = getattr(finding, "template_verified", None) is True
 tags = {
 scanner_tagged_kev = "kev" in tags
@@ -15771,6 +15786,19 @@ def test_mismatched_cpe_version_is_flagged()
 def test_generic_cpe_version_never_claims_version_identity()
 ⋮----
 def test_without_observed_version_cpe_version_is_not_guessed()
+⋮----
+def test_matching_cpe_vendor_supports_vendor_identity()
+⋮----
+def test_mismatched_cpe_vendor_is_flagged()
+⋮----
+def test_risk_context_does_not_reward_vendor_mismatch()
+⋮----
+matching = _finding(
+⋮----
+mismatched = _finding(
+⋮----
+good = build_cve_risk_context(matching)
+bad = build_cve_risk_context(mismatched)
 ```
 
 ## File: tests/test_cve_evidence_verdict.py
@@ -16731,6 +16759,8 @@ def test_stale_version_fingerprint_downgrades_cve_verdict()
 def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context()
 ⋮----
 def test_cpe_version_mismatch_downgrades_cve_verdict()
+⋮----
+def test_cpe_vendor_mismatch_downgrades_cve_verdict()
 ```
 
 ## File: tests/test_finding_lifecycle.py
