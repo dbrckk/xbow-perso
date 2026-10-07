@@ -530,3 +530,42 @@ def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict():
     )
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
     assert row["validation_priority"]["recommended_state"] == "passive_review"
+
+
+def test_stale_version_fingerprint_downgrades_cve_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "nginx request parsing issue"
+    finding.product = "nginx"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:nginx-stale",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-08-01T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert "stale_version_fingerprints" in row["technology"][
+        "freshness_ambiguity_reasons"
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+    assert row["validation_priority"]["recommended_state"] == "passive_review"
