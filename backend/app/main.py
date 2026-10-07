@@ -139,6 +139,9 @@ class Finding(BaseModel):
     template_max_requests: int | None = Field(default=None, ge=0, le=10000)
     vendor: str | None = None
     product: str | None = None
+    package_ecosystem: str | None = None
+    package_name: str | None = None
+    package_version: str | None = None
     affected_version_ranges: list[str] = Field(default_factory=list)
     affected_version_range_source: str | None = None
     affected_version_range_verified: bool | None = None

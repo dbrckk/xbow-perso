@@ -132,13 +132,14 @@ def build_finding_intelligence(
         freshness_ambiguity = fingerprint_staleness_reasons(
             matched_fingerprints,
         )
+        fingerprint_versions = tuple(
+            item.version
+            for item in matched_fingerprints
+            if item.version is not None
+        )
         cpe_consistency = build_cpe_consistency(
             finding,
-            observed_versions=(
-                item.version
-                for item in matched_fingerprints
-                if item.version is not None
-            ),
+            observed_versions=fingerprint_versions,
         )
         cve_ids = finding_cve_ids(finding)
         verified_advisory = None
@@ -148,7 +149,31 @@ def build_finding_intelligence(
                 cve_id=cve_ids[0],
                 vendor=getattr(finding, "vendor", None),
                 product=getattr(finding, "product", None),
+                package_ecosystem=getattr(
+                    finding,
+                    "package_ecosystem",
+                    None,
+                ),
+                package_name=getattr(finding, "package_name", None),
             )
+        package_version_raw = getattr(finding, "package_version", None)
+        package_version = (
+            str(package_version_raw).strip()
+            if isinstance(package_version_raw, str)
+            and package_version_raw.strip()
+            else None
+        )
+        advisory_observed_versions = fingerprint_versions
+        if (
+            verified_advisory
+            and verified_advisory.identity_kind == "package"
+        ):
+            advisory_observed_versions = (
+                (package_version,)
+                if package_version is not None
+                else ()
+            )
+
         scanner_ranges = tuple(
             str(item).strip()
             for item in (
@@ -164,11 +189,7 @@ def build_finding_intelligence(
         )
         affected_version_range = build_affected_version_range_evidence(
             finding,
-            observed_versions=(
-                item.version
-                for item in matched_fingerprints
-                if item.version is not None
-            ),
+            observed_versions=advisory_observed_versions,
             ranges_override=(
                 verified_advisory.affected_version_ranges
                 if verified_advisory
@@ -287,6 +308,11 @@ def build_finding_intelligence(
                 "affected_version_range": affected_version_range.to_dict(),
                 "cve_advisory": {
                     "matched": verified_advisory is not None,
+                    "identity_kind": (
+                        verified_advisory.identity_kind
+                        if verified_advisory
+                        else None
+                    ),
                     "source_name": (
                         cve_advisory_catalog.source_name
                         if verified_advisory

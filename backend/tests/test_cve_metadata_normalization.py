@@ -46,6 +46,9 @@ def test_nuclei_cve_metadata_survives_normalization():
                     "max-request": 1,
                     "vendor": "djangoproject",
                     "product": "django",
+                    "package_ecosystem": "PyPI",
+                    "package_name": "Django",
+                    "package_version": "5.1.2",
                     "affected-versions": [">=4.2,<4.2.16", ">=5.0,<5.1.3"],
                 },
             },
@@ -64,6 +67,9 @@ def test_nuclei_cve_metadata_survives_normalization():
     assert normalized.template_max_requests == 1
     assert normalized.vendor == "djangoproject"
     assert normalized.product == "django"
+    assert normalized.package_ecosystem == "PyPI"
+    assert normalized.package_name == "Django"
+    assert normalized.package_version == "5.1.2"
     assert normalized.affected_version_ranges == (
         ">=4.2,<4.2.16",
         ">=5.0,<5.1.3",
@@ -84,6 +90,9 @@ def test_nuclei_cve_metadata_survives_normalization():
     assert finding.template_max_requests == 1
     assert finding.references == ["https://nvd.nist.gov/vuln/detail/CVE-2026-1207"]
     assert finding.tags == ["cve", "sqli", "kev"]
+    assert finding.package_ecosystem == "PyPI"
+    assert finding.package_name == "Django"
+    assert finding.package_version == "5.1.2"
     assert finding.affected_version_ranges == [
         ">=4.2,<4.2.16",
         ">=5.0,<5.1.3",
@@ -111,6 +120,9 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
             "template_max_requests": 2,
             "vendor": "vendor",
             "product": "product",
+            "package_ecosystem": "npm",
+            "package_name": "@scope/package",
+            "package_version": "1.2.3",
             "affected_version_ranges": ["<1.2.4"],
             "affected_version_range_source": "vendor-advisory",
             "affected_version_range_verified": True,
@@ -129,6 +141,9 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
     assert finding.template_max_requests == 2
     assert finding.vendor == "vendor"
     assert finding.product == "product"
+    assert finding.package_ecosystem == "npm"
+    assert finding.package_name == "@scope/package"
+    assert finding.package_version == "1.2.3"
     assert finding.affected_version_ranges == ["<1.2.4"]
     assert finding.affected_version_range_source == "vendor-advisory"
     assert finding.affected_version_range_verified is True
@@ -148,6 +163,9 @@ def test_cve_metadata_defaults_keep_existing_findings_compatible():
     assert finding.tags == []
     assert finding.template_verified is None
     assert finding.epss_score is None
+    assert finding.package_ecosystem is None
+    assert finding.package_name is None
+    assert finding.package_version is None
     assert finding.affected_version_ranges == []
     assert finding.affected_version_range_source is None
     assert finding.affected_version_range_verified is None
