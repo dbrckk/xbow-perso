@@ -156,7 +156,11 @@ def build_finding_intelligence(
             }
         )
         range_ambiguity: tuple[str, ...] = ()
-        if affected_version_range.state == "not_affected":
+        if affected_version_range.binding_ambiguity_reason:
+            range_ambiguity = (
+                affected_version_range.binding_ambiguity_reason,
+            )
+        elif affected_version_range.state == "not_affected":
             range_ambiguity = ("observed_version_outside_affected_range",)
         elif affected_version_range.state == "mixed":
             range_ambiguity = ("mixed_affected_version_range_evidence",)
@@ -360,6 +364,10 @@ def build_finding_intelligence(
             ),
             "unknown_affected_version_candidates": sum(
                 row["affected_version_range"]["state"] == "unknown"
+                for row in finding_rows
+            ),
+            "ambiguous_cve_range_bindings": sum(
+                bool(row["affected_version_range"]["binding_ambiguity_reason"])
                 for row in finding_rows
             ),
             "high_confidence_version_correlated_cve_candidates": sum(
