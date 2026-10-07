@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "da2f3439c1839a9a32807a0c0f2c79e70320d828",
-  "head": "bcb3cdd79a4784fd9a82c8a1fce7664af9b0f540",
+  "base": "bcb3cdd79a4784fd9a82c8a1fce7664af9b0f540",
+  "head": "6cbb509d8fddf1452aaee91747e33ec6911cad4c",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,32 +10,32 @@
       "status": "M"
     },
     {
-      "path": "backend/app/osv_advisory_adapter.py",
-      "status": "A"
-    },
-    {
       "path": "backend/tests/test_cve_advisory_loader.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_osv_advisory_adapter.py",
-      "status": "A"
+      "path": "backend/tests/test_deployment_preflight.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_runtime_capabilities.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
     "backend/app/cve_advisory_loader.py",
-    "backend/app/osv_advisory_adapter.py",
     "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_osv_advisory_adapter.py"
+    "backend/tests/test_deployment_preflight.py",
+    "backend/tests/test_runtime_capabilities.py"
   ],
   "impacted_files": [
     "backend/app/cve_advisory_loader.py",
     "backend/app/deployment_preflight.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/app/osv_advisory_adapter.py",
     "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_osv_advisory_adapter.py"
+    "backend/tests/test_deployment_preflight.py",
+    "backend/tests/test_runtime_capabilities.py"
   ],
   "impacted_symbols": [
     {
@@ -51,22 +51,34 @@
       "line": 42
     },
     {
-      "name": "load_verified_cve_advisory_catalog",
+      "name": "_adapter_diagnostics",
       "kind": "function",
       "file": "backend/app/cve_advisory_loader.py",
       "line": 77
     },
     {
+      "name": "_load_verified_cve_advisory_catalog_with_diagnostics",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 112
+    },
+    {
+      "name": "load_verified_cve_advisory_catalog",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 197
+    },
+    {
       "name": "load_cve_advisory_catalog_with_status",
       "kind": "function",
       "file": "backend/app/cve_advisory_loader.py",
-      "line": 157
+      "line": 204
     },
     {
       "name": "cve_advisory_catalog_runtime_status",
       "kind": "function",
       "file": "backend/app/cve_advisory_loader.py",
-      "line": 206
+      "line": 258
     },
     {
       "name": "_configured",
@@ -657,66 +669,6 @@
       "line": 1890
     },
     {
-      "name": "OsvAdvisoryAdapterError",
-      "kind": "class",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 20
-    },
-    {
-      "name": "OsvAdvisoryAdapterResult",
-      "kind": "class",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 25
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 35
-    },
-    {
-      "name": "_text",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 54
-    },
-    {
-      "name": "_numeric_version",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 72
-    },
-    {
-      "name": "_record_cve_id",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 79
-    },
-    {
-      "name": "_expression",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 98
-    },
-    {
-      "name": "_semver_event_ranges",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 109
-    },
-    {
-      "name": "_records",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 191
-    },
-    {
-      "name": "adapt_osv_v1",
-      "kind": "function",
-      "file": "backend/app/osv_advisory_adapter.py",
-      "line": 207
-    },
-    {
       "name": "_document",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
@@ -744,131 +696,372 @@
       "name": "test_pinned_catalog_loads_as_verified",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 65
+      "line": 66
     },
     {
       "name": "test_digest_mismatch_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 92
+      "line": 94
     },
     {
       "name": "test_partial_configuration_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 114
+      "line": 116
     },
     {
       "name": "test_malformed_json_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 126
+      "line": 128
     },
     {
       "name": "test_symlink_catalog_is_rejected",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 148
+      "line": 150
     },
     {
       "name": "test_pinned_raw_nvd_v2_catalog_is_adapted_and_verified",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 163
+      "line": 165
     },
     {
       "name": "test_unsupported_catalog_format_fails_closed",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 229
+      "line": 239
     },
     {
       "name": "test_pinned_raw_osv_catalog_is_adapted_and_verified",
       "kind": "function",
       "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 246
+      "line": 256
     },
     {
-      "name": "_record",
+      "name": "test_osv_adapter_diagnostics_expose_skip_counts_without_identifiers",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 10
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 324
     },
     {
-      "name": "_affected",
+      "name": "_clear",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 18
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 32
     },
     {
-      "name": "_range",
+      "name": "_set_hardened_production",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 35
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 39
     },
     {
-      "name": "test_semver_range_is_converted_to_package_advisory",
+      "name": "test_preflight_is_ok_with_optional_pentagi_disabled",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 42
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 52
     },
     {
-      "name": "test_introduced_zero_and_fixed_becomes_bounded_from_zero",
+      "name": "test_preflight_errors_when_core_dependencies_are_not_ready",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 74
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 66
     },
     {
-      "name": "test_multiple_semver_intervals_are_preserved",
+      "name": "test_preflight_reports_missing_pentagi_configuration_without_values",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 96
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 77
     },
     {
-      "name": "test_non_semver_range_is_not_generically_ordered",
+      "name": "test_preflight_warns_when_execution_intent_cannot_be_enforced",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 121
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 93
     },
     {
-      "name": "test_explicit_numeric_versions_are_safe_exact_matches",
+      "name": "test_preflight_warns_on_orphan_pentagi_flags",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 142
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 118
     },
     {
-      "name": "test_non_numeric_semver_is_left_unknown",
+      "name": "test_preflight_reports_invalid_boolean_configuration_fail_closed",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 167
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 134
     },
     {
-      "name": "test_multiple_cve_aliases_make_binding_ambiguous",
+      "name": "test_preflight_endpoint_uses_dependency_readiness",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 188
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 147
     },
     {
-      "name": "test_single_cve_alias_binds_non_cve_osv_id",
+      "name": "test_production_preflight_requires_hardened_backends_and_digest_pinned_images",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 205
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 158
     },
     {
-      "name": "test_event_with_multiple_state_keys_is_rejected_conservatively",
+      "name": "test_production_preflight_accepts_hardened_distributed_configuration",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 217
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 183
     },
     {
-      "name": "test_invalid_package_identity_is_rejected",
+      "name": "test_production_preflight_rejects_mutable_tags",
       "kind": "function",
-      "file": "backend/tests/test_osv_advisory_adapter.py",
-      "line": 240
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 203
+    },
+    {
+      "name": "test_preflight_reports_strict_job_provenance_by_default",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 218
+    },
+    {
+      "name": "test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 231
+    },
+    {
+      "name": "test_preflight_rejects_invalid_legacy_provenance_boolean",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 243
+    },
+    {
+      "name": "test_production_preflight_rejects_inline_vault_master_key",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 255
+    },
+    {
+      "name": "test_production_preflight_requires_redis_rate_limit_backend",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 268
+    },
+    {
+      "name": "test_production_preflight_requires_vault_key_file",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 281
+    },
+    {
+      "name": "test_preflight_allows_unconfigured_optional_cve_advisory_catalog",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 294
+    },
+    {
+      "name": "test_preflight_rejects_partial_cve_advisory_catalog_configuration",
+      "kind": "function",
+      "file": "backend/tests/test_deployment_preflight.py",
+      "line": 312
+    },
+    {
+      "name": "_clear",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 27
+    },
+    {
+      "name": "test_pentagi_capability_defaults_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 32
+    },
+    {
+      "name": "test_all_operator_gates_still_do_not_claim_pentagi_execution",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 48
+    },
+    {
+      "name": "test_status_tracking_requires_integration_and_status_worker",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 70
+    },
+    {
+      "name": "test_invalid_boolean_configuration_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 83
+    },
+    {
+      "name": "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 98
+    },
+    {
+      "name": "test_capabilities_api_reports_configuration_error_without_raising",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 118
+    },
+    {
+      "name": "test_scanner_runtime_capability_defaults_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 131
+    },
+    {
+      "name": "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 150
+    },
+    {
+      "name": "test_capabilities_api_exposes_scanner_worker_admission",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 169
+    },
+    {
+      "name": "test_scanner_runtime_capability_rejects_unsupported_engine",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 185
+    },
+    {
+      "name": "test_recon_runtime_capability_defaults_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 199
+    },
+    {
+      "name": "test_external_recon_preflight_reports_missing_tools",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 212
+    },
+    {
+      "name": "test_external_recon_preflight_ready_when_every_tool_exists",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 233
+    },
+    {
+      "name": "test_recon_capability_invalid_configuration_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 247
+    },
+    {
+      "name": "test_capabilities_api_exposes_recon_preflight",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 257
+    },
+    {
+      "name": "test_strix_runtime_capability_fails_closed_without_binary_or_docker",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 277
+    },
+    {
+      "name": "test_strix_runtime_capability_stays_blocked_when_cli_exists",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 294
+    },
+    {
+      "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 378
+    },
+    {
+      "name": "test_browser_runtime_capability_ready_with_runtime_marker",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 391
+    },
+    {
+      "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 404
+    },
+    {
+      "name": "test_capabilities_api_exposes_browser_runtime_detail",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 417
+    },
+    {
+      "name": "test_strix_capability_preflight_state_stays_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 434
+    },
+    {
+      "name": "_clear_validation",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 490
+    },
+    {
+      "name": "test_validation_capability_defaults_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 495
+    },
+    {
+      "name": "test_repeat_validation_readiness_requires_http_and_differential",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 514
+    },
+    {
+      "name": "test_v2_planner_state_does_not_claim_network_execution",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 534
+    },
+    {
+      "name": "test_invalid_validation_configuration_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 551
+    },
+    {
+      "name": "test_validation_limits_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 571
+    },
+    {
+      "name": "test_capabilities_api_exposes_validation_state",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 586
+    },
+    {
+      "name": "test_capabilities_expose_optional_cve_advisory_catalog_state",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 603
+    },
+    {
+      "name": "test_capabilities_expose_invalid_cve_catalog_without_path_leak",
+      "kind": "function",
+      "file": "backend/tests/test_runtime_capabilities.py",
+      "line": 626
     }
   ],
   "selected_tests": [
     "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_osv_advisory_adapter.py"
+    "backend/tests/test_deployment_preflight.py",
+    "backend/tests/test_runtime_capabilities.py"
   ]
 }

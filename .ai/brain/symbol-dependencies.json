@@ -36,11 +36,20 @@
       ],
       "dependency_count": 1
     },
-    "load_verified_cve_advisory_catalog": {
+    "_adapter_diagnostics": {
       "source": {
         "file": "backend/app/cve_advisory_loader.py",
         "start": 77,
-        "end": 154
+        "end": 109
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_load_verified_cve_advisory_catalog_with_diagnostics": {
+      "source": {
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 112,
+        "end": 194
       },
       "symbol_dependencies": [
         {
@@ -104,6 +113,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "_adapter_diagnostics",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "_read_regular_file",
           "definitions": [
             {
@@ -152,13 +173,47 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 9
+      "dependency_count": 10
+    },
+    "load_verified_cve_advisory_catalog": {
+      "source": {
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 197,
+        "end": 201
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CveAdvisoryCatalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_catalog.py",
+              "line": 38,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_load_verified_cve_advisory_catalog_with_diagnostics",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 112,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
     },
     "load_cve_advisory_catalog_with_status": {
       "source": {
         "file": "backend/app/cve_advisory_loader.py",
-        "start": 157,
-        "end": 203
+        "start": 204,
+        "end": 255
       },
       "symbol_dependencies": [
         {
@@ -186,11 +241,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "load_verified_cve_advisory_catalog",
+          "symbol": "_load_verified_cve_advisory_catalog_with_diagnostics",
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 112,
               "kind": "function",
               "language": "python"
             }
@@ -203,8 +258,8 @@
     "cve_advisory_catalog_runtime_status": {
       "source": {
         "file": "backend/app/cve_advisory_loader.py",
-        "start": 206,
-        "end": 208
+        "start": 258,
+        "end": 260
       },
       "symbol_dependencies": [
         {
@@ -212,7 +267,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 157,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -221,318 +276,6 @@
         }
       ],
       "dependency_count": 1
-    },
-    "OsvAdvisoryAdapterError": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 20,
-        "end": 21
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "OsvAdvisoryAdapterResult": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 25,
-        "end": 51
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 35,
-        "end": 155
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OsvAdvisoryAdapterError",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_expression",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 98,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_numeric_version",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record_cve_id",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_semver_event_ranges",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 54,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_text": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 54,
-        "end": 69
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OsvAdvisoryAdapterError",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_numeric_version": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 72,
-        "end": 76
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_record_cve_id": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 79,
-        "end": 95
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OsvAdvisoryAdapterError",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_expression": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 98,
-        "end": 106
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_semver_event_ranges": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 109,
-        "end": 188
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_expression",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 98,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_numeric_version",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_records": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 191,
-        "end": 204
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OsvAdvisoryAdapterError",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "adapt_osv_v1": {
-      "source": {
-        "file": "backend/app/osv_advisory_adapter.py",
-        "start": 207,
-        "end": 338
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OsvAdvisoryAdapterError",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "OsvAdvisoryAdapterResult",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 25,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_numeric_version",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record_cve_id",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_records",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 191,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_semver_event_ranges",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 54,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
     },
     "_document": {
       "source": {
@@ -578,7 +321,7 @@
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
         "start": 50,
-        "end": 62
+        "end": 63
       },
       "symbol_dependencies": [
         {
@@ -598,7 +341,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 206,
+              "line": 258,
               "kind": "function",
               "language": "python"
             }
@@ -610,7 +353,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -623,8 +366,8 @@
     "test_pinned_catalog_loads_as_verified": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 65,
-        "end": 89
+        "start": 66,
+        "end": 91
       },
       "symbol_dependencies": [
         {
@@ -656,7 +399,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 157,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -669,8 +412,8 @@
     "test_digest_mismatch_fails_closed": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 92,
-        "end": 111
+        "start": 94,
+        "end": 113
       },
       "symbol_dependencies": [
         {
@@ -714,7 +457,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 157,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -726,7 +469,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -739,8 +482,8 @@
     "test_partial_configuration_fails_closed": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 114,
-        "end": 123
+        "start": 116,
+        "end": 125
       },
       "symbol_dependencies": [
         {
@@ -784,7 +527,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -797,8 +540,8 @@
     "test_malformed_json_fails_closed": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 126,
-        "end": 141
+        "start": 128,
+        "end": 143
       },
       "symbol_dependencies": [
         {
@@ -830,7 +573,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -843,8 +586,8 @@
     "test_symlink_catalog_is_rejected": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 148,
-        "end": 160
+        "start": 150,
+        "end": 162
       },
       "symbol_dependencies": [
         {
@@ -888,7 +631,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -901,8 +644,8 @@
     "test_pinned_raw_nvd_v2_catalog_is_adapted_and_verified": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 163,
-        "end": 226
+        "start": 165,
+        "end": 236
       },
       "symbol_dependencies": [
         {
@@ -934,7 +677,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 157,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -947,8 +690,8 @@
     "test_unsupported_catalog_format_fails_closed": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 229,
-        "end": 243
+        "start": 239,
+        "end": 253
       },
       "symbol_dependencies": [
         {
@@ -992,7 +735,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 77,
+              "line": 197,
               "kind": "function",
               "language": "python"
             }
@@ -1005,8 +748,8 @@
     "test_pinned_raw_osv_catalog_is_adapted_and_verified": {
       "source": {
         "file": "backend/tests/test_cve_advisory_loader.py",
-        "start": 246,
-        "end": 302
+        "start": 256,
+        "end": 321
       },
       "symbol_dependencies": [
         {
@@ -1026,7 +769,7 @@
           "definitions": [
             {
               "file": "backend/app/cve_advisory_loader.py",
-              "line": 157,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -1036,46 +779,62 @@
       ],
       "dependency_count": 2
     },
-    "_record": {
+    "test_osv_adapter_diagnostics_expose_skip_counts_without_identifiers": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 10,
-        "end": 15
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 324,
+        "end": 375
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_cve_advisory_catalog_with_status",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_set_hardened_production": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 39,
+        "end": 49
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_affected": {
+    "test_preflight_is_ok_with_optional_pentagi_disabled": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 18,
-        "end": 32
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_range": {
-      "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 35,
-        "end": 39
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_semver_range_is_converted_to_package_advisory": {
-      "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 42,
-        "end": 71
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 52,
+        "end": 63
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1083,35 +842,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1119,21 +854,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_introduced_zero_and_fixed_becomes_bounded_from_zero": {
+    "test_preflight_errors_when_core_dependencies_are_not_ready": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 74,
-        "end": 93
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 66,
+        "end": 74
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1141,35 +876,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1177,21 +888,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_multiple_semver_intervals_are_preserved": {
+    "test_preflight_reports_missing_pentagi_configuration_without_values": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 96,
-        "end": 118
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 77,
+        "end": 90
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1199,35 +910,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1235,21 +922,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_non_semver_range_is_not_generically_ordered": {
+    "test_preflight_warns_when_execution_intent_cannot_be_enforced": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 121,
-        "end": 139
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 93,
+        "end": 115
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1257,35 +944,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1293,21 +956,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_explicit_numeric_versions_are_safe_exact_matches": {
+    "test_preflight_warns_on_orphan_pentagi_flags": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 142,
-        "end": 164
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 118,
+        "end": 131
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1315,35 +978,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1351,21 +990,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_non_numeric_semver_is_left_unknown": {
+    "test_preflight_reports_invalid_boolean_configuration_fail_closed": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 167,
-        "end": 185
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 134,
+        "end": 144
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1373,35 +1012,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1409,21 +1024,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_multiple_cve_aliases_make_binding_ambiguous": {
+    "test_preflight_endpoint_uses_dependency_readiness": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 188,
-        "end": 202
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 147,
+        "end": 155
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1431,11 +1046,33 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_record",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_production_preflight_requires_hardened_backends_and_digest_pinned_images": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 158,
+        "end": 180
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1443,11 +1080,57 @@
           "relation": "same_file"
         },
         {
-          "symbol": "adapt_osv_v1",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_production_preflight_accepts_hardened_distributed_configuration": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 183,
+        "end": 200
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_set_hardened_production",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1457,19 +1140,19 @@
       ],
       "dependency_count": 3
     },
-    "test_single_cve_alias_binds_non_cve_osv_id": {
+    "test_production_preflight_rejects_mutable_tags": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 205,
-        "end": 214
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 203,
+        "end": 215
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1477,11 +1160,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_record",
+          "symbol": "_set_hardened_production",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 39,
               "kind": "function",
               "language": "python"
             }
@@ -1489,11 +1172,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "adapt_osv_v1",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1503,19 +1186,19 @@
       ],
       "dependency_count": 3
     },
-    "test_event_with_multiple_state_keys_is_rejected_conservatively": {
+    "test_preflight_reports_strict_job_provenance_by_default": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 217,
-        "end": 237
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 218,
+        "end": 228
       },
       "symbol_dependencies": [
         {
-          "symbol": "_affected",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 18,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -1523,35 +1206,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_range",
+          "symbol": "build_deployment_preflight",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_record",
-          "definitions": [
-            {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_osv_v1",
-          "definitions": [
-            {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1559,21 +1218,385 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_invalid_package_identity_is_rejected": {
+    "test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled": {
       "source": {
-        "file": "backend/tests/test_osv_advisory_adapter.py",
-        "start": 240,
-        "end": 258
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 231,
+        "end": 240
       },
       "symbol_dependencies": [
         {
-          "symbol": "OsvAdvisoryAdapterError",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 20,
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_preflight_rejects_invalid_legacy_provenance_boolean": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 243,
+        "end": 252
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_production_preflight_rejects_inline_vault_master_key": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 255,
+        "end": 265
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_set_hardened_production",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_production_preflight_requires_redis_rate_limit_backend": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 268,
+        "end": 278
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_set_hardened_production",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_production_preflight_requires_vault_key_file": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 281,
+        "end": 291
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_set_hardened_production",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_preflight_allows_unconfigured_optional_cve_advisory_catalog": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 294,
+        "end": 309
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_preflight_rejects_partial_cve_advisory_catalog_configuration": {
+      "source": {
+        "file": "backend/tests/test_deployment_preflight.py",
+        "start": 312,
+        "end": 331
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_deployment_preflight.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_pentagi_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 32,
+        "end": 45
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_all_operator_gates_still_do_not_claim_pentagi_execution": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 48,
+        "end": 67
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_status_tracking_requires_integration_and_status_worker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 70,
+        "end": 80
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_boolean_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 83,
+        "end": 95
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 19,
               "kind": "class",
               "language": "python"
             }
@@ -1581,11 +1604,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_record",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_osv_advisory_adapter.py",
-              "line": 10,
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -1593,11 +1616,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "adapt_osv_v1",
+          "symbol": "pentagi_runtime_capability",
           "definitions": [
             {
-              "file": "backend/app/osv_advisory_adapter.py",
-              "line": 207,
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 222,
               "kind": "function",
               "language": "python"
             }
@@ -1605,7 +1640,618 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 4
+    },
+    "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 98,
+        "end": 115
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_capabilities_api_reports_configuration_error_without_raising": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 118,
+        "end": 127
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 131,
+        "end": 147
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 150,
+        "end": 166
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_scanner_worker_admission": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 169,
+        "end": 181
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_scanner_runtime_capability_rejects_unsupported_engine": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 185,
+        "end": 195
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_runtime_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 199,
+        "end": 209
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 527,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_reports_missing_tools": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 212,
+        "end": 230
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 527,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_external_recon_preflight_ready_when_every_tool_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 233,
+        "end": 244
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 527,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_capability_invalid_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 247,
+        "end": 254
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_recon_preflight": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 257,
+        "end": 274
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_runtime_capability_fails_closed_without_binary_or_docker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 277,
+        "end": 291
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_strix_runtime_capability_stays_blocked_when_cli_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 294,
+        "end": 375
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_fails_closed_without_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 378,
+        "end": 388
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 488,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_ready_with_runtime_marker": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 391,
+        "end": 401
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 488,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_browser_runtime_capability_disabled_even_when_runtime_exists": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 404,
+        "end": 414
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 488,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_api_exposes_browser_runtime_detail": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 417,
+        "end": 430
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_strix_capability_preflight_state_stays_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 434,
+        "end": 475
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_clear_validation": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 490,
+        "end": 492
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_validation_capability_defaults_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 495,
+        "end": 511
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_repeat_validation_readiness_requires_http_and_differential": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 514,
+        "end": 531
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_v2_planner_state_does_not_claim_network_execution": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 534,
+        "end": 548
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_invalid_validation_configuration_fails_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 551,
+        "end": 568
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "safe_validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_validation_limits_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 571,
+        "end": 583
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CapabilityConfigError",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "safe_validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_capabilities_api_exposes_validation_state": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 586,
+        "end": 600
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_clear_validation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_runtime_capabilities.py",
+              "line": 490,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_capabilities_expose_optional_cve_advisory_catalog_state": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 603,
+        "end": 623
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_capabilities_expose_invalid_cve_catalog_without_path_leak": {
+      "source": {
+        "file": "backend/tests/test_runtime_capabilities.py",
+        "start": 626,
+        "end": 643
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     }
   }
 }

@@ -39,19 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:50:56Z
+Generated: 2026-10-07T20:55:48Z
 
 ### Git
 - Branch: `main`
-- Head: `bcb3cdd79a47`
-- Commit date: 2026-10-07T22:50:46+02:00
-- Commit: feat(vuln): adapt pinned OSV package advisories
+- Head: `6cbb509d8fdd`
+- Commit date: 2026-10-07T22:55:35+02:00
+- Commit: feat(vuln): expose redacted advisory adapter diagnostics
 - Tracked files: 679
 
 ### Recently changed files
 - `backend/app/cve_advisory_loader.py`
-- `backend/app/osv_advisory_adapter.py`
 - `backend/tests/test_cve_advisory_loader.py`
+- `backend/tests/test_deployment_preflight.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/app/osv_advisory_adapter.py`
 - `backend/tests/test_osv_advisory_adapter.py`
 - `backend/app/cve_advisory_catalog.py`
 - `backend/app/finding_intelligence.py`
@@ -61,9 +63,7 @@ Generated: 2026-10-07T20:50:56Z
 - `backend/tests/test_cve_metadata_normalization.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/app/nvd_advisory_adapter.py`
-- `backend/tests/test_deployment_preflight.py`
 - `backend/tests/test_nvd_advisory_adapter.py`
-- `backend/tests/test_runtime_capabilities.py`
 - `backend/app/deployment_preflight.py`
 
 ### Project signals

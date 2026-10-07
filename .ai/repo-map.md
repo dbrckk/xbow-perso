@@ -2775,7 +2775,7 @@ info = os.fstat(fd)
 ⋮----
 payload = handle.read(_MAX_CATALOG_BYTES + 1)
 ⋮----
-def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None
+def _adapter_diagnostics(source_format: str, adapted: Any) -> dict[str, Any] | None
 ⋮----
 path_raw = os.getenv(_PATH_ENV, "").strip()
 digest_raw = os.getenv(_SHA_ENV, "").strip().lower()
@@ -2787,8 +2787,11 @@ document: Any = json.loads(payload.decode("utf-8"))
 ⋮----
 source_format = os.getenv(
 ⋮----
+adapter_diagnostics: dict[str, Any] | None = None
+⋮----
 adapted = adapt_nvd_cve_api_v2(document)
 ⋮----
+adapter_diagnostics = _adapter_diagnostics(source_format, adapted)
 document = adapted.document
 ⋮----
 adapted = adapt_osv_v1(document)
@@ -2796,9 +2799,11 @@ adapted = adapt_osv_v1(document)
 default_source_name = {
 source_name = os.getenv(
 ⋮----
-configured = bool(
+catalog = build_cve_advisory_catalog(
 ⋮----
-catalog = load_verified_cve_advisory_catalog()
+def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None
+⋮----
+configured = bool(
 ⋮----
 def cve_advisory_catalog_runtime_status() -> dict[str, Any]
 ````
@@ -17003,6 +17008,10 @@ entry = catalog.entries[0]
 def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch)
 ⋮----
 path = tmp_path / "osv.json"
+⋮----
+path = tmp_path / "osv-skipped.json"
+⋮----
+rendered = str(status)
 ````
 
 ## File: backend/tests/test_cve_evidence_verdict.py
