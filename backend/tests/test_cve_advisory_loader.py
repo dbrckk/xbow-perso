@@ -241,3 +241,62 @@ def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch):
         match="format is unsupported",
     ):
         load_verified_cve_advisory_catalog()
+
+
+def test_pinned_raw_osv_catalog_is_adapted_and_verified(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    document = {
+        "id": "GHSA-fixture",
+        "aliases": ["CVE-2026-65432"],
+        "affected": [
+            {
+                "package": {
+                    "ecosystem": "PyPI",
+                    "name": "Django",
+                },
+                "ranges": [
+                    {
+                        "type": "SEMVER",
+                        "events": [
+                            {"introduced": "5.0.0"},
+                            {"fixed": "5.2.0"},
+                        ],
+                    }
+                ],
+                "versions": [],
+            }
+        ],
+    }
+    path = tmp_path / "osv.json"
+    payload = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(payload)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_PATH", str(path))
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        hashlib.sha256(payload).hexdigest(),
+    )
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "osv-v1",
+    )
+
+    catalog, status = load_cve_advisory_catalog_with_status()
+
+    assert catalog is not None
+    assert catalog.source_name == "osv-v1"
+    assert catalog.source_verified is True
+    assert catalog.entry_count == 1
+    entry = catalog.entries[0]
+    assert entry.cve_id == "CVE-2026-65432"
+    assert entry.identity_kind == "package"
+    assert entry.package_ecosystem == "pypi"
+    assert entry.package_name == "Django"
+    assert entry.affected_version_ranges == (">=5.0.0,<5.2.0",)
+    assert status["source_format"] == "osv-v1"

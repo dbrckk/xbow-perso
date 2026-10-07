@@ -18,6 +18,10 @@ from .nvd_advisory_adapter import (
     NvdAdvisoryAdapterError,
     adapt_nvd_cve_api_v2,
 )
+from .osv_advisory_adapter import (
+    OsvAdvisoryAdapterError,
+    adapt_osv_v1,
+)
 
 
 _MAX_CATALOG_BYTES = 8 * 1024 * 1024
@@ -26,7 +30,9 @@ _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
 _FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
-_ALLOWED_FORMATS = frozenset({"internal-v1", "nvd-cve-api-v2"})
+_ALLOWED_FORMATS = frozenset(
+    {"internal-v1", "nvd-cve-api-v2", "osv-v1"}
+)
 
 
 class CveAdvisoryCatalogLoadError(RuntimeError):
@@ -119,13 +125,22 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
             ) from exc
         document = adapted.document
 
+    if source_format == "osv-v1":
+        try:
+            adapted = adapt_osv_v1(document)
+        except OsvAdvisoryAdapterError as exc:
+            raise CveAdvisoryCatalogLoadError(
+                "OSV advisory catalog adaptation failed"
+            ) from exc
+        document = adapted.document
+
+    default_source_name = {
+        "nvd-cve-api-v2": "nvd-cve-api-v2",
+        "osv-v1": "osv-v1",
+    }.get(source_format, "pinned-cve-advisory-file")
     source_name = os.getenv(
         _SOURCE_ENV,
-        (
-            "nvd-cve-api-v2"
-            if source_format == "nvd-cve-api-v2"
-            else "pinned-cve-advisory-file"
-        ),
+        default_source_name,
     ).strip()
     try:
         return build_cve_advisory_catalog(
