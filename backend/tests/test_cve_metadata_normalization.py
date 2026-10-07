@@ -68,6 +68,8 @@ def test_nuclei_cve_metadata_survives_normalization():
         ">=4.2,<4.2.16",
         ">=5.0,<5.1.3",
     )
+    assert normalized.affected_version_range_source == "nuclei-template-metadata"
+    assert normalized.affected_version_range_verified is None
     assert normalized.tags == ("cve", "sqli", "kev")
     assert normalized.impact == "SQL execution"
     assert normalized.remediation == "upgrade"
@@ -86,6 +88,8 @@ def test_nuclei_cve_metadata_survives_normalization():
         ">=4.2,<4.2.16",
         ">=5.0,<5.1.3",
     ]
+    assert finding.affected_version_range_source == "nuclei-template-metadata"
+    assert finding.affected_version_range_verified is None
     assert "cve-id:CVE-2026-1207" in finding.evidence
 
 
@@ -108,6 +112,8 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
             "vendor": "vendor",
             "product": "product",
             "affected_version_ranges": ["<1.2.4"],
+            "affected_version_range_source": "vendor-advisory",
+            "affected_version_range_verified": True,
         },
         _campaign(),
     )
@@ -124,6 +130,8 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
     assert finding.vendor == "vendor"
     assert finding.product == "product"
     assert finding.affected_version_ranges == ["<1.2.4"]
+    assert finding.affected_version_range_source == "vendor-advisory"
+    assert finding.affected_version_range_verified is True
 
 
 def test_cve_metadata_defaults_keep_existing_findings_compatible():
@@ -141,3 +149,5 @@ def test_cve_metadata_defaults_keep_existing_findings_compatible():
     assert finding.template_verified is None
     assert finding.epss_score is None
     assert finding.affected_version_ranges == []
+    assert finding.affected_version_range_source is None
+    assert finding.affected_version_range_verified is None
