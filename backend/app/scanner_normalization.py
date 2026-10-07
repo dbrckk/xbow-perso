@@ -41,6 +41,7 @@ class NormalizedScannerFinding:
     template_max_requests: int | None = None
     vendor: str | None = None
     product: str | None = None
+    affected_version_ranges: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -114,6 +115,24 @@ def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]:
         items = [value]
     return tuple(str(item) for item in items[:limit])
 
+
+
+def _version_range_list(value: Any, *, limit: int = 16) -> tuple[str, ...]:
+    values = _string_list(value, limit=limit)
+    result: list[str] = []
+    seen: set[str] = set()
+    for item in values:
+        normalized = item.strip()
+        if (
+            not normalized
+            or len(normalized.encode("utf-8")) > 128
+            or any(ord(char) < 0x20 or ord(char) == 0x7F for char in normalized)
+            or normalized in seen
+        ):
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return tuple(result)
 
 def _cve_ids(value: Any, *, limit: int = 32) -> tuple[str, ...]:
     if value is None or value == "":
@@ -190,6 +209,12 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         template_max_requests=_optional_nonnegative_int(item.get("template_max_requests")),
         vendor=_optional_str(item.get("vendor")),
         product=_optional_str(item.get("product")),
+        affected_version_ranges=_version_range_list(
+            item.get("affected_version_ranges")
+            or item.get("affected_versions")
+            or item.get("version_range")
+            or item.get("version-range")
+        ),
     )
 
 
@@ -267,6 +292,13 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
         ),
         vendor=_optional_str(metadata.get("vendor")),
         product=_optional_str(metadata.get("product")),
+        affected_version_ranges=_version_range_list(
+            metadata.get("affected_version_ranges")
+            or metadata.get("affected-versions")
+            or metadata.get("affected_versions")
+            or metadata.get("version-range")
+            or metadata.get("version_range")
+        ),
     )
 
 
@@ -316,6 +348,7 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding:
         template_max_requests=item.template_max_requests,
         vendor=item.vendor,
         product=item.product,
+        affected_version_ranges=list(item.affected_version_ranges),
         status="validation_required",
         discovered_by=item.engine,
     )
