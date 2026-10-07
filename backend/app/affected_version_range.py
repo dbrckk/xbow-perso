@@ -24,7 +24,11 @@ class AffectedVersionRangeEvidence:
     state: str
     range_binding: str
     binding_ambiguity_reason: str | None
+    range_source: str | None
+    range_source_verified: bool
+    range_provenance_state: str
     affected_version_supported: bool
+    trusted_affected_version_supported: bool
     exploitability_confirmed: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -102,6 +106,20 @@ def build_affected_version_range_evidence(
         )
     )
     cve_ids = finding_cve_ids(finding)
+    raw_source = str(
+        getattr(finding, "affected_version_range_source", "") or ""
+    ).strip()
+    range_source = raw_source[:120] or None
+    range_source_verified = bool(
+        range_source
+        and getattr(finding, "affected_version_range_verified", None) is True
+    )
+    if range_source_verified:
+        range_provenance_state = "verified"
+    elif range_source:
+        range_provenance_state = "unverified"
+    else:
+        range_provenance_state = "missing"
 
     if not ranges:
         state = "not_available"
@@ -116,7 +134,11 @@ def build_affected_version_range_evidence(
             state=state,
             range_binding="no_ranges",
             binding_ambiguity_reason=None,
+            range_source=range_source,
+            range_source_verified=range_source_verified,
+            range_provenance_state=range_provenance_state,
             affected_version_supported=False,
+            trusted_affected_version_supported=False,
             exploitability_confirmed=False,
         )
 
@@ -141,7 +163,11 @@ def build_affected_version_range_evidence(
                 else "no_cve_binding"
             ),
             binding_ambiguity_reason=reason,
+            range_source=range_source,
+            range_source_verified=range_source_verified,
+            range_provenance_state=range_provenance_state,
             affected_version_supported=False,
+            trusted_affected_version_supported=False,
             exploitability_confirmed=False,
         )
 
@@ -192,6 +218,14 @@ def build_affected_version_range_evidence(
         state=state,
         range_binding="single_cve",
         binding_ambiguity_reason=None,
+        range_source=range_source,
+        range_source_verified=range_source_verified,
+        range_provenance_state=range_provenance_state,
         affected_version_supported=(state == "affected" and not unparseable),
+        trusted_affected_version_supported=(
+            state == "affected"
+            and not unparseable
+            and range_source_verified
+        ),
         exploitability_confirmed=False,
     )
