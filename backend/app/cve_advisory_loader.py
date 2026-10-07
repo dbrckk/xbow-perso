@@ -74,12 +74,48 @@ def _read_regular_file(path: Path) -> bytes:
         os.close(fd)
 
 
-def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
+def _adapter_diagnostics(source_format: str, adapted: Any) -> dict[str, Any] | None:
+    if source_format == "nvd-cve-api-v2":
+        return {
+            "schema": adapted.schema,
+            "input_count": adapted.input_vulnerability_count,
+            "output_count": adapted.output_entry_count,
+            "skipped_complex_configurations": (
+                adapted.skipped_complex_configurations
+            ),
+            "skipped_non_vulnerable_matches": (
+                adapted.skipped_non_vulnerable_matches
+            ),
+            "skipped_unusable_version_matches": (
+                adapted.skipped_unusable_version_matches
+            ),
+        }
+    if source_format == "osv-v1":
+        return {
+            "schema": adapted.schema,
+            "input_count": adapted.input_record_count,
+            "output_count": adapted.output_entry_count,
+            "skipped_ambiguous_cve_bindings": (
+                adapted.skipped_ambiguous_cve_bindings
+            ),
+            "skipped_non_semver_ranges": adapted.skipped_non_semver_ranges,
+            "skipped_unusable_semver_ranges": (
+                adapted.skipped_unusable_semver_ranges
+            ),
+            "skipped_unusable_explicit_versions": (
+                adapted.skipped_unusable_explicit_versions
+            ),
+        }
+    return None
+
+
+def _load_verified_cve_advisory_catalog_with_diagnostics(
+) -> tuple[CveAdvisoryCatalog | None, dict[str, Any] | None]:
     path_raw = os.getenv(_PATH_ENV, "").strip()
     digest_raw = os.getenv(_SHA_ENV, "").strip().lower()
 
     if not path_raw and not digest_raw:
-        return None
+        return None, None
     if not path_raw or not digest_raw:
         raise CveAdvisoryCatalogLoadError(
             "CVE advisory catalog path and SHA-256 must be configured together"
@@ -116,6 +152,7 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
             "CVE advisory catalog format is unsupported"
         )
 
+    adapter_diagnostics: dict[str, Any] | None = None
     if source_format == "nvd-cve-api-v2":
         try:
             adapted = adapt_nvd_cve_api_v2(document)
@@ -123,6 +160,7 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
             raise CveAdvisoryCatalogLoadError(
                 "NVD advisory catalog adaptation failed"
             ) from exc
+        adapter_diagnostics = _adapter_diagnostics(source_format, adapted)
         document = adapted.document
 
     if source_format == "osv-v1":
@@ -132,6 +170,7 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
             raise CveAdvisoryCatalogLoadError(
                 "OSV advisory catalog adaptation failed"
             ) from exc
+        adapter_diagnostics = _adapter_diagnostics(source_format, adapted)
         document = adapted.document
 
     default_source_name = {
@@ -143,7 +182,7 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
         default_source_name,
     ).strip()
     try:
-        return build_cve_advisory_catalog(
+        catalog = build_cve_advisory_catalog(
             document,
             source_name=source_name,
             source_verified=True,
@@ -152,6 +191,14 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
         raise CveAdvisoryCatalogLoadError(
             "CVE advisory catalog schema validation failed"
         ) from exc
+    return catalog, adapter_diagnostics
+
+
+def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
+    catalog, _adapter_diagnostics_value = (
+        _load_verified_cve_advisory_catalog_with_diagnostics()
+    )
+    return catalog
 
 
 def load_cve_advisory_catalog_with_status(
@@ -161,7 +208,9 @@ def load_cve_advisory_catalog_with_status(
         or os.getenv(_SHA_ENV, "").strip()
     )
     try:
-        catalog = load_verified_cve_advisory_catalog()
+        catalog, adapter_diagnostics = (
+            _load_verified_cve_advisory_catalog_with_diagnostics()
+        )
     except CveAdvisoryCatalogLoadError as exc:
         return None, {
             "configured": configured,
@@ -173,6 +222,7 @@ def load_cve_advisory_catalog_with_status(
                 "internal-v1",
             ).strip().lower(),
             "entry_count": 0,
+            "adapter": None,
             "error": str(exc),
         }
 
@@ -187,6 +237,7 @@ def load_cve_advisory_catalog_with_status(
                 "internal-v1",
             ).strip().lower(),
             "entry_count": 0,
+            "adapter": None,
             "error": None,
         }
     return catalog, {
@@ -199,6 +250,7 @@ def load_cve_advisory_catalog_with_status(
             "internal-v1",
         ).strip().lower(),
         "entry_count": catalog.entry_count,
+        "adapter": adapter_diagnostics,
         "error": None,
     }
 
