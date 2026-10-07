@@ -70,6 +70,7 @@
       "dependents": [
         "backend/app/active_validation.py",
         "backend/app/adaptive_cycle.py",
+        "backend/app/affected_version_range.py",
         "backend/app/agent_registry.py",
         "backend/app/attack_surface.py",
         "backend/app/autonomy_gate.py",
@@ -280,7 +281,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 211,
+      "in_degree": 212,
       "out_degree": 60,
       "path": "backend/app/main.py"
     },
@@ -294,6 +295,7 @@
       "dependents": [
         "backend/tests/test_active_validation.py",
         "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_affected_version_range.py",
         "backend/tests/test_agent_registry.py",
         "backend/tests/test_alert_delivery.py",
         "backend/tests/test_api_idempotency.py",
@@ -548,7 +550,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 255,
+      "in_degree": 256,
       "out_degree": 4,
       "path": "frontend/app.js"
     },
@@ -1294,6 +1296,38 @@
       "path": "backend/app/storage_core.py"
     },
     {
+      "dependencies": [
+        "backend/app/affected_version_range.py",
+        "backend/app/cpe_consistency.py",
+        "backend/app/cve_evidence_verdict.py",
+        "backend/app/cve_risk_context.py",
+        "backend/app/cve_validation_priority.py",
+        "backend/app/differential_intelligence.py",
+        "backend/app/differential_quality.py",
+        "backend/app/finding_cluster_consensus.py",
+        "backend/app/finding_cluster_saturation.py",
+        "backend/app/finding_correlation.py",
+        "backend/app/finding_readiness.py",
+        "backend/app/finding_triage.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/public_duplicate_intelligence.py",
+        "backend/app/repeat_validation_outcome.py",
+        "backend/app/technology_fingerprint_intelligence.py",
+        "backend/app/validation_priority.py",
+        "backend/app/vulnerability_intelligence.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/tests/test_differential_evidence_integration.py",
+        "backend/tests/test_finding_intelligence.py",
+        "backend/tests/test_vulnerability_intelligence.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 19,
+      "path": "backend/app/finding_intelligence.py"
+    },
+    {
       "dependencies": [],
       "dependents": [
         "backend/app/alert_delivery.py",
@@ -1322,37 +1356,6 @@
       "in_degree": 22,
       "out_degree": 0,
       "path": "backend/app/secret_vault.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/cpe_consistency.py",
-        "backend/app/cve_evidence_verdict.py",
-        "backend/app/cve_risk_context.py",
-        "backend/app/cve_validation_priority.py",
-        "backend/app/differential_intelligence.py",
-        "backend/app/differential_quality.py",
-        "backend/app/finding_cluster_consensus.py",
-        "backend/app/finding_cluster_saturation.py",
-        "backend/app/finding_correlation.py",
-        "backend/app/finding_readiness.py",
-        "backend/app/finding_triage.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/public_duplicate_intelligence.py",
-        "backend/app/repeat_validation_outcome.py",
-        "backend/app/technology_fingerprint_intelligence.py",
-        "backend/app/validation_priority.py",
-        "backend/app/vulnerability_intelligence.py"
-      ],
-      "dependents": [
-        "backend/app/main.py",
-        "backend/tests/test_differential_evidence_integration.py",
-        "backend/tests/test_finding_intelligence.py",
-        "backend/tests/test_vulnerability_intelligence.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 18,
-      "path": "backend/app/finding_intelligence.py"
     },
     {
       "dependencies": [
@@ -2345,8 +2348,8 @@
       "path": "backend/app/review_queue.py"
     }
   ],
-  "edge_count": 2153,
+  "edge_count": 2156,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 466,
+  "node_count": 468,
   "schema_version": 1
 }

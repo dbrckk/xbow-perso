@@ -5,19 +5,19 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "CpeConsistency": {
+    "AffectedVersionRangeEvidence": {
       "source": {
-        "file": "backend/app/cpe_consistency.py",
-        "start": 11,
-        "end": 33
+        "file": "backend/app/affected_version_range.py",
+        "start": 14,
+        "end": 36
       },
       "symbol_dependencies": [
         {
           "symbol": "to_dict",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 30,
+              "file": "backend/app/affected_version_range.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -29,17 +29,17 @@
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/cpe_consistency.py",
-        "start": 30,
-        "end": 150
+        "file": "backend/app/affected_version_range.py",
+        "start": 26,
+        "end": 146
       },
       "symbol_dependencies": [
         {
-          "symbol": "CpeConsistency",
+          "symbol": "AffectedVersionRangeEvidence",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 11,
+              "file": "backend/app/affected_version_range.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
@@ -47,11 +47,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_normalize_token",
+          "symbol": "_clause_matches",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 36,
+              "file": "backend/app/affected_version_range.py",
+              "line": 47,
               "kind": "function",
               "language": "python"
             }
@@ -59,11 +59,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_parse_cpe23",
+          "symbol": "_range_matches",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 40,
+              "file": "backend/app/affected_version_range.py",
+              "line": 68,
               "kind": "function",
               "language": "python"
             }
@@ -71,11 +71,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_cpe_consistency",
+          "symbol": "_version_tuple",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
+              "file": "backend/app/affected_version_range.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_affected_version_range_evidence",
+          "definitions": [
+            {
+              "file": "backend/app/affected_version_range.py",
+              "line": 78,
               "kind": "function",
               "language": "python"
             }
@@ -83,85 +95,30 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 5
     },
-    "_normalize_token": {
+    "_version_tuple": {
       "source": {
-        "file": "backend/app/cpe_consistency.py",
-        "start": 36,
-        "end": 37
+        "file": "backend/app/affected_version_range.py",
+        "start": 39,
+        "end": 44
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_parse_cpe23": {
+    "_clause_matches": {
       "source": {
-        "file": "backend/app/cpe_consistency.py",
-        "start": 40,
-        "end": 50
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "build_cpe_consistency": {
-      "source": {
-        "file": "backend/app/cpe_consistency.py",
-        "start": 53,
-        "end": 171
+        "file": "backend/app/affected_version_range.py",
+        "start": 47,
+        "end": 65
       },
       "symbol_dependencies": [
         {
-          "symbol": "CpeConsistency",
+          "symbol": "_version_tuple",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_token",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 36,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_parse_cpe23",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 40,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "CveRiskContext": {
-      "source": {
-        "file": "backend/app/cve_risk_context.py",
-        "start": 19,
-        "end": 43
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 38,
+              "file": "backend/app/affected_version_range.py",
+              "line": 39,
               "kind": "function",
               "language": "python"
             }
@@ -171,123 +128,79 @@
       ],
       "dependency_count": 1
     },
-    "_unit_interval": {
+    "_range_matches": {
       "source": {
-        "file": "backend/app/cve_risk_context.py",
-        "start": 46,
-        "end": 55
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_cvss": {
-      "source": {
-        "file": "backend/app/cve_risk_context.py",
-        "start": 58,
-        "end": 67
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "build_cve_risk_context": {
-      "source": {
-        "file": "backend/app/cve_risk_context.py",
-        "start": 70,
-        "end": 197
+        "file": "backend/app/affected_version_range.py",
+        "start": 68,
+        "end": 75
       },
       "symbol_dependencies": [
         {
-          "symbol": "CveRiskContext",
+          "symbol": "_clause_matches",
           "definitions": [
             {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "KevCatalog",
-          "definitions": [
-            {
-              "file": "backend/app/kev_catalog.py",
-              "line": 34,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_cvss",
-          "definitions": [
-            {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 58,
+              "file": "backend/app/affected_version_range.py",
+              "line": 47,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "_unit_interval",
-          "definitions": [
-            {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "finding_cve_ids",
-          "definitions": [
-            {
-              "file": "backend/app/vulnerability_intelligence.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "finding_has_authoritative_kev",
-          "definitions": [
-            {
-              "file": "backend/app/kev_catalog.py",
-              "line": 183,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 1
+    },
+    "build_affected_version_range_evidence": {
+      "source": {
+        "file": "backend/app/affected_version_range.py",
+        "start": 78,
+        "end": 163
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AffectedVersionRangeEvidence",
+          "definitions": [
+            {
+              "file": "backend/app/affected_version_range.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_range_matches",
+          "definitions": [
+            {
+              "file": "backend/app/affected_version_range.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_version_tuple",
+          "definitions": [
+            {
+              "file": "backend/app/affected_version_range.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
     },
     "build_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 37,
-        "end": 402
+        "start": 38,
+        "end": 435
       },
       "symbol_dependencies": [
         {
@@ -297,6 +210,18 @@
               "file": "backend/app/differential_intelligence.py",
               "line": 17,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_affected_version_range_evidence",
+          "definitions": [
+            {
+              "file": "backend/app/affected_version_range.py",
+              "line": 78,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -558,6 +483,12 @@
           "symbol": "to_dict",
           "definitions": [
             {
+              "file": "backend/app/affected_version_range.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            },
+            {
               "file": "backend/app/cpe_consistency.py",
               "line": 30,
               "kind": "function",
@@ -580,24 +511,18 @@
               "line": 22,
               "kind": "function",
               "language": "python"
-            },
-            {
-              "file": "backend/app/differential_intelligence.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
             }
           ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 23
+      "dependency_count": 24
     },
     "campaign_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 406,
-        "end": 447
+        "start": 439,
+        "end": 480
       },
       "symbol_dependencies": [
         {
@@ -605,7 +530,7 @@
           "definitions": [
             {
               "file": "backend/app/main.py",
-              "line": 217,
+              "line": 218,
               "kind": "function",
               "language": "python"
             }
@@ -617,7 +542,7 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -651,40 +576,74 @@
       ],
       "dependency_count": 4
     },
-    "_finding": {
+    "authenticate_control_api": {
       "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 10,
-        "end": 24
+        "file": "backend/app/main.py",
+        "start": 35,
+        "end": 42
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AuthError",
+          "definitions": [
+            {
+              "file": "backend/app/auth.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "require_api_token",
+          "definitions": [
+            {
+              "file": "backend/app/auth.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "utcnow": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 48,
+        "end": 49
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_matching_cpe_supports_product_identity": {
+    "storage": {
       "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 27,
-        "end": 37
+        "file": "backend/app/main.py",
+        "start": 52,
+        "end": 53
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "StorageBackend",
           "definitions": [
             {
-              "file": "backend/tests/test_cpe_consistency.py",
+              "file": "backend/app/storage_backend.py",
               "line": 10,
-              "kind": "function",
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_cpe_consistency",
+          "symbol": "create_storage",
           "definitions": [
             {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
+              "file": "backend/app/storage_backend.py",
+              "line": 57,
               "kind": "function",
               "language": "python"
             }
@@ -694,393 +653,19 @@
       ],
       "dependency_count": 2
     },
-    "test_generic_cpe_does_not_support_product_identity": {
+    "queue": {
       "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 40,
-        "end": 48
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_mismatched_cpe_is_explicitly_flagged": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 51,
-        "end": 61
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_unparseable_cpe_is_not_trusted": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 64,
-        "end": 70
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_risk_context_only_rewards_consistent_cpe": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 73,
-        "end": 89
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_risk_context",
-          "definitions": [
-            {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 70,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_matching_cpe_version_supports_version_identity": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 92,
-        "end": 105
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_mismatched_cpe_version_is_flagged": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 108,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_generic_cpe_version_never_claims_version_identity": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 124,
-        "end": 137
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_without_observed_version_cpe_version_is_not_guessed": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 140,
-        "end": 150
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_matching_cpe_vendor_supports_vendor_identity": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 153,
-        "end": 165
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_mismatched_cpe_vendor_is_flagged": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 168,
-        "end": 180
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cpe_consistency",
-          "definitions": [
-            {
-              "file": "backend/app/cpe_consistency.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_risk_context_does_not_reward_vendor_mismatch": {
-      "source": {
-        "file": "backend/tests/test_cpe_consistency.py",
-        "start": 183,
-        "end": 202
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cpe_consistency.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_risk_context",
-          "definitions": [
-            {
-              "file": "backend/app/cve_risk_context.py",
-              "line": 70,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_graph": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 21,
+        "file": "backend/app/main.py",
+        "start": 56,
         "end": 57
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "QueueBackend",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
+              "file": "backend/app/queue_backend.py",
+              "line": 10,
               "kind": "class",
               "language": "python"
             }
@@ -1088,16 +673,486 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "create_queue",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/queue_backend.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "incident_store": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 60,
+        "end": 65
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "IncidentStore",
+          "definitions": [
+            {
+              "file": "backend/app/incident_store.py",
+              "line": 16,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_stable_key": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 68,
+        "end": 70
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "CampaignState": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 73,
+        "end": 80
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "ProgramRules": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 83,
+        "end": 93
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "TargetInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 96,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/scope_policy.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "primary_target_must_be_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 103,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "primary_target_must_be_allowed": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 103,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "is_host_allowed",
+          "definitions": [
+            {
+              "file": "backend/app/scope_policy.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "Finding": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 117,
+        "end": 145
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "FindingReviewMetadataInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 148,
+        "end": 170
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "normalize_review_metadata",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 158,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "normalize_review_metadata": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 158,
+        "end": 170
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "Campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 173,
+        "end": 180
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 117,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "EvidenceInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 183,
+        "end": 187
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "HackerOneScopePreviewInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 190,
+        "end": 191
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "OpenApiPreviewInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 194,
+        "end": 195
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "IncidentAcknowledgeInput": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 198,
+        "end": 200
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "save_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 203,
+        "end": 207
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignConflictError",
+          "definitions": [
+            {
+              "file": "backend/app/storage_core.py",
+              "line": 22,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "assert_campaign_record": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 210,
+        "end": 215
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "assert_campaign_exists": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 218,
+        "end": 219
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_reject_cancelled_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 222,
+        "end": 224
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_reject_new_findings_for_closed_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 227,
+        "end": 232
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "add",
@@ -1114,19 +1169,31 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_consolidates_member_and_cluster_views": {
+    "_campaign_graph": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 60,
-        "end": 92
+        "file": "backend/app/main.py",
+        "start": 235,
+        "end": 239
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
               "kind": "function",
               "language": "python"
             }
@@ -1134,11 +1201,69 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "from_records",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
+              "file": "backend/app/observation_graph.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_observations",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_has_evidence_backed_independent_validation": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 242,
+        "end": 244
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Finding",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 117,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_campaign_graph",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 235,
               "kind": "function",
               "language": "python"
             }
@@ -1146,11 +1271,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "has_evidence_backed_independent_validation",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/validation_state.py",
+              "line": 98,
               "kind": "function",
               "language": "python"
             }
@@ -1160,113 +1285,155 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_summary_reflects_cluster_saturation": {
+    "policy_receipt": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 95,
-        "end": 107
+        "file": "backend/app/main.py",
+        "start": 247,
+        "end": 270
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "Campaign",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_finding_intelligence_does_not_expose_query_values": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 110,
-        "end": 120
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "is_host_allowed",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/scope_policy.py",
+              "line": 14,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "seal_policy_receipt",
+          "definitions": [
+            {
+              "file": "backend/app/policy_integrity.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "sanitized_scan_payload": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 273,
+        "end": 306
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "attach_job_provenance",
+          "definitions": [
+            {
+              "file": "backend/app/job_provenance.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_route_is_exposed": {
+    "live": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 123,
-        "end": 124
+        "file": "backend/app/main.py",
+        "start": 310,
+        "end": 311
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ready": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 75,
+        "end": 75
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "auth_status": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 328,
+        "end": 333
       },
       "symbol_dependencies": [
         {
-          "symbol": "api",
+          "symbol": "api_token_source_status",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
+              "file": "backend/app/auth.py",
+              "line": 90,
               "kind": "function",
-              "language": "javascript"
+              "language": "python"
             }
           ],
           "relation": "imported_module"
@@ -1274,43 +1441,169 @@
       ],
       "dependency_count": 1
     },
-    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
+    "health": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 127,
-        "end": 154
+        "file": "backend/app/main.py",
+        "start": 337,
+        "end": 349
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "deployment_preflight": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 353,
+        "end": 356
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_deployment_preflight",
+          "definitions": [
+            {
+              "file": "backend/app/deployment_preflight.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "system_capabilities": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 360,
+        "end": 446
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "safe_browser_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 512,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_pentagi_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_recon_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_scanner_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "safe_validation_runtime_capability",
+          "definitions": [
+            {
+              "file": "backend/app/runtime_capabilities.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "preview_openapi_tests": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 450,
+        "end": 456
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OpenApiPreviewError",
+          "definitions": [
+            {
+              "file": "backend/app/openapi_testgen.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "OpenApiPreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 194,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "build_openapi_read_only_preview",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/openapi_testgen.py",
+              "line": 769,
               "kind": "function",
               "language": "python"
             }
@@ -1320,43 +1613,65 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
+    "get_offensive_expansion": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 157,
-        "end": 180
+        "file": "backend/app/main.py",
+        "start": 460,
+        "end": 463
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "offensive_expansion_catalog",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/offensive_expansion.py",
+              "line": 6,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "get_observer_health": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 467,
+        "end": 468
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_graph",
+          "symbol": "observer_health_metrics",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
+              "file": "backend/app/observer_metrics.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "observer_runtime",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/observer_runtime.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/observer_runtime.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -1366,19 +1681,19 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_exposes_cve_risk_context_without_confirmation": {
+    "get_incidents": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 183,
-        "end": 206
+        "file": "backend/app/main.py",
+        "start": 472,
+        "end": 473
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "incident_store",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/main.py",
+              "line": 60,
               "kind": "function",
               "language": "python"
             }
@@ -1386,23 +1701,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "read_incident_status",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/incident_api.py",
+              "line": 14,
               "kind": "function",
               "language": "python"
             }
@@ -1410,45 +1713,45 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     },
-    "test_finding_intelligence_counts_verified_kev_candidates": {
+    "acknowledge_incident": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 209,
-        "end": 251
+        "file": "backend/app/main.py",
+        "start": 477,
+        "end": 488
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "IncidentAcknowledgeInput",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
+              "file": "backend/app/main.py",
+              "line": 198,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "IncidentApiConflict",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
+              "file": "backend/app/incident_api.py",
+              "line": 10,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "acknowledge_incident_versioned",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/incident_api.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
@@ -1456,45 +1759,149 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_kev_catalog",
+          "symbol": "incident_store",
           "definitions": [
             {
-              "file": "backend/app/kev_catalog.py",
-              "line": 84,
+              "file": "backend/app/main.py",
+              "line": 60,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 4
     },
-    "test_finding_intelligence_exposes_bounded_cve_validation_plan": {
+    "list_agents": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 254,
-        "end": 266
+        "file": "backend/app/main.py",
+        "start": 492,
+        "end": 494
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "public_agent_catalog",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/agent_registry.py",
+              "line": 100,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "preview_hackerone_scope": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 498,
+        "end": 530
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_graph",
+          "symbol": "HackerOneScopeImportError",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
+              "file": "backend/app/hackerone_scope_import.py",
               "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "HackerOneScopePreviewInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 190,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "import_hackerone_structured_scope",
+          "definitions": [
+            {
+              "file": "backend/app/hackerone_scope_import.py",
+              "line": 471,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "create_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 534,
+        "end": 538
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
               "kind": "function",
               "language": "python"
             }
@@ -1502,11 +1909,1060 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "save_campaign",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/main.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "list_campaigns": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 542,
+        "end": 543
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "get_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 547,
+        "end": 548
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "get_campaign_target_memory": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 552,
+        "end": 560
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "get_campaign_surface_diff": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 564,
+        "end": 574
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "get_campaign_surface_temporal": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 578,
+        "end": 586
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "get_campaign_surface_confidence": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 590,
+        "end": 603
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "campaign_outbox_status": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 607,
+        "end": 617
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "outbox_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/api_outbox.py",
+              "line": 124,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/observer_runtime.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "campaign_outbox_recovery": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 621,
+        "end": 639
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose_outbox_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/outbox_recovery.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "public_recovery_diagnostics",
+          "definitions": [
+            {
+              "file": "backend/app/outbox_recovery.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_apply_local_outbox_repairs": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 642,
+        "end": 677
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "local_completion_event",
+          "definitions": [
+            {
+              "file": "backend/app/outbox_recovery.py",
+              "line": 75,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "reconcile_campaign_outbox_local": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 681,
+        "end": 735
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_apply_local_outbox_repairs",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 642,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reject_cancelled_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose_outbox_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/outbox_recovery.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "public_recovery_diagnostics",
+          "definitions": [
+            {
+              "file": "backend/app/outbox_recovery.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "preview_pentagi_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 739,
+        "end": 767
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "PentagiAdmissionError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_admission.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PentagiControlError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_control.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PentagiPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_adapter.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_reject_cancelled_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prepare_pentagi_control_preview",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_control.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_pentagi_dispatch_fingerprint": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 770,
+        "end": 771
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_record_pentagi_dispatch_intent": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 774,
+        "end": 797
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_reconcile_pentagi_queued_event": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 800,
+        "end": 843
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 173,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "dispatch_pentagi_campaign": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 847,
+        "end": 917
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CampaignState",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 73,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "PentagiAdmissionError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_admission.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PentagiControlError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_control.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PentagiExecutionGuardError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_execution_guard.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PentagiPolicyError",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_adapter.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_pentagi_dispatch_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 770,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reconcile_pentagi_queued_event",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 800,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_record_pentagi_dispatch_intent",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 774,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reject_cancelled_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "enqueue_pentagi_flow",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_dispatch.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
               "kind": "function",
               "language": "python"
             }
@@ -1524,47 +2980,599 @@
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "prepare_pentagi_execution_permit",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_dispatch.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ready",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "require_pentagi_control_ready",
+          "definitions": [
+            {
+              "file": "backend/app/pentagi_control.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "pentagi_campaign_status": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 921,
+        "end": 947
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "campaign_job_counts",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "backend/app/queue_backend.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_artifacts",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 1874,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "list_campaign_observations": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 951,
+        "end": 953
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "list_observations",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "campaign_decision_audit": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 957,
+        "end": 965
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_campaign_graph",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verify_decision_audit_chain",
+          "definitions": [
+            {
+              "file": "backend/app/decision_audit.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaign_event_audit": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 969,
+        "end": 975
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verify_campaign_event_chain",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaign_worker_audit": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 979,
+        "end": 987
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verify_worker_audit_chain",
+          "definitions": [
+            {
+              "file": "backend/app/worker_audit.py",
+              "line": 71,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaign_knowledge": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 991,
+        "end": 1002
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_campaign_graph",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_knowledge_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "decision_history",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 216,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_findings",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/observer_runtime.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "campaign_finding_ranking": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1006,
+        "end": 1029
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_campaign_graph",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "list_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_findings_explainable",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_hypothesis_stability",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "campaign_advisory_history": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1033,
+        "end": 1038
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "list_advisory_focus_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "campaign_advisory_delta": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1042,
+        "end": 1049
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diff_advisory_focus_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/planner_advisory.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_advisory_focus_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 4
     },
-    "test_finding_intelligence_surfaces_reproducible_differential_quality": {
+    "campaign_advisory_journal": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 269,
-        "end": 322
+        "file": "backend/app/main.py",
+        "start": 1053,
+        "end": 1061
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/main.py",
+              "line": 218,
               "kind": "function",
               "language": "python"
             }
@@ -1572,11 +3580,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "build_advisory_decision_journal",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/planner_advisory.py",
+              "line": 146,
               "kind": "function",
               "language": "python"
             }
@@ -1584,57 +3592,533 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "list_advisory_focus_snapshots",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/storage_backend.py",
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "campaign_hypothesis_history": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1065,
+        "end": 1070
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "list_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "campaign_hypothesis_delta": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1074,
+        "end": 1081
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diff_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 100,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "campaign_hypothesis_stability": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1085,
+        "end": 1093
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "list_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_hypothesis_stability",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "campaign_plan": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1097,
+        "end": 1143
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AdaptivePlanner",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_campaign_graph",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "advisory_focus_fingerprint",
+          "definitions": [
+            {
+              "file": "backend/app/planner_advisory.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "agent_for_action",
+          "definitions": [
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "apply_budget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 218,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_advisory_planner_context",
+          "definitions": [
+            {
+              "file": "backend/app/planner_advisory.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_quality",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_knowledge_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "list_hypothesis_snapshots",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planner_budget_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "put_advisory_focus_snapshot",
+          "definitions": [
+            {
+              "file": "backend/app/storage_backend.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "rank_findings",
+          "definitions": [
+            {
+              "file": "backend/app/knowledge_memory.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_hypothesis_stability",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_memory.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/agent_registry.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/evidence_quality.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 20
+    },
+    "check_policy": {
+      "source": {
+        "file": "backend/app/main.py",
+        "start": 1147,
+        "end": 1153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "append_campaign_event",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_audit.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_record",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "policy_receipt",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 247,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "utcnow",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 5
     },
-    "test_finding_intelligence_surfaces_reproduced_repeat_outcome": {
+    "verify_campaign_policy_receipt": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 325,
-        "end": 376
+        "file": "backend/app/main.py",
+        "start": 1157,
+        "end": 1159
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "assert_campaign_exists",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
+              "file": "backend/app/main.py",
+              "line": 218,
               "kind": "function",
               "language": "python"
             }
@@ -1642,23 +4126,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "verify_policy_receipt",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
+              "file": "backend/app/policy_integrity.py",
+              "line": 50,
               "kind": "function",
               "language": "python"
             }
@@ -1666,497 +4138,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
-    },
-    "test_finding_intelligence_surfaces_contradictory_repeat_outcome": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 379,
-        "end": 441
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_conflicting_product_versions_downgrade_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 444,
-        "end": 487
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_declared_cve_product_missing_from_observed_stack_downgrades_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 490,
-        "end": 532
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_stale_version_fingerprint_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 535,
-        "end": 571
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_mismatched_cpe_downgrades_cve_verdict_and_risk_context": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 574,
-        "end": 615
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_cpe_version_mismatch_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 618,
-        "end": 657
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_cpe_vendor_mismatch_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 660,
-        "end": 701
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 9,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
+      "dependency_count": 2
     }
   }
 }

@@ -57,6 +57,7 @@ backend/
   app/
     active_validation.py
     adaptive_cycle.py
+    affected_version_range.py
     agent_registry.py
     alert_delivery.py
     api_outbox.py
@@ -260,6 +261,7 @@ backend/
   tests/
     test_active_validation.py
     test_adaptive_cycle.py
+    test_affected_version_range.py
     test_agent_registry.py
     test_alert_delivery.py
     test_api_idempotency.py
@@ -1296,6 +1298,79 @@ planned = AdaptivePlanner().plan(campaign, graph)
 memories = build_learning_memory(graph)
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
+````
+
+## File: backend/app/affected_version_range.py
+````python
+AFFECTED_VERSION_RANGE_SCHEMA = "affected-version-range-v1"
+_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){0,5}$")
+_CLAUSE_RE = re.compile(r"^(<=|>=|<|>|==|=)?\s*([0-9]+(?:\.[0-9]+){0,5})$")
+⋮----
+@dataclass(frozen=True)
+class AffectedVersionRangeEvidence
+⋮----
+schema: str
+finding_id: str
+ranges: tuple[str, ...]
+observed_versions: tuple[str, ...]
+matching_versions: tuple[str, ...]
+outside_versions: tuple[str, ...]
+unparseable_ranges: tuple[str, ...]
+state: str
+affected_version_supported: bool
+exploitability_confirmed: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _version_tuple(value: str) -> tuple[int, ...] | None
+⋮----
+normalized = str(value or "").strip()
+⋮----
+parts = tuple(int(part) for part in normalized.split("."))
+⋮----
+def _clause_matches(version: tuple[int, ...], clause: str) -> bool | None
+⋮----
+match = _CLAUSE_RE.fullmatch(clause.strip())
+⋮----
+operator = match.group(1) or "="
+target = _version_tuple(match.group(2))
+⋮----
+def _range_matches(version: tuple[int, ...], expression: str) -> bool | None
+⋮----
+clauses = [part.strip() for part in expression.split(",")]
+⋮----
+outcomes = [_clause_matches(version, clause) for clause in clauses]
+⋮----
+raw_ranges = getattr(finding, "affected_version_ranges", None) or ()
+⋮----
+raw_ranges = (raw_ranges,)
+ranges = tuple(
+observed = tuple(
+⋮----
+state = "not_available"
+⋮----
+parseable_ranges: list[str] = []
+unparseable: list[str] = []
+⋮----
+probe = _range_matches((0, 0, 0, 0, 0, 0), expression)
+⋮----
+matching: list[str] = []
+outside: list[str] = []
+unparseable_observed = False
+⋮----
+version = _version_tuple(raw_version)
+⋮----
+unparseable_observed = True
+⋮----
+state = "unknown"
+⋮----
+state = "mixed"
+⋮----
+state = "affected"
+⋮----
+state = "not_affected"
 ````
 
 ## File: backend/app/agent_registry.py
@@ -3840,7 +3915,16 @@ fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
 freshness_ambiguity = fingerprint_staleness_reasons(
 cpe_consistency = build_cpe_consistency(
+affected_version_range = build_affected_version_range_evidence(
 cpe_ambiguity = tuple(
+range_ambiguity: tuple[str, ...] = ()
+⋮----
+range_ambiguity = ("observed_version_outside_affected_range",)
+⋮----
+range_ambiguity = ("mixed_affected_version_range_evidence",)
+⋮----
+range_ambiguity = ("unparseable_affected_version_range",)
+⋮----
 combined_fingerprint_ambiguity = tuple(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
@@ -7221,6 +7305,7 @@ template_verified: bool | None = None
 template_max_requests: int | None = Field(default=None, ge=0, le=10000)
 vendor: str | None = None
 product: str | None = None
+affected_version_ranges: list[str] = Field(default_factory=list)
 status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "candidate"
 discovered_by: str = "unknown"
 validated_by: str | None = None
@@ -11468,6 +11553,7 @@ template_verified: bool | None = None
 template_max_requests: int | None = None
 vendor: str | None = None
 product: str | None = None
+affected_version_ranges: tuple[str, ...] = ()
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -11502,6 +11588,8 @@ def _string_list(value: Any, *, limit: int = 50) -> tuple[str, ...]
 items = [value]
 ⋮----
 items = list(value)
+⋮----
+def _version_range_list(value: Any, *, limit: int = 16) -> tuple[str, ...]
 ⋮----
 def _cve_ids(value: Any, *, limit: int = 32) -> tuple[str, ...]
 ⋮----
@@ -15393,6 +15481,27 @@ worker_outcomes = {
 def test_cycle_does_not_suppress_recovered_worker_kind()
 ````
 
+## File: backend/tests/test_affected_version_range.py
+````python
+def _finding(*ranges)
+⋮----
+def test_numeric_version_inside_range_is_supported()
+⋮----
+result = build_affected_version_range_evidence(
+⋮----
+def test_numeric_version_outside_range_is_not_affected()
+⋮----
+def test_multiple_ranges_are_or_alternatives()
+⋮----
+def test_conflicting_observed_versions_are_mixed()
+⋮----
+def test_unparseable_range_stays_unknown()
+⋮----
+def test_non_numeric_observed_version_stays_unknown()
+⋮----
+def test_missing_ranges_do_not_guess_applicability()
+````
+
 ## File: backend/tests/test_agent_registry.py
 ````python
 def test_agent_registry_routes_every_planner_action()
@@ -17369,6 +17478,10 @@ def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context()
 def test_cpe_version_mismatch_downgrades_cve_verdict()
 ⋮----
 def test_cpe_vendor_mismatch_downgrades_cve_verdict()
+⋮----
+def test_observed_version_outside_affected_range_downgrades_cve_verdict()
+⋮----
+def test_observed_version_inside_affected_range_supports_candidate_without_confirmation()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py

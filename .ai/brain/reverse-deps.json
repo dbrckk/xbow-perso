@@ -32,6 +32,17 @@
       "in_degree": 3,
       "out_degree": 9
     },
+    "backend/app/affected_version_range.py": {
+      "dependencies": [
+        "backend/app/main.py"
+      ],
+      "dependents": [
+        "backend/app/finding_intelligence.py",
+        "backend/tests/test_affected_version_range.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
+    },
     "backend/app/agent_registry.py": {
       "dependencies": [
         "backend/app/main.py"
@@ -684,6 +695,7 @@
     },
     "backend/app/finding_intelligence.py": {
       "dependencies": [
+        "backend/app/affected_version_range.py",
         "backend/app/cpe_consistency.py",
         "backend/app/cve_evidence_verdict.py",
         "backend/app/cve_risk_context.py",
@@ -710,7 +722,7 @@
         "backend/tests/test_vulnerability_intelligence.py"
       ],
       "in_degree": 4,
-      "out_degree": 18
+      "out_degree": 19
     },
     "backend/app/finding_lifecycle.py": {
       "dependencies": [
@@ -1428,6 +1440,7 @@
       "dependents": [
         "backend/app/active_validation.py",
         "backend/app/adaptive_cycle.py",
+        "backend/app/affected_version_range.py",
         "backend/app/agent_registry.py",
         "backend/app/attack_surface.py",
         "backend/app/autonomy_gate.py",
@@ -1638,7 +1651,7 @@
         "backend/tests/test_worker_state.py",
         "frontend/app.js"
       ],
-      "in_degree": 211,
+      "in_degree": 212,
       "out_degree": 60
     },
     "backend/app/metrics.py": {
@@ -3647,6 +3660,15 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 6
+    },
+    "backend/tests/test_affected_version_range.py": {
+      "dependencies": [
+        "backend/app/affected_version_range.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "backend/tests/test_agent_registry.py": {
       "dependencies": [
@@ -6554,6 +6576,7 @@
       "dependents": [
         "backend/tests/test_active_validation.py",
         "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_affected_version_range.py",
         "backend/tests/test_agent_registry.py",
         "backend/tests/test_alert_delivery.py",
         "backend/tests/test_api_idempotency.py",
@@ -6808,7 +6831,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 255,
+      "in_degree": 256,
       "out_degree": 4
     },
     "frontend/hackerone.js": {
