@@ -113,7 +113,7 @@ def match_finding_technology(
     fingerprints: tuple[TechnologyFingerprint, ...],
 ) -> tuple[TechnologyFingerprint, ...]:
     parts = []
-    for name in ("title", "summary", "impact", "remediation"):
+    for name in ("title", "summary", "impact", "remediation", "product"):
         value = getattr(finding, name, None)
         if value:
             parts.append(str(value))
@@ -130,6 +130,25 @@ def match_finding_technology(
     return tuple(matches)
 
 
+
+
+def finding_product_ambiguity_reasons(
+    finding: Any,
+    fingerprints: tuple[TechnologyFingerprint, ...],
+) -> tuple[str, ...]:
+    declared = _normalize_product(str(getattr(finding, "product", "") or ""))
+    if not declared or not fingerprints:
+        return ()
+
+    observed = {
+        item.normalized_product
+        for item in fingerprints
+        if item.normalized_product
+    }
+    if declared in observed:
+        return ()
+
+    return ("declared_product_not_observed",)
 
 def fingerprint_ambiguity_reasons(
     fingerprints: tuple[TechnologyFingerprint, ...],
