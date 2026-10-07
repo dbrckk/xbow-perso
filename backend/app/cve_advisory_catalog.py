@@ -20,8 +20,11 @@ class CveAdvisoryCatalogError(RuntimeError):
 @dataclass(frozen=True)
 class CveAdvisoryEntry:
     cve_id: str
-    vendor: str
-    product: str
+    identity_kind: str
+    vendor: str | None
+    product: str | None
+    package_ecosystem: str | None
+    package_name: str | None
     affected_version_ranges: tuple[str, ...]
     authoritative: bool
 
@@ -75,6 +78,32 @@ def _normalize_cve(value: object) -> str:
 
 def _normalize_identity(value: object, *, name: str) -> str:
     return _text(value, name=name, max_len=200).lower()
+
+
+def _optional_identity(value: object, *, name: str) -> str | None:
+    if value is None or value == "":
+        return None
+    return _normalize_identity(value, name=name)
+
+
+def _optional_package_ecosystem(value: object) -> str | None:
+    if value is None or value == "":
+        return None
+    return _text(
+        value,
+        name="package_ecosystem",
+        max_len=120,
+    ).lower()
+
+
+def _optional_package_name(value: object) -> str | None:
+    if value is None or value == "":
+        return None
+    return _text(
+        value,
+        name="package_name",
+        max_len=240,
+    )
 
 
 def _ranges(value: object) -> tuple[str, ...]:
@@ -152,25 +181,67 @@ def build_cve_advisory_catalog(
             "advisory declared count does not match entries"
         )
 
-    by_key: dict[tuple[str, str, str], CveAdvisoryEntry] = {}
+    by_key: dict[
+        tuple[str, str, str, str],
+        CveAdvisoryEntry,
+    ] = {}
     for raw in raw_entries:
         if not isinstance(raw, Mapping):
             raise CveAdvisoryCatalogError(
                 "advisory entry must be a mapping"
             )
         cve_id = _normalize_cve(raw.get("cve_id"))
-        vendor = _normalize_identity(raw.get("vendor"), name="vendor")
-        product = _normalize_identity(raw.get("product"), name="product")
+        vendor = _optional_identity(raw.get("vendor"), name="vendor")
+        product = _optional_identity(raw.get("product"), name="product")
+        package_ecosystem = _optional_package_ecosystem(
+            raw.get("package_ecosystem")
+        )
+        package_name = _optional_package_name(
+            raw.get("package_name")
+        )
+
+        if (vendor is None) != (product is None):
+            raise CveAdvisoryCatalogError(
+                "vendor/product advisory identity is incomplete"
+            )
+        if (package_ecosystem is None) != (package_name is None):
+            raise CveAdvisoryCatalogError(
+                "package advisory identity is incomplete"
+            )
+
+        cpe_identity = vendor is not None and product is not None
+        package_identity = (
+            package_ecosystem is not None
+            and package_name is not None
+        )
+        if cpe_identity == package_identity:
+            raise CveAdvisoryCatalogError(
+                "advisory entry must define exactly one identity kind"
+            )
+        identity_kind = "cpe" if cpe_identity else "package"
+
         entry = CveAdvisoryEntry(
             cve_id=cve_id,
+            identity_kind=identity_kind,
             vendor=vendor,
             product=product,
+            package_ecosystem=package_ecosystem,
+            package_name=package_name,
             affected_version_ranges=_ranges(
                 raw.get("affected_version_ranges")
             ),
             authoritative=bool(source_verified),
         )
-        key = (cve_id, vendor, product)
+        key = (
+            cve_id,
+            identity_kind,
+            (
+                f"{vendor}:{product}"
+                if cpe_identity
+                else f"{package_ecosystem}:{package_name}"
+            ),
+            "",
+        )
         existing = by_key.get(key)
         if existing is not None and existing != entry:
             raise CveAdvisoryCatalogError(
@@ -198,6 +269,8 @@ def find_verified_cve_advisory(
     cve_id: str,
     vendor: str | None = None,
     product: str | None = None,
+    package_ecosystem: str | None = None,
+    package_name: str | None = None,
 ) -> CveAdvisoryEntry | None:
     if (
         catalog.schema != CVE_ADVISORY_CATALOG_SCHEMA
@@ -217,23 +290,47 @@ def find_verified_cve_advisory(
             if product
             else None
         )
+        normalized_package_ecosystem = (
+            _optional_package_ecosystem(package_ecosystem)
+            if package_ecosystem
+            else None
+        )
+        normalized_package_name = (
+            _optional_package_name(package_name)
+            if package_name
+            else None
+        )
     except CveAdvisoryCatalogError:
         return None
 
-    matches = [
-        entry
-        for entry in catalog.entries
-        if entry.authoritative
-        and entry.cve_id == normalized_cve
-        and (
-            normalized_vendor is None
-            or entry.vendor == normalized_vendor
-        )
-        and (
-            normalized_product is None
-            or entry.product == normalized_product
-        )
-    ]
+    if (normalized_vendor is None) != (normalized_product is None):
+        return None
+    if (
+        (normalized_package_ecosystem is None)
+        != (normalized_package_name is None)
+    ):
+        return None
+
+    matches: list[CveAdvisoryEntry] = []
+    for entry in catalog.entries:
+        if not entry.authoritative or entry.cve_id != normalized_cve:
+            continue
+        if (
+            entry.identity_kind == "cpe"
+            and normalized_vendor is not None
+            and normalized_product is not None
+            and entry.vendor == normalized_vendor
+            and entry.product == normalized_product
+        ):
+            matches.append(entry)
+        elif (
+            entry.identity_kind == "package"
+            and normalized_package_ecosystem is not None
+            and normalized_package_name is not None
+            and entry.package_ecosystem == normalized_package_ecosystem
+            and entry.package_name == normalized_package_name
+        ):
+            matches.append(entry)
     if len(matches) != 1:
         return None
     return matches[0]
