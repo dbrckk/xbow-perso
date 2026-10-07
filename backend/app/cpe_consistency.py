@@ -121,8 +121,6 @@ def build_cpe_consistency(
         reasons.add("generic_cpe_vendor")
     if vendor_mismatches:
         reasons.add("cpe_vendor_mismatch")
-    if cpes and not declared_vendor:
-        reasons.add("declared_vendor_missing")
     if generic_versions and normalized_observed_versions:
         reasons.add("generic_cpe_version")
     if version_mismatches:
