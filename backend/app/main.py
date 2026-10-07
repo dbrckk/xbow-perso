@@ -140,6 +140,8 @@ class Finding(BaseModel):
     vendor: str | None = None
     product: str | None = None
     affected_version_ranges: list[str] = Field(default_factory=list)
+    affected_version_range_source: str | None = None
+    affected_version_range_verified: bool | None = None
     status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "candidate"
     discovered_by: str = "unknown"
     validated_by: str | None = None

@@ -160,6 +160,13 @@ def build_finding_intelligence(
             range_ambiguity = (
                 affected_version_range.binding_ambiguity_reason,
             )
+        elif (
+            affected_version_range.state == "affected"
+            and not affected_version_range.trusted_affected_version_supported
+        ):
+            range_ambiguity = (
+                "unverified_affected_version_range_source",
+            )
         elif affected_version_range.state == "not_affected":
             range_ambiguity = ("observed_version_outside_affected_range",)
         elif affected_version_range.state == "mixed":
@@ -356,6 +363,19 @@ def build_finding_intelligence(
             ),
             "affected_version_supported_candidates": sum(
                 row["affected_version_range"]["state"] == "affected"
+                for row in finding_rows
+            ),
+            "trusted_affected_version_supported_candidates": sum(
+                row["affected_version_range"][
+                    "trusted_affected_version_supported"
+                ]
+                for row in finding_rows
+            ),
+            "unverified_affected_version_range_sources": sum(
+                row["affected_version_range"]["state"] == "affected"
+                and not row["affected_version_range"][
+                    "trusted_affected_version_supported"
+                ]
                 for row in finding_rows
             ),
             "outside_affected_version_candidates": sum(

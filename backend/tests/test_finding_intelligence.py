@@ -754,6 +754,8 @@ def test_observed_version_inside_affected_range_supports_candidate_without_confi
     finding.cve_ids = ["CVE-2026-12345"]
     finding.evidence = ["cve-id:CVE-2026-12345"]
     finding.affected_version_ranges = [">=5.0,<5.1.3"]
+    finding.affected_version_range_source = "vendor-advisory"
+    finding.affected_version_range_verified = True
     finding.discovered_by = "nuclei"
 
     graph = _graph()
@@ -775,6 +777,10 @@ def test_observed_version_inside_affected_range_supports_candidate_without_confi
 
     assert row["affected_version_range"]["state"] == "affected"
     assert row["affected_version_range"]["affected_version_supported"] is True
+    assert row["affected_version_range"][
+        "trusted_affected_version_supported"
+    ] is True
+    assert row["affected_version_range"]["range_provenance_state"] == "verified"
     assert row["affected_version_range"]["matching_versions"] == ["5.1.2"]
     assert row["affected_version_range"]["exploitability_confirmed"] is False
     assert "observed_version_outside_affected_range" not in row["technology"][
@@ -832,3 +838,52 @@ def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range():
     assert row["cve_evidence_verdict"]["verdict"] == (
         "ambiguous_version_candidate"
     )
+
+
+def test_unverified_affected_range_downgrades_cve_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.affected_version_ranges = [">=5.0,<5.1.3"]
+    finding.affected_version_range_source = "nuclei-template-metadata"
+    finding.affected_version_range_verified = False
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-affected-unverified",
+            "technology",
+            "django/5.1.2",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["affected_version_range"]["state"] == "affected"
+    assert row["affected_version_range"]["affected_version_supported"] is True
+    assert row["affected_version_range"][
+        "trusted_affected_version_supported"
+    ] is False
+    assert row["affected_version_range"]["range_provenance_state"] == (
+        "unverified"
+    )
+    assert "unverified_affected_version_range_source" in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
