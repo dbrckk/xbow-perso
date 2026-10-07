@@ -699,3 +699,84 @@ def test_cpe_vendor_mismatch_downgrades_cve_verdict():
     )
     assert "cpe_untrusted" in row["cve_risk_context"]["reasons"]
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+
+
+def test_observed_version_outside_affected_range_downgrades_cve_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.affected_version_ranges = ["<5.1.3"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-fixed",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["affected_version_range"]["state"] == "not_affected"
+    assert row["affected_version_range"]["outside_versions"] == ["5.1.4"]
+    assert "observed_version_outside_affected_range" in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+    assert row["affected_version_range"]["exploitability_confirmed"] is False
+
+
+def test_observed_version_inside_affected_range_supports_candidate_without_confirmation():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.affected_version_ranges = [">=5.0,<5.1.3"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-affected",
+            "technology",
+            "django/5.1.2",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["affected_version_range"]["state"] == "affected"
+    assert row["affected_version_range"]["affected_version_supported"] is True
+    assert row["affected_version_range"]["matching_versions"] == ["5.1.2"]
+    assert row["affected_version_range"]["exploitability_confirmed"] is False
+    assert "observed_version_outside_affected_range" not in row["technology"][
+        "ambiguity_reasons"
+    ]
