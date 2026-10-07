@@ -605,6 +605,7 @@ def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
         "XBOW_CVE_ADVISORY_CATALOG_PATH",
         "XBOW_CVE_ADVISORY_CATALOG_SHA256",
         "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -615,6 +616,7 @@ def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
         "available": False,
         "verified": False,
         "source_name": None,
+        "source_format": "internal-v1",
         "entry_count": 0,
         "error": None,
     }
