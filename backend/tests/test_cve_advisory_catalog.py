@@ -42,6 +42,7 @@ def test_verified_catalog_exposes_authoritative_entry():
     )
 
     assert entry is not None
+    assert entry.identity_kind == "cpe"
     assert entry.authoritative is True
     assert entry.affected_version_ranges == (">=5.0,<5.2.0",)
 
@@ -133,3 +134,97 @@ def test_invalid_lookup_identity_fails_closed():
         cve_id="not-a-cve",
         product="django",
     ) is None
+
+
+def test_verified_package_advisory_matches_ecosystem_and_name():
+    document = {
+        "count": 1,
+        "entries": [
+            {
+                "cve_id": "CVE-2026-22222",
+                "package_ecosystem": "PyPI",
+                "package_name": "Django",
+                "affected_version_ranges": ["<5.2.1"],
+            }
+        ],
+    }
+    catalog = build_cve_advisory_catalog(
+        document,
+        source_name="osv-fixture",
+        source_verified=True,
+    )
+
+    entry = find_verified_cve_advisory(
+        catalog,
+        cve_id="CVE-2026-22222",
+        package_ecosystem="pypi",
+        package_name="Django",
+    )
+
+    assert entry is not None
+    assert entry.identity_kind == "package"
+    assert entry.vendor is None
+    assert entry.product is None
+    assert entry.package_ecosystem == "pypi"
+    assert entry.package_name == "Django"
+
+
+def test_package_name_matching_is_conservative_and_case_sensitive():
+    catalog = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-22222",
+                    "package_ecosystem": "PyPI",
+                    "package_name": "Django",
+                    "affected_version_ranges": ["<5.2.1"],
+                }
+            ],
+        },
+        source_name="osv-fixture",
+        source_verified=True,
+    )
+
+    assert find_verified_cve_advisory(
+        catalog,
+        cve_id="CVE-2026-22222",
+        package_ecosystem="pypi",
+        package_name="django",
+    ) is None
+
+
+@pytest.mark.parametrize(
+    "entry",
+    (
+        {
+            "cve_id": "CVE-2026-33333",
+            "package_ecosystem": "PyPI",
+            "affected_version_ranges": ["<2.0"],
+        },
+        {
+            "cve_id": "CVE-2026-33333",
+            "package_name": "fixture",
+            "affected_version_ranges": ["<2.0"],
+        },
+        {
+            "cve_id": "CVE-2026-33333",
+            "vendor": "vendor",
+            "product": "product",
+            "package_ecosystem": "PyPI",
+            "package_name": "fixture",
+            "affected_version_ranges": ["<2.0"],
+        },
+        {
+            "cve_id": "CVE-2026-33333",
+            "affected_version_ranges": ["<2.0"],
+        },
+    ),
+)
+def test_advisory_identity_must_be_exactly_one_complete_kind(entry):
+    with pytest.raises(CveAdvisoryCatalogError):
+        build_cve_advisory_catalog(
+            {"count": 1, "entries": [entry]},
+            source_name="fixture",
+            source_verified=True,
+        )
