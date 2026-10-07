@@ -39,23 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:05:40Z
+Generated: 2026-10-07T20:12:20Z
 
 ### Git
 - Branch: `main`
-- Head: `e59ebae38375`
-- Commit date: 2026-10-07T22:05:28+02:00
-- Commit: feat(vuln): track affected-range provenance trust
-- Tracked files: 671
+- Head: `c24fa822fbe5`
+- Commit date: 2026-10-07T22:12:07+02:00
+- Commit: feat(vuln): add verified CVE advisory range catalog
+- Tracked files: 673
 
 ### Recently changed files
 - `backend/app/affected_version_range.py`
+- `backend/app/cve_advisory_catalog.py`
 - `backend/app/finding_intelligence.py`
+- `backend/tests/test_cve_advisory_catalog.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
 - `backend/tests/test_affected_version_range.py`
 - `backend/tests/test_cve_metadata_normalization.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/app/cpe_consistency.py`
 - `backend/app/cve_risk_context.py`
 - `backend/tests/test_cpe_consistency.py`

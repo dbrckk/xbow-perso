@@ -401,6 +401,16 @@
       "in_degree": 3,
       "out_degree": 1
     },
+    "backend/app/cve_advisory_catalog.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/finding_intelligence.py",
+        "backend/tests/test_cve_advisory_catalog.py",
+        "backend/tests/test_finding_intelligence.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 0
+    },
     "backend/app/cve_evidence_verdict.py": {
       "dependencies": [
         "backend/app/main.py",
@@ -698,6 +708,7 @@
       "dependencies": [
         "backend/app/affected_version_range.py",
         "backend/app/cpe_consistency.py",
+        "backend/app/cve_advisory_catalog.py",
         "backend/app/cve_evidence_verdict.py",
         "backend/app/cve_risk_context.py",
         "backend/app/cve_validation_priority.py",
@@ -723,7 +734,7 @@
         "backend/tests/test_vulnerability_intelligence.py"
       ],
       "in_degree": 4,
-      "out_degree": 19
+      "out_degree": 20
     },
     "backend/app/finding_lifecycle.py": {
       "dependencies": [
@@ -4007,6 +4018,15 @@
       "in_degree": 0,
       "out_degree": 3
     },
+    "backend/tests/test_cve_advisory_catalog.py": {
+      "dependencies": [
+        "backend/app/cve_advisory_catalog.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_cve_evidence_verdict.py": {
       "dependencies": [
         "backend/app/cve_evidence_verdict.py",
@@ -4281,6 +4301,7 @@
     },
     "backend/tests/test_finding_intelligence.py": {
       "dependencies": [
+        "backend/app/cve_advisory_catalog.py",
         "backend/app/finding_intelligence.py",
         "backend/app/kev_catalog.py",
         "backend/app/main.py",
@@ -4289,7 +4310,7 @@
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 6
     },
     "backend/tests/test_finding_lifecycle.py": {
       "dependencies": [
@@ -6606,6 +6627,7 @@
         "backend/tests/test_control_views.py",
         "backend/tests/test_coverage.py",
         "backend/tests/test_cpe_consistency.py",
+        "backend/tests/test_cve_advisory_catalog.py",
         "backend/tests/test_cve_evidence_verdict.py",
         "backend/tests/test_cve_metadata_normalization.py",
         "backend/tests/test_cve_risk_context.py",
@@ -6835,7 +6857,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 256,
+      "in_degree": 257,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

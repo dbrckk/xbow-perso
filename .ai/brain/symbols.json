@@ -1135,6 +1135,90 @@
       "line": 53
     },
     {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "CveAdvisoryCatalogError",
+      "line": 16
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "CveAdvisoryEntry",
+      "line": 21
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 28
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "class",
+      "name": "CveAdvisoryCatalog",
+      "line": 35
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 43
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_text",
+      "line": 49
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_normalize_cve",
+      "line": 68
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_normalize_identity",
+      "line": 76
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_ranges",
+      "line": 80
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_canonical_digest",
+      "line": 109
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "build_cve_advisory_catalog",
+      "line": 124
+    },
+    {
+      "file": "backend/app/cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "find_verified_cve_advisory",
+      "line": 195
+    },
+    {
       "file": "backend/app/cve_evidence_verdict.py",
       "language": "python",
       "kind": "class",
@@ -1902,14 +1986,14 @@
       "language": "python",
       "kind": "function",
       "name": "build_finding_intelligence",
-      "line": 38
+      "line": 39
     },
     {
       "file": "backend/app/finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "campaign_finding_intelligence",
-      "line": 467
+      "line": 526
     },
     {
       "file": "backend/app/finding_lifecycle.py",
@@ -14316,6 +14400,48 @@
       "line": 183
     },
     {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_document",
+      "line": 11
+    },
+    {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_verified_catalog_exposes_authoritative_entry",
+      "line": 25
+    },
+    {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unverified_catalog_never_returns_trusted_advisory",
+      "line": 49
+    },
+    {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_ambiguous_same_cve_without_product_binding_fails_closed",
+      "line": 64
+    },
+    {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_conflicting_duplicate_advisory_entry_is_rejected",
+      "line": 94
+    },
+    {
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_invalid_lookup_identity_fails_closed",
+      "line": 124
+    },
+    {
       "file": "backend/tests/test_cve_evidence_verdict.py",
       "language": "python",
       "kind": "function",
@@ -15755,168 +15881,182 @@
       "language": "python",
       "kind": "function",
       "name": "_finding",
-      "line": 9
+      "line": 10
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_graph",
-      "line": 21
+      "line": 22
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
-      "line": 60
+      "line": 61
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
-      "line": 95
+      "line": 96
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_does_not_expose_query_values",
-      "line": 110
+      "line": 111
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_route_is_exposed",
-      "line": 123
+      "line": 124
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
-      "line": 127
+      "line": 128
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
-      "line": 157
+      "line": 158
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
-      "line": 183
+      "line": 184
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_counts_verified_kev_candidates",
-      "line": 209
+      "line": 210
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_exposes_bounded_cve_validation_plan",
-      "line": 254
+      "line": 255
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_surfaces_reproducible_differential_quality",
-      "line": 269
+      "line": 270
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_surfaces_reproduced_repeat_outcome",
-      "line": 325
+      "line": 326
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_intelligence_surfaces_contradictory_repeat_outcome",
-      "line": 379
+      "line": 380
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_conflicting_product_versions_downgrade_cve_verdict",
-      "line": 444
+      "line": 445
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_declared_cve_product_missing_from_observed_stack_downgrades_verdict",
-      "line": 490
+      "line": 491
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_stale_version_fingerprint_downgrades_cve_verdict",
-      "line": 535
+      "line": 536
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_mismatched_cpe_downgrades_cve_verdict_and_risk_context",
-      "line": 574
+      "line": 575
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_cpe_version_mismatch_downgrades_cve_verdict",
-      "line": 618
+      "line": 619
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_cpe_vendor_mismatch_downgrades_cve_verdict",
-      "line": 660
+      "line": 661
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_observed_version_outside_affected_range_downgrades_cve_verdict",
-      "line": 704
+      "line": 705
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_observed_version_inside_affected_range_supports_candidate_without_confirmation",
-      "line": 746
+      "line": 747
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_shared_range_across_multiple_cves_never_downgrades_as_outside_range",
-      "line": 791
+      "line": 792
     },
     {
       "file": "backend/tests/test_finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_unverified_affected_range_downgrades_cve_verdict",
-      "line": 843
+      "line": 844
+    },
+    {
+      "file": "backend/tests/test_finding_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_verified_advisory_range_overrides_conflicting_scanner_range",
+      "line": 893
+    },
+    {
+      "file": "backend/tests/test_finding_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unverified_advisory_catalog_cannot_override_scanner_range",
+      "line": 972
     },
     {
       "file": "backend/tests/test_finding_lifecycle.py",

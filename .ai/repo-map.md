@@ -79,6 +79,7 @@ backend/
     control_plane_health.py
     coverage.py
     cpe_consistency.py
+    cve_advisory_catalog.py
     cve_evidence_verdict.py
     cve_risk_context.py
     cve_validation_priority.py
@@ -288,6 +289,7 @@ backend/
     test_control_views.py
     test_coverage.py
     test_cpe_consistency.py
+    test_cve_advisory_catalog.py
     test_cve_evidence_verdict.py
     test_cve_metadata_normalization.py
     test_cve_risk_context.py
@@ -1349,7 +1351,7 @@ clauses = [part.strip() for part in expression.split(",")]
 ⋮----
 outcomes = [_clause_matches(version, clause) for clause in clauses]
 ⋮----
-raw_ranges = getattr(finding, "affected_version_ranges", None) or ()
+raw_ranges = (
 ⋮----
 raw_ranges = (raw_ranges,)
 ranges = tuple(
@@ -1357,6 +1359,7 @@ observed = tuple(
 cve_ids = finding_cve_ids(finding)
 raw_source = str(
 range_source = raw_source[:120] or None
+verified_value = (
 range_source_verified = bool(
 ⋮----
 range_provenance_state = "verified"
@@ -2650,6 +2653,81 @@ supports_vendor = bool(
 supports_version = bool(
 ````
 
+## File: backend/app/cve_advisory_catalog.py
+````python
+CVE_ADVISORY_CATALOG_SCHEMA = "cve-advisory-catalog-v1"
+_MAX_ENTRIES = 20000
+_MAX_RANGES = 16
+_CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,10})$", re.IGNORECASE)
+⋮----
+class CveAdvisoryCatalogError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class CveAdvisoryEntry
+⋮----
+cve_id: str
+vendor: str
+product: str
+affected_version_ranges: tuple[str, ...]
+authoritative: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class CveAdvisoryCatalog
+⋮----
+schema: str
+source_name: str
+source_verified: bool
+source_digest_sha256: str
+entries: tuple[CveAdvisoryEntry, ...]
+entry_count: int
+⋮----
+result = value.strip()
+⋮----
+def _normalize_cve(value: object) -> str
+⋮----
+text = _text(value, name="cve_id", max_len=32).upper()
+match = _CVE_RE.fullmatch(text)
+⋮----
+def _normalize_identity(value: object, *, name: str) -> str
+⋮----
+def _ranges(value: object) -> tuple[str, ...]
+⋮----
+result: list[str] = []
+seen: set[str] = set()
+⋮----
+item = _text(
+⋮----
+def _canonical_digest(document: Mapping[str, Any]) -> str
+⋮----
+encoded = json.dumps(
+⋮----
+normalized_source = _text(
+raw_entries = document.get("entries")
+⋮----
+declared_count = document.get("count")
+⋮----
+by_key: dict[tuple[str, str, str], CveAdvisoryEntry] = {}
+⋮----
+cve_id = _normalize_cve(raw.get("cve_id"))
+vendor = _normalize_identity(raw.get("vendor"), name="vendor")
+product = _normalize_identity(raw.get("product"), name="product")
+entry = CveAdvisoryEntry(
+key = (cve_id, vendor, product)
+existing = by_key.get(key)
+⋮----
+entries = tuple(
+⋮----
+normalized_cve = _normalize_cve(cve_id)
+normalized_vendor = (
+normalized_product = (
+⋮----
+matches = [
+````
+
 ## File: backend/app/cve_evidence_verdict.py
 ````python
 CVE_EVIDENCE_VERDICT_SCHEMA = "cve-evidence-verdict-v1"
@@ -3933,6 +4011,12 @@ fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
 freshness_ambiguity = fingerprint_staleness_reasons(
 cpe_consistency = build_cpe_consistency(
+cve_ids = finding_cve_ids(finding)
+verified_advisory = None
+⋮----
+verified_advisory = find_verified_cve_advisory(
+scanner_ranges = tuple(
+advisory_range_conflict = bool(
 affected_version_range = build_affected_version_range_evidence(
 cpe_ambiguity = tuple(
 range_ambiguity: tuple[str, ...] = ()
@@ -16564,6 +16648,27 @@ good = build_cve_risk_context(matching)
 bad = build_cve_risk_context(mismatched)
 ````
 
+## File: backend/tests/test_cve_advisory_catalog.py
+````python
+def _document()
+⋮----
+def test_verified_catalog_exposes_authoritative_entry()
+⋮----
+catalog = build_cve_advisory_catalog(
+⋮----
+entry = find_verified_cve_advisory(
+⋮----
+def test_unverified_catalog_never_returns_trusted_advisory()
+⋮----
+def test_ambiguous_same_cve_without_product_binding_fails_closed()
+⋮----
+document = {
+⋮----
+def test_conflicting_duplicate_advisory_entry_is_rejected()
+⋮----
+def test_invalid_lookup_identity_fails_closed()
+````
+
 ## File: backend/tests/test_cve_evidence_verdict.py
 ````python
 def _finding(*, evidence=None)
@@ -17532,6 +17637,12 @@ def test_observed_version_inside_affected_range_supports_candidate_without_confi
 def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range()
 ⋮----
 def test_unverified_affected_range_downgrades_cve_verdict()
+⋮----
+def test_verified_advisory_range_overrides_conflicting_scanner_range()
+⋮----
+catalog = build_cve_advisory_catalog(
+⋮----
+def test_unverified_advisory_catalog_cannot_override_scanner_range()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
