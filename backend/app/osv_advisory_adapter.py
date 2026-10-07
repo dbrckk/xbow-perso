@@ -114,8 +114,6 @@ def _semver_event_ranges(events: object) -> tuple[str, ...] | None:
     start: str | None = None
     expressions: list[str] = []
     saw_introduced = False
-    saw_fixed = False
-    saw_last_affected = False
 
     for raw_event in events:
         if not isinstance(raw_event, Mapping):
@@ -149,27 +147,21 @@ def _semver_event_ranges(events: object) -> tuple[str, ...] | None:
             return None
 
         if key == "fixed":
-            if saw_last_affected:
-                return None
             value = _numeric_version(raw_value)
             if value is None:
                 return None
             expressions.append(_expression(start, "<", value))
             open_range = False
             start = None
-            saw_fixed = True
             continue
 
         if key == "last_affected":
-            if saw_fixed:
-                return None
             value = _numeric_version(raw_value)
             if value is None:
                 return None
             expressions.append(_expression(start, "<=", value))
             open_range = False
             start = None
-            saw_last_affected = True
             continue
 
         value = str(raw_value or "").strip()
