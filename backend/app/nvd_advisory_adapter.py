@@ -6,7 +6,7 @@ from typing import Any, Mapping
 
 
 NVD_ADVISORY_ADAPTER_SCHEMA = "nvd-advisory-adapter-v1"
-_CVE_RE = re.compile(r"^CVE-(\\d{4})-(\\d{4,10})$", re.IGNORECASE)
+_CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,10})$", re.IGNORECASE)
 _MAX_VULNERABILITIES = 10000
 _MAX_CONFIGURATIONS_PER_CVE = 64
 _MAX_MATCHES_PER_NODE = 128
