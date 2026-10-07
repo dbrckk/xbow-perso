@@ -39,28 +39,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:12:20Z
+Generated: 2026-10-07T20:17:00Z
 
 ### Git
 - Branch: `main`
-- Head: `c24fa822fbe5`
-- Commit date: 2026-10-07T22:12:07+02:00
-- Commit: feat(vuln): add verified CVE advisory range catalog
-- Tracked files: 673
+- Head: `7c0a19bc804b`
+- Commit date: 2026-10-07T22:16:46+02:00
+- Commit: feat(vuln): load pinned verified CVE advisory catalog
+- Tracked files: 675
 
 ### Recently changed files
+- `backend/app/cve_advisory_loader.py`
+- `backend/app/finding_intelligence.py`
+- `backend/tests/test_cve_advisory_loader.py`
 - `backend/app/affected_version_range.py`
 - `backend/app/cve_advisory_catalog.py`
-- `backend/app/finding_intelligence.py`
 - `backend/tests/test_cve_advisory_catalog.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
 - `backend/tests/test_affected_version_range.py`
 - `backend/tests/test_cve_metadata_normalization.py`
-- `backend/app/cpe_consistency.py`
-- `backend/app/cve_risk_context.py`
-- `backend/tests/test_cpe_consistency.py`
 
 ### Project signals
 - `pyproject.toml`

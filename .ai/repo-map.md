@@ -80,6 +80,7 @@ backend/
     coverage.py
     cpe_consistency.py
     cve_advisory_catalog.py
+    cve_advisory_loader.py
     cve_evidence_verdict.py
     cve_risk_context.py
     cve_validation_priority.py
@@ -290,6 +291,7 @@ backend/
     test_coverage.py
     test_cpe_consistency.py
     test_cve_advisory_catalog.py
+    test_cve_advisory_loader.py
     test_cve_evidence_verdict.py
     test_cve_metadata_normalization.py
     test_cve_risk_context.py
@@ -2726,6 +2728,45 @@ normalized_vendor = (
 normalized_product = (
 ⋮----
 matches = [
+````
+
+## File: backend/app/cve_advisory_loader.py
+````python
+_MAX_CATALOG_BYTES = 8 * 1024 * 1024
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
+_SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
+_SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
+⋮----
+class CveAdvisoryCatalogLoadError(RuntimeError)
+⋮----
+def _read_regular_file(path: Path) -> bytes
+⋮----
+flags = os.O_RDONLY
+⋮----
+fd = os.open(path, flags)
+⋮----
+info = os.fstat(fd)
+⋮----
+payload = handle.read(_MAX_CATALOG_BYTES + 1)
+⋮----
+def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None
+⋮----
+path_raw = os.getenv(_PATH_ENV, "").strip()
+digest_raw = os.getenv(_SHA_ENV, "").strip().lower()
+⋮----
+payload = _read_regular_file(Path(path_raw))
+actual_digest = hashlib.sha256(payload).hexdigest()
+⋮----
+document: Any = json.loads(payload.decode("utf-8"))
+⋮----
+source_name = os.getenv(
+⋮----
+configured = bool(
+⋮----
+catalog = load_verified_cve_advisory_catalog()
+⋮----
+def cve_advisory_catalog_runtime_status() -> dict[str, Any]
 ````
 
 ## File: backend/app/cve_evidence_verdict.py
@@ -16667,6 +16708,35 @@ document = {
 def test_conflicting_duplicate_advisory_entry_is_rejected()
 ⋮----
 def test_invalid_lookup_identity_fails_closed()
+````
+
+## File: backend/tests/test_cve_advisory_loader.py
+````python
+def _document()
+⋮----
+def _write_catalog(tmp_path)
+⋮----
+path = tmp_path / "cve-advisories.json"
+payload = json.dumps(
+⋮----
+def _clear(monkeypatch)
+⋮----
+def test_unconfigured_loader_returns_none(monkeypatch)
+⋮----
+def test_pinned_catalog_loads_as_verified(tmp_path, monkeypatch)
+⋮----
+def test_digest_mismatch_fails_closed(tmp_path, monkeypatch)
+⋮----
+def test_partial_configuration_fails_closed(tmp_path, monkeypatch)
+⋮----
+def test_malformed_json_fails_closed(tmp_path, monkeypatch)
+⋮----
+path = tmp_path / "bad.json"
+payload = b"{not-json"
+⋮----
+def test_symlink_catalog_is_rejected(tmp_path, monkeypatch)
+⋮----
+link = tmp_path / "catalog-link.json"
 ````
 
 ## File: backend/tests/test_cve_evidence_verdict.py

@@ -1,16 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e59ebae38375bd53d08ff703c15dd9f2e6f98003",
-  "head": "c24fa822fbe556d78160811aa0430a85ca74d9e0",
+  "base": "c24fa822fbe556d78160811aa0430a85ca74d9e0",
+  "head": "7c0a19bc804b8e2e672c555d2b72a021e9b5e0e8",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/affected_version_range.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/cve_advisory_catalog.py",
+      "path": "backend/app/cve_advisory_loader.py",
       "status": "A"
     },
     {
@@ -18,152 +14,66 @@
       "status": "M"
     },
     {
-      "path": "backend/tests/test_cve_advisory_catalog.py",
+      "path": "backend/tests/test_cve_advisory_loader.py",
       "status": "A"
-    },
-    {
-      "path": "backend/tests/test_finding_intelligence.py",
-      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/affected_version_range.py",
-    "backend/app/cve_advisory_catalog.py",
+    "backend/app/cve_advisory_loader.py",
     "backend/app/finding_intelligence.py",
-    "backend/tests/test_cve_advisory_catalog.py",
-    "backend/tests/test_finding_intelligence.py"
+    "backend/tests/test_cve_advisory_loader.py"
   ],
   "impacted_files": [
-    "backend/app/affected_version_range.py",
-    "backend/app/cve_advisory_catalog.py",
+    "backend/app/cve_advisory_loader.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/tests/test_affected_version_range.py",
-    "backend/tests/test_cve_advisory_catalog.py",
+    "backend/tests/test_cve_advisory_loader.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
     {
-      "name": "AffectedVersionRangeEvidence",
+      "name": "CveAdvisoryCatalogLoadError",
       "kind": "class",
-      "file": "backend/app/affected_version_range.py",
-      "line": 16
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 26
     },
     {
-      "name": "to_dict",
+      "name": "_read_regular_file",
       "kind": "function",
-      "file": "backend/app/affected_version_range.py",
-      "line": 34
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 30
     },
     {
-      "name": "_version_tuple",
+      "name": "load_verified_cve_advisory_catalog",
       "kind": "function",
-      "file": "backend/app/affected_version_range.py",
-      "line": 47
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 65
     },
     {
-      "name": "_clause_matches",
+      "name": "load_cve_advisory_catalog_with_status",
       "kind": "function",
-      "file": "backend/app/affected_version_range.py",
-      "line": 55
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 114
     },
     {
-      "name": "_range_matches",
+      "name": "cve_advisory_catalog_runtime_status",
       "kind": "function",
-      "file": "backend/app/affected_version_range.py",
-      "line": 76
-    },
-    {
-      "name": "build_affected_version_range_evidence",
-      "kind": "function",
-      "file": "backend/app/affected_version_range.py",
-      "line": 86
-    },
-    {
-      "name": "CveAdvisoryCatalogError",
-      "kind": "class",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 16
-    },
-    {
-      "name": "CveAdvisoryEntry",
-      "kind": "class",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 21
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 28
-    },
-    {
-      "name": "CveAdvisoryCatalog",
-      "kind": "class",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 35
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 43
-    },
-    {
-      "name": "_text",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 49
-    },
-    {
-      "name": "_normalize_cve",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 68
-    },
-    {
-      "name": "_normalize_identity",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 76
-    },
-    {
-      "name": "_ranges",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 80
-    },
-    {
-      "name": "_canonical_digest",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 109
-    },
-    {
-      "name": "build_cve_advisory_catalog",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 124
-    },
-    {
-      "name": "find_verified_cve_advisory",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_catalog.py",
-      "line": 195
+      "file": "backend/app/cve_advisory_loader.py",
+      "line": 151
     },
     {
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 39
+      "line": 40
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 526
+      "line": 527
     },
     {
       "name": "authenticate_control_api",
@@ -712,118 +622,58 @@
       "line": 1882
     },
     {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 9
-    },
-    {
-      "name": "test_numeric_version_inside_range_is_supported",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 20
-    },
-    {
-      "name": "test_numeric_version_outside_range_is_not_affected",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 33
-    },
-    {
-      "name": "test_multiple_ranges_are_or_alternatives",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 44
-    },
-    {
-      "name": "test_conflicting_observed_versions_are_mixed",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 54
-    },
-    {
-      "name": "test_unparseable_range_stays_unknown",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 66
-    },
-    {
-      "name": "test_non_numeric_observed_version_stays_unknown",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 79
-    },
-    {
-      "name": "test_missing_ranges_do_not_guess_applicability",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 90
-    },
-    {
-      "name": "test_multiple_cves_make_shared_range_binding_unknown",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 100
-    },
-    {
-      "name": "test_range_without_cve_binding_is_unknown",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 122
-    },
-    {
-      "name": "test_unverified_range_source_cannot_become_trusted_support",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 138
-    },
-    {
-      "name": "test_verified_range_source_can_support_candidate_without_confirmation",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 157
-    },
-    {
-      "name": "test_missing_range_source_is_not_invented",
-      "kind": "function",
-      "file": "backend/tests/test_affected_version_range.py",
-      "line": 175
-    },
-    {
       "name": "_document",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
-      "line": 11
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 15
     },
     {
-      "name": "test_verified_catalog_exposes_authoritative_entry",
+      "name": "_write_catalog",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
-      "line": 25
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 29
     },
     {
-      "name": "test_unverified_catalog_never_returns_trusted_advisory",
+      "name": "_clear",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 40
+    },
+    {
+      "name": "test_unconfigured_loader_returns_none",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_loader.py",
       "line": 49
     },
     {
-      "name": "test_ambiguous_same_cve_without_product_binding_fails_closed",
+      "name": "test_pinned_catalog_loads_as_verified",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
-      "line": 64
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 63
     },
     {
-      "name": "test_conflicting_duplicate_advisory_entry_is_rejected",
+      "name": "test_digest_mismatch_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
-      "line": 94
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 89
     },
     {
-      "name": "test_invalid_lookup_identity_fails_closed",
+      "name": "test_partial_configuration_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_catalog.py",
-      "line": 124
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 111
+    },
+    {
+      "name": "test_malformed_json_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 123
+    },
+    {
+      "name": "test_symlink_catalog_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "line": 145
     },
     {
       "name": "_finding",
@@ -1085,8 +935,7 @@
     }
   ],
   "selected_tests": [
-    "backend/tests/test_affected_version_range.py",
-    "backend/tests/test_cve_advisory_catalog.py",
+    "backend/tests/test_cve_advisory_loader.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"

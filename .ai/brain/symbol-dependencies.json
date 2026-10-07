@@ -5,311 +5,28 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "AffectedVersionRangeEvidence": {
+    "CveAdvisoryCatalogLoadError": {
       "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 16,
-        "end": 44
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 34,
-        "end": 154
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AffectedVersionRangeEvidence",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_clause_matches",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_range_matches",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 76,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_version_tuple",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_affected_version_range_evidence",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 86,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding_cve_ids",
-          "definitions": [
-            {
-              "file": "backend/app/vulnerability_intelligence.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_version_tuple": {
-      "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 47,
-        "end": 52
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 26,
+        "end": 27
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_clause_matches": {
+    "_read_regular_file": {
       "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 55,
-        "end": 73
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 30,
+        "end": 62
       },
       "symbol_dependencies": [
         {
-          "symbol": "_version_tuple",
+          "symbol": "CveAdvisoryCatalogLoadError",
           "definitions": [
             {
-              "file": "backend/app/affected_version_range.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_range_matches": {
-      "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 76,
-        "end": 83
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_clause_matches",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_affected_version_range_evidence": {
-      "source": {
-        "file": "backend/app/affected_version_range.py",
-        "start": 86,
-        "end": 244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AffectedVersionRangeEvidence",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_range_matches",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 76,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_version_tuple",
-          "definitions": [
-            {
-              "file": "backend/app/affected_version_range.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "finding_cve_ids",
-          "definitions": [
-            {
-              "file": "backend/app/vulnerability_intelligence.py",
-              "line": 61,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "CveAdvisoryCatalogError": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 16,
-        "end": 17
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "CveAdvisoryEntry": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 21,
-        "end": 31
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 43,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "CveAdvisoryCatalog": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 35,
-        "end": 46
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryEntry",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 21,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 43,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_text": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 49,
-        "end": 65
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
@@ -319,123 +36,11 @@
       ],
       "dependency_count": 1
     },
-    "_normalize_cve": {
+    "load_verified_cve_advisory_catalog": {
       "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 68,
-        "end": 73
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_normalize_identity": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 76,
-        "end": 77
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_ranges": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 80,
-        "end": 106
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_canonical_digest": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 109,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_cve_advisory_catalog": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 124,
-        "end": 192
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 65,
+        "end": 111
       },
       "symbol_dependencies": [
         {
@@ -448,7 +53,7 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "CveAdvisoryCatalogError",
@@ -460,14 +65,14 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "CveAdvisoryEntry",
+          "symbol": "CveAdvisoryCatalogLoadError",
           "definitions": [
             {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 21,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
               "kind": "class",
               "language": "python"
             }
@@ -475,11 +80,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_canonical_digest",
+          "symbol": "_read_regular_file",
           "definitions": [
             {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 109,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 30,
               "kind": "function",
               "language": "python"
             }
@@ -487,131 +92,93 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_normalize_cve",
+          "symbol": "build_cve_advisory_catalog",
           "definitions": [
             {
               "file": "backend/app/cve_advisory_catalog.py",
-              "line": 68,
+              "line": 124,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_identity",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 76,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_ranges",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 80,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_text",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "find_verified_cve_advisory": {
-      "source": {
-        "file": "backend/app/cve_advisory_catalog.py",
-        "start": 195,
-        "end": 239
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "CveAdvisoryEntry",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 21,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_cve",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_identity",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 76,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 5
     },
+    "load_cve_advisory_catalog_with_status": {
+      "source": {
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 114,
+        "end": 148
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CveAdvisoryCatalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_catalog.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CveAdvisoryCatalogLoadError",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_verified_cve_advisory_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "cve_advisory_catalog_runtime_status": {
+      "source": {
+        "file": "backend/app/cve_advisory_loader.py",
+        "start": 151,
+        "end": 153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "load_cve_advisory_catalog_with_status",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
     "build_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 39,
-        "end": 522
+        "start": 40,
+        "end": 523
       },
       "symbol_dependencies": [
         {
@@ -956,8 +523,8 @@
     "campaign_finding_intelligence": {
       "source": {
         "file": "backend/app/finding_intelligence.py",
-        "start": 526,
-        "end": 567
+        "start": 527,
+        "end": 573
       },
       "symbol_dependencies": [
         {
@@ -977,12 +544,24 @@
           "definitions": [
             {
               "file": "backend/app/finding_intelligence.py",
-              "line": 39,
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "load_cve_advisory_catalog_with_status",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "load_observation_graph",
@@ -1009,451 +588,61 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 5
     },
     "_document": {
       "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 11,
-        "end": 22
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 15,
+        "end": 26
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "test_verified_catalog_exposes_authoritative_entry": {
+    "_write_catalog": {
       "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 25,
-        "end": 46
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 29,
+        "end": 37
       },
       "symbol_dependencies": [
         {
           "symbol": "_document",
           "definitions": [
             {
-              "file": "backend/tests/test_cve_advisory_catalog.py",
-              "line": 11,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 15,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "find_verified_cve_advisory",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_unverified_catalog_never_returns_trusted_advisory": {
-      "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 49,
-        "end": 61
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_document",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cve_advisory_catalog.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "find_verified_cve_advisory",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_ambiguous_same_cve_without_product_binding_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 64,
-        "end": 91
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "find_verified_cve_advisory",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_conflicting_duplicate_advisory_entry_is_rejected": {
-      "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 94,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "CveAdvisoryCatalogError",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 16,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_invalid_lookup_identity_fails_closed": {
-      "source": {
-        "file": "backend/tests/test_cve_advisory_catalog.py",
-        "start": 124,
-        "end": 135
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_document",
-          "definitions": [
-            {
-              "file": "backend/tests/test_cve_advisory_catalog.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "find_verified_cve_advisory",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_finding": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 10,
-        "end": 19
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_graph": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 22,
-        "end": 58
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_finding_intelligence_consolidates_member_and_cluster_views": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 61,
-        "end": 93
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_finding_intelligence_summary_reflects_cluster_saturation": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 96,
-        "end": 108
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_finding_intelligence_does_not_expose_query_values": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 111,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_finding_intelligence_route_is_exposed": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 124,
-        "end": 125
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 1
     },
-    "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking": {
+    "_clear": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 128,
-        "end": 155
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 40,
+        "end": 46
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_unconfigured_loader_returns_none": {
+      "source": {
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 49,
+        "end": 60
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1461,23 +650,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "cve_advisory_catalog_runtime_status",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 151,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "load_verified_cve_advisory_catalog",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -1487,19 +676,19 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_exposes_advisory_validation_priority_only": {
+    "test_pinned_catalog_loads_as_verified": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 158,
-        "end": 181
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 63,
+        "end": 86
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1507,11 +696,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "_write_catalog",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -1519,11 +708,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "load_cve_advisory_catalog_with_status",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 114,
               "kind": "function",
               "language": "python"
             }
@@ -1533,19 +722,31 @@
       ],
       "dependency_count": 3
     },
-    "test_finding_intelligence_exposes_cve_risk_context_without_confirmation": {
+    "test_digest_mismatch_fails_closed": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 184,
-        "end": 207
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 89,
+        "end": 108
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "CveAdvisoryCatalogLoadError",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
@@ -1553,11 +754,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_graph",
+          "symbol": "_write_catalog",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -1565,11 +766,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_finding_intelligence",
+          "symbol": "load_cve_advisory_catalog_with_status",
           "definitions": [
             {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_verified_cve_advisory_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -1577,57 +790,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 5
     },
-    "test_finding_intelligence_counts_verified_kev_candidates": {
+    "test_partial_configuration_fails_closed": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 210,
-        "end": 252
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 111,
+        "end": 120
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "CveAdvisoryCatalogLoadError",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "build_kev_catalog",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/kev_catalog.py",
-              "line": 84,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_write_catalog",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_verified_cve_advisory_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -1637,55 +850,101 @@
       ],
       "dependency_count": 4
     },
-    "test_finding_intelligence_exposes_bounded_cve_validation_plan": {
+    "test_malformed_json_fails_closed": {
       "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 255,
-        "end": 267
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 123,
+        "end": 138
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "CveAdvisoryCatalogLoadError",
           "definitions": [
             {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "plan",
+          "symbol": "_clear",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_verified_cve_advisory_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_symlink_catalog_is_rejected": {
+      "source": {
+        "file": "backend/tests/test_cve_advisory_loader.py",
+        "start": 145,
+        "end": 157
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CveAdvisoryCatalogLoadError",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_clear",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_write_catalog",
+          "definitions": [
+            {
+              "file": "backend/tests/test_cve_advisory_loader.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_verified_cve_advisory_catalog",
+          "definitions": [
+            {
+              "file": "backend/app/cve_advisory_loader.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -1694,1080 +953,6 @@
         }
       ],
       "dependency_count": 4
-    },
-    "test_finding_intelligence_surfaces_reproducible_differential_quality": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 270,
-        "end": 323
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_finding_intelligence_surfaces_reproduced_repeat_outcome": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 326,
-        "end": 377
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_finding_intelligence_surfaces_contradictory_repeat_outcome": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 380,
-        "end": 442
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_conflicting_product_versions_downgrade_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 445,
-        "end": 488
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_declared_cve_product_missing_from_observed_stack_downgrades_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 491,
-        "end": 533
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_stale_version_fingerprint_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 536,
-        "end": 572
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_mismatched_cpe_downgrades_cve_verdict_and_risk_context": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 575,
-        "end": 616
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_cpe_version_mismatch_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 619,
-        "end": 658
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_cpe_vendor_mismatch_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 661,
-        "end": 702
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_observed_version_outside_affected_range_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 705,
-        "end": 744
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_observed_version_inside_affected_range_supports_candidate_without_confirmation": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 747,
-        "end": 789
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_shared_range_across_multiple_cves_never_downgrades_as_outside_range": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 792,
-        "end": 841
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_unverified_affected_range_downgrades_cve_verdict": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 844,
-        "end": 890
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_verified_advisory_range_overrides_conflicting_scanner_range": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 893,
-        "end": 969
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_unverified_advisory_catalog_cannot_override_scanner_range": {
-      "source": {
-        "file": "backend/tests/test_finding_intelligence.py",
-        "start": 972,
-        "end": 1028
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 10,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_finding_intelligence.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_cve_advisory_catalog",
-          "definitions": [
-            {
-              "file": "backend/app/cve_advisory_catalog.py",
-              "line": 124,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_finding_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/finding_intelligence.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
     }
   }
 }
