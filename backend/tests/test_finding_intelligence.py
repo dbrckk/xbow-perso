@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+from app.cve_advisory_catalog import build_cve_advisory_catalog
 from app.finding_intelligence import build_finding_intelligence
 from app.kev_catalog import build_kev_catalog
 from app.main import app
@@ -887,3 +888,141 @@ def test_unverified_affected_range_downgrades_cve_verdict():
         "ambiguous_version_candidate"
     )
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+
+
+def test_verified_advisory_range_overrides_conflicting_scanner_range():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.vendor = "djangoproject"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.affected_version_ranges = ["<5.1.3"]
+    finding.affected_version_range_source = "nuclei-template-metadata"
+    finding.affected_version_range_verified = False
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-a",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:django-b",
+            "technology",
+            "django 5.1.4",
+            "wappalyzer",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+    catalog = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-12345",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": [">=5.0,<5.2.0"],
+                }
+            ],
+        },
+        source_name="vendor-advisory-feed",
+        source_verified=True,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        graph,
+        cve_advisory_catalog=catalog,
+    )
+    row = result["findings"][0]
+
+    assert row["cve_advisory"]["matched"] is True
+    assert row["cve_advisory"]["source_verified"] is True
+    assert row["cve_advisory"]["scanner_range_conflict"] is True
+    assert row["affected_version_range"]["state"] == "affected"
+    assert row["affected_version_range"][
+        "trusted_affected_version_supported"
+    ] is True
+    assert row["affected_version_range"]["range_source"] == (
+        "vendor-advisory-feed:CVE-2026-12345"
+    )
+    assert row["affected_version_range"]["range_source_verified"] is True
+    assert result["summary"]["verified_advisory_range_matches"] == 1
+    assert result["summary"]["scanner_advisory_range_conflicts"] == 1
+
+
+def test_unverified_advisory_catalog_cannot_override_scanner_range():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.vendor = "djangoproject"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.affected_version_ranges = ["<5.1.3"]
+    finding.affected_version_range_source = "nuclei-template-metadata"
+    finding.affected_version_range_verified = False
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-current-unverified-catalog",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+    catalog = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-12345",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": [">=5.0,<5.2.0"],
+                }
+            ],
+        },
+        source_name="unverified-cache",
+        source_verified=False,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        graph,
+        cve_advisory_catalog=catalog,
+    )
+    row = result["findings"][0]
+
+    assert row["cve_advisory"]["matched"] is False
+    assert row["affected_version_range"]["state"] == "not_affected"
+    assert row["affected_version_range"]["range_source"] == (
+        "nuclei-template-metadata"
+    )
+    assert row["affected_version_range"]["range_source_verified"] is False
