@@ -87,8 +87,15 @@ def build_affected_version_range_evidence(
     finding: Any,
     *,
     observed_versions: Iterable[str] = (),
+    ranges_override: Iterable[str] | None = None,
+    range_source_override: str | None = None,
+    range_source_verified_override: bool | None = None,
 ) -> AffectedVersionRangeEvidence:
-    raw_ranges = getattr(finding, "affected_version_ranges", None) or ()
+    raw_ranges = (
+        ranges_override
+        if ranges_override is not None
+        else getattr(finding, "affected_version_ranges", None) or ()
+    )
     if isinstance(raw_ranges, str):
         raw_ranges = (raw_ranges,)
     ranges = tuple(
@@ -107,12 +114,18 @@ def build_affected_version_range_evidence(
     )
     cve_ids = finding_cve_ids(finding)
     raw_source = str(
-        getattr(finding, "affected_version_range_source", "") or ""
+        range_source_override
+        if range_source_override is not None
+        else getattr(finding, "affected_version_range_source", "") or ""
     ).strip()
     range_source = raw_source[:120] or None
+    verified_value = (
+        range_source_verified_override
+        if range_source_verified_override is not None
+        else getattr(finding, "affected_version_range_verified", None)
+    )
     range_source_verified = bool(
-        range_source
-        and getattr(finding, "affected_version_range_verified", None) is True
+        range_source and verified_value is True
     )
     if range_source_verified:
         range_provenance_state = "verified"
