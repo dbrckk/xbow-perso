@@ -304,6 +304,7 @@ def test_preflight_allows_unconfigured_optional_cve_advisory_catalog(monkeypatch
         "source_name": None,
         "source_format": "internal-v1",
         "entry_count": 0,
+        "adapter": None,
         "error": None,
     }
 
