@@ -604,7 +604,10 @@ def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context():
     row = result["findings"][0]
 
     assert row["cpe_consistency"]["cpe_supports_product_identity"] is False
-    assert row["cpe_consistency"]["reasons"] == ["cpe_product_mismatch"]
+    assert row["cpe_consistency"]["reasons"] == [
+        "cpe_product_mismatch",
+        "cpe_version_mismatch",
+    ]
     assert row["cve_evidence_verdict"]["verdict"] == (
         "ambiguous_version_candidate"
     )
