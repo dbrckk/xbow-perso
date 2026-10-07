@@ -111,7 +111,8 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
         ) from exc
 
 
-def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
+def load_cve_advisory_catalog_with_status(
+) -> tuple[CveAdvisoryCatalog | None, dict[str, Any]]:
     configured = bool(
         os.getenv(_PATH_ENV, "").strip()
         or os.getenv(_SHA_ENV, "").strip()
@@ -119,7 +120,7 @@ def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
     try:
         catalog = load_verified_cve_advisory_catalog()
     except CveAdvisoryCatalogLoadError as exc:
-        return {
+        return None, {
             "configured": configured,
             "available": False,
             "verified": False,
@@ -129,7 +130,7 @@ def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
         }
 
     if catalog is None:
-        return {
+        return None, {
             "configured": False,
             "available": False,
             "verified": False,
@@ -137,7 +138,7 @@ def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
             "entry_count": 0,
             "error": None,
         }
-    return {
+    return catalog, {
         "configured": True,
         "available": True,
         "verified": True,
@@ -145,3 +146,8 @@ def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
         "entry_count": catalog.entry_count,
         "error": None,
     }
+
+
+def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
+    _catalog, status = load_cve_advisory_catalog_with_status()
+    return status
