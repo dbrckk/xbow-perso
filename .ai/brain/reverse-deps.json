@@ -415,7 +415,8 @@
     "backend/app/cve_advisory_loader.py": {
       "dependencies": [
         "backend/app/cve_advisory_catalog.py",
-        "backend/app/nvd_advisory_adapter.py"
+        "backend/app/nvd_advisory_adapter.py",
+        "backend/app/osv_advisory_adapter.py"
       ],
       "dependents": [
         "backend/app/deployment_preflight.py",
@@ -424,7 +425,7 @@
         "backend/tests/test_cve_advisory_loader.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 3
     },
     "backend/app/cve_evidence_verdict.py": {
       "dependencies": [
@@ -2089,6 +2090,15 @@
       ],
       "in_degree": 12,
       "out_degree": 41
+    },
+    "backend/app/osv_advisory_adapter.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/cve_advisory_loader.py",
+        "backend/tests/test_osv_advisory_adapter.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
     },
     "backend/app/outbox_recovery.py": {
       "dependencies": [
@@ -5307,6 +5317,15 @@
       "in_degree": 0,
       "out_degree": 4
     },
+    "backend/tests/test_osv_advisory_adapter.py": {
+      "dependencies": [
+        "backend/app/osv_advisory_adapter.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_outbox_chaos.py": {
       "dependencies": [
         "backend/app/campaign_audit.py",
@@ -6782,6 +6801,7 @@
         "backend/tests/test_opportunity_ranking.py",
         "backend/tests/test_orchestrator.py",
         "backend/tests/test_orchestrator_validation_alignment.py",
+        "backend/tests/test_osv_advisory_adapter.py",
         "backend/tests/test_outbox_chaos.py",
         "backend/tests/test_overview_reasoning.py",
         "backend/tests/test_passive_api_intelligence.py",
@@ -6904,7 +6924,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 259,
+      "in_degree": 260,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

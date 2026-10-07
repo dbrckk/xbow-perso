@@ -39,16 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:44:28Z
+Generated: 2026-10-07T20:50:56Z
 
 ### Git
 - Branch: `main`
-- Head: `da2f3439c183`
-- Commit date: 2026-10-07T22:44:14+02:00
-- Commit: feat(vuln): add package advisory identity
-- Tracked files: 677
+- Head: `bcb3cdd79a47`
+- Commit date: 2026-10-07T22:50:46+02:00
+- Commit: feat(vuln): adapt pinned OSV package advisories
+- Tracked files: 679
 
 ### Recently changed files
+- `backend/app/cve_advisory_loader.py`
+- `backend/app/osv_advisory_adapter.py`
+- `backend/tests/test_cve_advisory_loader.py`
+- `backend/tests/test_osv_advisory_adapter.py`
 - `backend/app/cve_advisory_catalog.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/main.py`
@@ -56,14 +60,11 @@ Generated: 2026-10-07T20:44:28Z
 - `backend/tests/test_cve_advisory_catalog.py`
 - `backend/tests/test_cve_metadata_normalization.py`
 - `backend/tests/test_finding_intelligence.py`
-- `backend/app/cve_advisory_loader.py`
 - `backend/app/nvd_advisory_adapter.py`
-- `backend/tests/test_cve_advisory_loader.py`
 - `backend/tests/test_deployment_preflight.py`
 - `backend/tests/test_nvd_advisory_adapter.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/app/deployment_preflight.py`
-- `backend/app/affected_version_range.py`
 
 ### Project signals
 - `pyproject.toml`

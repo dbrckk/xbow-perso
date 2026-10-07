@@ -1244,35 +1244,35 @@
       "language": "python",
       "kind": "class",
       "name": "CveAdvisoryCatalogLoadError",
-      "line": 32
+      "line": 38
     },
     {
       "file": "backend/app/cve_advisory_loader.py",
       "language": "python",
       "kind": "function",
       "name": "_read_regular_file",
-      "line": 36
+      "line": 42
     },
     {
       "file": "backend/app/cve_advisory_loader.py",
       "language": "python",
       "kind": "function",
       "name": "load_verified_cve_advisory_catalog",
-      "line": 71
+      "line": 77
     },
     {
       "file": "backend/app/cve_advisory_loader.py",
       "language": "python",
       "kind": "function",
       "name": "load_cve_advisory_catalog_with_status",
-      "line": 142
+      "line": 157
     },
     {
       "file": "backend/app/cve_advisory_loader.py",
       "language": "python",
       "kind": "function",
       "name": "cve_advisory_catalog_runtime_status",
-      "line": 191
+      "line": 206
     },
     {
       "file": "backend/app/cve_evidence_verdict.py",
@@ -6159,6 +6159,76 @@
       "kind": "function",
       "name": "advance_campaign",
       "line": 696
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "class",
+      "name": "OsvAdvisoryAdapterError",
+      "line": 20
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "class",
+      "name": "OsvAdvisoryAdapterResult",
+      "line": 25
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "to_dict",
+      "line": 35
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_text",
+      "line": 54
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_numeric_version",
+      "line": 72
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_record_cve_id",
+      "line": 79
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_expression",
+      "line": 98
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_semver_event_ranges",
+      "line": 109
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_records",
+      "line": 191
+    },
+    {
+      "file": "backend/app/osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "adapt_osv_v1",
+      "line": 207
     },
     {
       "file": "backend/app/outbox_recovery.py",
@@ -14666,6 +14736,13 @@
       "line": 229
     },
     {
+      "file": "backend/tests/test_cve_advisory_loader.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_pinned_raw_osv_catalog_is_adapted_and_verified",
+      "line": 246
+    },
+    {
       "file": "backend/tests/test_cve_evidence_verdict.py",
       "language": "python",
       "kind": "function",
@@ -22763,6 +22840,97 @@
       "kind": "function",
       "name": "test_independent_observed_validation_removes_pending_finding",
       "line": 56
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_record",
+      "line": 10
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_affected",
+      "line": 18
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_range",
+      "line": 35
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_semver_range_is_converted_to_package_advisory",
+      "line": 42
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_introduced_zero_and_fixed_becomes_bounded_from_zero",
+      "line": 74
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_multiple_semver_intervals_are_preserved",
+      "line": 96
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_non_semver_range_is_not_generically_ordered",
+      "line": 121
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_explicit_numeric_versions_are_safe_exact_matches",
+      "line": 142
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_non_numeric_semver_is_left_unknown",
+      "line": 167
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_multiple_cve_aliases_make_binding_ambiguous",
+      "line": 188
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_single_cve_alias_binds_non_cve_osv_id",
+      "line": 205
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_event_with_multiple_state_keys_is_rejected_conservatively",
+      "line": 217
+    },
+    {
+      "file": "backend/tests/test_osv_advisory_adapter.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_invalid_package_identity_is_rejected",
+      "line": 240
     },
     {
       "file": "backend/tests/test_outbox_chaos.py",

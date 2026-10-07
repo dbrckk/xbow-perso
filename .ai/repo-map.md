@@ -158,6 +158,7 @@ backend/
     operational_slo.py
     opportunity_ranking.py
     orchestrator.py
+    osv_advisory_adapter.py
     outbox_recovery.py
     passive_api_intelligence.py
     passive_response_context.py
@@ -407,6 +408,7 @@ backend/
     test_opportunity_ranking.py
     test_orchestrator_validation_alignment.py
     test_orchestrator.py
+    test_osv_advisory_adapter.py
     test_outbox_chaos.py
     test_overview_reasoning.py
     test_passive_api_intelligence.py
@@ -2759,7 +2761,7 @@ _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
 _FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
-_ALLOWED_FORMATS = frozenset({"internal-v1", "nvd-cve-api-v2"})
+_ALLOWED_FORMATS = frozenset(
 ⋮----
 class CveAdvisoryCatalogLoadError(RuntimeError)
 ⋮----
@@ -2789,6 +2791,9 @@ adapted = adapt_nvd_cve_api_v2(document)
 ⋮----
 document = adapted.document
 ⋮----
+adapted = adapt_osv_v1(document)
+⋮----
+default_source_name = {
 source_name = os.getenv(
 ⋮----
 configured = bool(
@@ -9024,6 +9029,121 @@ jobs = _enqueue_action(
 reason = (
 ⋮----
 action = planner.plan(campaign, graph)[0]
+````
+
+## File: backend/app/osv_advisory_adapter.py
+````python
+OSV_ADVISORY_ADAPTER_SCHEMA = "osv-advisory-adapter-v1"
+_CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,10})$", re.IGNORECASE)
+_NUMERIC_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){0,5}$")
+_MAX_RECORDS = 10000
+_MAX_AFFECTED = 256
+_MAX_RANGES_PER_AFFECTED = 64
+_MAX_EVENTS_PER_RANGE = 128
+_MAX_VERSIONS_PER_AFFECTED = 2048
+_MAX_OUTPUT_ENTRIES = 20000
+_MAX_OUTPUT_RANGES = 16
+⋮----
+class OsvAdvisoryAdapterError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class OsvAdvisoryAdapterResult
+⋮----
+schema: str
+document: dict[str, Any]
+input_record_count: int
+output_entry_count: int
+skipped_ambiguous_cve_bindings: int
+skipped_non_semver_ranges: int
+skipped_unusable_semver_ranges: int
+skipped_unusable_explicit_versions: int
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+result = value.strip()
+⋮----
+def _numeric_version(value: object) -> str | None
+⋮----
+raw = str(value or "").strip()
+⋮----
+def _record_cve_id(record: Mapping[str, Any]) -> str | None
+⋮----
+candidates: set[str] = set()
+record_id = record.get("id")
+⋮----
+aliases = record.get("aliases") or []
+⋮----
+def _expression(start: str | None, end_op: str | None, end: str | None) -> str
+⋮----
+clauses: list[str] = []
+⋮----
+def _semver_event_ranges(events: object) -> tuple[str, ...] | None
+⋮----
+open_range = False
+start: str | None = None
+expressions: list[str] = []
+saw_introduced = False
+⋮----
+supported_keys = [
+⋮----
+key = supported_keys[0]
+raw_value = raw_event.get(key)
+⋮----
+value = str(raw_value or "").strip()
+⋮----
+start = "0"
+⋮----
+start = _numeric_version(value)
+⋮----
+open_range = True
+saw_introduced = True
+⋮----
+value = _numeric_version(raw_value)
+⋮----
+start = None
+⋮----
+numeric_limit = _numeric_version(value)
+⋮----
+normalized = tuple(
+⋮----
+def _records(document: Mapping[str, Any]) -> list[Mapping[str, Any]]
+⋮----
+raw_records = document.get("vulns")
+⋮----
+def adapt_osv_v1(document: Mapping[str, Any]) -> OsvAdvisoryAdapterResult
+⋮----
+records = _records(document)
+⋮----
+output: dict[tuple[str, str, str], set[str]] = {}
+skipped_ambiguous = 0
+skipped_non_semver = 0
+skipped_semver = 0
+skipped_versions = 0
+⋮----
+cve_id = _record_cve_id(record)
+⋮----
+affected = record.get("affected") or []
+⋮----
+package = raw_affected.get("package")
+⋮----
+ecosystem = _text(
+package_name = _text(
+⋮----
+ranges: set[str] = set()
+raw_ranges = raw_affected.get("ranges") or []
+⋮----
+range_type = str(raw_range.get("type") or "").strip().upper()
+⋮----
+converted = _semver_event_ranges(raw_range.get("events"))
+⋮----
+versions = raw_affected.get("versions") or []
+⋮----
+version = _numeric_version(raw_version)
+⋮----
+key = (cve_id, ecosystem, package_name)
+⋮----
+entries = [
+normalized = {
 ````
 
 ## File: backend/app/outbox_recovery.py
@@ -16881,6 +17001,8 @@ path = tmp_path / "nvd.json"
 entry = catalog.entries[0]
 ⋮----
 def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch)
+⋮----
+path = tmp_path / "osv.json"
 ````
 
 ## File: backend/tests/test_cve_evidence_verdict.py
@@ -21386,6 +21508,35 @@ breaker = circuit_breaker_state(graph)
 def test_action_after_stop_opens_circuit_breaker_before_new_work(tmp_path)
 ⋮----
 def test_single_planner_reversal_does_not_trip_breaker(tmp_path)
+````
+
+## File: backend/tests/test_osv_advisory_adapter.py
+````python
+def _record(*, vuln_id="CVE-2026-12345", aliases=None, affected=None)
+⋮----
+def _range(range_type, *events)
+⋮----
+def test_semver_range_is_converted_to_package_advisory()
+⋮----
+result = adapt_osv_v1(
+⋮----
+def test_introduced_zero_and_fixed_becomes_bounded_from_zero()
+⋮----
+def test_multiple_semver_intervals_are_preserved()
+⋮----
+def test_non_semver_range_is_not_generically_ordered()
+⋮----
+def test_explicit_numeric_versions_are_safe_exact_matches()
+⋮----
+def test_non_numeric_semver_is_left_unknown()
+⋮----
+def test_multiple_cve_aliases_make_binding_ambiguous()
+⋮----
+def test_single_cve_alias_binds_non_cve_osv_id()
+⋮----
+def test_event_with_multiple_state_keys_is_rejected_conservatively()
+⋮----
+def test_invalid_package_identity_is_rejected()
 ````
 
 ## File: backend/tests/test_outbox_chaos.py
