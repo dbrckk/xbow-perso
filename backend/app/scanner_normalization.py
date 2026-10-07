@@ -43,6 +43,7 @@ class NormalizedScannerFinding:
     product: str | None = None
     package_ecosystem: str | None = None
     package_name: str | None = None
+    package_version: str | None = None
     affected_version_ranges: tuple[str, ...] = ()
     affected_version_range_source: str | None = None
     affected_version_range_verified: bool | None = None
@@ -260,6 +261,9 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         package_name=_optional_bounded_text(
             item.get("package_name") or item.get("package")
         ),
+        package_version=_optional_bounded_text(
+            item.get("package_version") or item.get("package-version")
+        ),
         affected_version_ranges=affected_version_ranges,
         affected_version_range_source=affected_version_range_source,
         affected_version_range_verified=affected_version_range_verified,
@@ -374,6 +378,10 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
             or metadata.get("package-name")
             or metadata.get("package")
         ),
+        package_version=_optional_bounded_text(
+            metadata.get("package_version")
+            or metadata.get("package-version")
+        ),
         affected_version_ranges=affected_version_ranges,
         affected_version_range_source=affected_version_range_source,
         affected_version_range_verified=affected_version_range_verified,
@@ -392,6 +400,9 @@ def normalized_finding_id(item: NormalizedScannerFinding) -> str:
             item.summary.strip(),
             item.template_id or "",
             item.matcher_name or "",
+            item.package_ecosystem or "",
+            item.package_name or "",
+            item.package_version or "",
         ],
         ensure_ascii=False,
         separators=(",", ":"),
@@ -428,6 +439,7 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding:
         product=item.product,
         package_ecosystem=item.package_ecosystem,
         package_name=item.package_name,
+        package_version=item.package_version,
         affected_version_ranges=list(item.affected_version_ranges),
         affected_version_range_source=item.affected_version_range_source,
         affected_version_range_verified=item.affected_version_range_verified,
