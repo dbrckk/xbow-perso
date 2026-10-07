@@ -235,12 +235,8 @@ def build_cve_advisory_catalog(
         key = (
             cve_id,
             identity_kind,
-            (
-                f"{vendor}:{product}"
-                if cpe_identity
-                else f"{package_ecosystem}:{package_name}"
-            ),
-            "",
+            vendor if cpe_identity else package_ecosystem or "",
+            product if cpe_identity else package_name or "",
         )
         existing = by_key.get(key)
         if existing is not None and existing != entry:
