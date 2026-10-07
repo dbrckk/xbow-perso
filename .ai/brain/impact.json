@@ -1,54 +1,121 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "177690b7027133cd20d83a56f18ad65baaecaa07",
-  "head": "99e004abe9d5e9b633ccbe3c3842d24d102be05c",
+  "base": "99e004abe9d5e9b633ccbe3c3842d24d102be05c",
+  "head": "9e2e3c73c174a10ff775f7f95b34606fc8f196c9",
   "index_mode": "incremental",
   "changed_files": [
+    {
+      "path": "backend/app/cpe_consistency.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/app/cve_risk_context.py",
+      "status": "M"
+    },
     {
       "path": "backend/app/finding_intelligence.py",
       "status": "M"
     },
     {
-      "path": "backend/app/technology_fingerprint_intelligence.py",
-      "status": "M"
+      "path": "backend/tests/test_cpe_consistency.py",
+      "status": "A"
     },
     {
       "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
-    },
-    {
-      "path": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "status": "M"
     }
   ],
   "changed_source_files": [
+    "backend/app/cpe_consistency.py",
+    "backend/app/cve_risk_context.py",
     "backend/app/finding_intelligence.py",
-    "backend/app/technology_fingerprint_intelligence.py",
-    "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_technology_fingerprint_intelligence.py"
+    "backend/tests/test_cpe_consistency.py",
+    "backend/tests/test_finding_intelligence.py"
   ],
   "impacted_files": [
+    "backend/app/cpe_consistency.py",
+    "backend/app/cve_risk_context.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/app/technology_fingerprint_intelligence.py",
+    "backend/tests/test_cpe_consistency.py",
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
     {
+      "name": "CpeConsistency",
+      "kind": "class",
+      "file": "backend/app/cpe_consistency.py",
+      "line": 11
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cpe_consistency.py",
+      "line": 22
+    },
+    {
+      "name": "_normalize_token",
+      "kind": "function",
+      "file": "backend/app/cpe_consistency.py",
+      "line": 28
+    },
+    {
+      "name": "_parse_cpe23",
+      "kind": "function",
+      "file": "backend/app/cpe_consistency.py",
+      "line": 32
+    },
+    {
+      "name": "build_cpe_consistency",
+      "kind": "function",
+      "file": "backend/app/cpe_consistency.py",
+      "line": 45
+    },
+    {
+      "name": "CveRiskContext",
+      "kind": "class",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 19
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 37
+    },
+    {
+      "name": "_unit_interval",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 45
+    },
+    {
+      "name": "_cvss",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 57
+    },
+    {
+      "name": "build_cve_risk_context",
+      "kind": "function",
+      "file": "backend/app/cve_risk_context.py",
+      "line": 69
+    },
+    {
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 36
+      "line": 37
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 385
+      "line": 394
     },
     {
       "name": "authenticate_control_api",
@@ -597,64 +664,94 @@
       "line": 1879
     },
     {
-      "name": "TechnologyFingerprint",
-      "kind": "class",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 19
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 10
     },
     {
-      "name": "to_dict",
+      "name": "test_matching_cpe_supports_product_identity",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 28
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 27
     },
     {
-      "name": "_normalize_product",
+      "name": "test_generic_cpe_does_not_support_product_identity",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 35
-    },
-    {
-      "name": "_parse_technology",
-      "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "file": "backend/tests/test_cpe_consistency.py",
       "line": 40
     },
     {
-      "name": "build_technology_fingerprints",
+      "name": "test_mismatched_cpe_is_explicitly_flagged",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 50
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 51
     },
     {
-      "name": "match_finding_technology",
+      "name": "test_unparseable_cpe_is_not_trusted",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 136
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 64
     },
     {
-      "name": "finding_product_ambiguity_reasons",
+      "name": "test_risk_context_only_rewards_consistent_cpe",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 160
+      "file": "backend/tests/test_cpe_consistency.py",
+      "line": 73
     },
     {
-      "name": "fingerprint_ambiguity_reasons",
+      "name": "_finding",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 178
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 11
     },
     {
-      "name": "fingerprint_staleness_reasons",
+      "name": "test_risk_context_combines_structured_cve_metadata_without_confirmation",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 199
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 29
     },
     {
-      "name": "build_finding_fingerprint_intelligence",
+      "name": "test_scanner_kev_tag_never_becomes_authoritative_automatically",
       "kind": "function",
-      "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 242
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 41
+    },
+    {
+      "name": "test_explicit_authoritative_kev_verification_is_distinct",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 49
+    },
+    {
+      "name": "test_non_cve_finding_is_not_ranked_as_cve_risk",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 60
+    },
+    {
+      "name": "test_missing_external_metrics_remains_usable_and_conservative",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 78
+    },
+    {
+      "name": "test_invalid_metric_values_are_ignored",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 95
+    },
+    {
+      "name": "test_verified_kev_catalog_promotes_only_matching_cve",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 111
+    },
+    {
+      "name": "test_unverified_kev_catalog_cannot_promote_risk_context",
+      "kind": "function",
+      "file": "backend/tests/test_cve_risk_context.py",
+      "line": 148
     },
     {
       "name": "_finding",
@@ -789,88 +886,10 @@
       "line": 535
     },
     {
-      "name": "_graph",
+      "name": "test_mismatched_cpe_downgrades_cve_verdict_and_risk_context",
       "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 15
-    },
-    {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 46
-    },
-    {
-      "name": "test_versioned_technology_fingerprints_are_aggregated_by_source",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 57
-    },
-    {
-      "name": "test_unversioned_technology_remains_advisory",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 70
-    },
-    {
-      "name": "test_finding_matches_observed_product_without_guessing_version",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 78
-    },
-    {
-      "name": "test_unrelated_finding_does_not_receive_fingerprint",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 90
-    },
-    {
-      "name": "test_fingerprint_intelligence_never_enables_exploitation",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 99
-    },
-    {
-      "name": "test_conflicting_versions_are_marked_ambiguous",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 111
-    },
-    {
-      "name": "test_multi_source_same_version_is_not_ambiguous",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 142
-    },
-    {
-      "name": "test_declared_product_is_matched_even_when_title_is_generic",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 151
-    },
-    {
-      "name": "test_unobserved_declared_product_is_marked_ambiguous",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 166
-    },
-    {
-      "name": "test_old_timestamped_version_is_marked_stale",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 177
-    },
-    {
-      "name": "test_recent_timestamped_version_is_not_stale",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 204
-    },
-    {
-      "name": "test_missing_timestamp_does_not_invent_staleness",
-      "kind": "function",
-      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 230
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 574
     },
     {
       "name": "_campaign",
@@ -946,9 +965,10 @@
     }
   ],
   "selected_tests": [
+    "backend/tests/test_cpe_consistency.py",
+    "backend/tests/test_cve_risk_context.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
-    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

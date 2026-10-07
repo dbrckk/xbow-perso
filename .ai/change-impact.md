@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 267b046a9858734608b72712a22bd3da04d174cd
-Head: 99e004abe9d5e9b633ccbe3c3842d24d102be05c
+Base: 9daabc6653518beab73da986cd5f55cdb064e675
+Head: 9e2e3c73c174a10ff775f7f95b34606fc8f196c9
 
 ## Changed files
+- A backend/app/cpe_consistency.py
+- M backend/app/cve_risk_context.py
 - M backend/app/finding_intelligence.py
-- M backend/app/technology_fingerprint_intelligence.py
+- A backend/tests/test_cpe_consistency.py
 - M backend/tests/test_finding_intelligence.py
-- M backend/tests/test_technology_fingerprint_intelligence.py
 
 ## Affected areas
 - backend

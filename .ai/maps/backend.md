@@ -61,6 +61,7 @@ app/
   circuit_breaker.py
   control_plane_health.py
   coverage.py
+  cpe_consistency.py
   cve_evidence_verdict.py
   cve_risk_context.py
   cve_validation_priority.py
@@ -268,6 +269,7 @@ tests/
   test_control_plane_health.py
   test_control_views.py
   test_coverage.py
+  test_cpe_consistency.py
   test_cve_evidence_verdict.py
   test_cve_metadata_normalization.py
   test_cve_risk_context.py
@@ -1867,6 +1869,63 @@ penalty = min(15, max(5, int(round(diminishing * 15))))
 adjusted = PlannedAction(
 ```
 
+## File: app/cpe_consistency.py
+```python
+CPE_CONSISTENCY_SCHEMA = "cpe-consistency-v1"
+⋮----
+@dataclass(frozen=True)
+class CpeConsistency
+⋮----
+schema: str
+finding_id: str
+cpe_count: int
+parsed_cpe_count: int
+product_match_count: int
+generic_product_count: int
+mismatch_count: int
+reasons: tuple[str, ...]
+cpe_supports_product_identity: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+def _normalize_token(value: object) -> str
+⋮----
+def _parse_cpe23(value: object) -> tuple[str, str, str] | None
+⋮----
+raw = str(value or "").strip()
+⋮----
+parts = raw.split(":")
+⋮----
+vendor = parts[3].strip()
+product = parts[4].strip()
+version = parts[5].strip()
+⋮----
+def build_cpe_consistency(finding: Any) -> CpeConsistency
+⋮----
+raw_cpes = getattr(finding, "cpe", None)
+⋮----
+cpes: tuple[object, ...] = (raw_cpes,)
+⋮----
+cpes = tuple(raw_cpes)
+⋮----
+cpes = ()
+⋮----
+declared_product = _normalize_token(getattr(finding, "product", ""))
+parsed = [item for item in (_parse_cpe23(value) for value in cpes) if item]
+⋮----
+matches = 0
+generic = 0
+mismatches = 0
+⋮----
+normalized_product = _normalize_token(product)
+⋮----
+reasons: set[str] = set()
+⋮----
+supports = bool(
+```
+
 ## File: app/cve_evidence_verdict.py
 ```python
 CVE_EVIDENCE_VERDICT_SCHEMA = "cve-evidence-verdict-v1"
@@ -1927,6 +1986,8 @@ cvss: float | None
 epss_score: float | None
 epss_percentile: float | None
 cpe_present: bool
+cpe_supports_product_identity: bool
+cpe_consistency_reasons: tuple[str, ...]
 template_verified: bool
 scanner_tagged_kev: bool
 authoritative_kev_verified: bool
@@ -1951,6 +2012,7 @@ epss_score = _unit_interval(getattr(finding, "epss_score", None))
 epss_percentile = _unit_interval(
 cpe = getattr(finding, "cpe", None)
 cpe_present = bool(
+cpe_consistency = build_cpe_consistency(finding)
 template_verified = getattr(finding, "template_verified", None) is True
 tags = {
 scanner_tagged_kev = "kev" in tags
@@ -3143,6 +3205,8 @@ high_confidence_fingerprint_match_count = sum(
 fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
 freshness_ambiguity = fingerprint_staleness_reasons(
+cpe_consistency = build_cpe_consistency(finding)
+cpe_ambiguity = tuple(
 combined_fingerprint_ambiguity = tuple(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
@@ -15664,6 +15728,30 @@ action = PlannedAction(
 def test_coverage_priority_never_changes_non_scan_action()
 ```
 
+## File: tests/test_cpe_consistency.py
+```python
+def _finding(*, product="django", cpe=None)
+⋮----
+def test_matching_cpe_supports_product_identity()
+⋮----
+finding = _finding(
+⋮----
+result = build_cpe_consistency(finding)
+⋮----
+def test_generic_cpe_does_not_support_product_identity()
+⋮----
+def test_mismatched_cpe_is_explicitly_flagged()
+⋮----
+def test_unparseable_cpe_is_not_trusted()
+⋮----
+finding = _finding(cpe=["not-a-cpe"])
+⋮----
+def test_risk_context_only_rewards_consistent_cpe()
+⋮----
+matching = build_cve_risk_context(
+mismatched = build_cve_risk_context(
+```
+
 ## File: tests/test_cve_evidence_verdict.py
 ```python
 def _finding(*, evidence=None)
@@ -16618,6 +16706,8 @@ graph = _graph()
 def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict()
 ⋮----
 def test_stale_version_fingerprint_downgrades_cve_verdict()
+⋮----
+def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context()
 ```
 
 ## File: tests/test_finding_lifecycle.py
