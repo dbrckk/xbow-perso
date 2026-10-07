@@ -58,6 +58,7 @@ def test_unconfigured_loader_returns_none(monkeypatch):
         "source_name": None,
         "source_format": "internal-v1",
         "entry_count": 0,
+        "adapter": None,
         "error": None,
     }
 
@@ -85,6 +86,7 @@ def test_pinned_catalog_loads_as_verified(tmp_path, monkeypatch):
         "source_name": "vendor-advisory-feed",
         "source_format": "internal-v1",
         "entry_count": 1,
+        "adapter": None,
         "error": None,
     }
 
@@ -224,6 +226,14 @@ def test_pinned_raw_nvd_v2_catalog_is_adapted_and_verified(
     assert entry.product == "django"
     assert entry.affected_version_ranges == (">=5.0,<5.2.0",)
     assert status["source_format"] == "nvd-cve-api-v2"
+    assert status["adapter"] == {
+        "schema": "nvd-advisory-adapter-v1",
+        "input_count": 1,
+        "output_count": 1,
+        "skipped_complex_configurations": 0,
+        "skipped_non_vulnerable_matches": 0,
+        "skipped_unusable_version_matches": 0,
+    }
 
 
 def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch):
@@ -300,3 +310,66 @@ def test_pinned_raw_osv_catalog_is_adapted_and_verified(
     assert entry.package_name == "Django"
     assert entry.affected_version_ranges == (">=5.0.0,<5.2.0",)
     assert status["source_format"] == "osv-v1"
+    assert status["adapter"] == {
+        "schema": "osv-advisory-adapter-v1",
+        "input_count": 1,
+        "output_count": 1,
+        "skipped_ambiguous_cve_bindings": 0,
+        "skipped_non_semver_ranges": 0,
+        "skipped_unusable_semver_ranges": 0,
+        "skipped_unusable_explicit_versions": 0,
+    }
+
+
+def test_osv_adapter_diagnostics_expose_skip_counts_without_identifiers(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    document = {
+        "id": "GHSA-private-marker",
+        "aliases": ["CVE-2026-70001"],
+        "affected": [
+            {
+                "package": {
+                    "ecosystem": "PyPI",
+                    "name": "PrivatePackageMarker",
+                },
+                "ranges": [
+                    {
+                        "type": "ECOSYSTEM",
+                        "events": [
+                            {"introduced": "1.0-r0"},
+                            {"fixed": "2.0-r1"},
+                        ],
+                    }
+                ],
+                "versions": [],
+            }
+        ],
+    }
+    path = tmp_path / "osv-skipped.json"
+    payload = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(payload)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_PATH", str(path))
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        hashlib.sha256(payload).hexdigest(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_FORMAT", "osv-v1")
+
+    catalog, status = load_cve_advisory_catalog_with_status()
+
+    assert catalog is not None
+    assert catalog.entry_count == 0
+    assert status["adapter"]["input_count"] == 1
+    assert status["adapter"]["output_count"] == 0
+    assert status["adapter"]["skipped_non_semver_ranges"] == 1
+    rendered = str(status)
+    assert "GHSA-private-marker" not in rendered
+    assert "CVE-2026-70001" not in rendered
+    assert "PrivatePackageMarker" not in rendered
