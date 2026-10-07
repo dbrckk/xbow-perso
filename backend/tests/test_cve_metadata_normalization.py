@@ -46,6 +46,7 @@ def test_nuclei_cve_metadata_survives_normalization():
                     "max-request": 1,
                     "vendor": "djangoproject",
                     "product": "django",
+                    "affected-versions": [">=4.2,<4.2.16", ">=5.0,<5.1.3"],
                 },
             },
         },
@@ -63,6 +64,10 @@ def test_nuclei_cve_metadata_survives_normalization():
     assert normalized.template_max_requests == 1
     assert normalized.vendor == "djangoproject"
     assert normalized.product == "django"
+    assert normalized.affected_version_ranges == (
+        ">=4.2,<4.2.16",
+        ">=5.0,<5.1.3",
+    )
     assert normalized.tags == ("cve", "sqli", "kev")
     assert normalized.impact == "SQL execution"
     assert normalized.remediation == "upgrade"
@@ -77,6 +82,10 @@ def test_nuclei_cve_metadata_survives_normalization():
     assert finding.template_max_requests == 1
     assert finding.references == ["https://nvd.nist.gov/vuln/detail/CVE-2026-1207"]
     assert finding.tags == ["cve", "sqli", "kev"]
+    assert finding.affected_version_ranges == [
+        ">=4.2,<4.2.16",
+        ">=5.0,<5.1.3",
+    ]
     assert "cve-id:CVE-2026-1207" in finding.evidence
 
 
@@ -98,6 +107,7 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
             "template_max_requests": 2,
             "vendor": "vendor",
             "product": "product",
+            "affected_version_ranges": ["<1.2.4"],
         },
         _campaign(),
     )
@@ -113,6 +123,7 @@ def test_strix_structured_metadata_is_bounded_and_persisted():
     assert finding.template_max_requests == 2
     assert finding.vendor == "vendor"
     assert finding.product == "product"
+    assert finding.affected_version_ranges == ["<1.2.4"]
 
 
 def test_cve_metadata_defaults_keep_existing_findings_compatible():
@@ -129,3 +140,4 @@ def test_cve_metadata_defaults_keep_existing_findings_compatible():
     assert finding.tags == []
     assert finding.template_verified is None
     assert finding.epss_score is None
+    assert finding.affected_version_ranges == []
