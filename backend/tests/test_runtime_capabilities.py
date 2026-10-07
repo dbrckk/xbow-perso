@@ -598,3 +598,43 @@ def test_capabilities_api_exposes_validation_state(monkeypatch):
     assert detail["repeat_validation_max_observations"] == 2
     assert detail["automatic_execution_authorized"] is False
     assert detail["exploit_execution_allowed"] is False
+
+
+def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
+    for name in (
+        "XBOW_CVE_ADVISORY_CATALOG_PATH",
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+    result = main.system_capabilities()
+
+    assert result["reasoning"]["cve_advisory_catalog"] == {
+        "configured": False,
+        "available": False,
+        "verified": False,
+        "source_name": None,
+        "entry_count": 0,
+        "error": None,
+    }
+
+
+def test_capabilities_expose_invalid_cve_catalog_without_path_leak(monkeypatch):
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_PATH",
+        "/private/secret-catalog.json",
+    )
+    monkeypatch.delenv(
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        raising=False,
+    )
+
+    result = main.system_capabilities()
+    status = result["reasoning"]["cve_advisory_catalog"]
+
+    assert status["configured"] is True
+    assert status["available"] is False
+    assert status["verified"] is False
+    assert "configured together" in str(status["error"])
+    assert "/private/secret-catalog.json" not in str(result)
