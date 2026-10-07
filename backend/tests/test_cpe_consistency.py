@@ -83,7 +83,7 @@ def test_risk_context_only_rewards_consistent_cpe():
     )
 
     assert matching.cpe_supports_product_identity is True
-    assert "cpe_product_consistent" in matching.reasons
+    assert "cpe_identity_consistent" in matching.reasons
     assert mismatched.cpe_supports_product_identity is False
     assert "cpe_untrusted" in mismatched.reasons
     assert matching.risk_score > mismatched.risk_score
@@ -148,3 +148,55 @@ def test_without_observed_version_cpe_version_is_not_guessed():
     assert result.cpe_supports_version_identity is False
     assert result.version_match_count == 0
     assert result.version_mismatch_count == 0
+
+
+def test_matching_cpe_vendor_supports_vendor_identity():
+    finding = _finding(
+        product="django",
+        cpe=["cpe:2.3:a:djangoproject:django:5.1:*:*:*:*:*:*:*"],
+    )
+    finding.vendor = "djangoproject"
+
+    result = build_cpe_consistency(finding)
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_vendor_identity is True
+    assert result.vendor_match_count == 1
+    assert result.vendor_mismatch_count == 0
+
+
+def test_mismatched_cpe_vendor_is_flagged():
+    finding = _finding(
+        product="django",
+        cpe=["cpe:2.3:a:evilcorp:django:5.1:*:*:*:*:*:*:*"],
+    )
+    finding.vendor = "djangoproject"
+
+    result = build_cpe_consistency(finding)
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_vendor_identity is False
+    assert result.vendor_mismatch_count == 1
+    assert "cpe_vendor_mismatch" in result.reasons
+
+
+def test_risk_context_does_not_reward_vendor_mismatch():
+    matching = _finding(
+        product="django",
+        cpe=["cpe:2.3:a:djangoproject:django:5.1:*:*:*:*:*:*:*"],
+    )
+    matching.vendor = "djangoproject"
+    mismatched = _finding(
+        product="django",
+        cpe=["cpe:2.3:a:evilcorp:django:5.1:*:*:*:*:*:*:*"],
+    )
+    mismatched.vendor = "djangoproject"
+
+    good = build_cve_risk_context(matching)
+    bad = build_cve_risk_context(mismatched)
+
+    assert good.cpe_supports_vendor_identity is True
+    assert bad.cpe_supports_vendor_identity is False
+    assert "cpe_identity_consistent" in good.reasons
+    assert "cpe_untrusted" in bad.reasons
+    assert good.risk_score > bad.risk_score
