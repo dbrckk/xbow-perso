@@ -128,11 +128,22 @@ def build_finding_intelligence(
         freshness_ambiguity = fingerprint_staleness_reasons(
             matched_fingerprints,
         )
-        cpe_consistency = build_cpe_consistency(finding)
+        cpe_consistency = build_cpe_consistency(
+            finding,
+            observed_versions=(
+                item.version
+                for item in matched_fingerprints
+                if item.version is not None
+            ),
+        )
         cpe_ambiguity = tuple(
             reason
             for reason in cpe_consistency.reasons
-            if reason in {"cpe_product_mismatch", "unparseable_cpe"}
+            if reason in {
+                "cpe_product_mismatch",
+                "unparseable_cpe",
+                "cpe_version_mismatch",
+            }
         )
         combined_fingerprint_ambiguity = tuple(
             sorted(

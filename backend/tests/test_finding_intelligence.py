@@ -604,9 +604,54 @@ def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context():
     row = result["findings"][0]
 
     assert row["cpe_consistency"]["cpe_supports_product_identity"] is False
-    assert row["cpe_consistency"]["reasons"] == ["cpe_product_mismatch"]
+    assert row["cpe_consistency"]["reasons"] == [
+        "cpe_product_mismatch",
+        "cpe_version_mismatch",
+    ]
     assert row["cve_evidence_verdict"]["verdict"] == (
         "ambiguous_version_candidate"
     )
     assert "cpe_untrusted" in row["cve_risk_context"]["reasons"]
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+
+
+def test_cpe_version_mismatch_downgrades_cve_verdict():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.cpe = [
+        "cpe:2.3:a:djangoproject:django:4.2.0:*:*:*:*:*:*:*"
+    ]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-current",
+            "technology",
+            "django/5.1.2",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["cpe_consistency"]["cpe_supports_product_identity"] is True
+    assert row["cpe_consistency"]["cpe_supports_version_identity"] is False
+    assert row["cpe_consistency"]["version_mismatch_count"] == 1
+    assert "cpe_version_mismatch" in row["cpe_consistency"]["reasons"]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
