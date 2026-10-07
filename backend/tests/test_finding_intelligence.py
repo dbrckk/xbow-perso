@@ -780,3 +780,55 @@ def test_observed_version_inside_affected_range_supports_candidate_without_confi
     assert "observed_version_outside_affected_range" not in row["technology"][
         "ambiguity_reasons"
     ]
+
+
+def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-1111", "CVE-2026-2222"]
+    finding.evidence = [
+        "cve-id:CVE-2026-1111",
+        "cve-id:CVE-2026-2222",
+    ]
+    finding.affected_version_ranges = ["<5.1.3"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-current",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    assert row["affected_version_range"]["state"] == "unknown"
+    assert row["affected_version_range"]["range_binding"] == (
+        "ambiguous_multi_cve"
+    )
+    assert row["affected_version_range"]["binding_ambiguity_reason"] == (
+        "multiple_cves_share_unbound_ranges"
+    )
+    assert row["affected_version_range"]["outside_versions"] == []
+    assert "multiple_cves_share_unbound_ranges" in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert "observed_version_outside_affected_range" not in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
