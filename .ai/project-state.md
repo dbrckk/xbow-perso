@@ -39,28 +39,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T13:58:18Z
+Generated: 2026-10-07T19:59:19Z
 
 ### Git
 - Branch: `main`
-- Head: `b63d48b5bca1`
-- Commit date: 2026-10-07T15:58:07+02:00
-- Commit: feat(vuln): verify observed versions against affected ranges
+- Head: `bfa53a30cfd5`
+- Commit date: 2026-10-07T21:59:07+02:00
+- Commit: feat(vuln): require unambiguous CVE range binding
 - Tracked files: 671
 
 ### Recently changed files
 - `backend/app/affected_version_range.py`
 - `backend/app/finding_intelligence.py`
+- `backend/tests/test_affected_version_range.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/main.py`
 - `backend/app/scanner_normalization.py`
-- `backend/tests/test_affected_version_range.py`
 - `backend/tests/test_cve_metadata_normalization.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/app/cpe_consistency.py`
 - `backend/app/cve_risk_context.py`
 - `backend/tests/test_cpe_consistency.py`
-- `backend/app/technology_fingerprint_intelligence.py`
-- `backend/tests/test_technology_fingerprint_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

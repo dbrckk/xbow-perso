@@ -709,6 +709,8 @@ matching_versions: tuple[str, ...]
 outside_versions: tuple[str, ...]
 unparseable_ranges: tuple[str, ...]
 state: str
+range_binding: str
+binding_ambiguity_reason: str | None
 affected_version_supported: bool
 exploitability_confirmed: bool
 ⋮----
@@ -740,8 +742,11 @@ raw_ranges = getattr(finding, "affected_version_ranges", None) or ()
 raw_ranges = (raw_ranges,)
 ranges = tuple(
 observed = tuple(
+cve_ids = finding_cve_ids(finding)
 ⋮----
 state = "not_available"
+⋮----
+reason = (
 ⋮----
 parseable_ranges: list[str] = []
 unparseable: list[str] = []
@@ -3310,6 +3315,8 @@ cpe_consistency = build_cpe_consistency(
 affected_version_range = build_affected_version_range_evidence(
 cpe_ambiguity = tuple(
 range_ambiguity: tuple[str, ...] = ()
+⋮----
+range_ambiguity = (
 ⋮----
 range_ambiguity = ("observed_version_outside_affected_range",)
 ⋮----
@@ -14892,6 +14899,12 @@ def test_unparseable_range_stays_unknown()
 def test_non_numeric_observed_version_stays_unknown()
 ⋮----
 def test_missing_ranges_do_not_guess_applicability()
+⋮----
+def test_multiple_cves_make_shared_range_binding_unknown()
+⋮----
+finding = _finding("<5.1.3")
+⋮----
+def test_range_without_cve_binding_is_unknown()
 ```
 
 ## File: tests/test_agent_registry.py
@@ -16874,6 +16887,8 @@ def test_cpe_vendor_mismatch_downgrades_cve_verdict()
 def test_observed_version_outside_affected_range_downgrades_cve_verdict()
 ⋮----
 def test_observed_version_inside_affected_range_supports_candidate_without_confirmation()
+⋮----
+def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range()
 ```
 
 ## File: tests/test_finding_lifecycle.py
