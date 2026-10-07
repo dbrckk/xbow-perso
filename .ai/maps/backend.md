@@ -126,6 +126,7 @@ app/
   main.py
   metrics.py
   nuclei_parser.py
+  nvd_advisory_adapter.py
   observation_graph.py
   observation_writer.py
   observer_heartbeat.py
@@ -371,6 +372,7 @@ tests/
   test_nuclei_preflight.py
   test_nuclei_queue_lifecycle.py
   test_nuclei_worker_plan.py
+  test_nvd_advisory_adapter.py
   test_observation_graph.py
   test_observation_writer_provenance.py
   test_observer_deadline_heartbeat.py
@@ -2129,6 +2131,8 @@ _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
+_FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
+_ALLOWED_FORMATS = frozenset({"internal-v1", "nvd-cve-api-v2"})
 ⋮----
 class CveAdvisoryCatalogLoadError(RuntimeError)
 ⋮----
@@ -2151,6 +2155,12 @@ payload = _read_regular_file(Path(path_raw))
 actual_digest = hashlib.sha256(payload).hexdigest()
 ⋮----
 document: Any = json.loads(payload.decode("utf-8"))
+⋮----
+source_format = os.getenv(
+⋮----
+adapted = adapt_nvd_cve_api_v2(document)
+⋮----
+document = adapted.document
 ⋮----
 source_name = os.getenv(
 ⋮----
@@ -7364,6 +7374,91 @@ line = raw_line.strip()
 item = json.loads(line)
 ⋮----
 finding = normalize_nuclei_item(item, campaign)
+```
+
+## File: app/nvd_advisory_adapter.py
+```python
+NVD_ADVISORY_ADAPTER_SCHEMA = "nvd-advisory-adapter-v1"
+_CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,10})$", re.IGNORECASE)
+_MAX_VULNERABILITIES = 10000
+_MAX_CONFIGURATIONS_PER_CVE = 64
+_MAX_MATCHES_PER_NODE = 128
+_MAX_OUTPUT_ENTRIES = 20000
+⋮----
+class NvdAdvisoryAdapterError(RuntimeError)
+⋮----
+@dataclass(frozen=True)
+class NvdAdvisoryAdapterResult
+⋮----
+schema: str
+document: dict[str, Any]
+input_vulnerability_count: int
+output_entry_count: int
+skipped_complex_configurations: int
+skipped_non_vulnerable_matches: int
+skipped_unusable_version_matches: int
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+def _text(value: object, *, name: str, max_len: int = 256) -> str
+⋮----
+result = value.strip()
+⋮----
+def _parse_cpe23(criteria: object) -> tuple[str, str, str] | None
+⋮----
+raw = _text(criteria, name="criteria", max_len=1024)
+⋮----
+parts = raw.split(":")
+⋮----
+vendor = parts[3].strip().lower()
+product = parts[4].strip().lower()
+version = parts[5].strip()
+⋮----
+def _numeric_version(value: object) -> str | None
+⋮----
+raw = str(value or "").strip()
+⋮----
+parts = raw.split(".")
+⋮----
+def _range_expression(match: Mapping[str, Any], cpe_version: str) -> str | None
+⋮----
+clauses: list[str] = []
+⋮----
+bounds = (
+⋮----
+version = _numeric_version(match.get(field))
+⋮----
+exact = _numeric_version(cpe_version)
+⋮----
+nodes = configuration.get("nodes")
+⋮----
+node = nodes[0]
+⋮----
+matches = node.get("cpeMatch")
+⋮----
+def adapt_nvd_cve_api_v2(document: Mapping[str, Any]) -> NvdAdvisoryAdapterResult
+⋮----
+raw_vulnerabilities = document.get("vulnerabilities")
+⋮----
+output: dict[tuple[str, str, str], set[str]] = {}
+skipped_complex = 0
+skipped_non_vulnerable = 0
+skipped_unusable = 0
+⋮----
+cve = raw_wrapper.get("cve")
+⋮----
+cve_id = _text(cve.get("id"), name="cve.id", max_len=32).upper()
+⋮----
+configurations = cve.get("configurations") or []
+⋮----
+identity = _parse_cpe23(match.get("criteria"))
+⋮----
+expression = _range_expression(match, cpe_version)
+⋮----
+key = (cve_id, vendor, product)
+⋮----
+entries = [
+normalized = {
 ```
 
 ## File: app/observation_graph.py
@@ -16131,6 +16226,13 @@ payload = b"{not-json"
 def test_symlink_catalog_is_rejected(tmp_path, monkeypatch)
 ⋮----
 link = tmp_path / "catalog-link.json"
+⋮----
+document = {
+path = tmp_path / "nvd.json"
+⋮----
+entry = catalog.entries[0]
+⋮----
+def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch)
 ```
 
 ## File: tests/test_cve_evidence_verdict.py
@@ -20116,6 +20218,35 @@ def test_nuclei_active_execution_rejects_version_mismatch(monkeypatch, tmp_path)
 stdout = "Nuclei Engine Version: v3.98.0"
 ⋮----
 plan = build_nuclei_plan(_campaign(), str(root / "job-mismatch"))
+```
+
+## File: tests/test_nvd_advisory_adapter.py
+```python
+def _wrapper(*matches, cve_id="CVE-2026-12345", operator="OR", negate=False)
+⋮----
+def test_nvd_bounded_range_is_converted_to_internal_expression()
+⋮----
+result = adapt_nvd_cve_api_v2(
+⋮----
+def test_nvd_exact_numeric_cpe_version_becomes_exact_range()
+⋮----
+def test_nvd_merges_ranges_for_same_cve_vendor_product()
+⋮----
+def test_non_vulnerable_match_is_not_converted()
+⋮----
+def test_unbounded_wildcard_version_is_not_guessed()
+⋮----
+def test_complex_logical_configuration_is_skipped(operator, negate)
+⋮----
+def test_child_node_configuration_is_skipped()
+⋮----
+document = {
+⋮----
+result = adapt_nvd_cve_api_v2(document)
+⋮----
+def test_non_numeric_nvd_bound_is_kept_unknown()
+⋮----
+def test_invalid_cve_identifier_is_rejected()
 ```
 
 ## File: tests/test_observation_graph.py

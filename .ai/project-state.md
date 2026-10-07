@@ -39,23 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:21:52Z
+Generated: 2026-10-07T20:33:41Z
 
 ### Git
 - Branch: `main`
-- Head: `2c83a0e2542c`
-- Commit date: 2026-10-07T22:21:40+02:00
-- Commit: feat(vuln): expose CVE advisory catalog deployment state
-- Tracked files: 675
+- Head: `e478a06a79f1`
+- Commit date: 2026-10-07T22:33:30+02:00
+- Commit: feat(vuln): adapt pinned NVD 2.x advisory exports
+- Tracked files: 677
 
 ### Recently changed files
+- `backend/app/cve_advisory_loader.py`
+- `backend/app/nvd_advisory_adapter.py`
+- `backend/tests/test_cve_advisory_loader.py`
+- `backend/tests/test_deployment_preflight.py`
+- `backend/tests/test_nvd_advisory_adapter.py`
+- `backend/tests/test_runtime_capabilities.py`
 - `backend/app/deployment_preflight.py`
 - `backend/app/main.py`
-- `backend/tests/test_deployment_preflight.py`
-- `backend/tests/test_runtime_capabilities.py`
-- `backend/app/cve_advisory_loader.py`
 - `backend/app/finding_intelligence.py`
-- `backend/tests/test_cve_advisory_loader.py`
 - `backend/app/affected_version_range.py`
 - `backend/app/cve_advisory_catalog.py`
 - `backend/tests/test_cve_advisory_catalog.py`

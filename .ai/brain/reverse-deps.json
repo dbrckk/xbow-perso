@@ -414,7 +414,8 @@
     },
     "backend/app/cve_advisory_loader.py": {
       "dependencies": [
-        "backend/app/cve_advisory_catalog.py"
+        "backend/app/cve_advisory_catalog.py",
+        "backend/app/nvd_advisory_adapter.py"
       ],
       "dependents": [
         "backend/app/deployment_preflight.py",
@@ -423,7 +424,7 @@
         "backend/tests/test_cve_advisory_loader.py"
       ],
       "in_degree": 4,
-      "out_degree": 1
+      "out_degree": 2
     },
     "backend/app/cve_evidence_verdict.py": {
       "dependencies": [
@@ -1717,6 +1718,15 @@
       ],
       "in_degree": 2,
       "out_degree": 2
+    },
+    "backend/app/nvd_advisory_adapter.py": {
+      "dependencies": [],
+      "dependents": [
+        "backend/app/cve_advisory_loader.py",
+        "backend/tests/test_nvd_advisory_adapter.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 0
     },
     "backend/app/observation_graph.py": {
       "dependencies": [
@@ -5099,6 +5109,15 @@
       "in_degree": 0,
       "out_degree": 3
     },
+    "backend/tests/test_nvd_advisory_adapter.py": {
+      "dependencies": [
+        "backend/app/nvd_advisory_adapter.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "backend/tests/test_observation_graph.py": {
       "dependencies": [
         "backend/app/observation_graph.py",
@@ -6744,6 +6763,7 @@
         "backend/tests/test_nuclei_preflight.py",
         "backend/tests/test_nuclei_queue_lifecycle.py",
         "backend/tests/test_nuclei_worker_plan.py",
+        "backend/tests/test_nvd_advisory_adapter.py",
         "backend/tests/test_observation_graph.py",
         "backend/tests/test_observation_writer_provenance.py",
         "backend/tests/test_observer_deadline_heartbeat.py",
@@ -6884,7 +6904,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 258,
+      "in_degree": 259,
       "out_degree": 4
     },
     "frontend/hackerone.js": {
