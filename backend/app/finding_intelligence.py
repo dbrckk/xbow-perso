@@ -25,6 +25,7 @@ from .technology_fingerprint_intelligence import (
     match_finding_technology,
     fingerprint_ambiguity_reasons,
     finding_product_ambiguity_reasons,
+    fingerprint_staleness_reasons,
 )
 from .validation_priority import build_validation_priority
 from .vulnerability_intelligence import build_vulnerability_signal
@@ -123,8 +124,15 @@ def build_finding_intelligence(
             finding,
             technology_fingerprints,
         )
+        freshness_ambiguity = fingerprint_staleness_reasons(
+            matched_fingerprints,
+        )
         combined_fingerprint_ambiguity = tuple(
-            sorted(set(fingerprint_ambiguity) | set(product_ambiguity))
+            sorted(
+                set(fingerprint_ambiguity)
+                | set(product_ambiguity)
+                | set(freshness_ambiguity)
+            )
         )
         vulnerability = build_vulnerability_signal(
             finding,
@@ -198,6 +206,9 @@ def build_finding_intelligence(
                     ),
                     "ambiguity_reasons": list(
                         combined_fingerprint_ambiguity
+                    ),
+                    "freshness_ambiguity_reasons": list(
+                        freshness_ambiguity
                     ),
                 },
                 "public_duplicate_similarity": duplicate_similarity,
