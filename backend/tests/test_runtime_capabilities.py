@@ -618,6 +618,7 @@ def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
         "source_name": None,
         "source_format": "internal-v1",
         "entry_count": 0,
+        "adapter": None,
         "error": None,
     }
 
