@@ -205,17 +205,20 @@ def find_verified_cve_advisory(
     ):
         return None
 
-    normalized_cve = _normalize_cve(cve_id)
-    normalized_vendor = (
-        _normalize_identity(vendor, name="vendor")
-        if vendor
-        else None
-    )
-    normalized_product = (
-        _normalize_identity(product, name="product")
-        if product
-        else None
-    )
+    try:
+        normalized_cve = _normalize_cve(cve_id)
+        normalized_vendor = (
+            _normalize_identity(vendor, name="vendor")
+            if vendor
+            else None
+        )
+        normalized_product = (
+            _normalize_identity(product, name="product")
+            if product
+            else None
+        )
+    except CveAdvisoryCatalogError:
+        return None
 
     matches = [
         entry
