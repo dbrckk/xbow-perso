@@ -41,6 +41,8 @@ class NormalizedScannerFinding:
     template_max_requests: int | None = None
     vendor: str | None = None
     product: str | None = None
+    package_ecosystem: str | None = None
+    package_name: str | None = None
     affected_version_ranges: tuple[str, ...] = ()
     affected_version_range_source: str | None = None
     affected_version_range_verified: bool | None = None
@@ -59,6 +61,23 @@ class NormalizedScannerFinding:
 
 def _optional_str(value: Any) -> str | None:
     return None if value in {None, ""} else str(value)
+
+
+def _optional_bounded_text(
+    value: Any,
+    *,
+    max_bytes: int = 200,
+) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip()
+    if (
+        not normalized
+        or len(normalized.encode("utf-8")) > max_bytes
+        or any(ord(char) < 0x20 or ord(char) == 0x7F for char in normalized)
+    ):
+        return None
+    return normalized
 
 
 def _optional_cvss(value: Any) -> float | None:
@@ -235,6 +254,12 @@ def normalize_strix_item(item: dict[str, Any], campaign: Campaign) -> Normalized
         template_max_requests=_optional_nonnegative_int(item.get("template_max_requests")),
         vendor=_optional_str(item.get("vendor")),
         product=_optional_str(item.get("product")),
+        package_ecosystem=_optional_bounded_text(
+            item.get("package_ecosystem") or item.get("ecosystem")
+        ),
+        package_name=_optional_bounded_text(
+            item.get("package_name") or item.get("package")
+        ),
         affected_version_ranges=affected_version_ranges,
         affected_version_range_source=affected_version_range_source,
         affected_version_range_verified=affected_version_range_verified,
@@ -339,6 +364,16 @@ def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> Normalize
         ),
         vendor=_optional_str(metadata.get("vendor")),
         product=_optional_str(metadata.get("product")),
+        package_ecosystem=_optional_bounded_text(
+            metadata.get("package_ecosystem")
+            or metadata.get("package-ecosystem")
+            or metadata.get("ecosystem")
+        ),
+        package_name=_optional_bounded_text(
+            metadata.get("package_name")
+            or metadata.get("package-name")
+            or metadata.get("package")
+        ),
         affected_version_ranges=affected_version_ranges,
         affected_version_range_source=affected_version_range_source,
         affected_version_range_verified=affected_version_range_verified,
@@ -391,6 +426,8 @@ def to_campaign_finding(item: NormalizedScannerFinding) -> Finding:
         template_max_requests=item.template_max_requests,
         vendor=item.vendor,
         product=item.product,
+        package_ecosystem=item.package_ecosystem,
+        package_name=item.package_name,
         affected_version_ranges=list(item.affected_version_ranges),
         affected_version_range_source=item.affected_version_range_source,
         affected_version_range_verified=item.affected_version_range_verified,
