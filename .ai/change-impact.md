@@ -1,12 +1,15 @@
 # Change impact
 
-Base: 32ea4127a944175a1215c8b2ed9e156f2809913f
-Head: bfa53a30cfd534dc8b24a164566713bbf23359e3
+Base: f0cb2334461796fbf8548e4baaf3c59141b7ade5
+Head: e59ebae38375bd53d08ff703c15dd9f2e6f98003
 
 ## Changed files
 - M backend/app/affected_version_range.py
 - M backend/app/finding_intelligence.py
+- M backend/app/main.py
+- M backend/app/scanner_normalization.py
 - M backend/tests/test_affected_version_range.py
+- M backend/tests/test_cve_metadata_normalization.py
 - M backend/tests/test_finding_intelligence.py
 
 ## Affected areas

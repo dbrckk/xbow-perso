@@ -1319,7 +1319,11 @@ unparseable_ranges: tuple[str, ...]
 state: str
 range_binding: str
 binding_ambiguity_reason: str | None
+range_source: str | None
+range_source_verified: bool
+range_provenance_state: str
 affected_version_supported: bool
+trusted_affected_version_supported: bool
 exploitability_confirmed: bool
 ⋮----
 def to_dict(self) -> dict[str, Any]
@@ -1351,6 +1355,15 @@ raw_ranges = (raw_ranges,)
 ranges = tuple(
 observed = tuple(
 cve_ids = finding_cve_ids(finding)
+raw_source = str(
+range_source = raw_source[:120] or None
+range_source_verified = bool(
+⋮----
+range_provenance_state = "verified"
+⋮----
+range_provenance_state = "unverified"
+⋮----
+range_provenance_state = "missing"
 ⋮----
 state = "not_available"
 ⋮----
@@ -7313,6 +7326,8 @@ template_max_requests: int | None = Field(default=None, ge=0, le=10000)
 vendor: str | None = None
 product: str | None = None
 affected_version_ranges: list[str] = Field(default_factory=list)
+affected_version_range_source: str | None = None
+affected_version_range_verified: bool | None = None
 status: Literal["candidate", "validation_required", "confirmed", "rejected"] = "candidate"
 discovered_by: str = "unknown"
 validated_by: str | None = None
@@ -11561,6 +11576,8 @@ template_max_requests: int | None = None
 vendor: str | None = None
 product: str | None = None
 affected_version_ranges: tuple[str, ...] = ()
+affected_version_range_source: str | None = None
+affected_version_range_verified: bool | None = None
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -11616,6 +11633,12 @@ cwe = item.get("cwe")
 cwe = ", ".join(str(x) for x in cwe)
 cve_ids = _cve_ids(
 evidence = _with_cve_evidence(
+affected_version_ranges = _version_range_list(
+affected_version_range_source = _optional_str(
+⋮----
+affected_version_range_source = "strix-finding-payload"
+affected_version_range_verified_raw = (
+affected_version_range_verified = (
 ⋮----
 def normalize_nuclei_item(item: dict[str, Any], campaign: Campaign) -> NormalizedScannerFinding | None
 ⋮----
@@ -11633,6 +11656,8 @@ template_id = item.get("template-id") or item.get("template_id")
 metadata = info.get("metadata") if isinstance(info.get("metadata"), dict) else {}
 references = info.get("reference") or info.get("references") or []
 cpe = _identifier_list(classification.get("cpe"))
+⋮----
+affected_version_range_source = "nuclei-template-metadata"
 ⋮----
 def normalized_finding_id(item: NormalizedScannerFinding) -> str
 ⋮----
@@ -15513,6 +15538,14 @@ def test_multiple_cves_make_shared_range_binding_unknown()
 finding = _finding("<5.1.3")
 ⋮----
 def test_range_without_cve_binding_is_unknown()
+⋮----
+def test_unverified_range_source_cannot_become_trusted_support()
+⋮----
+finding = _finding(">=4.2,<4.2.16")
+⋮----
+def test_verified_range_source_can_support_candidate_without_confirmation()
+⋮----
+def test_missing_range_source_is_not_invented()
 ````
 
 ## File: backend/tests/test_agent_registry.py
@@ -17497,6 +17530,8 @@ def test_observed_version_outside_affected_range_downgrades_cve_verdict()
 def test_observed_version_inside_affected_range_supports_candidate_without_confirmation()
 ⋮----
 def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range()
+⋮----
+def test_unverified_affected_range_downgrades_cve_verdict()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
