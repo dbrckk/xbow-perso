@@ -3141,6 +3141,8 @@ matched_fingerprints = match_finding_technology(
 versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 fingerprint_ambiguity = fingerprint_ambiguity_reasons(
+product_ambiguity = finding_product_ambiguity_reasons(
+combined_fingerprint_ambiguity = tuple(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
 cve_risk_context = build_cve_risk_context(
@@ -13572,6 +13574,10 @@ matches = []
 ⋮----
 product = fingerprint.normalized_product
 ⋮----
+declared = _normalize_product(str(getattr(finding, "product", "") or ""))
+⋮----
+observed = {
+⋮----
 """Return conservative ambiguity markers for conflicting matched versions."""
 versions_by_product: dict[str, set[str]] = {}
 ⋮----
@@ -16584,6 +16590,8 @@ def test_finding_intelligence_surfaces_contradictory_repeat_outcome()
 def test_conflicting_product_versions_downgrade_cve_verdict()
 ⋮----
 graph = _graph()
+⋮----
+def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict()
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -24247,6 +24255,12 @@ result = build_finding_fingerprint_intelligence(
 def test_conflicting_versions_are_marked_ambiguous()
 ⋮----
 def test_multi_source_same_version_is_not_ambiguous()
+⋮----
+def test_declared_product_is_matched_even_when_title_is_generic()
+⋮----
+finding = _finding("generic parsing discrepancy")
+⋮----
+def test_unobserved_declared_product_is_marked_ambiguous()
 ```
 
 ## File: tests/test_validation_priority.py

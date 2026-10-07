@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-06T21:42:47Z
+Generated: 2026-10-07T09:27:21Z
 
 ### Git
 - Branch: `main`
-- Head: `373738a347da`
-- Commit date: 2026-10-06T23:42:35+02:00
-- Commit: feat(vuln): downgrade CVEs on conflicting fingerprints
+- Head: `177690b70271`
+- Commit date: 2026-10-07T11:27:09+02:00
+- Commit: feat(vuln): downgrade CVEs on product mismatch
 - Tracked files: 667
 
 ### Recently changed files
@@ -63,10 +63,6 @@ Generated: 2026-10-06T21:42:47Z
 - `backend/app/repeat_validation.py`
 - `backend/tests/test_repeat_validation.py`
 - `backend/tests/test_repeat_validation_orchestrator.py`
-- `backend/app/differential_quality.py`
-- `backend/app/vulnerability_intelligence.py`
-- `backend/tests/test_differential_quality.py`
-- `backend/tests/test_vulnerability_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 1f1fd123a7e8aa77270a7e0393ced1bcda671dec
-Head: 373738a347dafccc69ed81eb4a0e7ced146222b1
+Base: 45a08b8c235ba37be5b90da3f3c262392a3b965c
+Head: 177690b7027133cd20d83a56f18ad65baaecaa07
 
 ## Changed files
 - M backend/app/finding_intelligence.py
