@@ -1026,3 +1026,78 @@ def test_unverified_advisory_catalog_cannot_override_scanner_range():
         "nuclei-template-metadata"
     )
     assert row["affected_version_range"]["range_source_verified"] is False
+
+
+def test_package_advisory_uses_package_version_not_technology_version():
+    finding = _finding(
+        "f-package",
+        "https://example.test/package",
+        severity="high",
+    )
+    finding.cve_ids = ["CVE-2026-42424"]
+    finding.evidence = ["cve-id:CVE-2026-42424"]
+    finding.package_ecosystem = "PyPI"
+    finding.package_name = "Django"
+    finding.package_version = "5.1.2"
+    finding.vendor = None
+    finding.product = None
+
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:a",
+            "asset",
+            "example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f-package",
+            "finding",
+            "f-package",
+            "scanner-a",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:unrelated",
+            "technology",
+            "nginx/9.9.9",
+            "httpx",
+            parent_ids=("asset:a",),
+            metadata={"confidence": 0.95},
+        )
+    )
+    catalog = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-42424",
+                    "package_ecosystem": "PyPI",
+                    "package_name": "Django",
+                    "affected_version_ranges": [">=5.0,<5.2.0"],
+                }
+            ],
+        },
+        source_name="osv-fixture",
+        source_verified=True,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        graph,
+        cve_advisory_catalog=catalog,
+    )
+    row = result["findings"][0]
+
+    assert row["cve_advisory"]["matched"] is True
+    assert row["cve_advisory"]["identity_kind"] == "package"
+    assert row["affected_version_range"]["observed_versions"] == ["5.1.2"]
+    assert row["affected_version_range"]["state"] == "affected"
+    assert row["affected_version_range"][
+        "trusted_affected_version_supported"
+    ] is True
+    assert row["affected_version_range"]["exploitability_confirmed"] is False
