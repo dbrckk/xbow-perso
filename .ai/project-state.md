@@ -39,16 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T20:33:41Z
+Generated: 2026-10-07T20:44:28Z
 
 ### Git
 - Branch: `main`
-- Head: `e478a06a79f1`
-- Commit date: 2026-10-07T22:33:30+02:00
-- Commit: feat(vuln): adapt pinned NVD 2.x advisory exports
+- Head: `da2f3439c183`
+- Commit date: 2026-10-07T22:44:14+02:00
+- Commit: feat(vuln): add package advisory identity
 - Tracked files: 677
 
 ### Recently changed files
+- `backend/app/cve_advisory_catalog.py`
+- `backend/app/finding_intelligence.py`
+- `backend/app/main.py`
+- `backend/app/scanner_normalization.py`
+- `backend/tests/test_cve_advisory_catalog.py`
+- `backend/tests/test_cve_metadata_normalization.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/cve_advisory_loader.py`
 - `backend/app/nvd_advisory_adapter.py`
 - `backend/tests/test_cve_advisory_loader.py`
@@ -56,15 +63,7 @@ Generated: 2026-10-07T20:33:41Z
 - `backend/tests/test_nvd_advisory_adapter.py`
 - `backend/tests/test_runtime_capabilities.py`
 - `backend/app/deployment_preflight.py`
-- `backend/app/main.py`
-- `backend/app/finding_intelligence.py`
 - `backend/app/affected_version_range.py`
-- `backend/app/cve_advisory_catalog.py`
-- `backend/tests/test_cve_advisory_catalog.py`
-- `backend/tests/test_finding_intelligence.py`
-- `backend/app/scanner_normalization.py`
-- `backend/tests/test_affected_version_range.py`
-- `backend/tests/test_cve_metadata_normalization.py`
 
 ### Project signals
 - `pyproject.toml`

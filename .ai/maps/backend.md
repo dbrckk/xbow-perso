@@ -2062,8 +2062,11 @@ class CveAdvisoryCatalogError(RuntimeError)
 class CveAdvisoryEntry
 ⋮----
 cve_id: str
-vendor: str
-product: str
+identity_kind: str
+vendor: str | None
+product: str | None
+package_ecosystem: str | None
+package_name: str | None
 affected_version_ranges: tuple[str, ...]
 authoritative: bool
 ⋮----
@@ -2090,6 +2093,12 @@ match = _CVE_RE.fullmatch(text)
 ⋮----
 def _normalize_identity(value: object, *, name: str) -> str
 ⋮----
+def _optional_identity(value: object, *, name: str) -> str | None
+⋮----
+def _optional_package_ecosystem(value: object) -> str | None
+⋮----
+def _optional_package_name(value: object) -> str | None
+⋮----
 def _ranges(value: object) -> tuple[str, ...]
 ⋮----
 result: list[str] = []
@@ -2106,13 +2115,21 @@ raw_entries = document.get("entries")
 ⋮----
 declared_count = document.get("count")
 ⋮----
-by_key: dict[tuple[str, str, str], CveAdvisoryEntry] = {}
+by_key: dict[
 ⋮----
 cve_id = _normalize_cve(raw.get("cve_id"))
-vendor = _normalize_identity(raw.get("vendor"), name="vendor")
-product = _normalize_identity(raw.get("product"), name="product")
+vendor = _optional_identity(raw.get("vendor"), name="vendor")
+product = _optional_identity(raw.get("product"), name="product")
+package_ecosystem = _optional_package_ecosystem(
+package_name = _optional_package_name(
+⋮----
+cpe_identity = vendor is not None and product is not None
+package_identity = (
+⋮----
+identity_kind = "cpe" if cpe_identity else "package"
+⋮----
 entry = CveAdvisoryEntry(
-key = (cve_id, vendor, product)
+key = (
 existing = by_key.get(key)
 ⋮----
 entries = tuple(
@@ -2120,8 +2137,10 @@ entries = tuple(
 normalized_cve = _normalize_cve(cve_id)
 normalized_vendor = (
 normalized_product = (
+normalized_package_ecosystem = (
+normalized_package_name = (
 ⋮----
-matches = [
+matches: list[CveAdvisoryEntry] = []
 ```
 
 ## File: app/cve_advisory_loader.py
@@ -3454,11 +3473,18 @@ high_confidence_fingerprint_match_count = sum(
 fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
 freshness_ambiguity = fingerprint_staleness_reasons(
+fingerprint_versions = tuple(
 cpe_consistency = build_cpe_consistency(
 cve_ids = finding_cve_ids(finding)
 verified_advisory = None
 ⋮----
 verified_advisory = find_verified_cve_advisory(
+package_version_raw = getattr(finding, "package_version", None)
+package_version = (
+advisory_observed_versions = fingerprint_versions
+⋮----
+advisory_observed_versions = (
+⋮----
 scanner_ranges = tuple(
 advisory_range_conflict = bool(
 affected_version_range = build_affected_version_range_evidence(
@@ -6853,6 +6879,9 @@ template_verified: bool | None = None
 template_max_requests: int | None = Field(default=None, ge=0, le=10000)
 vendor: str | None = None
 product: str | None = None
+package_ecosystem: str | None = None
+package_name: str | None = None
+package_version: str | None = None
 affected_version_ranges: list[str] = Field(default_factory=list)
 affected_version_range_source: str | None = None
 affected_version_range_verified: bool | None = None
@@ -11189,6 +11218,9 @@ template_verified: bool | None = None
 template_max_requests: int | None = None
 vendor: str | None = None
 product: str | None = None
+package_ecosystem: str | None = None
+package_name: str | None = None
+package_version: str | None = None
 affected_version_ranges: tuple[str, ...] = ()
 affected_version_range_source: str | None = None
 affected_version_range_verified: bool | None = None
@@ -11198,6 +11230,8 @@ def to_dict(self) -> dict[str, Any]
 payload = asdict(self)
 ⋮----
 def _optional_str(value: Any) -> str | None
+⋮----
+normalized = value.strip()
 ⋮----
 def _optional_cvss(value: Any) -> float | None
 ⋮----
@@ -16197,6 +16231,12 @@ document = {
 def test_conflicting_duplicate_advisory_entry_is_rejected()
 ⋮----
 def test_invalid_lookup_identity_fails_closed()
+⋮----
+def test_verified_package_advisory_matches_ecosystem_and_name()
+⋮----
+def test_package_name_matching_is_conservative_and_case_sensitive()
+⋮----
+def test_advisory_identity_must_be_exactly_one_complete_kind(entry)
 ```
 
 ## File: tests/test_cve_advisory_loader.py
@@ -17213,6 +17253,8 @@ def test_verified_advisory_range_overrides_conflicting_scanner_range()
 catalog = build_cve_advisory_catalog(
 ⋮----
 def test_unverified_advisory_catalog_cannot_override_scanner_range()
+⋮----
+def test_package_advisory_uses_package_version_not_technology_version()
 ```
 
 ## File: tests/test_finding_lifecycle.py

@@ -1,15 +1,16 @@
 # Change impact
 
-Base: 461f6181155a492dd52d96fc90b3af4e1f971914
-Head: e478a06a79f1a71f464d99db1e9113c4ad187ca5
+Base: 9c36b97fac7c91d9de302d71d1dea2250eff5edb
+Head: da2f3439c1839a9a32807a0c0f2c79e70320d828
 
 ## Changed files
-- M backend/app/cve_advisory_loader.py
-- A backend/app/nvd_advisory_adapter.py
-- M backend/tests/test_cve_advisory_loader.py
-- M backend/tests/test_deployment_preflight.py
-- A backend/tests/test_nvd_advisory_adapter.py
-- M backend/tests/test_runtime_capabilities.py
+- M backend/app/cve_advisory_catalog.py
+- M backend/app/finding_intelligence.py
+- M backend/app/main.py
+- M backend/app/scanner_normalization.py
+- M backend/tests/test_cve_advisory_catalog.py
+- M backend/tests/test_cve_metadata_normalization.py
+- M backend/tests/test_finding_intelligence.py
 
 ## Affected areas
 - backend
