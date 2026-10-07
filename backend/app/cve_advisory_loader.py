@@ -14,6 +14,10 @@ from .cve_advisory_catalog import (
     CveAdvisoryCatalogError,
     build_cve_advisory_catalog,
 )
+from .nvd_advisory_adapter import (
+    NvdAdvisoryAdapterError,
+    adapt_nvd_cve_api_v2,
+)
 
 
 _MAX_CATALOG_BYTES = 8 * 1024 * 1024
@@ -21,6 +25,8 @@ _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
+_FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
+_ALLOWED_FORMATS = frozenset({"internal-v1", "nvd-cve-api-v2"})
 
 
 class CveAdvisoryCatalogLoadError(RuntimeError):
@@ -95,9 +101,31 @@ def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None:
             "CVE advisory catalog root must be an object"
         )
 
+    source_format = os.getenv(
+        _FORMAT_ENV,
+        "internal-v1",
+    ).strip().lower()
+    if source_format not in _ALLOWED_FORMATS:
+        raise CveAdvisoryCatalogLoadError(
+            "CVE advisory catalog format is unsupported"
+        )
+
+    if source_format == "nvd-cve-api-v2":
+        try:
+            adapted = adapt_nvd_cve_api_v2(document)
+        except NvdAdvisoryAdapterError as exc:
+            raise CveAdvisoryCatalogLoadError(
+                "NVD advisory catalog adaptation failed"
+            ) from exc
+        document = adapted.document
+
     source_name = os.getenv(
         _SOURCE_ENV,
-        "pinned-cve-advisory-file",
+        (
+            "nvd-cve-api-v2"
+            if source_format == "nvd-cve-api-v2"
+            else "pinned-cve-advisory-file"
+        ),
     ).strip()
     try:
         return build_cve_advisory_catalog(
@@ -125,6 +153,10 @@ def load_cve_advisory_catalog_with_status(
             "available": False,
             "verified": False,
             "source_name": None,
+            "source_format": os.getenv(
+                _FORMAT_ENV,
+                "internal-v1",
+            ).strip().lower(),
             "entry_count": 0,
             "error": str(exc),
         }
@@ -135,6 +167,10 @@ def load_cve_advisory_catalog_with_status(
             "available": False,
             "verified": False,
             "source_name": None,
+            "source_format": os.getenv(
+                _FORMAT_ENV,
+                "internal-v1",
+            ).strip().lower(),
             "entry_count": 0,
             "error": None,
         }
@@ -143,6 +179,10 @@ def load_cve_advisory_catalog_with_status(
         "available": True,
         "verified": True,
         "source_name": catalog.source_name,
+        "source_format": os.getenv(
+            _FORMAT_ENV,
+            "internal-v1",
+        ).strip().lower(),
         "entry_count": catalog.entry_count,
         "error": None,
     }

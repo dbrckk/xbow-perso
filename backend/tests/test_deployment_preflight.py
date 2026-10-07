@@ -25,6 +25,7 @@ _ENV_NAMES = (
     "XBOW_CVE_ADVISORY_CATALOG_PATH",
     "XBOW_CVE_ADVISORY_CATALOG_SHA256",
     "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
+    "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
 )
 
 
@@ -301,6 +302,7 @@ def test_preflight_allows_unconfigured_optional_cve_advisory_catalog(monkeypatch
         "available": False,
         "verified": False,
         "source_name": None,
+        "source_format": "internal-v1",
         "entry_count": 0,
         "error": None,
     }
