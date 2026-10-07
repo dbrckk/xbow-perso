@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Mapping
 
 
 NVD_ADVISORY_ADAPTER_SCHEMA = "nvd-advisory-adapter-v1"
+_CVE_RE = re.compile(r"^CVE-(\\d{4})-(\\d{4,10})$", re.IGNORECASE)
 _MAX_VULNERABILITIES = 10000
 _MAX_CONFIGURATIONS_PER_CVE = 64
 _MAX_MATCHES_PER_NODE = 128
@@ -168,7 +170,7 @@ def adapt_nvd_cve_api_v2(document: Mapping[str, Any]) -> NvdAdvisoryAdapterResul
                 "NVD vulnerability cve must be an object"
             )
         cve_id = _text(cve.get("id"), name="cve.id", max_len=32).upper()
-        if not cve_id.startswith("CVE-"):
+        if not _CVE_RE.fullmatch(cve_id):
             raise NvdAdvisoryAdapterError("NVD CVE id is invalid")
 
         configurations = cve.get("configurations") or []
