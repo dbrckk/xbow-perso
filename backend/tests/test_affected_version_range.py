@@ -133,3 +133,52 @@ def test_range_without_cve_binding_is_unknown():
     assert result.state == "unknown"
     assert result.range_binding == "no_cve_binding"
     assert result.binding_ambiguity_reason == "affected_range_without_cve"
+
+
+def test_unverified_range_source_cannot_become_trusted_support():
+    finding = _finding(">=4.2,<4.2.16")
+    finding.affected_version_range_source = "nuclei-template-metadata"
+    finding.affected_version_range_verified = False
+
+    result = build_affected_version_range_evidence(
+        finding,
+        observed_versions=("4.2.12",),
+    )
+
+    assert result.state == "affected"
+    assert result.affected_version_supported is True
+    assert result.range_source == "nuclei-template-metadata"
+    assert result.range_source_verified is False
+    assert result.range_provenance_state == "unverified"
+    assert result.trusted_affected_version_supported is False
+    assert result.exploitability_confirmed is False
+
+
+def test_verified_range_source_can_support_candidate_without_confirmation():
+    finding = _finding(">=4.2,<4.2.16")
+    finding.affected_version_range_source = "vendor-advisory"
+    finding.affected_version_range_verified = True
+
+    result = build_affected_version_range_evidence(
+        finding,
+        observed_versions=("4.2.12",),
+    )
+
+    assert result.state == "affected"
+    assert result.range_source == "vendor-advisory"
+    assert result.range_source_verified is True
+    assert result.range_provenance_state == "verified"
+    assert result.trusted_affected_version_supported is True
+    assert result.exploitability_confirmed is False
+
+
+def test_missing_range_source_is_not_invented():
+    result = build_affected_version_range_evidence(
+        _finding("<5.1.3"),
+        observed_versions=("5.1.2",),
+    )
+
+    assert result.range_source is None
+    assert result.range_source_verified is False
+    assert result.range_provenance_state == "missing"
+    assert result.trusted_affected_version_supported is False
