@@ -360,6 +360,9 @@ def deployment_preflight():
 
 @app.get("/api/capabilities")
 def system_capabilities():
+    from .cve_advisory_loader import (
+        cve_advisory_catalog_runtime_status,
+    )
     from .runtime_capabilities import (
         safe_browser_runtime_capability,
         safe_pentagi_runtime_capability,
@@ -373,6 +376,7 @@ def system_capabilities():
     browser = safe_browser_runtime_capability()
     recon = safe_recon_runtime_capability()
     validation = safe_validation_runtime_capability()
+    cve_advisory_catalog = cve_advisory_catalog_runtime_status()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -424,6 +428,7 @@ def system_capabilities():
             "evidence_quality_scoring": "read_only",
             "review_queue": "read_only",
             "decision_consensus": "read_only",
+            "cve_advisory_catalog": cve_advisory_catalog,
         },
         "reporting": {
             "report_generation": True,
