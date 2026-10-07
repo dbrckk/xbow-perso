@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from .affected_version_range import build_affected_version_range_evidence
 from .cpe_consistency import build_cpe_consistency
 from .cve_advisory_catalog import find_verified_cve_advisory
+from .cve_advisory_loader import load_cve_advisory_catalog_with_status
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
 from .cve_validation_priority import build_cve_validation_plan
@@ -547,6 +548,9 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
                 program_handle = handle
         break
 
+    cve_advisory_catalog, cve_advisory_catalog_status = (
+        load_cve_advisory_catalog_with_status()
+    )
     payload = build_finding_intelligence(
         campaign.findings,
         graph,
@@ -554,10 +558,12 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
         threshold=threshold,
         public_reports=public_reports,
         program_handle=program_handle,
+        cve_advisory_catalog=cve_advisory_catalog,
     )
     return {
         "campaign_id": campaign.id,
         "threshold": threshold,
+        "cve_advisory_catalog": cve_advisory_catalog_status,
         **payload,
         "read_only": True,
         "advisory_only": True,
