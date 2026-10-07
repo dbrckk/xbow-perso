@@ -4,6 +4,8 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any, Iterable
 
+from .vulnerability_intelligence import finding_cve_ids
+
 
 AFFECTED_VERSION_RANGE_SCHEMA = "affected-version-range-v1"
 _VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){0,5}$")
@@ -20,6 +22,8 @@ class AffectedVersionRangeEvidence:
     outside_versions: tuple[str, ...]
     unparseable_ranges: tuple[str, ...]
     state: str
+    range_binding: str
+    binding_ambiguity_reason: str | None
     affected_version_supported: bool
     exploitability_confirmed: bool
 
@@ -97,6 +101,7 @@ def build_affected_version_range_evidence(
             }
         )
     )
+    cve_ids = finding_cve_ids(finding)
 
     if not ranges:
         state = "not_available"
@@ -109,6 +114,33 @@ def build_affected_version_range_evidence(
             outside_versions=(),
             unparseable_ranges=(),
             state=state,
+            range_binding="no_ranges",
+            binding_ambiguity_reason=None,
+            affected_version_supported=False,
+            exploitability_confirmed=False,
+        )
+
+    if len(cve_ids) != 1:
+        reason = (
+            "multiple_cves_share_unbound_ranges"
+            if len(cve_ids) > 1
+            else "affected_range_without_cve"
+        )
+        return AffectedVersionRangeEvidence(
+            schema=AFFECTED_VERSION_RANGE_SCHEMA,
+            finding_id=str(getattr(finding, "id", "")),
+            ranges=ranges,
+            observed_versions=observed,
+            matching_versions=(),
+            outside_versions=(),
+            unparseable_ranges=(),
+            state="unknown",
+            range_binding=(
+                "ambiguous_multi_cve"
+                if len(cve_ids) > 1
+                else "no_cve_binding"
+            ),
+            binding_ambiguity_reason=reason,
             affected_version_supported=False,
             exploitability_confirmed=False,
         )
@@ -158,6 +190,8 @@ def build_affected_version_range_evidence(
         outside_versions=tuple(outside),
         unparseable_ranges=tuple(unparseable),
         state=state,
+        range_binding="single_cve",
+        binding_ambiguity_reason=None,
         affected_version_supported=(state == "affected" and not unparseable),
         exploitability_confirmed=False,
     )
