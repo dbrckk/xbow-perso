@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from .affected_version_range import build_affected_version_range_evidence
 from .cpe_consistency import build_cpe_consistency
+from .cve_advisory_catalog import find_verified_cve_advisory
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
 from .cve_validation_priority import build_cve_validation_plan
@@ -30,7 +31,7 @@ from .technology_fingerprint_intelligence import (
     fingerprint_staleness_reasons,
 )
 from .validation_priority import build_validation_priority
-from .vulnerability_intelligence import build_vulnerability_signal
+from .vulnerability_intelligence import build_vulnerability_signal, finding_cve_ids
 
 router = APIRouter()
 
@@ -44,6 +45,7 @@ def build_finding_intelligence(
     public_reports: list[dict[str, Any]] | None = None,
     program_handle: str | None = None,
     kev_catalog: Any | None = None,
+    cve_advisory_catalog: Any | None = None,
 ) -> dict[str, Any]:
     readiness = build_finding_readiness(
         findings,
@@ -137,12 +139,47 @@ def build_finding_intelligence(
                 if item.version is not None
             ),
         )
+        cve_ids = finding_cve_ids(finding)
+        verified_advisory = None
+        if cve_advisory_catalog is not None and len(cve_ids) == 1:
+            verified_advisory = find_verified_cve_advisory(
+                cve_advisory_catalog,
+                cve_id=cve_ids[0],
+                vendor=getattr(finding, "vendor", None),
+                product=getattr(finding, "product", None),
+            )
+        scanner_ranges = tuple(
+            str(item).strip()
+            for item in (
+                getattr(finding, "affected_version_ranges", None) or ()
+            )
+            if str(item).strip()
+        )
+        advisory_range_conflict = bool(
+            verified_advisory
+            and scanner_ranges
+            and set(scanner_ranges)
+            != set(verified_advisory.affected_version_ranges)
+        )
         affected_version_range = build_affected_version_range_evidence(
             finding,
             observed_versions=(
                 item.version
                 for item in matched_fingerprints
                 if item.version is not None
+            ),
+            ranges_override=(
+                verified_advisory.affected_version_ranges
+                if verified_advisory
+                else None
+            ),
+            range_source_override=(
+                f"{cve_advisory_catalog.source_name}:{verified_advisory.cve_id}"
+                if verified_advisory
+                else None
+            ),
+            range_source_verified_override=(
+                True if verified_advisory else None
             ),
         )
         cpe_ambiguity = tuple(
@@ -247,6 +284,19 @@ def build_finding_intelligence(
                 "cve_risk_context": cve_risk_context.to_dict(),
                 "cpe_consistency": cpe_consistency.to_dict(),
                 "affected_version_range": affected_version_range.to_dict(),
+                "cve_advisory": {
+                    "matched": verified_advisory is not None,
+                    "source_name": (
+                        cve_advisory_catalog.source_name
+                        if verified_advisory
+                        else None
+                    ),
+                    "source_verified": bool(
+                        verified_advisory
+                        and cve_advisory_catalog.source_verified
+                    ),
+                    "scanner_range_conflict": advisory_range_conflict,
+                },
                 "cve_validation_plan": cve_validation_plan.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
                 "technology": {
@@ -388,6 +438,15 @@ def build_finding_intelligence(
             ),
             "ambiguous_cve_range_bindings": sum(
                 bool(row["affected_version_range"]["binding_ambiguity_reason"])
+                for row in finding_rows
+            ),
+            "verified_advisory_range_matches": sum(
+                row["cve_advisory"]["matched"]
+                and row["cve_advisory"]["source_verified"]
+                for row in finding_rows
+            ),
+            "scanner_advisory_range_conflicts": sum(
+                row["cve_advisory"]["scanner_range_conflict"]
                 for row in finding_rows
             ),
             "high_confidence_version_correlated_cve_candidates": sum(
