@@ -87,3 +87,64 @@ def test_risk_context_only_rewards_consistent_cpe():
     assert mismatched.cpe_supports_product_identity is False
     assert "cpe_untrusted" in mismatched.reasons
     assert matching.risk_score > mismatched.risk_score
+
+
+def test_matching_cpe_version_supports_version_identity():
+    finding = _finding(
+        cpe=["cpe:2.3:a:djangoproject:django:5.1.2:*:*:*:*:*:*:*"]
+    )
+
+    result = build_cpe_consistency(
+        finding,
+        observed_versions=("5.1.2",),
+    )
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_version_identity is True
+    assert result.version_match_count == 1
+    assert result.version_mismatch_count == 0
+
+
+def test_mismatched_cpe_version_is_flagged():
+    finding = _finding(
+        cpe=["cpe:2.3:a:djangoproject:django:4.2.0:*:*:*:*:*:*:*"]
+    )
+
+    result = build_cpe_consistency(
+        finding,
+        observed_versions=("5.1.2",),
+    )
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_version_identity is False
+    assert result.version_mismatch_count == 1
+    assert "cpe_version_mismatch" in result.reasons
+
+
+def test_generic_cpe_version_never_claims_version_identity():
+    finding = _finding(
+        cpe=["cpe:2.3:a:djangoproject:django:*:*:*:*:*:*:*:*"]
+    )
+
+    result = build_cpe_consistency(
+        finding,
+        observed_versions=("5.1.2",),
+    )
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_version_identity is False
+    assert result.generic_version_count == 1
+    assert "generic_cpe_version" in result.reasons
+
+
+def test_without_observed_version_cpe_version_is_not_guessed():
+    finding = _finding(
+        cpe=["cpe:2.3:a:djangoproject:django:5.1.2:*:*:*:*:*:*:*"]
+    )
+
+    result = build_cpe_consistency(finding)
+
+    assert result.cpe_supports_product_identity is True
+    assert result.cpe_supports_version_identity is False
+    assert result.version_match_count == 0
+    assert result.version_mismatch_count == 0
