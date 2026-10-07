@@ -42,6 +42,7 @@ def _clear(monkeypatch):
         "XBOW_CVE_ADVISORY_CATALOG_PATH",
         "XBOW_CVE_ADVISORY_CATALOG_SHA256",
         "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -55,6 +56,7 @@ def test_unconfigured_loader_returns_none(monkeypatch):
         "available": False,
         "verified": False,
         "source_name": None,
+        "source_format": "internal-v1",
         "entry_count": 0,
         "error": None,
     }
@@ -81,6 +83,7 @@ def test_pinned_catalog_loads_as_verified(tmp_path, monkeypatch):
         "available": True,
         "verified": True,
         "source_name": "vendor-advisory-feed",
+        "source_format": "internal-v1",
         "entry_count": 1,
         "error": None,
     }
@@ -153,5 +156,88 @@ def test_symlink_catalog_is_rejected(tmp_path, monkeypatch):
     with pytest.raises(
         CveAdvisoryCatalogLoadError,
         match="cannot be opened",
+    ):
+        load_verified_cve_advisory_catalog()
+
+
+def test_pinned_raw_nvd_v2_catalog_is_adapted_and_verified(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    document = {
+        "vulnerabilities": [
+            {
+                "cve": {
+                    "id": "CVE-2026-54321",
+                    "configurations": [
+                        {
+                            "nodes": [
+                                {
+                                    "operator": "OR",
+                                    "negate": False,
+                                    "cpeMatch": [
+                                        {
+                                            "vulnerable": True,
+                                            "criteria": (
+                                                "cpe:2.3:a:djangoproject:"
+                                                "django:*:*:*:*:*:*:*:*"
+                                            ),
+                                            "versionStartIncluding": "5.0",
+                                            "versionEndExcluding": "5.2.0",
+                                        }
+                                    ],
+                                }
+                            ]
+                        }
+                    ],
+                }
+            }
+        ]
+    }
+    path = tmp_path / "nvd.json"
+    payload = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(payload)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_PATH", str(path))
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        hashlib.sha256(payload).hexdigest(),
+    )
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "nvd-cve-api-v2",
+    )
+
+    catalog, status = load_cve_advisory_catalog_with_status()
+
+    assert catalog is not None
+    assert catalog.source_name == "nvd-cve-api-v2"
+    assert catalog.source_verified is True
+    assert catalog.entry_count == 1
+    entry = catalog.entries[0]
+    assert entry.cve_id == "CVE-2026-54321"
+    assert entry.vendor == "djangoproject"
+    assert entry.product == "django"
+    assert entry.affected_version_ranges == (">=5.0,<5.2.0",)
+    assert status["source_format"] == "nvd-cve-api-v2"
+
+
+def test_unsupported_catalog_format_fails_closed(tmp_path, monkeypatch):
+    _clear(monkeypatch)
+    path, digest = _write_catalog(tmp_path)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_SHA256", digest)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "unknown-format",
+    )
+
+    with pytest.raises(
+        CveAdvisoryCatalogLoadError,
+        match="format is unsupported",
     ):
         load_verified_cve_advisory_catalog()
