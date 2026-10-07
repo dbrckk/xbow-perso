@@ -9,6 +9,10 @@ from app.affected_version_range import (
 def _finding(*ranges):
     return SimpleNamespace(
         id="f1",
+        cve_ids=["CVE-2026-12345"],
+        evidence=["cve-id:CVE-2026-12345"],
+        title="fixture",
+        summary="",
         affected_version_ranges=list(ranges),
     )
 
@@ -91,3 +95,41 @@ def test_missing_ranges_do_not_guess_applicability():
 
     assert result.state == "not_available"
     assert result.affected_version_supported is False
+
+
+def test_multiple_cves_make_shared_range_binding_unknown():
+    finding = _finding("<5.1.3")
+    finding.cve_ids = ["CVE-2026-1111", "CVE-2026-2222"]
+    finding.evidence = [
+        "cve-id:CVE-2026-1111",
+        "cve-id:CVE-2026-2222",
+    ]
+
+    result = build_affected_version_range_evidence(
+        finding,
+        observed_versions=("5.1.4",),
+    )
+
+    assert result.state == "unknown"
+    assert result.range_binding == "ambiguous_multi_cve"
+    assert result.binding_ambiguity_reason == (
+        "multiple_cves_share_unbound_ranges"
+    )
+    assert result.outside_versions == ()
+    assert result.affected_version_supported is False
+
+
+def test_range_without_cve_binding_is_unknown():
+    finding = _finding("<5.1.3")
+    finding.cve_ids = []
+    finding.evidence = []
+    finding.title = "generic issue"
+
+    result = build_affected_version_range_evidence(
+        finding,
+        observed_versions=("5.1.2",),
+    )
+
+    assert result.state == "unknown"
+    assert result.range_binding == "no_cve_binding"
+    assert result.binding_ambiguity_reason == "affected_range_without_cve"
