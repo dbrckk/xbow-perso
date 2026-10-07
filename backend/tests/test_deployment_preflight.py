@@ -22,6 +22,9 @@ _ENV_NAMES = (
     "XBOW_VAULT_ENABLED",
     "XBOW_VAULT_MASTER_KEY_FILE",
     "XBOW_VAULT_MASTER_KEY",
+    "XBOW_CVE_ADVISORY_CATALOG_PATH",
+    "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+    "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
 )
 
 
@@ -285,3 +288,41 @@ def test_production_preflight_requires_vault_key_file(monkeypatch):
     assert "production_vault_key_file_required" in {
         item["code"] for item in result["issues"]
     }
+
+
+def test_preflight_allows_unconfigured_optional_cve_advisory_catalog(monkeypatch):
+    _clear(monkeypatch)
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "ok"
+    assert result["cve_advisory_catalog"] == {
+        "configured": False,
+        "available": False,
+        "verified": False,
+        "source_name": None,
+        "entry_count": 0,
+        "error": None,
+    }
+
+
+def test_preflight_rejects_partial_cve_advisory_catalog_configuration(
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_PATH",
+        "/private/catalog.json",
+    )
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "cve_advisory_catalog_invalid" in {
+        item["code"] for item in result["issues"]
+    }
+    status = result["cve_advisory_catalog"]
+    assert status["configured"] is True
+    assert status["available"] is False
+    assert status["verified"] is False
+    assert "/private/catalog.json" not in str(result)
