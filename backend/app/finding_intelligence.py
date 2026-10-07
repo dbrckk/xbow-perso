@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .affected_version_range import build_affected_version_range_evidence
 from .cpe_consistency import build_cpe_consistency
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
@@ -136,6 +137,14 @@ def build_finding_intelligence(
                 if item.version is not None
             ),
         )
+        affected_version_range = build_affected_version_range_evidence(
+            finding,
+            observed_versions=(
+                item.version
+                for item in matched_fingerprints
+                if item.version is not None
+            ),
+        )
         cpe_ambiguity = tuple(
             reason
             for reason in cpe_consistency.reasons
@@ -146,12 +155,23 @@ def build_finding_intelligence(
                 "cpe_version_mismatch",
             }
         )
+        range_ambiguity: tuple[str, ...] = ()
+        if affected_version_range.state == "not_affected":
+            range_ambiguity = ("observed_version_outside_affected_range",)
+        elif affected_version_range.state == "mixed":
+            range_ambiguity = ("mixed_affected_version_range_evidence",)
+        elif affected_version_range.state == "unknown" and (
+            affected_version_range.unparseable_ranges
+        ):
+            range_ambiguity = ("unparseable_affected_version_range",)
+
         combined_fingerprint_ambiguity = tuple(
             sorted(
                 set(fingerprint_ambiguity)
                 | set(product_ambiguity)
                 | set(freshness_ambiguity)
                 | set(cpe_ambiguity)
+                | set(range_ambiguity)
             )
         )
         vulnerability = build_vulnerability_signal(
@@ -215,6 +235,7 @@ def build_finding_intelligence(
                 "cve_evidence_verdict": cve_evidence_verdict.to_dict(),
                 "cve_risk_context": cve_risk_context.to_dict(),
                 "cpe_consistency": cpe_consistency.to_dict(),
+                "affected_version_range": affected_version_range.to_dict(),
                 "cve_validation_plan": cve_validation_plan.to_dict(),
                 "validation_priority": validation_priority.to_dict(),
                 "technology": {
@@ -327,6 +348,18 @@ def build_finding_intelligence(
             ),
             "version_correlated_cve_candidates": sum(
                 row["vulnerability"]["version_correlated"]
+                for row in finding_rows
+            ),
+            "affected_version_supported_candidates": sum(
+                row["affected_version_range"]["state"] == "affected"
+                for row in finding_rows
+            ),
+            "outside_affected_version_candidates": sum(
+                row["affected_version_range"]["state"] == "not_affected"
+                for row in finding_rows
+            ),
+            "unknown_affected_version_candidates": sum(
+                row["affected_version_range"]["state"] == "unknown"
                 for row in finding_rows
             ),
             "high_confidence_version_correlated_cve_candidates": sum(
