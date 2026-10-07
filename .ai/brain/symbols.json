@@ -1825,14 +1825,14 @@
       "language": "python",
       "kind": "function",
       "name": "build_finding_intelligence",
-      "line": 35
+      "line": 36
     },
     {
       "file": "backend/app/finding_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "campaign_finding_intelligence",
-      "line": 374
+      "line": 385
     },
     {
       "file": "backend/app/finding_lifecycle.py",
@@ -11310,63 +11310,70 @@
       "language": "python",
       "kind": "class",
       "name": "TechnologyFingerprint",
-      "line": 18
+      "line": 19
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "to_dict",
-      "line": 26
+      "line": 28
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_normalize_product",
-      "line": 33
+      "line": 35
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_parse_technology",
-      "line": 38
+      "line": 40
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "build_technology_fingerprints",
-      "line": 48
+      "line": 50
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "match_finding_technology",
-      "line": 111
+      "line": 136
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "finding_product_ambiguity_reasons",
-      "line": 135
+      "line": 160
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "fingerprint_ambiguity_reasons",
-      "line": 153
+      "line": 178
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "fingerprint_staleness_reasons",
+      "line": 199
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "build_finding_fingerprint_intelligence",
-      "line": 173
+      "line": 242
     },
     {
       "file": "backend/app/validation_priority.py",
@@ -15588,6 +15595,13 @@
       "kind": "function",
       "name": "test_declared_cve_product_missing_from_observed_stack_downgrades_verdict",
       "line": 490
+    },
+    {
+      "file": "backend/tests/test_finding_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_stale_version_fingerprint_downgrades_cve_verdict",
+      "line": 535
     },
     {
       "file": "backend/tests/test_finding_lifecycle.py",
@@ -29685,77 +29699,98 @@
       "language": "python",
       "kind": "function",
       "name": "_graph",
-      "line": 13
+      "line": 15
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_finding",
-      "line": 44
+      "line": 46
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_versioned_technology_fingerprints_are_aggregated_by_source",
-      "line": 55
+      "line": 57
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_unversioned_technology_remains_advisory",
-      "line": 68
+      "line": 70
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_finding_matches_observed_product_without_guessing_version",
-      "line": 76
+      "line": 78
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_unrelated_finding_does_not_receive_fingerprint",
-      "line": 88
+      "line": 90
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_fingerprint_intelligence_never_enables_exploitation",
-      "line": 97
+      "line": 99
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_conflicting_versions_are_marked_ambiguous",
-      "line": 109
+      "line": 111
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_multi_source_same_version_is_not_ambiguous",
-      "line": 140
+      "line": 142
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_declared_product_is_matched_even_when_title_is_generic",
-      "line": 149
+      "line": 151
     },
     {
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "test_unobserved_declared_product_is_marked_ambiguous",
-      "line": 164
+      "line": 166
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_old_timestamped_version_is_marked_stale",
+      "line": 177
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_recent_timestamped_version_is_not_stale",
+      "line": 204
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_missing_timestamp_does_not_invent_staleness",
+      "line": 230
     },
     {
       "file": "backend/tests/test_validation_priority.py",

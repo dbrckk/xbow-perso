@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "373738a347dafccc69ed81eb4a0e7ced146222b1",
-  "head": "177690b7027133cd20d83a56f18ad65baaecaa07",
+  "base": "177690b7027133cd20d83a56f18ad65baaecaa07",
+  "head": "99e004abe9d5e9b633ccbe3c3842d24d102be05c",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -42,13 +42,13 @@
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 35
+      "line": 36
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 374
+      "line": 385
     },
     {
       "name": "authenticate_control_api",
@@ -600,55 +600,61 @@
       "name": "TechnologyFingerprint",
       "kind": "class",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 18
+      "line": 19
     },
     {
       "name": "to_dict",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 26
+      "line": 28
     },
     {
       "name": "_normalize_product",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 33
+      "line": 35
     },
     {
       "name": "_parse_technology",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 38
+      "line": 40
     },
     {
       "name": "build_technology_fingerprints",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 48
+      "line": 50
     },
     {
       "name": "match_finding_technology",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 111
+      "line": 136
     },
     {
       "name": "finding_product_ambiguity_reasons",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 135
+      "line": 160
     },
     {
       "name": "fingerprint_ambiguity_reasons",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 153
+      "line": 178
+    },
+    {
+      "name": "fingerprint_staleness_reasons",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 199
     },
     {
       "name": "build_finding_fingerprint_intelligence",
       "kind": "function",
       "file": "backend/app/technology_fingerprint_intelligence.py",
-      "line": 173
+      "line": 242
     },
     {
       "name": "_finding",
@@ -777,70 +783,94 @@
       "line": 490
     },
     {
+      "name": "test_stale_version_fingerprint_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 535
+    },
+    {
       "name": "_graph",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 13
+      "line": 15
     },
     {
       "name": "_finding",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 44
+      "line": 46
     },
     {
       "name": "test_versioned_technology_fingerprints_are_aggregated_by_source",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 55
+      "line": 57
     },
     {
       "name": "test_unversioned_technology_remains_advisory",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 68
+      "line": 70
     },
     {
       "name": "test_finding_matches_observed_product_without_guessing_version",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 76
+      "line": 78
     },
     {
       "name": "test_unrelated_finding_does_not_receive_fingerprint",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 88
+      "line": 90
     },
     {
       "name": "test_fingerprint_intelligence_never_enables_exploitation",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 97
+      "line": 99
     },
     {
       "name": "test_conflicting_versions_are_marked_ambiguous",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 109
+      "line": 111
     },
     {
       "name": "test_multi_source_same_version_is_not_ambiguous",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 140
+      "line": 142
     },
     {
       "name": "test_declared_product_is_matched_even_when_title_is_generic",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 149
+      "line": 151
     },
     {
       "name": "test_unobserved_declared_product_is_marked_ambiguous",
       "kind": "function",
       "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-      "line": 164
+      "line": 166
+    },
+    {
+      "name": "test_old_timestamped_version_is_marked_stale",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 177
+    },
+    {
+      "name": "test_recent_timestamped_version_is_not_stale",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 204
+    },
+    {
+      "name": "test_missing_timestamp_does_not_invent_staleness",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 230
     },
     {
       "name": "_campaign",

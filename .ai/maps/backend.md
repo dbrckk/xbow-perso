@@ -3142,6 +3142,7 @@ versioned_fingerprint_match_count = sum(
 high_confidence_fingerprint_match_count = sum(
 fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
+freshness_ambiguity = fingerprint_staleness_reasons(
 combined_fingerprint_ambiguity = tuple(
 vulnerability = build_vulnerability_signal(
 cve_evidence_verdict = build_cve_evidence_verdict(
@@ -13523,6 +13524,7 @@ version: str | None
 confidence: float
 sources: tuple[str, ...]
 observation_ids: tuple[str, ...]
+latest_observed_at: str | None = None
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -13546,6 +13548,12 @@ normalized = _normalize_product(product)
 ⋮----
 key = (normalized, version)
 current = grouped.setdefault(
+⋮----
+raw_timestamp = observation.metadata.get(timestamp_key)
+⋮----
+parsed_timestamp = datetime.fromisoformat(
+⋮----
+parsed_timestamp = parsed_timestamp.replace(tzinfo=timezone.utc)
 ⋮----
 raw_confidence = observation.metadata.get("confidence")
 ⋮----
@@ -13584,6 +13592,22 @@ versions_by_product: dict[str, set[str]] = {}
 reasons: set[str] = set()
 ⋮----
 versioned = [item for item in fingerprints if item.version]
+⋮----
+current = now or datetime.now(timezone.utc)
+⋮----
+current = current.replace(tzinfo=timezone.utc)
+current = current.astimezone(timezone.utc)
+⋮----
+timestamped = [item for item in versioned if item.latest_observed_at]
+⋮----
+fresh = False
+⋮----
+observed = datetime.fromisoformat(
+⋮----
+observed = observed.replace(tzinfo=timezone.utc)
+age_seconds = (current - observed.astimezone(timezone.utc)).total_seconds()
+⋮----
+fresh = True
 ⋮----
 fingerprints = build_technology_fingerprints(graph)
 rows = []
@@ -16592,6 +16616,8 @@ def test_conflicting_product_versions_downgrade_cve_verdict()
 graph = _graph()
 ⋮----
 def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict()
+⋮----
+def test_stale_version_fingerprint_downgrades_cve_verdict()
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -24261,6 +24287,12 @@ def test_declared_product_is_matched_even_when_title_is_generic()
 finding = _finding("generic parsing discrepancy")
 ⋮----
 def test_unobserved_declared_product_is_marked_ambiguous()
+⋮----
+def test_old_timestamped_version_is_marked_stale()
+⋮----
+def test_recent_timestamped_version_is_not_stale()
+⋮----
+def test_missing_timestamp_does_not_invent_staleness()
 ```
 
 ## File: tests/test_validation_priority.py

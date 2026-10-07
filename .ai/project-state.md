@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T09:27:21Z
+Generated: 2026-10-07T09:36:22Z
 
 ### Git
 - Branch: `main`
-- Head: `177690b70271`
-- Commit date: 2026-10-07T11:27:09+02:00
-- Commit: feat(vuln): downgrade CVEs on product mismatch
+- Head: `99e004abe9d5`
+- Commit date: 2026-10-07T11:36:08+02:00
+- Commit: feat(vuln): downgrade CVEs on stale fingerprints
 - Tracked files: 667
 
 ### Recently changed files
@@ -58,11 +58,6 @@ Generated: 2026-10-07T09:27:21Z
 - `backend/app/main.py`
 - `backend/app/runtime_capabilities.py`
 - `backend/tests/test_runtime_capabilities.py`
-- `.env.example`
-- `backend/app/orchestrator.py`
-- `backend/app/repeat_validation.py`
-- `backend/tests/test_repeat_validation.py`
-- `backend/tests/test_repeat_validation_orchestrator.py`
 
 ### Project signals
 - `pyproject.toml`
