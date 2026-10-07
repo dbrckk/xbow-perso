@@ -1,13 +1,12 @@
 # Change impact
 
-Base: 9daabc6653518beab73da986cd5f55cdb064e675
-Head: 9e2e3c73c174a10ff775f7f95b34606fc8f196c9
+Base: df987567504a9f27ccc5a1e90ece0b41a7426d65
+Head: 2d625cdd8e494c376bbc464283497d653c61c887
 
 ## Changed files
-- A backend/app/cpe_consistency.py
-- M backend/app/cve_risk_context.py
+- M backend/app/cpe_consistency.py
 - M backend/app/finding_intelligence.py
-- A backend/tests/test_cpe_consistency.py
+- M backend/tests/test_cpe_consistency.py
 - M backend/tests/test_finding_intelligence.py
 
 ## Affected areas

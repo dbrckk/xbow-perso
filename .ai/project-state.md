@@ -39,25 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-07T09:40:46Z
+Generated: 2026-10-07T13:24:11Z
 
 ### Git
 - Branch: `main`
-- Head: `9e2e3c73c174`
-- Commit date: 2026-10-07T11:40:32+02:00
-- Commit: feat(vuln): distrust inconsistent CPE evidence
+- Head: `2d625cdd8e49`
+- Commit date: 2026-10-07T15:23:14+02:00
+- Commit: feat(vuln): downgrade CVEs on CPE version mismatch
 - Tracked files: 669
 
 ### Recently changed files
 - `backend/app/cpe_consistency.py`
-- `backend/app/cve_risk_context.py`
 - `backend/app/finding_intelligence.py`
 - `backend/tests/test_cpe_consistency.py`
 - `backend/tests/test_finding_intelligence.py`
+- `backend/app/cve_risk_context.py`
 - `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
-- `backend/app/repeat_validation_outcome.py`
-- `backend/tests/test_repeat_validation_outcome.py`
 
 ### Project signals
 - `pyproject.toml`

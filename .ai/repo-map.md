@@ -2491,8 +2491,12 @@ parsed_cpe_count: int
 product_match_count: int
 generic_product_count: int
 mismatch_count: int
+version_match_count: int
+generic_version_count: int
+version_mismatch_count: int
 reasons: tuple[str, ...]
 cpe_supports_product_identity: bool
+cpe_supports_version_identity: bool
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
@@ -2510,8 +2514,6 @@ vendor = parts[3].strip()
 product = parts[4].strip()
 version = parts[5].strip()
 ⋮----
-def build_cpe_consistency(finding: Any) -> CpeConsistency
-⋮----
 raw_cpes = getattr(finding, "cpe", None)
 ⋮----
 cpes: tuple[object, ...] = (raw_cpes,)
@@ -2523,15 +2525,24 @@ cpes = ()
 declared_product = _normalize_token(getattr(finding, "product", ""))
 parsed = [item for item in (_parse_cpe23(value) for value in cpes) if item]
 ⋮----
+normalized_observed_versions = {
+⋮----
 matches = 0
 generic = 0
 mismatches = 0
+version_matches = 0
+generic_versions = 0
+version_mismatches = 0
 ⋮----
 normalized_product = _normalize_token(product)
+⋮----
+normalized_version = str(version or "").strip().lower()
 ⋮----
 reasons: set[str] = set()
 ⋮----
 supports = bool(
+⋮----
+supports_version = bool(
 ````
 
 ## File: backend/app/cve_evidence_verdict.py
@@ -3813,7 +3824,7 @@ high_confidence_fingerprint_match_count = sum(
 fingerprint_ambiguity = fingerprint_ambiguity_reasons(
 product_ambiguity = finding_product_ambiguity_reasons(
 freshness_ambiguity = fingerprint_staleness_reasons(
-cpe_consistency = build_cpe_consistency(finding)
+cpe_consistency = build_cpe_consistency(
 cpe_ambiguity = tuple(
 combined_fingerprint_ambiguity = tuple(
 vulnerability = build_vulnerability_signal(
@@ -16358,6 +16369,16 @@ def test_risk_context_only_rewards_consistent_cpe()
 ⋮----
 matching = build_cve_risk_context(
 mismatched = build_cve_risk_context(
+⋮----
+def test_matching_cpe_version_supports_version_identity()
+⋮----
+result = build_cpe_consistency(
+⋮----
+def test_mismatched_cpe_version_is_flagged()
+⋮----
+def test_generic_cpe_version_never_claims_version_identity()
+⋮----
+def test_without_observed_version_cpe_version_is_not_guessed()
 ````
 
 ## File: backend/tests/test_cve_evidence_verdict.py
@@ -17316,6 +17337,8 @@ def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict()
 def test_stale_version_fingerprint_downgrades_cve_verdict()
 ⋮----
 def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context()
+⋮----
+def test_cpe_version_mismatch_downgrades_cve_verdict()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
