@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 from app.observation_graph import Observation, ObservationGraph
@@ -7,6 +8,7 @@ from app.technology_fingerprint_intelligence import (
     match_finding_technology,
     fingerprint_ambiguity_reasons,
     finding_product_ambiguity_reasons,
+    fingerprint_staleness_reasons,
 )
 
 
@@ -170,3 +172,69 @@ def test_unobserved_declared_product_is_marked_ambiguous():
         finding,
         fingerprints,
     ) == ("declared_product_not_observed",)
+
+
+def test_old_timestamped_version_is_marked_stale():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "tech:nginx-old",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={
+                "confidence": 0.9,
+                "observed_at": "2026-08-01T00:00:00+00:00",
+            },
+        )
+    )
+    matched = match_finding_technology(
+        _finding("nginx parsing issue"),
+        build_technology_fingerprints(graph),
+    )
+
+    assert matched[0].latest_observed_at == "2026-08-01T00:00:00+00:00"
+    assert fingerprint_staleness_reasons(
+        matched,
+        now=datetime(2026, 10, 7, tzinfo=timezone.utc),
+        max_age_days=30,
+    ) == ("stale_version_fingerprints",)
+
+
+def test_recent_timestamped_version_is_not_stale():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "tech:nginx-recent",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            metadata={
+                "confidence": 0.9,
+                "observed_at": "2026-10-01T00:00:00Z",
+            },
+        )
+    )
+    matched = match_finding_technology(
+        _finding("nginx parsing issue"),
+        build_technology_fingerprints(graph),
+    )
+
+    assert fingerprint_staleness_reasons(
+        matched,
+        now=datetime(2026, 10, 7, tzinfo=timezone.utc),
+        max_age_days=30,
+    ) == ()
+
+
+def test_missing_timestamp_does_not_invent_staleness():
+    matched = match_finding_technology(
+        _finding("nginx parsing issue"),
+        build_technology_fingerprints(_graph()),
+    )
+
+    assert fingerprint_staleness_reasons(
+        matched,
+        now=datetime(2026, 10, 7, tzinfo=timezone.utc),
+        max_age_days=30,
+    ) == ()
