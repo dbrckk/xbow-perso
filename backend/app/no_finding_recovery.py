@@ -25,6 +25,24 @@ _ALLOWED_RECON_KINDS = frozenset(
 _ENDPOINT_REVIEW_TYPES = frozenset(
     {"input_surface_review", "authorization_surface_review"}
 )
+_SUCCESSFUL_RECON_OUTCOMES = frozenset(
+    {"completed", "success", "observed", "no_findings", "no_change"}
+)
+
+
+def _is_completed_recon_step(observation: Any) -> bool:
+    """Do not exhaust a recovery task on contradictory terminal evidence."""
+    metadata = observation.metadata
+    if metadata.get("status") != "completed":
+        return False
+    outcome = metadata.get("outcome")
+    return (
+        outcome is None
+        or (
+            isinstance(outcome, str)
+            and outcome.strip().lower() in _SUCCESSFUL_RECON_OUTCOMES
+        )
+    )
 
 
 @dataclass(frozen=True)
@@ -487,7 +505,7 @@ def build_no_finding_recovery(
         for item in graph.by_kind(kind)
     ) or any(
         item.metadata.get("task_kind") == "browser_observe"
-        and item.metadata.get("status") == "completed"
+        and _is_completed_recon_step(item)
         and (
             normalized_target_host is None
             or has_in_scope_asset_ancestor(item.id)
@@ -521,7 +539,7 @@ def build_no_finding_recovery(
         kind = item.metadata.get("task_kind")
         if (
             kind in _ALLOWED_RECON_KINDS
-            and item.metadata.get("status") == "completed"
+            and _is_completed_recon_step(item)
             and has_in_scope_asset_ancestor(item.id)
         ):
             completed_recovery_evidence.setdefault(str(kind), []).append(item)
