@@ -182,9 +182,16 @@ def build_attack_surface(
     form_input_names = sorted({name for item in valid_forms for name in item["input_names"]})
     unique_urls = {item["url"] for item in valid_endpoints}
     endpoint_sources = Counter(item["source"] for item in valid_endpoints)
+    # Invalid imported endpoint/form records are diagnostic data, not
+    # independent confirmation of a discovered web surface.
     surface_sources = {
         str(item["source"])
-        for item in [*endpoints, *forms, *technologies, *wafs]
+        for item in [
+            *valid_endpoints,
+            *valid_forms,
+            *technologies,
+            *wafs,
+        ]
         if str(item.get("source", "")).strip()
     }
     source_diversity = len(surface_sources)
