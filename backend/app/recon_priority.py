@@ -273,7 +273,7 @@ def prioritize_recon_tasks(
             diff_boost + history_boost + temporal_boost,
         )
         no_finding_boost = (
-            max(0, 24 - 5 * recommended_kinds.index(task.kind))
+            max(0, 24 - 8 * recommended_kinds.index(task.kind))
             if task.kind in recommended_kinds
             else 0
         )
