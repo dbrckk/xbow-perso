@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T21:24:51Z
+Generated: 2026-10-08T21:29:39Z
 
 ### Git
 - Branch: `main`
-- Head: `b98f73b7a56c`
-- Commit date: 2026-10-08T23:24:40+02:00
-- Commit: fix(recovery): reconcile scanner findings before negative-result learning
+- Head: `744b96fc8fb2`
+- Commit date: 2026-10-08T23:29:19+02:00
+- Commit: fix(recovery): reject ambiguous mixed-parent review evidence
 - Tracked files: 685
 
 ### Recently changed files

@@ -7678,6 +7678,12 @@ parsed = urlsplit(f"//{raw}")
 """Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
 ⋮----
+parents = set(item.parent_ids)
+# A mixed-parent review could otherwise close a valid endpoint's
+# gap even when the same record also claims an unrelated asset,
+# endpoint, or finding. Require the *entire* lineage to be a
+# nonempty set of eligible surface observations.
+⋮----
 """Count completed jobs without treating duplicate reporters as independent.
 
     A scanner job contributes an independent source only if *all* completed
@@ -21302,6 +21308,14 @@ def test_malformed_finding_counter_requires_ingestion_reconciliation()
 def test_other_origin_scan_finding_count_does_not_block_target_recovery()
 ⋮----
 def test_existing_findings_do_not_get_misclassified_as_missing_ingestion()
+⋮----
+def test_review_with_mixed_authorized_and_other_host_parents_is_not_coverage()
+⋮----
+def test_form_review_cannot_use_mixed_endpoint_parent_to_close_gap()
+⋮----
+def test_review_of_two_valid_target_endpoints_closes_both_gaps()
+⋮----
+def test_review_with_no_surface_parent_never_closes_coverage()
 ```
 
 ## File: tests/test_nuclei_preflight.py
