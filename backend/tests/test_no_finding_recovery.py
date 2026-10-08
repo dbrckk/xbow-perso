@@ -1578,3 +1578,87 @@ def test_scans_exclusively_on_another_origin_are_not_target_ambiguities():
     assert result.state == "no_completed_scans"
     assert result.completed_scan_count == 0
     assert result.ambiguous_scan_source_jobs == 0
+
+
+def test_ambiguous_scan_jobs_do_not_trigger_premature_surface_rotation():
+    graph = _graph(scans=0)
+    for job in ("ambiguous-a", "ambiguous-b"):
+        for source in ("nuclei", "strix"):
+            _record_completed_scan(
+                graph,
+                observation_id=f"scan:{job}:{source}",
+                job_id=job,
+                source=source,
+            )
+    _record_completed_scan(
+        graph,
+        observation_id="scan:independent",
+        job_id="independent",
+        source="nuclei",
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 3
+    assert result.trusted_completed_scan_count == 1
+    assert result.ambiguous_scan_source_jobs == 2
+    assert result.state == "recovery_advisory"
+    assert not any(
+        "repeated completed scans yielded" in reason
+        for reason in result.reasons
+    )
+    assert result.to_dict()["trusted_completed_scan_count"] == 1
+
+
+def test_three_trusted_scans_can_trigger_coverage_rotation():
+    result = _feedback(_graph(scans=3), target_host="example.test")
+
+    assert result.completed_scan_count == 3
+    assert result.trusted_completed_scan_count == 3
+    assert result.ambiguous_scan_source_jobs == 0
+    assert any(
+        "repeated completed scans yielded" in reason
+        for reason in result.reasons
+    )
+
+
+def test_only_ambiguous_scan_jobs_require_manual_source_review():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph,
+        observation_id="scan:missing-source",
+        job_id="unknown-source",
+        source=" ",
+    )
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 0
+    assert result.scanner_source_count == 0
+    assert result.state == "scan_source_unverified"
+    assert result.recommended_task_kinds == ()
+    assert result.negative_result_proves_safe is False
+
+
+def test_cross_origin_ambiguity_does_not_reduce_separate_trusted_job_count():
+    graph = _two_origin_graph()
+    for scheme in ("http", "https"):
+        _record_completed_scan(
+            graph,
+            observation_id=f"scan:shared:{scheme}",
+            job_id="one-job-two-origins",
+            source="nuclei",
+            asset_id=f"asset:{scheme}",
+        )
+    _record_completed_scan(
+        graph,
+        observation_id="scan:good:https",
+        job_id="origin-specific-job",
+        source="nuclei",
+        asset_id="asset:https",
+    )
+
+    result = _feedback(graph, target_url="https://example.test")
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "recovery_advisory"
