@@ -14367,19 +14367,21 @@ base = 0.45
 base = max(base, sum(explicit) / len(explicit))
 confidence = round(min(1.0, base), 3)
 ⋮----
-parts = []
-⋮----
-value = getattr(finding, name, None)
-⋮----
+"""Use evidence about the finding, not impact or remediation advice."""
+text_fields = [
 evidence = getattr(finding, "evidence", None)
 ⋮----
-haystack = _normalize_product(" ".join(parts))
+declared = _normalize_product(str(getattr(finding, "product", "") or ""))
+mentions = (
 ⋮----
 scoped_fingerprints = filter_fingerprints_for_finding_asset(
 ⋮----
 product = fingerprint.normalized_product
 ⋮----
-declared = _normalize_product(str(getattr(finding, "product", "") or ""))
+# Explicit product identity takes precedence over free text:
+# an unrelated product mentioned in the title is not evidence.
+⋮----
+phrase = tuple(_TOKEN_RE.findall(product))
 ⋮----
 observed = {
 ⋮----
@@ -25474,6 +25476,31 @@ def test_credentialed_graph_asset_never_matches_clean_finding()
 def test_malformed_graph_asset_does_not_enable_unscoped_legacy_fingerprint()
 ⋮----
 def test_valid_and_malformed_technology_ancestors_fail_closed()
+⋮----
+def test_product_name_inside_larger_token_does_not_match_fingerprint()
+⋮----
+finding = _finding("nginxproxy parsing issue")
+⋮----
+def test_explicit_product_identity_overrides_unrelated_title_mentions()
+⋮----
+finding = _finding("nginx request parsing issue")
+⋮----
+def test_product_in_remediation_only_is_not_vulnerability_evidence()
+⋮----
+finding = _finding("request parsing issue")
+⋮----
+def test_product_mentioned_after_long_title_remains_matchable()
+⋮----
+finding = _finding(
+⋮----
+def test_multiword_technology_requires_contiguous_whole_token_phrase()
+⋮----
+found = match_finding_technology(
+false = match_finding_technology(
+⋮----
+def test_explicit_product_can_match_without_textual_product_mentions()
+⋮----
+finding = _finding("Generic request parsing discrepancy")
 ```
 
 ## File: tests/test_validation_priority.py

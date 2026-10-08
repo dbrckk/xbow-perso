@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T14:02:17Z
+Generated: 2026-10-08T14:07:25Z
 
 ### Git
 - Branch: `main`
-- Head: `1416c60f4bda`
-- Commit date: 2026-10-08T16:02:03+02:00
-- Commit: fix(vuln): fail closed on ambiguous multi-asset fingerprint provenance
+- Head: `3230d5e7733b`
+- Commit date: 2026-10-08T16:07:13+02:00
+- Commit: fix(vuln): match technology products by full tokens, not substrings
 - Tracked files: 681
 
 ### Recently changed files
@@ -53,8 +53,6 @@ Generated: 2026-10-08T14:02:17Z
 - `backend/tests/test_technology_fingerprint_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/app/finding_intelligence.py`
-- `backend/app/cve_advisory_consensus.py`
-- `backend/tests/test_cve_advisory_consensus.py`
 
 ### Project signals
 - `pyproject.toml`

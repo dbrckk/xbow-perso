@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 679d30b40ef4356b5a591aba7ffa9386e963afae
-Head: 1416c60f4bda3cb952aab071be20039ae59bef21
+Base: ba845a06aac8a0707779fca6c266a9f4b252dbc3
+Head: 3230d5e7733b1ed3a3c168c795e8b5ff9f42016a
 
 ## Changed files
 - M backend/app/technology_fingerprint_intelligence.py
