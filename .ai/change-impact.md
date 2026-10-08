@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 2e3b9514bb1fcfc8106d85694fad700890e8396b
-Head: a240a906dedbad152d206fa6f4325c4a88b31bc4
+Base: 71f8b0f03852af9b926b0e69a14215f1b300236a
+Head: 24fcdf5bf0b1b7ead8d7f7d06b4b2dece838a7b5
 
 ## Changed files
-- M backend/app/no_finding_recovery.py
-- M backend/tests/test_no_finding_recovery.py
+- M backend/app/learning_memory.py
+- M backend/tests/test_learning_memory.py
 
 ## Affected areas
 - backend

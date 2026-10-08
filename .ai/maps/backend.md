@@ -6883,9 +6883,17 @@ attempts = int(job.get("attempts") or 0)
 totals = {"completed": 0, "failed": 0, "cancelled": 0, "requeued": 0}
 by_kind: dict[str, dict[str, int]] = defaultdict(
 recent: list[dict[str, Any]] = []
+# A single job may emit queued, retry and terminal events. Learning from
+# the event count inflates scanner failures and can suppress a healthy
+# engine. For planning, count the last valid state of each job only.
+final_by_job: dict[tuple[str, str], str] = {}
+valid_events = 0
 ⋮----
 kind = str(event.get("job_kind") or "")
 status = str(event.get("status") or "")
+job_id = str(event.get("job_id") or "").strip()
+⋮----
+attempts = int(event.get("attempts") or 0)
 ⋮----
 bucket = "requeued" if status == "queued" else status
 ```
@@ -20571,6 +20579,26 @@ event = worker_outcome_event(
 summary = summarize_worker_outcomes([{**event, "at": "t1"}])
 ⋮----
 def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits()
+⋮----
+def test_worker_summary_counts_one_final_state_per_job()
+⋮----
+def event(status, *, job_id="job-1", kind="nuclei_scan")
+⋮----
+summary = summarize_worker_outcomes(
+⋮----
+def test_worker_summary_does_not_merge_different_job_kinds()
+⋮----
+summary = summarize_worker_outcomes([
+⋮----
+def test_invalid_worker_events_cannot_inflate_recovery_failure_counts()
+⋮----
+events = [
+summary = summarize_worker_outcomes(events)
+⋮----
+def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count()
+⋮----
+outcomes = summarize_worker_outcomes(events)
+feedback = build_no_finding_recovery(
 ```
 
 ## File: tests/test_live_activation_profile.py

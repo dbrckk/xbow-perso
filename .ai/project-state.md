@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T17:36:14Z
+Generated: 2026-10-08T17:39:57Z
 
 ### Git
 - Branch: `main`
-- Head: `a240a906dedb`
-- Commit date: 2026-10-08T19:36:01+02:00
-- Commit: feat(planner): avoid repeated no-finding recon tasks
+- Head: `24fcdf5bf0b1`
+- Commit date: 2026-10-08T19:39:34+02:00
+- Commit: fix(learning): learn from final worker job states
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/learning_memory.py`
+- `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/target_memory.py`
