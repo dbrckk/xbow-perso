@@ -162,3 +162,167 @@ def test_storage_accepts_form_and_waf_observations(tmp_path: Path):
 
     assert form["kind"] == "form"
     assert waf["kind"] == "waf"
+
+
+def test_historical_query_values_are_redacted_but_parameter_names_are_kept():
+    current = campaign(
+        "current",
+        created_at="2026-09-02T00:00:00+00:00",
+        updated_at="2026-09-02T01:00:00+00:00",
+    )
+    store = FakeStore(
+        [current],
+        {
+            "current": [
+                observation(
+                    "a",
+                    "asset",
+                    "https://app.example.com/internal?credential=asset-secret",
+                    "2026-09-02T00:01:00+00:00",
+                ),
+                observation(
+                    "e",
+                    "endpoint",
+                    "https://app.example.com/api?session=one-secret&token=two-secret#fragment",
+                    "2026-09-02T00:02:00+00:00",
+                ),
+                observation(
+                    "f",
+                    "form",
+                    "POST /login?csrf=form-secret&email=private@example.com",
+                    "2026-09-02T00:03:00+00:00",
+                ),
+            ]
+        },
+    )
+
+    memory = build_target_memory(store, current)
+    values = {item["value"] for item in memory["nodes"]}
+
+    assert "https://app.example.com" in values
+    assert "https://app.example.com/api?session=&token=" in values
+    assert "POST /login?csrf=&email=" in values
+    for secret in (
+        "asset-secret",
+        "one-secret",
+        "two-secret",
+        "form-secret",
+        "private@example.com",
+        "fragment",
+    ):
+        assert secret not in str(memory)
+
+
+def test_query_value_changes_do_not_inflate_historical_novelty():
+    old = campaign(
+        "old",
+        created_at="2026-09-01T00:00:00+00:00",
+        updated_at="2026-09-01T01:00:00+00:00",
+    )
+    current = campaign(
+        "current",
+        created_at="2026-09-02T00:00:00+00:00",
+        updated_at="2026-09-02T01:00:00+00:00",
+    )
+    store = FakeStore(
+        [current, old],
+        {
+            "old": [
+                observation(
+                    "e1",
+                    "endpoint",
+                    "https://app.example.com/api?id=old-secret",
+                    "2026-09-01T00:01:00+00:00",
+                )
+            ],
+            "current": [
+                observation(
+                    "e2",
+                    "endpoint",
+                    "https://app.example.com/api?id=new-secret",
+                    "2026-09-02T00:01:00+00:00",
+                )
+            ],
+        },
+    )
+
+    memory = build_target_memory(store, current)
+
+    assert memory["summary"]["by_kind"]["endpoint"] == 1
+    assert memory["delta"]["persistent_count"] == 1
+    assert memory["delta"]["added_count"] == 0
+    assert memory["delta"]["removed_count"] == 0
+    assert memory["nodes"][0]["value"] == "https://app.example.com/api?id="
+    assert "old-secret" not in str(memory)
+    assert "new-secret" not in str(memory)
+
+
+def test_malformed_and_credentialed_endpoint_observations_are_ignored():
+    current = campaign(
+        "current",
+        created_at="2026-09-02T00:00:00+00:00",
+        updated_at="2026-09-02T01:00:00+00:00",
+    )
+    store = FakeStore(
+        [current],
+        {
+            "current": [
+                observation(
+                    "e1",
+                    "endpoint",
+                    "https://[broken-host?token=secret-one",
+                    "2026-09-02T00:01:00+00:00",
+                ),
+                observation(
+                    "e2",
+                    "endpoint",
+                    "https://username:password@app.example.com/api?x=secret-two",
+                    "2026-09-02T00:02:00+00:00",
+                ),
+            ]
+        },
+    )
+    memory = build_target_memory(store, current)
+
+    assert memory["summary"]["nodes"] == 0
+    assert "secret-one" not in str(memory)
+    assert "secret-two" not in str(memory)
+    assert "username" not in str(memory)
+
+
+def test_large_query_values_are_not_reflected_on_parse_limit():
+    current = campaign(
+        "current",
+        created_at="2026-09-02T00:00:00+00:00",
+        updated_at="2026-09-02T01:00:00+00:00",
+    )
+    query = "&".join(
+        f"key{i}=private-value-{i}"
+        for i in range(70)
+    )
+    store = FakeStore(
+        [current],
+        {
+            "current": [
+                observation(
+                    "e1",
+                    "endpoint",
+                    f"https://app.example.com/api?{query}",
+                    "2026-09-02T00:01:00+00:00",
+                )
+            ]
+        },
+    )
+    memory = build_target_memory(store, current)
+
+    assert memory["nodes"][0]["value"] == "https://app.example.com/api"
+    assert "private-value" not in str(memory)
+
+
+def test_ipv6_origin_keeps_valid_brackets_without_query_values():
+    from app.target_memory import _canonical_value
+
+    assert _canonical_value(
+        "endpoint",
+        "https://[2001:db8::1]:8443/api?session=private-value",
+    ) == "https://[2001:db8::1]:8443/api?session="
