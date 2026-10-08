@@ -73,26 +73,114 @@ def recon_capabilities() -> tuple[ReconCapability, ...]:
     return _CAPABILITIES
 
 
-def _asset_host(value: str) -> str:
-    parsed = urlsplit(value if "://" in value else f"//{value}")
-    return (parsed.hostname or "").lower().rstrip(".")
+def _origin_identity(
+    value: str,
+    *,
+    allow_hostname: bool = False,
+) -> tuple[str, str | None, int | None] | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = urlsplit(
+            raw if "://" in raw or not allow_hostname else f"//{raw}"
+        )
+        scheme = parsed.scheme.lower() or None
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+        if (
+            not host
+            or scheme not in {None, "http", "https"}
+            or (scheme is None and not allow_hostname)
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
+            return None
+    except ValueError:
+        return None
+    if port is None:
+        if scheme == "https":
+            port = 443
+        elif scheme == "http":
+            port = 80
+    return host, scheme, port
 
 
 def _safe_target(value: str) -> tuple[str, str]:
+    identity = _origin_identity(value)
+    if identity is None:
+        return "", ""
+    host, scheme, port = identity
+    if scheme not in {"http", "https"}:
+        return "", ""
+    raw_host = f"[{host}]" if ":" in host else host
+    default_port = 443 if scheme == "https" else 80
+    netloc = (
+        f"{raw_host}:{port}"
+        if port is not None and port != default_port
+        else raw_host
+    )
     parsed = urlsplit(value)
-    scheme = parsed.scheme.lower()
-    host = (parsed.hostname or "").lower().rstrip(".")
-    if not scheme or not host:
-        return "", ""
-    try:
-        port = parsed.port
-    except ValueError:
-        return "", ""
-    if port and not ((scheme == "http" and port == 80) or (scheme == "https" and port == 443)):
-        netloc = f"{host}:{port}"
-    else:
-        netloc = host
     return urlunsplit((scheme, netloc, parsed.path or "/", "", "")), host
+
+
+def _same_origin(value: str, target_origin: tuple[str, str | None, int | None]) -> bool:
+    candidate = _origin_identity(value)
+    return candidate is not None and candidate == target_origin
+
+
+def _compatible_asset(
+    value: str,
+    target_origin: tuple[str, str | None, int | None],
+) -> bool:
+    identity = _origin_identity(value, allow_hostname=True)
+    if identity is None:
+        return False
+    host, scheme, port = identity
+    target_host, target_scheme, target_port = target_origin
+    return (
+        host == target_host
+        and (scheme is None or scheme == target_scheme)
+        and (port is None or port == target_port)
+    )
+
+
+def _recon_observation_is_for_target(
+    item: Any,
+    *,
+    target_origin: tuple[str, str | None, int | None],
+    observations: dict[str, Any],
+    assets: list[Any],
+) -> bool:
+    if item.kind in {"endpoint", "form"} and not _same_origin(
+        item.value, target_origin
+    ):
+        return False
+
+    pending = list(item.parent_ids)
+    seen: set[str] = set()
+    linked_assets: list[Any] = []
+    while pending:
+        parent_id = pending.pop()
+        if parent_id in seen:
+            continue
+        seen.add(parent_id)
+        parent = observations.get(parent_id)
+        if parent is None:
+            return False
+        if parent.kind == "asset":
+            linked_assets.append(parent)
+        else:
+            pending.extend(parent.parent_ids)
+    if linked_assets:
+        return all(
+            _compatible_asset(asset.value, target_origin)
+            for asset in linked_assets
+        )
+    # Legacy unlinked observations cannot be assigned to one of many assets.
+    return len(assets) == 1 and _compatible_asset(
+        assets[0].value, target_origin
+    )
 
 
 def build_recon_plan(
@@ -110,18 +198,34 @@ def build_recon_plan(
     if not safe_target or not scope_checker(host):
         return []
 
-    observed_assets = {
-        asset_host
-        for item in graph.by_kind("asset")
-        if (asset_host := _asset_host(item.value))
-    }
-    if observed_assets and host not in observed_assets:
+    assets = graph.by_kind("asset")
+    target_origin = _origin_identity(safe_target)
+    if target_origin is None:
+        return []
+    if assets and not any(
+        _compatible_asset(item.value, target_origin)
+        for item in assets
+    ):
         return []
 
-    endpoints = graph.by_kind("endpoint")
-    forms = graph.by_kind("form")
-    technologies = graph.by_kind("technology")
-    wafs = graph.by_kind("waf")
+    observations = {item.id: item for item in graph.values()}
+
+    def matching(kind: str) -> list[Any]:
+        return [
+            item
+            for item in graph.by_kind(kind)
+            if _recon_observation_is_for_target(
+                item,
+                target_origin=target_origin,
+                observations=observations,
+                assets=assets,
+            )
+        ]
+
+    endpoints = matching("endpoint")
+    forms = matching("form")
+    technologies = matching("technology")
+    wafs = matching("waf")
     tasks: list[ReconTask] = []
 
     if not endpoints:
