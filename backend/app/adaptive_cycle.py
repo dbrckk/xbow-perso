@@ -154,7 +154,9 @@ def campaign_adaptive_cycle(campaign_id: str):
 
     campaign = assert_campaign_exists(campaign_id)
     store = storage()
-    graph = load_observation_graph(store, campaign.id)
+    graph = load_observation_graph(
+        store, campaign.id, include_persisted_discovery_times=True
+    )
     rules = campaign.target.rules
 
     def scope_checker(host: str) -> bool:
