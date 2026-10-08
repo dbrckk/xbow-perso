@@ -213,3 +213,251 @@ def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypat
     # Surface diff, temporal, confidence and target memory must also redact
     # parameter values before the full API response is returned.
     assert "secret" not in str(result)
+
+
+def test_multi_host_recon_ignores_inventory_from_other_authorized_host():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "a.example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "b.example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://b.example.test/api",
+            "crawler",
+            parent_ids=("asset:b",),
+        )
+    )
+    for kind in ("form", "technology", "waf"):
+        value = (
+            "https://b.example.test/login" if kind == "form" else "nginx/1.24.0"
+        )
+        graph.add(
+            Observation(
+                f"{kind}:b",
+                kind,
+                value,
+                "scanner",
+                parent_ids=("asset:b",),
+            )
+        )
+
+    tasks = build_recon_plan(
+        "https://a.example.test/",
+        graph,
+        scope_checker=lambda host: host in {"a.example.test", "b.example.test"},
+    )
+
+    assert [task.kind for task in tasks] == ["crawl", "detect_technology"]
+    assert all(task.target == "https://a.example.test/" for task in tasks)
+    assert all(task.max_requests <= 40 for task in tasks)
+
+
+def test_recon_does_not_reuse_http_inventory_on_https_origin():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:http", "asset", "http://example.test", "recon"))
+    graph.add(Observation("asset:https", "asset", "https://example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:http",
+            "endpoint",
+            "http://example.test/api",
+            "crawler",
+            parent_ids=("asset:http",),
+        )
+    )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert [task.kind for task in tasks] == ["crawl", "detect_technology"]
+
+
+def test_recon_does_not_reuse_another_port_form_or_technology():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:443", "asset", "https://example.test", "recon"))
+    graph.add(
+        Observation(
+            "asset:8443",
+            "asset",
+            "https://example.test:8443",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:443",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:443",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:8443",
+            "form",
+            "https://example.test:8443/login",
+            "form-agent",
+            parent_ids=("asset:8443",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:8443",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:8443",),
+        )
+    )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    kinds = [task.kind for task in tasks]
+    assert kinds == [
+        "map_endpoints",
+        "detect_technology",
+        "map_forms",
+        "browser_observe",
+    ]
+
+
+def test_unlinked_observation_from_multi_asset_graph_is_not_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "a.example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "b.example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:legacy",
+            "endpoint",
+            "https://a.example.test/api",
+            "legacy-import",
+        )
+    )
+
+    tasks = build_recon_plan(
+        "https://a.example.test",
+        graph,
+        scope_checker=lambda host: True,
+    )
+
+    assert [task.kind for task in tasks] == ["crawl", "detect_technology"]
+
+
+def test_single_host_legacy_unlinked_endpoint_still_counts_when_origin_matches():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:legacy",
+            "endpoint",
+            "https://example.test/api",
+            "legacy-import",
+        )
+    )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert "map_endpoints" in [task.kind for task in tasks]
+    assert "crawl" not in [task.kind for task in tasks]
+
+
+def test_recon_rejects_non_http_or_credential_bearing_target():
+    graph = ObservationGraph()
+    for value in (
+        "ftp://example.test/data",
+        "https://user:password@example.test/",
+        "https://example.test:invalid/path",
+        "https://[invalid-ipv6",
+    ):
+        assert build_recon_plan(
+            value,
+            graph,
+            scope_checker=lambda host: host == "example.test",
+        ) == []
+
+
+def test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:ipv6", "asset", "https://[::1]", "inventory"))
+    tasks = build_recon_plan(
+        "https://[::1]:443/path?secret=sensitive",
+        graph,
+        scope_checker=lambda host: host == "::1",
+    )
+
+    assert [task.kind for task in tasks] == ["crawl", "detect_technology"]
+    assert all(task.target == "https://[::1]/path" for task in tasks)
+    assert "sensitive" not in str([task.to_dict() for task in tasks])
+    assert all(
+        task.read_only and task.same_origin_only
+        and set(task.allowed_methods) <= {"GET", "HEAD"}
+        for task in tasks
+    )
+
+
+def test_multi_host_recon_route_offers_missing_target_crawl_after_negative_scan(
+    tmp_path, monkeypatch,
+):
+    db = str(tmp_path / "multi-host-recon.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    campaign = Campaign(
+        id="recon-multi-host-feedback",
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://a.example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["a.example.test", "b.example.test"],
+                automated_scanning=True,
+            ),
+        ),
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    for observation in (
+        Observation("asset:a", "asset", "a.example.test", "inventory"),
+        Observation("asset:b", "asset", "b.example.test", "inventory"),
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://b.example.test/api?secret=redacted",
+            "crawler",
+            parent_ids=("asset:b",),
+        ),
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "target-a-scan",
+            },
+        ),
+    ):
+        store.put_observation(campaign.id, observation.to_dict())
+
+    result = campaign_recon_plan(campaign.id)
+    assert "crawl" in [task["kind"] for task in result["tasks"]]
+    assert result["no_finding_feedback"]["state"] == "recovery_advisory"
+    assert result["no_finding_feedback"]["recommended_task_kinds"] == ["crawl"]
+    assert result["diff_priority"]["scope_expansion"] is False
+    assert result["execution"] == "advisory_only"
+    assert "redacted" not in str(result)
