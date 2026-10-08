@@ -5,34 +5,31 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "NoFindingRecovery": {
+    "TechniqueMemory": {
       "source": {
-        "file": "backend/app/no_finding_recovery.py",
-        "start": 20,
-        "end": 47
+        "file": "backend/app/learning_memory.py",
+        "start": 15,
+        "end": 26
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/no_finding_recovery.py",
-        "start": 42,
-        "end": 162
+        "file": "backend/app/learning_memory.py",
+        "start": 25,
+        "end": 26
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_learning_memory": {
+      "source": {
+        "file": "backend/app/learning_memory.py",
+        "start": 29,
+        "end": 120
       },
       "symbol_dependencies": [
-        {
-          "symbol": "NoFindingRecovery",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -46,36 +43,12 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_completed_scan_evidence",
+          "symbol": "TechniqueMemory",
           "definitions": [
             {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reviewed_ids",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_unstable_scanner_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 92,
-              "kind": "function",
+              "file": "backend/app/learning_memory.py",
+              "line": 15,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -94,11 +67,33 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_attack_surface",
+          "symbol": "by_kind",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 73,
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "campaign_learning_memory": {
+      "source": {
+        "file": "backend/app/learning_memory.py",
+        "start": 124,
+        "end": 142
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
               "kind": "function",
               "language": "python"
             }
@@ -106,17 +101,72 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_no_finding_recovery",
+          "symbol": "build_learning_memory",
           "definitions": [
             {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 111,
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "worker_outcome_event": {
+      "source": {
+        "file": "backend/app/learning_memory.py",
+        "start": 156,
+        "end": 173
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "summarize_worker_outcomes": {
+      "source": {
+        "file": "backend/app/learning_memory.py",
+        "start": 176,
+        "end": 237
+      },
+      "symbol_dependencies": [
         {
           "symbol": "by_kind",
           "definitions": [
@@ -130,13 +180,22 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 9
+      "dependency_count": 1
+    },
+    "NoFindingRecovery": {
+      "source": {
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 20,
+        "end": 50
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
     "_reviewed_ids": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 50,
-        "end": 65
+        "start": 53,
+        "end": 68
       },
       "symbol_dependencies": [
         {
@@ -169,8 +228,8 @@
     "_completed_scan_evidence": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 68,
-        "end": 89
+        "start": 71,
+        "end": 92
       },
       "symbol_dependencies": [
         {
@@ -215,8 +274,8 @@
     "_unstable_scanner_outcomes": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 92,
-        "end": 108
+        "start": 95,
+        "end": 111
       },
       "symbol_dependencies": [
         {
@@ -237,8 +296,8 @@
     "build_no_finding_recovery": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 111,
-        "end": 409
+        "start": 114,
+        "end": 437
       },
       "symbol_dependencies": [
         {
@@ -270,7 +329,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 68,
+              "line": 71,
               "kind": "function",
               "language": "python"
             }
@@ -282,7 +341,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 50,
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -294,7 +353,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 92,
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
@@ -342,7 +401,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 201,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -354,7 +413,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 238,
+              "line": 241,
               "kind": "function",
               "language": "python"
             }
@@ -379,8 +438,8 @@
     "has_in_scope_asset_ancestor": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 201,
-        "end": 321
+        "start": 204,
+        "end": 324
       },
       "symbol_dependencies": [
         {
@@ -388,7 +447,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 68,
+              "line": 71,
               "kind": "function",
               "language": "python"
             }
@@ -400,7 +459,19 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 50,
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_unstable_scanner_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
@@ -436,7 +507,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 238,
+              "line": 241,
               "kind": "function",
               "language": "python"
             }
@@ -444,13 +515,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 6
     },
     "scan_matches_target": {
       "source": {
         "file": "backend/app/no_finding_recovery.py",
-        "start": 238,
-        "end": 358
+        "start": 241,
+        "end": 361
       },
       "symbol_dependencies": [
         {
@@ -458,7 +529,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 68,
+              "line": 71,
               "kind": "function",
               "language": "python"
             }
@@ -470,7 +541,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 50,
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -482,7 +553,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 92,
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
@@ -506,7 +577,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 201,
+              "line": 204,
               "kind": "function",
               "language": "python"
             }
@@ -516,11 +587,272 @@
       ],
       "dependency_count": 5
     },
+    "CoverageDomain": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 19,
+        "end": 28
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_ratio": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 31,
+        "end": 32
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_reviewed_parent_ids": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 35,
+        "end": 44
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "is_completed_review_evidence",
+          "definitions": [
+            {
+              "file": "backend/app/review_evidence.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "build_red_team_coverage": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 47,
+        "end": 226
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "CoverageDomain",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_ratio",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reviewed_parent_ids",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "analyze_validation_state",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "attempted_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_attack_surface",
+          "definitions": [
+            {
+              "file": "backend/app/attack_surface.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_chains",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_chain.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observed_independent_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "campaign_red_team_coverage": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 230,
+        "end": 242
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "is_completed_review_evidence": {
+      "source": {
+        "file": "backend/app/review_evidence.py",
+        "start": 12,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
     "_graph": {
       "source": {
-        "file": "backend/tests/test_no_finding_recovery.py",
+        "file": "backend/tests/test_form_waf_reasoning.py",
         "start": 7,
-        "end": 34
+        "end": 39
       },
       "symbol_dependencies": [
         {
@@ -562,6 +894,1058 @@
       ],
       "dependency_count": 3
     },
+    "test_forms_and_wafs_generate_safe_bounded_hypotheses": {
+      "source": {
+        "file": "backend/tests/test_form_waf_reasoning.py",
+        "start": 42,
+        "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_form_waf_reasoning.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_review_queue_prioritizes_form_and_protection_context": {
+      "source": {
+        "file": "backend/tests/test_form_waf_reasoning.py",
+        "start": 53,
+        "end": 60
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_form_waf_reasoning.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_review_queue",
+          "definitions": [
+            {
+              "file": "backend/app/review_queue.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_coverage_requires_recorded_form_and_waf_review_evidence": {
+      "source": {
+        "file": "backend/tests/test_form_waf_reasoning.py",
+        "start": 63,
+        "end": 104
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_form_waf_reasoning.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_learning_memory_aggregates_only_explicit_outcomes": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 7,
+        "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_learning_memory_is_bounded_and_deterministic": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 53,
+        "end": 72
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_learning_memory_route_is_exposed": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 75,
+        "end": 100
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 124,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_learning_memory_rejects_unbounded_limits": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 103,
+        "end": 111
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_worker_outcome_memory_excludes_payloads_and_errors": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 114,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "event",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 164,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 156,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 139,
+        "end": 158
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "worker_outcome_event",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 156,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_worker_summary_counts_one_final_state_per_job": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 161,
+        "end": 194
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "event",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 164,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "event": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 164,
+        "end": 284
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_invalid_worker_events_cannot_inflate_recovery_failure_counts",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 215,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_worker_summary_does_not_merge_different_job_kinds",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 197,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_worker_summary_does_not_merge_different_job_kinds": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 197,
+        "end": 212
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_invalid_worker_events_cannot_inflate_recovery_failure_counts": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 215,
+        "end": 253
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 256,
+        "end": 295
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_technique_job_observation": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 298,
+        "end": 308
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_technique_memory_deduplicates_multiple_observations_from_same_job": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 311,
+        "end": 328
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_technique_job_observation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_contradictory_job_results_are_inconclusive_regardless_of_order": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 331,
+        "end": 351
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_technique_job_observation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_distinct_job_ids_remain_independent_technique_attempts": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 354,
+        "end": 368
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_technique_job_observation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_legacy_observations_without_job_id_keep_independent_evidence": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 371,
+        "end": 383
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_technique_job_observation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_malformed_job_id_cannot_create_extra_technique_confidence": {
+      "source": {
+        "file": "backend/tests/test_learning_memory.py",
+        "start": 386,
+        "end": 408
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_technique_job_observation",
+          "definitions": [
+            {
+              "file": "backend/tests/test_learning_memory.py",
+              "line": 298,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
     "_feedback": {
       "source": {
         "file": "backend/tests/test_no_finding_recovery.py",
@@ -574,7 +1958,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 111,
+              "line": 114,
               "kind": "function",
               "language": "python"
             }
@@ -918,7 +2302,7 @@
           "definitions": [
             {
               "file": "backend/app/no_finding_recovery.py",
-              "line": 111,
+              "line": 114,
               "kind": "function",
               "language": "python"
             }
@@ -2481,122 +3865,6 @@
         "file": "backend/tests/test_no_finding_recovery.py",
         "start": 824,
         "end": 851
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_feedback",
-          "definitions": [
-            {
-              "file": "backend/tests/test_no_finding_recovery.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_no_finding_recovery.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_completed_scoped_review_closes_only_its_own_endpoint_gap": {
-      "source": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "start": 854,
-        "end": 881
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_feedback",
-          "definitions": [
-            {
-              "file": "backend/tests/test_no_finding_recovery.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_no_finding_recovery.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_review_without_terminal_status_cannot_claim_coverage": {
-      "source": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "start": 884,
-        "end": 897
       },
       "symbol_dependencies": [
         {

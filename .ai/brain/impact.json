@@ -1,29 +1,79 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "bf26dfe153239d8047ab45b626e98c4fb70ef478",
-  "head": "a06dc471f61221d5411a46cee805f2504e1311be",
+  "base": "a06dc471f61221d5411a46cee805f2504e1311be",
+  "head": "e5b316f84fc2d9697cd77b0a749aa58b8312bd98",
   "index_mode": "incremental",
   "changed_files": [
+    {
+      "path": "backend/app/learning_memory.py",
+      "status": "M"
+    },
     {
       "path": "backend/app/no_finding_recovery.py",
       "status": "M"
     },
     {
+      "path": "backend/app/red_team_coverage.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/review_evidence.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/tests/test_form_waf_reasoning.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_learning_memory.py",
+      "status": "M"
+    },
+    {
       "path": "backend/tests/test_no_finding_recovery.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_red_team_coverage.py",
+      "status": "M"
+    },
+    {
+      "path": "backend/tests/test_review_evidence.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
+    "backend/app/learning_memory.py",
     "backend/app/no_finding_recovery.py",
-    "backend/tests/test_no_finding_recovery.py"
+    "backend/app/red_team_coverage.py",
+    "backend/app/review_evidence.py",
+    "backend/tests/test_form_waf_reasoning.py",
+    "backend/tests/test_learning_memory.py",
+    "backend/tests/test_no_finding_recovery.py",
+    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_review_evidence.py"
   ],
   "impacted_files": [
     "backend/app/adaptive_cycle.py",
+    "backend/app/campaign_overview.py",
+    "backend/app/campaign_risk.py",
+    "backend/app/htb_lab.py",
+    "backend/app/learning_memory.py",
     "backend/app/no_finding_recovery.py",
+    "backend/app/orchestrator.py",
     "backend/app/recon_swarm.py",
+    "backend/app/red_team_coverage.py",
+    "backend/app/red_team_decision.py",
+    "backend/app/review_evidence.py",
+    "backend/app/scanner_adaptation.py",
+    "backend/app/worker_service.py",
+    "backend/tests/test_adaptive_cycle.py",
+    "backend/tests/test_form_waf_reasoning.py",
     "backend/tests/test_learning_memory.py",
-    "backend/tests/test_no_finding_recovery.py"
+    "backend/tests/test_no_finding_recovery.py",
+    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_review_evidence.py",
+    "backend/tests/test_scanner_adaptation.py"
   ],
   "impacted_symbols": [
     {
@@ -69,6 +119,234 @@
       "line": 150
     },
     {
+      "name": "campaign_overview",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 45
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/campaign_overview.py",
+      "line": 54
+    },
+    {
+      "name": "CampaignRisk",
+      "kind": "class",
+      "file": "backend/app/campaign_risk.py",
+      "line": 21
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 29
+    },
+    {
+      "name": "build_campaign_risk",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 35
+    },
+    {
+      "name": "campaign_risk",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 130
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/campaign_risk.py",
+      "line": 137
+    },
+    {
+      "name": "_normalize_technique",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 15
+    },
+    {
+      "name": "build_htb_live_readiness",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 24
+    },
+    {
+      "name": "htb_live_readiness",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 143
+    },
+    {
+      "name": "HtbLabCampaignInput",
+      "kind": "class",
+      "file": "backend/app/htb_lab.py",
+      "line": 147
+    },
+    {
+      "name": "validate_authorized_lab_target",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 153
+    },
+    {
+      "name": "_active_same_target_htb_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 185
+    },
+    {
+      "name": "create_htb_lab_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 200
+    },
+    {
+      "name": "HtbLabOutcomeInput",
+      "kind": "class",
+      "file": "backend/app/htb_lab.py",
+      "line": 264
+    },
+    {
+      "name": "validate_techniques",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 272
+    },
+    {
+      "name": "validate_overlap",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 277
+    },
+    {
+      "name": "_latest_htb_outcome_event",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 287
+    },
+    {
+      "name": "_assert_htb_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 299
+    },
+    {
+      "name": "record_htb_lab_outcome",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 311
+    },
+    {
+      "name": "is_htb_training_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 410
+    },
+    {
+      "name": "_current_htb_feedback_observations",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 424
+    },
+    {
+      "name": "collect_htb_cross_lab_learning",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 455
+    },
+    {
+      "name": "build_htb_cross_lab_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 505
+    },
+    {
+      "name": "build_htb_benchmark_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 519
+    },
+    {
+      "name": "finish_htb_lab_campaign",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 611
+    },
+    {
+      "name": "build_htb_focus_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 635
+    },
+    {
+      "name": "htb_focus_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 702
+    },
+    {
+      "name": "htb_benchmark_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 713
+    },
+    {
+      "name": "htb_global_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 723
+    },
+    {
+      "name": "htb_lab_session_status",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 733
+    },
+    {
+      "name": "htb_lab_learning_summary",
+      "kind": "function",
+      "file": "backend/app/htb_lab.py",
+      "line": 766
+    },
+    {
+      "name": "TechniqueMemory",
+      "kind": "class",
+      "file": "backend/app/learning_memory.py",
+      "line": 15
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 25
+    },
+    {
+      "name": "build_learning_memory",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 29
+    },
+    {
+      "name": "campaign_learning_memory",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 124
+    },
+    {
+      "name": "worker_outcome_event",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 156
+    },
+    {
+      "name": "summarize_worker_outcomes",
+      "kind": "function",
+      "file": "backend/app/learning_memory.py",
+      "line": 176
+    },
+    {
       "name": "NoFindingRecovery",
       "kind": "class",
       "file": "backend/app/no_finding_recovery.py",
@@ -78,43 +356,145 @@
       "name": "to_dict",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 42
+      "line": 45
     },
     {
       "name": "_reviewed_ids",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 50
+      "line": 53
     },
     {
       "name": "_completed_scan_evidence",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 68
+      "line": 71
     },
     {
       "name": "_unstable_scanner_outcomes",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 92
+      "line": 95
     },
     {
       "name": "build_no_finding_recovery",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 111
+      "line": 114
     },
     {
       "name": "has_in_scope_asset_ancestor",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 201
+      "line": 204
     },
     {
       "name": "scan_matches_target",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 238
+      "line": 241
+    },
+    {
+      "name": "_stable_id",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 57
+    },
+    {
+      "name": "_graph_fingerprint",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 62
+    },
+    {
+      "name": "_load_graph",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 79
+    },
+    {
+      "name": "_seed_primary_target",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 83
+    },
+    {
+      "name": "_minimum_enrichment_score",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 100
+    },
+    {
+      "name": "_surface_enrichment",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 111
+    },
+    {
+      "name": "_intelligence_context",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 135
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 146
+    },
+    {
+      "name": "_validation_saturated_cluster_ids",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 265
+    },
+    {
+      "name": "_pending_findings",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 305
+    },
+    {
+      "name": "_enqueue_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 351
+    },
+    {
+      "name": "_scan_engines",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 417
+    },
+    {
+      "name": "_enqueue_action",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 428
+    },
+    {
+      "name": "_decision_explanation",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 534
+    },
+    {
+      "name": "_record_decision",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 581
+    },
+    {
+      "name": "_result",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 624
+    },
+    {
+      "name": "advance_campaign",
+      "kind": "function",
+      "file": "backend/app/orchestrator.py",
+      "line": 696
     },
     {
       "name": "ReconCapability",
@@ -207,6 +587,330 @@
       "line": 281
     },
     {
+      "name": "CoverageDomain",
+      "kind": "class",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 19
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 27
+    },
+    {
+      "name": "_ratio",
+      "kind": "function",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 31
+    },
+    {
+      "name": "_reviewed_parent_ids",
+      "kind": "function",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 35
+    },
+    {
+      "name": "build_red_team_coverage",
+      "kind": "function",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 47
+    },
+    {
+      "name": "campaign_red_team_coverage",
+      "kind": "function",
+      "file": "backend/app/red_team_coverage.py",
+      "line": 230
+    },
+    {
+      "name": "RedTeamDecision",
+      "kind": "class",
+      "file": "backend/app/red_team_decision.py",
+      "line": 32
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/red_team_decision.py",
+      "line": 40
+    },
+    {
+      "name": "build_red_team_decisions",
+      "kind": "function",
+      "file": "backend/app/red_team_decision.py",
+      "line": 47
+    },
+    {
+      "name": "prioritize_finding_ids",
+      "kind": "function",
+      "file": "backend/app/red_team_decision.py",
+      "line": 84
+    },
+    {
+      "name": "campaign_red_team_decisions",
+      "kind": "function",
+      "file": "backend/app/red_team_decision.py",
+      "line": 235
+    },
+    {
+      "name": "scope_checker",
+      "kind": "function",
+      "file": "backend/app/red_team_decision.py",
+      "line": 244
+    },
+    {
+      "name": "is_completed_review_evidence",
+      "kind": "function",
+      "file": "backend/app/review_evidence.py",
+      "line": 12
+    },
+    {
+      "name": "ScannerAdaptation",
+      "kind": "class",
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 12
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 21
+    },
+    {
+      "name": "_engine_memory",
+      "kind": "function",
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 30
+    },
+    {
+      "name": "adapt_scanner_engines",
+      "kind": "function",
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 42
+    },
+    {
+      "name": "rank_key",
+      "kind": "function",
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 99
+    },
+    {
+      "name": "CampaignCancelledError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 48
+    },
+    {
+      "name": "StaleValidationJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 52
+    },
+    {
+      "name": "StaleBrowserJobError",
+      "kind": "class",
+      "file": "backend/app/worker_service.py",
+      "line": 56
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 64
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 69
+    },
+    {
+      "name": "_append_event_once",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 80
+    },
+    {
+      "name": "_lease_heartbeat",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 97
+    },
+    {
+      "name": "renew",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 104
+    },
+    {
+      "name": "_process_scanner_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 125
+    },
+    {
+      "name": "process_strix_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 132
+    },
+    {
+      "name": "process_nuclei_scan",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 136
+    },
+    {
+      "name": "process_validation",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 140
+    },
+    {
+      "name": "process_browser_flow",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 213
+    },
+    {
+      "name": "process_recon_task",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 317
+    },
+    {
+      "name": "process_report",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 442
+    },
+    {
+      "name": "_record_worker_outcome",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 484
+    },
+    {
+      "name": "_worker_bool",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 514
+    },
+    {
+      "name": "_legacy_unprovenanced_jobs_allowed",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 526
+    },
+    {
+      "name": "_verify_policy_bound_job",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 530
+    },
+    {
+      "name": "_active_scanner_execution_requested",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 550
+    },
+    {
+      "name": "_claim_for_role",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 557
+    },
+    {
+      "name": "process_one",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 571
+    },
+    {
+      "name": "_worker_poll_seconds",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 628
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "backend/app/worker_service.py",
+      "line": 639
+    },
+    {
+      "name": "_gate",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 8
+    },
+    {
+      "name": "test_cycle_halts_when_gate_is_blocked",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 18
+    },
+    {
+      "name": "test_cycle_maps_safe_planner_actions_to_bounded_states",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 29
+    },
+    {
+      "name": "test_cycle_requires_human_for_report_focus",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 40
+    },
+    {
+      "name": "test_cycle_suppresses_repeated_failed_techniques",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 51
+    },
+    {
+      "name": "test_adaptive_cycle_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 71
+    },
+    {
+      "name": "test_cycle_halts_for_human_review_after_repeated_requeues_without_success",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 75
+    },
+    {
+      "name": "test_cycle_does_not_suppress_recovered_worker_kind",
+      "kind": "function",
+      "file": "backend/tests/test_adaptive_cycle.py",
+      "line": 101
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_form_waf_reasoning.py",
+      "line": 7
+    },
+    {
+      "name": "test_forms_and_wafs_generate_safe_bounded_hypotheses",
+      "kind": "function",
+      "file": "backend/tests/test_form_waf_reasoning.py",
+      "line": 42
+    },
+    {
+      "name": "test_review_queue_prioritizes_form_and_protection_context",
+      "kind": "function",
+      "file": "backend/tests/test_form_waf_reasoning.py",
+      "line": 53
+    },
+    {
+      "name": "test_coverage_requires_recorded_form_and_waf_review_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_form_waf_reasoning.py",
+      "line": 63
+    },
+    {
       "name": "test_learning_memory_aggregates_only_explicit_outcomes",
       "kind": "function",
       "file": "backend/tests/test_learning_memory.py",
@@ -271,6 +975,42 @@
       "kind": "function",
       "file": "backend/tests/test_learning_memory.py",
       "line": 256
+    },
+    {
+      "name": "_technique_job_observation",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 298
+    },
+    {
+      "name": "test_technique_memory_deduplicates_multiple_observations_from_same_job",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 311
+    },
+    {
+      "name": "test_contradictory_job_results_are_inconclusive_regardless_of_order",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 331
+    },
+    {
+      "name": "test_distinct_job_ids_remain_independent_technique_attempts",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 354
+    },
+    {
+      "name": "test_legacy_observations_without_job_id_keep_independent_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 371
+    },
+    {
+      "name": "test_malformed_job_id_cannot_create_extra_technique_confidence",
+      "kind": "function",
+      "file": "backend/tests/test_learning_memory.py",
+      "line": 386
     },
     {
       "name": "_graph",
@@ -529,10 +1269,172 @@
       "kind": "function",
       "file": "backend/tests/test_no_finding_recovery.py",
       "line": 884
+    },
+    {
+      "name": "_unattributed_scanner_failures",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 900
+    },
+    {
+      "name": "test_global_worker_failures_do_not_block_different_target_recovery",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 912
+    },
+    {
+      "name": "test_global_worker_failures_cannot_create_missing_target_scan_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 948
+    },
+    {
+      "name": "test_single_observed_host_still_blocks_recovery_on_real_worker_failure",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 963
+    },
+    {
+      "name": "test_legacy_campaign_wide_health_retains_conservative_gate",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 977
+    },
+    {
+      "name": "test_healthy_multi_host_worker_summary_does_not_claim_attribution",
+      "kind": "function",
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "line": 987
+    },
+    {
+      "name": "test_red_team_coverage_reports_gaps_without_executing_actions",
+      "kind": "function",
+      "file": "backend/tests/test_red_team_coverage.py",
+      "line": 7
+    },
+    {
+      "name": "test_endpoint_review_credit_requires_recorded_review_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_red_team_coverage.py",
+      "line": 43
+    },
+    {
+      "name": "test_red_team_coverage_improves_after_independent_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_red_team_coverage.py",
+      "line": 77
+    },
+    {
+      "name": "test_red_team_coverage_route_is_exposed_and_reads_durable_graph",
+      "kind": "function",
+      "file": "backend/tests/test_red_team_coverage.py",
+      "line": 110
+    },
+    {
+      "name": "test_red_team_coverage_ignores_failed_or_queued_review_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_red_team_coverage.py",
+      "line": 138
+    },
+    {
+      "name": "test_review_completion_requires_accepted_explicit_status",
+      "kind": "function",
+      "file": "backend/tests/test_review_evidence.py",
+      "line": 23
+    },
+    {
+      "name": "test_review_without_status_does_not_silently_close_coverage",
+      "kind": "function",
+      "file": "backend/tests/test_review_evidence.py",
+      "line": 38
+    },
+    {
+      "name": "test_inconclusive_or_failed_outcome_does_not_close_gap",
+      "kind": "function",
+      "file": "backend/tests/test_review_evidence.py",
+      "line": 50
+    },
+    {
+      "name": "test_review_requires_explicit_review_type",
+      "kind": "function",
+      "file": "backend/tests/test_review_evidence.py",
+      "line": 66
+    },
+    {
+      "name": "_memory",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 7
+    },
+    {
+      "name": "test_adaptation_never_expands_configured_engines",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 20
+    },
+    {
+      "name": "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 33
+    },
+    {
+      "name": "test_adaptation_never_suppresses_last_configured_engine",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 45
+    },
+    {
+      "name": "test_adaptation_ranks_successful_memory_first",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 66
+    },
+    {
+      "name": "test_adaptation_rejects_unknown_or_duplicate_configuration",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 80
+    },
+    {
+      "name": "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 88
+    },
+    {
+      "name": "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 108
+    },
+    {
+      "name": "test_negative_memory_cannot_expand_scanner_configuration",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 128
+    },
+    {
+      "name": "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 141
+    },
+    {
+      "name": "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
+      "kind": "function",
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 153
     }
   ],
   "selected_tests": [
+    "backend/tests/test_adaptive_cycle.py",
+    "backend/tests/test_coverage.py",
+    "backend/tests/test_form_waf_reasoning.py",
     "backend/tests/test_learning_memory.py",
-    "backend/tests/test_no_finding_recovery.py"
+    "backend/tests/test_no_finding_recovery.py",
+    "backend/tests/test_red_team_coverage.py",
+    "backend/tests/test_review_evidence.py",
+    "backend/tests/test_scanner_adaptation.py"
   ]
 }

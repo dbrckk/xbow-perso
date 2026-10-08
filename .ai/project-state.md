@@ -39,27 +39,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:21:37Z
+Generated: 2026-10-08T18:33:31Z
 
 ### Git
 - Branch: `main`
-- Head: `a06dc471f612`
-- Commit date: 2026-10-08T20:21:17+02:00
-- Commit: fix(recovery): require completed evidence for surface review coverage
-- Tracked files: 683
+- Head: `e5b316f84fc2`
+- Commit date: 2026-10-08T20:28:33+02:00
+- Commit: fix(recovery): isolate campaign worker failures from target-specific feedback
+- Tracked files: 685
 
 ### Recently changed files
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_swarm.py`
-- `backend/app/adaptive_cycle.py`
-- `backend/app/scanner_adaptation.py`
-- `backend/tests/test_htb_lab.py`
-- `backend/tests/test_orchestrator.py`
-- `backend/tests/test_scanner_adaptation.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
+- `backend/app/red_team_coverage.py`
+- `backend/app/review_evidence.py`
+- `backend/tests/test_form_waf_reasoning.py`
+- `backend/tests/test_red_team_coverage.py`
+- `backend/tests/test_review_evidence.py`
+- `backend/app/recon_swarm.py`
+- `backend/tests/test_recon_swarm.py`
 
 ### Project signals
 - `pyproject.toml`

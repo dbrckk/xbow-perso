@@ -203,6 +203,7 @@ backend/
     report_approval.py
     report_readiness.py
     report.py
+    review_evidence.py
     review_queue.py
     rolling_telemetry.py
     runtime_capabilities.py
@@ -467,6 +468,7 @@ backend/
     test_report_metadata_normalization.py
     test_report_readiness.py
     test_report.py
+    test_review_evidence.py
     test_review_queue.py
     test_rolling_telemetry.py
     test_route_registration_uniqueness.py
@@ -7455,12 +7457,37 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
     No target interaction, payload generation, or autonomous execution happens here.
     """
 ⋮----
-buckets: dict[str, dict[str, Any]] = defaultdict(
+# One scanner or validation job may emit multiple evidence observations.
+# Counting each observation as an independent attempt inflates both
+# failure/success rates and technique confidence. Deduplicate only when
+# an explicit valid job ID is available; historical records without a
+# job ID remain independently accountable by observation ID.
+attempts: dict[tuple[str, str], dict[str, set[str]]] = {}
 ⋮----
 technique = str(item.metadata.get("technique", "")).strip().lower()
 outcome = str(item.metadata.get("outcome", "")).strip().lower()
 ⋮----
+job_id = item.metadata.get("job_id")
+⋮----
+identity = f"observation:{item.id}"
+⋮----
+identity = f"job:{job_id.strip()}"
+⋮----
+# Invalid job identity cannot establish independent evidence.
+⋮----
+attempt = attempts.setdefault(
+⋮----
+buckets: dict[str, dict[str, Any]] = defaultdict(
+⋮----
 bucket = buckets[technique]
+⋮----
+outcomes = attempt["outcomes"]
+# Contradictory observations from the same job do not confirm
+# either success or failure, regardless of ingestion order.
+outcome = next(iter(outcomes)) if len(outcomes) == 1 else "inconclusive"
+⋮----
+# A single job reported by several components is still one
+# origin of execution evidence, not multiple confirmations.
 ⋮----
 memories: list[TechniqueMemory] = []
 ⋮----
@@ -8168,6 +8195,9 @@ scope_integrity_issues: int
 recommended_task_kinds: tuple[str, ...]
 reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
+worker_health_attribution: str = "campaign_aggregate"
+worker_instability_observed: bool = False
+worker_instability_applied: bool = False
 advisory_only: bool = True
 may_expand_scope: bool = False
 may_increase_request_budget: bool = False
@@ -8264,6 +8294,13 @@ observed_browser_work = True  # fail closed on invalid worker data
 # Evidence from another asset or with missing parent lineage does not
 # exhaust the authorized target's options.
 completed_recovery_kinds = {
+⋮----
+worker_instability_observed = _unstable_scanner_outcomes(worker_outcomes)
+# Worker outcome summaries are campaign-wide and carry no asset identity.
+# Do not attribute a failure on host B to a completed scan of host A.
+worker_health_attributable = (
+worker_health_attribution = (
+worker_instability_applied = (
 ⋮----
 reasons: list[str] = []
 candidates: list[tuple[int, str]] = []
@@ -11920,6 +11957,28 @@ metadata = assess_finding_metadata(finding)
 cwe_display = metadata.canonical_cwe or (str(finding.cwe).strip() if finding.cwe else "N/A")
 cvss_display = "N/A" if metadata.cvss_score is None or metadata.cvss_rating is None else f"{metadata.cvss_score:.1f} ({metadata.cvss_rating.upper()})"
 severity_consistency = "N/A" if metadata.cvss_score is None else ("CONSISTENT" if metadata.severity_cvss_consistent else "REVIEW")
+````
+
+## File: backend/app/review_evidence.py
+````python
+_COMPLETED_REVIEW_STATES = frozenset({"completed", "reviewed"})
+_SUCCESSFUL_REVIEW_OUTCOMES = frozenset(
+⋮----
+def is_completed_review_evidence(observation: Any) -> bool
+⋮----
+"""Credit a review only with explicit terminal completion metadata.
+
+    Align with no-finding recovery's terminal review policy: missing,
+    queued, cancelled, failed or inconclusive reviews do not close coverage
+    gaps. Additional outcome metadata may not contradict completion.
+    """
+metadata = getattr(observation, "metadata", None)
+⋮----
+review_type = metadata.get("review_type")
+⋮----
+status = metadata.get("status")
+⋮----
+outcome = metadata.get("outcome")
 ````
 
 ## File: backend/app/review_queue.py
@@ -21247,6 +21306,22 @@ def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count()
 ⋮----
 outcomes = summarize_worker_outcomes(events)
 feedback = build_no_finding_recovery(
+⋮----
+metadata = {"technique": "scanner:nuclei", "outcome": outcome}
+⋮----
+def test_technique_memory_deduplicates_multiple_observations_from_same_job()
+⋮----
+memory = build_learning_memory(graph)[0]
+⋮----
+def test_contradictory_job_results_are_inconclusive_regardless_of_order()
+⋮----
+records = [
+⋮----
+def test_distinct_job_ids_remain_independent_technique_attempts()
+⋮----
+def test_legacy_observations_without_job_id_keep_independent_evidence()
+⋮----
+def test_malformed_job_id_cannot_create_extra_technique_confidence()
 ````
 
 ## File: backend/tests/test_live_activation_profile.py
@@ -21560,6 +21635,18 @@ def test_failed_form_review_does_not_close_coverage_gap()
 def test_completed_scoped_review_closes_only_its_own_endpoint_gap()
 ⋮----
 def test_review_without_terminal_status_cannot_claim_coverage()
+⋮----
+def _unattributed_scanner_failures()
+⋮----
+def test_global_worker_failures_do_not_block_different_target_recovery()
+⋮----
+def test_global_worker_failures_cannot_create_missing_target_scan_evidence()
+⋮----
+def test_single_observed_host_still_blocks_recovery_on_real_worker_failure()
+⋮----
+def test_legacy_campaign_wide_health_retains_conservative_gate()
+⋮----
+def test_healthy_multi_host_worker_summary_does_not_claim_attribution()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
@@ -23673,6 +23760,8 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_red_team_coverage(campaign.id)
+⋮----
+def test_red_team_coverage_ignores_failed_or_queued_review_evidence()
 ````
 
 ## File: backend/tests/test_red_team_decision.py
@@ -24214,6 +24303,19 @@ def test_report_holds_confirmed_finding_when_evidence_quality_is_not_high()
 def test_report_renders_normalized_cwe_and_cvss_rating()
 ⋮----
 report = render_markdown(campaign, platform="hackerone")
+````
+
+## File: backend/tests/test_review_evidence.py
+````python
+def test_review_completion_requires_accepted_explicit_status(status, accepted)
+⋮----
+record = Observation(
+⋮----
+def test_review_without_status_does_not_silently_close_coverage()
+⋮----
+def test_inconclusive_or_failed_outcome_does_not_close_gap()
+⋮----
+def test_review_requires_explicit_review_type()
 ````
 
 ## File: backend/tests/test_review_queue.py
