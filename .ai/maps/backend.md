@@ -7551,6 +7551,7 @@ missing_technology_context: bool
 scope_integrity_issues: int
 recommended_task_kinds: tuple[str, ...]
 reasons: tuple[str, ...]
+exhausted_task_kinds: tuple[str, ...] = ()
 advisory_only: bool = True
 may_expand_scope: bool = False
 may_increase_request_budget: bool = False
@@ -7633,6 +7634,12 @@ observed_browser_work = (
 ⋮----
 observed_browser_work = True  # fail closed on invalid worker data
 ⋮----
+# A completed, asset-linked recovery step with no new findings should
+# not be repeatedly promoted merely because its coverage gap persists.
+# Evidence from another asset or with missing parent lineage does not
+# exhaust the authorized target's options.
+completed_recovery_kinds = {
+⋮----
 reasons: list[str] = []
 candidates: list[tuple[int, str]] = []
 ⋮----
@@ -7650,6 +7657,8 @@ state = "recovery_advisory"
 # reparative task; a truly empty inventory requires crawl.
 ⋮----
 state = "no_supported_recovery_task"
+⋮----
+exhausted = tuple(sorted(
 ⋮----
 recommended = tuple(
 # A kind may appear with different scores; never recommend it twice.
@@ -20827,6 +20836,18 @@ graph = _graph(scans=4)
 before = _feedback(graph, allowed=("browser_observe",))
 ⋮----
 after = _feedback(graph, allowed=("browser_observe",))
+⋮----
+def test_completed_in_scope_recovery_task_is_not_recommended_twice()
+⋮----
+def test_completed_all_candidate_recovery_tasks_requires_review()
+⋮----
+def test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task()
+⋮----
+def test_orphan_recon_completion_does_not_exhaust_task()
+⋮----
+def test_failed_or_queued_recon_task_does_not_exhaust_option()
+⋮----
+def test_completed_recovery_cannot_create_new_authority()
 ```
 
 ## File: tests/test_nuclei_preflight.py

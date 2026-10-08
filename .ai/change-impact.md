@@ -1,12 +1,11 @@
 # Change impact
 
-Base: 0fdf88721dcf415d828b2652be9794ad73d06168
-Head: 6c870b7d5d84287e00426034af343dac8840df1e
+Base: 2e3b9514bb1fcfc8106d85694fad700890e8396b
+Head: a240a906dedbad152d206fa6f4325c4a88b31bc4
 
 ## Changed files
-- M backend/app/target_memory.py
-- M backend/tests/test_recon_swarm.py
-- M backend/tests/test_target_memory.py
+- M backend/app/no_finding_recovery.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend

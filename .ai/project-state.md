@@ -39,24 +39,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T16:51:49Z
+Generated: 2026-10-08T17:36:14Z
 
 ### Git
 - Branch: `main`
-- Head: `6c870b7d5d84`
-- Commit date: 2026-10-08T18:51:37+02:00
-- Commit: security(memory): redact historical URL query values
+- Head: `a240a906dedb`
+- Commit date: 2026-10-08T19:36:01+02:00
+- Commit: feat(planner): avoid repeated no-finding recon tasks
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/target_memory.py`
 - `backend/tests/test_recon_swarm.py`
 - `backend/tests/test_target_memory.py`
 - `backend/app/adaptive_cycle.py`
-- `backend/app/no_finding_recovery.py`
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
-- `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_recon_priority.py`
 - `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
