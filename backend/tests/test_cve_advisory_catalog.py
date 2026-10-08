@@ -298,3 +298,27 @@ def test_explicit_source_authority_is_normalized_and_persisted():
     assert catalog.source_name == "NVD Mirror Label"
     assert catalog.source_authority == "nvd"
     assert catalog.to_dict()["source_authority"] == "nvd"
+
+
+def test_catalog_normalizes_source_snapshot_to_utc():
+    catalog = build_cve_advisory_catalog(
+        _document(),
+        source_name="fixture",
+        source_verified=True,
+        source_snapshot_at="2026-10-08T09:30:00+02:00",
+    )
+
+    assert catalog.source_snapshot_at == "2026-10-08T07:30:00+00:00"
+
+
+def test_catalog_rejects_naive_source_snapshot_timestamp():
+    with pytest.raises(
+        CveAdvisoryCatalogError,
+        match="must include a timezone",
+    ):
+        build_cve_advisory_catalog(
+            _document(),
+            source_name="fixture",
+            source_verified=True,
+            source_snapshot_at="2026-10-08T09:30:00",
+        )
