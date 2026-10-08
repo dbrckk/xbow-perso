@@ -513,3 +513,156 @@ def test_missing_source_on_duplicate_scan_taints_job():
     assert coverage["evidence"]["completed_scans"] == 0
     assert coverage["evidence"]["untrusted_scan_observations"] == 2
     assert build_coverage_guidance(coverage)["focus"] != "surface_rotation"
+
+
+def test_positive_scan_report_without_recorded_findings_does_not_count_as_negative():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "scan:positive",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-a",
+                "findings": 2,
+            },
+        )
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 1
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+    assert build_coverage_guidance(coverage)["focus"] != "surface_rotation"
+
+
+def test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:a", "finding", "fixture", "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index, count in enumerate((0, 1)):
+        graph.add(
+            Observation(
+                f"scan:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "job-shared",
+                    "findings": count,
+                },
+            )
+        )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 2
+    assert coverage["evidence"]["untrusted_scan_observations"] == 2
+
+
+def test_invalid_scan_report_count_is_not_credited_as_completed_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index, value in enumerate((True, -1, "0")):
+        graph.add(
+            Observation(
+                f"scan:invalid-findings:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                    "findings": value,
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 3
+
+
+def test_explicit_zero_finding_scan_report_counts_as_completed_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index in range(3):
+        graph.add(
+            Observation(
+                f"scan:zero:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                    "findings": 0,
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 3
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
+    assert coverage["dimensions"]["diminishing_returns"] >= 0.5
+
+
+def test_explicit_findings_report_does_not_discard_scans_with_recorded_finding():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:a", "finding", "fixture", "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:positive",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-positive",
+                "findings": 1,
+            },
+        )
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 0
