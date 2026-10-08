@@ -8221,6 +8221,7 @@ def operational_metrics()
 ## File: backend/app/no_finding_recovery.py
 ````python
 NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
+_REVISIT_SURFACE_KINDS: dict[str, frozenset[str]] = {
 _ALLOWED_RECON_KINDS = frozenset(
 _ENDPOINT_REVIEW_TYPES = frozenset(
 ⋮----
@@ -8241,6 +8242,7 @@ scope_integrity_issues: int
 recommended_task_kinds: tuple[str, ...]
 reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
+reopened_task_kinds: tuple[str, ...] = ()
 ambiguous_scan_source_jobs: int = 0
 worker_health_attribution: str = "campaign_aggregate"
 worker_instability_observed: bool = False
@@ -8255,6 +8257,12 @@ negative_result_proves_safe: bool = False
 def to_dict(self) -> dict[str, Any]
 ⋮----
 result = asdict(self)
+⋮----
+def _trusted_utc_timestamp(value: object, *, now: datetime) -> datetime | None
+⋮----
+parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+⋮----
+parsed = parsed.astimezone(timezone.utc)
 ⋮----
 """Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
@@ -8352,7 +8360,11 @@ observed_browser_work = True  # fail closed on invalid worker data
 # not be repeatedly promoted merely because its coverage gap persists.
 # Evidence from another asset or with missing parent lineage does not
 # exhaust the authorized target's options.
-completed_recovery_kinds = {
+completed_recovery_evidence: dict[str, list[Any]] = {}
+⋮----
+kind = item.metadata.get("task_kind")
+⋮----
+completed_recovery_kinds = set(completed_recovery_evidence)
 ⋮----
 worker_instability_observed = _unstable_scanner_outcomes(worker_outcomes)
 # Worker outcome summaries are campaign-wide and carry no asset identity.
@@ -8380,6 +8392,22 @@ state = "recovery_advisory"
 # reparative task; a truly empty inventory requires crawl.
 ⋮----
 state = "no_supported_recovery_task"
+⋮----
+candidate_kinds = {kind for _score, kind in candidates} & allowed
+reopened: set[str] = set()
+⋮----
+current_time = datetime.now(timezone.utc)
+valid_endpoint_ids = {item["id"] for item in endpoints}
+valid_form_ids = {item["id"] for item in forms}
+surface_times: dict[str, list[datetime]] = {}
+⋮----
+timestamp = _trusted_utc_timestamp(
+⋮----
+completed_times = [
+# Missing or invalid completion timestamps cannot authorize a
+# retry recommendation based on assumed chronology.
+⋮----
+latest_completion = max(completed_times)
 ⋮----
 exhausted = tuple(sorted(
 ⋮----
@@ -21771,6 +21799,16 @@ def test_missing_scanner_source_requires_review_not_recovery_escalation()
 def test_blank_duplicate_source_cannot_be_hidden_by_named_reporter()
 ⋮----
 def test_oversized_scan_job_id_is_not_trusted_as_independent_source()
+⋮----
+def test_new_target_endpoint_after_recovery_completion_reopens_bounded_task()
+⋮----
+def test_old_target_observation_cannot_reopen_exhausted_recon()
+⋮----
+def test_missing_or_invalid_completion_timestamp_does_not_reopen_task()
+⋮----
+def test_cross_host_or_orphan_observation_does_not_reopen_target_task()
+⋮----
+def test_later_recovery_completion_prevents_repeating_old_novelty()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
