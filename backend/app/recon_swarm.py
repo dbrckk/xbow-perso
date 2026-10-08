@@ -201,7 +201,11 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     feedback = build_no_finding_recovery(
         graph,
         scope_checker=scope_checker,
-        available_task_kinds=(task.kind for task in tasks),
+        available_task_kinds=(
+            (task.kind for task in tasks)
+            if rules.automated_scanning
+            else ()
+        ),
         campaign_finding_count=len(campaign.findings),
         worker_outcomes=summarize_worker_outcomes(campaign.events),
     )
