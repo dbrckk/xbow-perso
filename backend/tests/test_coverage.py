@@ -800,3 +800,167 @@ def test_queued_then_completed_scan_keeps_coverage_credit():
     )
     assert coverage["evidence"]["completed_scans"] == 1
     assert coverage["evidence"]["untrusted_scan_observations"] == 0
+
+
+def test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-a",
+            },
+        )
+    )
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert result["evidence"]["completed_scans"] == 1
+    assert attribution["state"] == "endpoint_scope_unrecorded"
+    assert attribution["eligible_observed_endpoints"] == 1
+    assert attribution["documented_scanned_endpoints"] == 0
+    assert attribution["documented_fraction"] is None
+    assert attribution["not_proof_of_complete_scanning"] is True
+
+
+def test_endpoint_linked_scan_documents_only_its_observed_endpoint():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for index in (1, 2):
+        graph.add(
+            Observation(
+                f"endpoint:{index}",
+                "endpoint",
+                f"https://example.test/api/{index}",
+                "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+    graph.add(
+        Observation(
+            "scan:one",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:1",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-one",
+            },
+        )
+    )
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert attribution["state"] == "partial_endpoint_documentation"
+    assert attribution["eligible_observed_endpoints"] == 2
+    assert attribution["documented_scanned_endpoints"] == 1
+    assert attribution["documented_fraction"] == 0.5
+    assert result["dimensions"]["documented_endpoint_scan_fraction"] == 0.5
+
+
+def test_independent_endpoint_scan_records_document_all_observed_endpoints():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for index in (1, 2):
+        graph.add(
+            Observation(
+                f"endpoint:{index}",
+                "endpoint",
+                f"https://example.test/api/{index}",
+                "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+        graph.add(
+            Observation(
+                f"scan:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=(f"endpoint:{index}",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                },
+            )
+        )
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert attribution["state"] == "all_observed_endpoints_documented"
+    assert attribution["documented_scanned_endpoints"] == 2
+    assert attribution["documented_fraction"] == 1.0
+    assert attribution["not_proof_of_complete_scanning"] is True
+
+
+def test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:good", "asset", "example.test", "inventory"))
+    graph.add(Observation("asset:other", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:good",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:good",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:other",
+            "endpoint",
+            "https://other.test/api",
+            "crawler",
+            parent_ids=("asset:other",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:other",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:other",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-other",
+            },
+        )
+    )
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+    assert attribution["state"] == "no_completed_scan_evidence"
+    assert attribution["eligible_observed_endpoints"] == 1
+    assert attribution["documented_scanned_endpoints"] == 0
+    assert attribution["documented_fraction"] is None
