@@ -156,3 +156,140 @@ def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits():
         assert "recent_limit" in str(exc)
     else:
         raise AssertionError("unbounded outcome history must fail closed")
+
+
+def test_worker_summary_counts_one_final_state_per_job():
+    from app.learning_memory import summarize_worker_outcomes
+
+    def event(status, *, job_id="job-1", kind="nuclei_scan"):
+        return {
+            "type": "worker_outcome",
+            "job_id": job_id,
+            "job_kind": kind,
+            "status": status,
+            "success": status == "completed",
+            "attempts": 1,
+        }
+
+    summary = summarize_worker_outcomes(
+        [
+            event("queued"),
+            event("queued"),
+            event("failed"),
+            event("completed"),
+            event("failed", job_id="job-2"),
+        ]
+    )
+
+    assert summary["totals"] == {
+        "completed": 1,
+        "failed": 1,
+        "cancelled": 0,
+        "requeued": 0,
+    }
+    assert summary["by_job_kind"]["nuclei_scan"]["completed"] == 1
+    assert summary["distinct_jobs"] == 2
+    assert summary["duplicate_events"] == 3
+    assert len(summary["recent_outcomes"]) == 5
+    assert summary["contains_job_payloads"] is False
+
+
+def test_worker_summary_does_not_merge_different_job_kinds():
+    from app.learning_memory import summarize_worker_outcomes
+
+    summary = summarize_worker_outcomes([
+        {
+            "type": "worker_outcome",
+            "job_id": "shared-id",
+            "job_kind": kind,
+            "status": "completed",
+            "attempts": 1,
+        }
+        for kind in ("nuclei_scan", "recon_task")
+    ])
+
+    assert summary["distinct_jobs"] == 2
+    assert summary["totals"]["completed"] == 2
+
+
+def test_invalid_worker_events_cannot_inflate_recovery_failure_counts():
+    from app.learning_memory import summarize_worker_outcomes
+
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": "",
+            "job_kind": "nuclei_scan",
+            "status": "failed",
+            "attempts": 1,
+        },
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "failed",
+            "attempts": "invalid",
+        },
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "failed",
+            "attempts": 6,
+        },
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "completed",
+            "attempts": 2,
+        },
+    ]
+    summary = summarize_worker_outcomes(events)
+
+    assert summary["totals"]["failed"] == 0
+    assert summary["totals"]["completed"] == 1
+    assert summary["distinct_jobs"] == 1
+    assert summary["duplicate_events"] == 0
+
+
+def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count():
+    from app.learning_memory import summarize_worker_outcomes
+    from app.no_finding_recovery import build_no_finding_recovery
+
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(Observation(
+        "scan:one",
+        "evidence",
+        "scan-complete",
+        "nuclei",
+        parent_ids=("asset:a",),
+        metadata={
+            "phase": "scan",
+            "status": "completed",
+            "job_id": "job-1",
+        },
+    ))
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": status,
+            "attempts": 1,
+        }
+        for status in ("queued", "queued", "completed")
+    ]
+    outcomes = summarize_worker_outcomes(events)
+    feedback = build_no_finding_recovery(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+        available_task_kinds=("crawl",),
+        worker_outcomes=outcomes,
+    )
+
+    assert outcomes["totals"]["completed"] == 1
+    assert outcomes["totals"]["requeued"] == 0
+    assert feedback.state == "recovery_advisory"
+    assert feedback.recommended_task_kinds == ("crawl",)
