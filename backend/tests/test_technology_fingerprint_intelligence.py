@@ -908,3 +908,29 @@ def test_credentialed_graph_asset_never_matches_clean_finding():
     assert match_finding_technology(
         finding, build_technology_fingerprints(graph), graph
     ) == ()
+
+
+def test_malformed_graph_asset_does_not_enable_unscoped_legacy_fingerprint():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:malformed",
+            "asset",
+            "https://[invalid-ipv6",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:legacy",
+            "technology",
+            "nginx/1.24.0",
+            "legacy-import",
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test"
+
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
