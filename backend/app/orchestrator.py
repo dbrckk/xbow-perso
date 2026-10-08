@@ -216,7 +216,11 @@ def _intelligence_context(
         planned_actions[:] = [prioritized_action, *planned_actions[1:]]
     identity_access = summarize_identity_access_differentials(graph)
     htb_cross_lab_learning = None
-    scanner_memories = memories
+    # Scanner selection must not learn from technique evidence belonging
+    # to a different origin in a multi-asset campaign.
+    scanner_memories = build_learning_memory(
+        graph, target_url=str(campaign.target.primary_url)
+    )
     scanner_worker_outcomes = worker_outcomes
     if is_htb_training_campaign(campaign):
         (
