@@ -144,6 +144,78 @@ def _completed_scans_with_provenance(
     return representatives, accepted - len(representatives), untrusted, unreconciled
 
 
+
+def _endpoint_scan_attribution(
+    graph: ObservationGraph,
+    surface: dict[str, Any],
+    scan_evidence: list[Any],
+    *,
+    scope_checker: Callable[[str], bool] | None,
+) -> dict[str, Any]:
+    """Describe observed endpoint-level evidence, never infer unseen coverage.
+
+    A completed scan linked only to an asset is not proof of which of the
+    asset's individual endpoints the scanner checked. Only explicit
+    endpoint ancestry of a trusted completed scan contributes here.
+    """
+    eligible_ids = {
+        row["id"]
+        for row in surface["endpoints"]
+        if (
+            row["valid"]
+            and row["in_scope"] is not False
+            and (scope_checker is None or row["in_scope"] is True)
+            and not row["host_asset_mismatch"]
+            and row["asset_parent_ids"]
+        )
+    }
+    items = {item.id: item for item in graph.values()}
+    documented_ids: set[str] = set()
+    for scan in scan_evidence:
+        pending = list(scan.parent_ids)
+        visited: set[str] = set()
+        while pending:
+            parent_id = pending.pop()
+            if parent_id in visited:
+                continue
+            visited.add(parent_id)
+            parent = items.get(parent_id)
+            if parent is None:
+                continue
+            if parent.kind == "endpoint":
+                if parent.id in eligible_ids:
+                    documented_ids.add(parent.id)
+                # A direct endpoint reference is the unit of attribution;
+                # it does not imply scanning neighboring endpoints.
+                continue
+            if parent.kind != "asset":
+                pending.extend(parent.parent_ids)
+
+    if not scan_evidence:
+        state = "no_completed_scan_evidence"
+        fraction = None
+    elif not eligible_ids:
+        state = "no_eligible_observed_endpoints"
+        fraction = None
+    elif not documented_ids:
+        state = "endpoint_scope_unrecorded"
+        fraction = None
+    else:
+        fraction = round(len(documented_ids) / len(eligible_ids), 4)
+        state = (
+            "all_observed_endpoints_documented"
+            if len(documented_ids) == len(eligible_ids)
+            else "partial_endpoint_documentation"
+        )
+    return {
+        "state": state,
+        "eligible_observed_endpoints": len(eligible_ids),
+        "documented_scanned_endpoints": len(documented_ids),
+        "documented_fraction": fraction,
+        "not_proof_of_complete_scanning": True,
+    }
+
+
 def build_evidence_coverage(
     graph: ObservationGraph,
     *,
@@ -170,6 +242,9 @@ def build_evidence_coverage(
     })
     scan_count = len(scan_evidence)
     scan_score = 1.0 if scan_evidence else 0.0
+    endpoint_attribution = _endpoint_scan_attribution(
+        graph, surface, scan_evidence, scope_checker=scope_checker
+    )
 
     validation = analyze_validation_state(graph)
     finding_count = len(validation.finding_ids)
@@ -206,6 +281,9 @@ def build_evidence_coverage(
         "dimensions": {
             "surface_discovery": discovery,
             "scanner_execution": scan_score,
+            "documented_endpoint_scan_fraction": endpoint_attribution[
+                "documented_fraction"
+            ],
             "independent_validation": validation_score,
             "marginal_scan_yield": findings_per_scan,
             "validated_yield_per_scan": validated_per_scan,
@@ -219,6 +297,7 @@ def build_evidence_coverage(
             "waf_signals": int(summary["waf_count"]),
             "surface_source_diversity": int(summary["source_diversity"]),
             "scanner_sources": scanner_sources,
+            "endpoint_scan_attribution": endpoint_attribution,
             "completed_scans": scan_count,
             "duplicate_scan_observations": duplicate_scans,
             "untrusted_scan_observations": untrusted_scans,
