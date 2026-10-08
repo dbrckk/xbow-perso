@@ -2289,7 +2289,7 @@ def test_impossible_or_untrusted_first_discovery_never_reopens_task():
 
 def test_confirmed_new_form_can_reopen_completed_form_mapping():
     graph = _graph()
-    _record_timestamped_recovery(graph)
+    _record_timestamped_recovery(graph, kind="browser_observe")
     graph.add(
         Observation(
             "form:new",
@@ -2306,7 +2306,7 @@ def test_confirmed_new_form_can_reopen_completed_form_mapping():
     )
 
     result = _feedback(graph, target_host="example.test")
-    assert result.reopened_task_kinds == ("map_forms",)
-    assert "map_forms" in result.recommended_task_kinds
+    assert result.reopened_task_kinds == ("browser_observe",)
+    assert "browser_observe" in result.recommended_task_kinds
     assert result.may_enable_exploitation is False
     assert result.may_increase_request_budget is False
