@@ -245,10 +245,13 @@ def filter_fingerprints_for_finding_asset(
     if finding_keys and scoped_present:
         matches = []
         for fingerprint in fingerprints:
+            # Do not silently discard malformed linked assets and then
+            # trust the remaining valid one.
+            if any(not _asset_key(value) for value in fingerprint.asset_values):
+                continue
             fingerprint_keys = {
-                key
+                _asset_key(value)
                 for value in fingerprint.asset_values
-                if (key := _asset_key(value))
             }
             if fingerprint_keys and fingerprint_keys <= finding_keys:
                 # One observation linked to multiple distinct origins
