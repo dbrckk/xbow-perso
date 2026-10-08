@@ -1,79 +1,43 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "a759362713c0dd179b132f211ac133f447e2b47b",
-  "head": "80fc182627eafe952df3191232cd84467f4a9919",
+  "base": "80fc182627eafe952df3191232cd84467f4a9919",
+  "head": "7fbfa169569d5dfa53a94598ae3b47ff33a92ca8",
   "index_mode": "incremental",
   "changed_files": [
-    {
-      "path": "backend/app/cve_advisory_consensus.py",
-      "status": "M"
-    },
     {
       "path": "backend/app/finding_intelligence.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_cve_advisory_consensus.py",
+      "path": "backend/app/technology_fingerprint_intelligence.py",
       "status": "M"
     },
     {
       "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/cve_advisory_consensus.py",
     "backend/app/finding_intelligence.py",
-    "backend/tests/test_cve_advisory_consensus.py",
-    "backend/tests/test_finding_intelligence.py"
+    "backend/app/technology_fingerprint_intelligence.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_technology_fingerprint_intelligence.py"
   ],
   "impacted_files": [
-    "backend/app/cve_advisory_consensus.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/tests/test_cve_advisory_consensus.py",
+    "backend/app/technology_fingerprint_intelligence.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "AdvisorySourceEvidence",
-      "kind": "class",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 19
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 29
-    },
-    {
-      "name": "CveAdvisoryConsensus",
-      "kind": "class",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 39
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 57
-    },
-    {
-      "name": "_identity_key",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 69
-    },
-    {
-      "name": "build_cve_advisory_consensus",
-      "kind": "function",
-      "file": "backend/app/cve_advisory_consensus.py",
-      "line": 78
-    },
     {
       "name": "build_finding_intelligence",
       "kind": "function",
@@ -84,7 +48,7 @@
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 626
+      "line": 628
     },
     {
       "name": "authenticate_control_api",
@@ -633,64 +597,94 @@
       "line": 1893
     },
     {
-      "name": "_finding",
-      "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 10
+      "name": "TechnologyFingerprint",
+      "kind": "class",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 20
     },
     {
-      "name": "_catalog",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 25
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 31
     },
     {
-      "name": "test_parallel_cpe_and_package_identities_are_not_auto_merged",
+      "name": "_normalize_product",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 34
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 42
     },
     {
-      "name": "test_exact_identity_sources_can_agree_on_applicability",
+      "name": "_parse_technology",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 72
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 47
     },
     {
-      "name": "test_exact_identity_applicability_conflict_is_ambiguous",
+      "name": "_asset_key",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 107
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 57
     },
     {
-      "name": "test_unverified_catalog_is_ignored_by_consensus",
+      "name": "_asset_ancestor_ids",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 143
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 82
     },
     {
-      "name": "test_same_authority_aliases_do_not_create_cross_source_agreement",
+      "name": "_asset_scope",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 181
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 109
     },
     {
-      "name": "test_same_authority_conflicting_snapshots_are_ambiguous",
+      "name": "_finding_asset_keys",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 217
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 136
     },
     {
-      "name": "test_distinct_authorities_can_still_form_exact_identity_consensus",
+      "name": "filter_fingerprints_for_finding_asset",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 257
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 166
     },
     {
-      "name": "test_exact_identity_sources_agreeing_not_affected_downgrade_candidate",
+      "name": "build_technology_fingerprints",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_consensus.py",
-      "line": 292
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 208
+    },
+    {
+      "name": "match_finding_technology",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 310
+    },
+    {
+      "name": "finding_product_ambiguity_reasons",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 340
+    },
+    {
+      "name": "fingerprint_ambiguity_reasons",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 364
+    },
+    {
+      "name": "fingerprint_staleness_reasons",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 385
+    },
+    {
+      "name": "build_finding_fingerprint_intelligence",
+      "kind": "function",
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "line": 428
     },
     {
       "name": "_finding",
@@ -915,6 +909,120 @@
       "line": 1442
     },
     {
+      "name": "test_cross_asset_technology_version_does_not_contaminate_cve_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 1538
+    },
+    {
+      "name": "_graph",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 15
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 46
+    },
+    {
+      "name": "test_versioned_technology_fingerprints_are_aggregated_by_source",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 57
+    },
+    {
+      "name": "test_unversioned_technology_remains_advisory",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 70
+    },
+    {
+      "name": "test_finding_matches_observed_product_without_guessing_version",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 78
+    },
+    {
+      "name": "test_unrelated_finding_does_not_receive_fingerprint",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 90
+    },
+    {
+      "name": "test_fingerprint_intelligence_never_enables_exploitation",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 99
+    },
+    {
+      "name": "test_conflicting_versions_are_marked_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 111
+    },
+    {
+      "name": "test_multi_source_same_version_is_not_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 142
+    },
+    {
+      "name": "test_declared_product_is_matched_even_when_title_is_generic",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 151
+    },
+    {
+      "name": "test_unobserved_declared_product_is_marked_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 166
+    },
+    {
+      "name": "test_old_timestamped_version_is_marked_stale",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 177
+    },
+    {
+      "name": "test_recent_timestamped_version_is_not_stale",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 204
+    },
+    {
+      "name": "test_missing_timestamp_does_not_invent_staleness",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 230
+    },
+    {
+      "name": "test_same_asset_sources_aggregate_even_with_distinct_asset_observation_ids",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 243
+    },
+    {
+      "name": "test_finding_technology_match_is_scoped_to_its_asset",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 293
+    },
+    {
+      "name": "test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 356
+    },
+    {
+      "name": "test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph",
+      "kind": "function",
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "line": 404
+    },
+    {
       "name": "_campaign",
       "kind": "function",
       "file": "backend/tests/test_vulnerability_intelligence.py",
@@ -988,9 +1096,9 @@
     }
   ],
   "selected_tests": [
-    "backend/tests/test_cve_advisory_consensus.py",
     "backend/tests/test_differential_evidence_integration.py",
     "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_technology_fingerprint_intelligence.py",
     "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

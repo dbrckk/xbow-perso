@@ -2140,7 +2140,7 @@
       "language": "python",
       "kind": "function",
       "name": "campaign_finding_intelligence",
-      "line": 626
+      "line": 628
     },
     {
       "file": "backend/app/finding_lifecycle.py",
@@ -11765,70 +11765,105 @@
       "language": "python",
       "kind": "class",
       "name": "TechnologyFingerprint",
-      "line": 19
+      "line": 20
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "to_dict",
-      "line": 28
+      "line": 31
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_normalize_product",
-      "line": 35
+      "line": 42
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "_parse_technology",
-      "line": 40
+      "line": 47
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
-      "name": "build_technology_fingerprints",
-      "line": 50
+      "name": "_asset_key",
+      "line": 57
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
-      "name": "match_finding_technology",
+      "name": "_asset_ancestor_ids",
+      "line": 82
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_asset_scope",
+      "line": 109
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_finding_asset_keys",
       "line": 136
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
+      "name": "filter_fingerprints_for_finding_asset",
+      "line": 166
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "build_technology_fingerprints",
+      "line": 208
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "match_finding_technology",
+      "line": 310
+    },
+    {
+      "file": "backend/app/technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
       "name": "finding_product_ambiguity_reasons",
-      "line": 160
+      "line": 340
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "fingerprint_ambiguity_reasons",
-      "line": 178
+      "line": 364
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "fingerprint_staleness_reasons",
-      "line": 199
+      "line": 385
     },
     {
       "file": "backend/app/technology_fingerprint_intelligence.py",
       "language": "python",
       "kind": "function",
       "name": "build_finding_fingerprint_intelligence",
-      "line": 242
+      "line": 428
     },
     {
       "file": "backend/app/validation_priority.py",
@@ -16659,6 +16694,13 @@
       "kind": "function",
       "name": "test_cross_source_not_affected_consensus_forces_passive_review",
       "line": 1442
+    },
+    {
+      "file": "backend/tests/test_finding_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_cross_asset_technology_version_does_not_contaminate_cve_evidence",
+      "line": 1538
     },
     {
       "file": "backend/tests/test_finding_lifecycle.py",
@@ -31037,6 +31079,34 @@
       "kind": "function",
       "name": "test_missing_timestamp_does_not_invent_staleness",
       "line": 230
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_same_asset_sources_aggregate_even_with_distinct_asset_observation_ids",
+      "line": 243
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_finding_technology_match_is_scoped_to_its_asset",
+      "line": 293
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists",
+      "line": 356
+    },
+    {
+      "file": "backend/tests/test_technology_fingerprint_intelligence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph",
+      "line": 404
     },
     {
       "file": "backend/tests/test_validation_priority.py",

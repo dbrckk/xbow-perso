@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 42d6f8b78b3e39ef3b74a6bb450b58dafb7acffd
-Head: 80fc182627eafe952df3191232cd84467f4a9919
+Base: 8bee4ab63a714c9522aea8f4d6050323e5e5a7e6
+Head: 7fbfa169569d5dfa53a94598ae3b47ff33a92ca8
 
 ## Changed files
-- M backend/app/cve_advisory_consensus.py
 - M backend/app/finding_intelligence.py
-- M backend/tests/test_cve_advisory_consensus.py
+- M backend/app/technology_fingerprint_intelligence.py
 - M backend/tests/test_finding_intelligence.py
+- M backend/tests/test_technology_fingerprint_intelligence.py
 
 ## Affected areas
 - backend

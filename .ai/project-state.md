@@ -39,20 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T08:07:17Z
+Generated: 2026-10-08T08:17:27Z
 
 ### Git
 - Branch: `main`
-- Head: `80fc182627ea`
-- Commit date: 2026-10-08T10:07:03+02:00
-- Commit: feat(vuln): downgrade multi-source not-affected consensus
+- Head: `7fbfa169569d`
+- Commit date: 2026-10-08T10:17:16+02:00
+- Commit: feat(vuln): scope technology fingerprints by asset
 - Tracked files: 681
 
 ### Recently changed files
-- `backend/app/cve_advisory_consensus.py`
 - `backend/app/finding_intelligence.py`
-- `backend/tests/test_cve_advisory_consensus.py`
+- `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`
+- `backend/tests/test_technology_fingerprint_intelligence.py`
+- `backend/app/cve_advisory_consensus.py`
+- `backend/tests/test_cve_advisory_consensus.py`
 - `backend/app/cve_advisory_catalog.py`
 - `backend/app/cve_advisory_loader.py`
 - `backend/tests/test_cve_advisory_catalog.py`

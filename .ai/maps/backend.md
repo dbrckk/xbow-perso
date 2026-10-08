@@ -14244,6 +14244,8 @@ version: str | None
 confidence: float
 sources: tuple[str, ...]
 observation_ids: tuple[str, ...]
+asset_observation_ids: tuple[str, ...] = ()
+asset_values: tuple[str, ...] = ()
 latest_observed_at: str | None = None
 ⋮----
 def to_dict(self) -> dict[str, Any]
@@ -14262,11 +14264,52 @@ match = _VERSIONED_TECH_RE.fullmatch(raw)
 product = match.group("product").strip(" -_./:")
 version = match.group("version")
 ⋮----
-grouped: dict[tuple[str, str | None], dict[str, Any]] = {}
+def _asset_key(value: object) -> str
+⋮----
+parsed = urlsplit(raw if "://" in raw else f"//{raw}")
+host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+port = parsed.port
+⋮----
+scheme = parsed.scheme.lower()
+⋮----
+port = 443
+⋮----
+port = 80
+⋮----
+items = {item.id: item for item in graph.values()}
+pending = (
+seen: set[str] = set()
+assets: set[str] = set()
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = items.get(parent_id)
+⋮----
+asset_ids = _asset_ancestor_ids(graph, observation_id)
+asset_values = tuple(
+asset_keys = tuple(
+⋮----
+keys: set[str] = set()
+direct = _asset_key(getattr(finding, "asset", ""))
+⋮----
+finding_id = str(getattr(finding, "id", "") or "")
+⋮----
+finding_keys = set(_finding_asset_keys(finding, graph))
+scoped_present = any(item.asset_values for item in fingerprints)
+graph_asset_keys: set[str] = set()
+⋮----
+graph_asset_keys = {
+⋮----
+matches = []
+⋮----
+fingerprint_keys = {
+⋮----
+grouped: dict[
 ⋮----
 normalized = _normalize_product(product)
 ⋮----
-key = (normalized, version)
+key = (asset_keys, normalized, version)
 current = grouped.setdefault(
 ⋮----
 raw_timestamp = observation.metadata.get(timestamp_key)
@@ -14298,7 +14341,7 @@ evidence = getattr(finding, "evidence", None)
 ⋮----
 haystack = _normalize_product(" ".join(parts))
 ⋮----
-matches = []
+scoped_fingerprints = filter_fingerprints_for_finding_asset(
 ⋮----
 product = fingerprint.normalized_product
 ⋮----
@@ -14332,7 +14375,7 @@ fresh = True
 fingerprints = build_technology_fingerprints(graph)
 rows = []
 ⋮----
-matched = match_finding_technology(finding, fingerprints)
+matched = match_finding_technology(
 ```
 
 ## File: app/validation_priority.py
@@ -17600,6 +17643,10 @@ new_snapshot = build_cve_advisory_catalog(
 def test_cross_source_not_affected_consensus_forces_passive_review()
 ⋮----
 vendor = build_cve_advisory_catalog(
+⋮----
+def test_cross_asset_technology_version_does_not_contaminate_cve_evidence()
+⋮----
+matched = row["technology"]["matched_fingerprints"]
 ```
 
 ## File: tests/test_finding_lifecycle.py
@@ -25345,6 +25392,18 @@ def test_old_timestamped_version_is_marked_stale()
 def test_recent_timestamped_version_is_not_stale()
 ⋮----
 def test_missing_timestamp_does_not_invent_staleness()
+⋮----
+def test_same_asset_sources_aggregate_even_with_distinct_asset_observation_ids()
+⋮----
+fingerprints = build_technology_fingerprints(graph)
+⋮----
+def test_finding_technology_match_is_scoped_to_its_asset()
+⋮----
+finding = _finding("nginx request parsing discrepancy")
+⋮----
+def test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists()
+⋮----
+def test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph()
 ```
 
 ## File: tests/test_validation_priority.py
