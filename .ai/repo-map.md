@@ -1664,29 +1664,54 @@ router = APIRouter()
 ⋮----
 def canonical_host(value: str) -> str
 ⋮----
-parsed = urlsplit(value if "://" in value else f"//{value}")
+raw = str(value or "").strip()
+⋮----
+parsed = urlsplit(raw if "://" in raw else f"//{raw}")
+host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+_port = parsed.port
 ⋮----
 def canonical_endpoint(value: str) -> dict[str, Any]
 ⋮----
-parsed = urlsplit(value)
+"""Normalize web endpoints without trusting unsupported URL origins."""
+⋮----
+raw = str(value or "")
+⋮----
+parsed = urlsplit(raw)
 scheme = parsed.scheme.lower()
-host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+path = parsed.path or "/"
+parameter_names = sorted({
 ⋮----
 port = parsed.port
 ⋮----
 port = None
-valid = False
 error = "invalid_port"
 ⋮----
-valid = bool(scheme and host)
-error = None if valid else "missing_scheme_or_host"
+error = "unsupported_scheme" if scheme else "missing_scheme_or_host"
 ⋮----
-netloc = f"{host}:{port}"
+error = "missing_scheme_or_host"
 ⋮----
-netloc = host
-path = parsed.path or "/"
-canonical_url = urlunsplit((scheme, netloc, path, "", "")) if valid else ""
-parameter_names = sorted({key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)})
+error = "embedded_credentials"
+⋮----
+error = None
+⋮----
+scheme = ""
+host = ""
+path = "/"
+parameter_names = []
+⋮----
+error = "invalid_url"
+⋮----
+valid = error is None
+⋮----
+# urlunsplit requires brackets around IPv6 literals.
+netloc = f"[{host}]" if ":" in host else host
+⋮----
+netloc = f"{netloc}:{port}"
+canonical_url = urlunsplit((scheme, netloc, path, "", ""))
+⋮----
+canonical_url = ""
 ⋮----
 def _safe_form(item: Any, scope_checker: Callable[[str], bool] | None) -> dict[str, Any]
 ⋮----
@@ -16979,43 +17004,6 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_attack_surface(campaign.id)
-````
-
-## File: backend/tests/test_attack_surface.py
-````python
-def test_canonical_host_normalizes_case_and_trailing_dot()
-⋮----
-def test_canonical_endpoint_redacts_query_values_and_default_port()
-⋮----
-result = canonical_endpoint("HTTPS://Example.TEST:443/api/items?token=secret&id=42&id=43#frag")
-⋮----
-def test_canonical_endpoint_flags_invalid_port_without_leaking_query_values()
-⋮----
-result = canonical_endpoint("https://example.test:not-a-port/api?token=secret")
-⋮----
-def test_attack_surface_snapshot_is_deterministic_and_read_only()
-⋮----
-graph = ObservationGraph()
-⋮----
-result = build_attack_surface(graph)
-⋮----
-def test_attack_surface_models_forms_and_waf_without_secrets()
-⋮----
-result = build_attack_surface(graph, scope_checker=lambda host: host == "example.test")
-⋮----
-def test_attack_surface_counts_canonical_duplicates_and_invalid_entries()
-⋮----
-def test_attack_surface_route_is_exposed_and_reads_durable_graph(tmp_path, monkeypatch)
-⋮----
-db = str(tmp_path / "db.sqlite3")
-artifacts = str(tmp_path / "artifacts")
-⋮----
-campaign = Campaign(
-store = Storage(db, artifacts)
-⋮----
-result = campaign_attack_surface(campaign.id)
-⋮----
-def test_attack_surface_enrichment_score_rewards_cross_source_context()
 ````
 
 ## File: backend/tests/test_auth.py

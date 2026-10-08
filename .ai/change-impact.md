@@ -1,12 +1,11 @@
 # Change impact
 
-Base: bba4fd68e409d20071f13d4a1a136ab8c92c7905
-Head: fac555522ea6050cb8bafcfecc08b1793d040448
+Base: dc7bca139e0738041004c917c773e7d252319b2b
+Head: 17c67cf8e698e6402259ea0579a6ef023350c776
 
 ## Changed files
-- M backend/app/learning_memory.py
-- M backend/app/orchestrator.py
-- M backend/tests/test_learning_memory.py
+- M backend/app/attack_surface.py
+- M backend/tests/test_attack_surface.py
 
 ## Affected areas
 - backend

@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:07:31Z
+Generated: 2026-10-08T22:19:54Z
 
 ### Git
 - Branch: `main`
-- Head: `fac555522ea6`
-- Commit date: 2026-10-09T00:07:20+02:00
-- Commit: fix(learning): isolate scanner technique memory by authorized target origin
+- Head: `17c67cf8e698`
+- Commit date: 2026-10-09T00:19:44+02:00
+- Commit: fix(surface): reject invalid web origins before crediting coverage
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/attack_surface.py`
+- `backend/tests/test_attack_surface.py`
 - `backend/app/learning_memory.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_learning_memory.py`
