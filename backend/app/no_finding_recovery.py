@@ -151,13 +151,12 @@ def _completed_scan_evidence(
     """
     sources_by_job: dict[str, set[str]] = {}
     invalid_jobs: set[str] = set()
+    rejected_cross_origin_jobs: set[str] = set()
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("phase") != "scan"
             or item.metadata.get("status") != "completed"
         ):
-            continue
-        if evidence_filter is not None and not evidence_filter(item):
             continue
         raw_job_id = item.metadata.get("job_id")
         job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
@@ -169,11 +168,28 @@ def _completed_scan_evidence(
             invalid_jobs.add(key)
         else:
             key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+
+        if evidence_filter is not None and not evidence_filter(item):
+            # A job observed on another origin cannot be credited through
+            # a second conveniently in-scope report with the same job ID.
+            # Only explicit job IDs can establish cross-observation identity.
+            if key.startswith("job:"):
+                rejected_cross_origin_jobs.add(key)
+            continue
         source = item.source.strip() if isinstance(item.source, str) else ""
         sources_by_job.setdefault(key, set()).add(source)
 
+    # Fail closed on jobs with conflicting target ancestry even if scanner
+    # names agree. Other-target-only jobs are not counted as ambiguous for
+    # this target because they never entered the candidate set.
+    cross_origin_count = sum(
+        key in sources_by_job for key in rejected_cross_origin_jobs
+    )
+    for key in rejected_cross_origin_jobs:
+        sources_by_job.pop(key, None)
+
     trusted_sources: set[str] = set()
-    ambiguous = 0
+    ambiguous = cross_origin_count
     for job, reporters in sources_by_job.items():
         if job in invalid_jobs or len(reporters) != 1 or "" in reporters:
             ambiguous += 1
