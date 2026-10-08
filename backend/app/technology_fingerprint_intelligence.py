@@ -84,7 +84,11 @@ def _asset_ancestor_ids(
     observation_id: str,
 ) -> tuple[str, ...]:
     items = {item.id: item for item in graph.values()}
-    pending = list(items.get(observation_id).parent_ids) if observation_id in items else []
+    pending = (
+        list(items[observation_id].parent_ids)
+        if observation_id in items
+        else []
+    )
     seen: set[str] = set()
     assets: set[str] = set()
     while pending:
@@ -166,6 +170,22 @@ def filter_fingerprints_for_finding_asset(
 ) -> tuple[TechnologyFingerprint, ...]:
     finding_keys = set(_finding_asset_keys(finding, graph))
     scoped_present = any(item.asset_values for item in fingerprints)
+    graph_asset_keys: set[str] = set()
+
+    if graph is not None:
+        graph_asset_keys = {
+            key
+            for observation in graph.by_kind("asset")
+            if (key := _asset_key(observation.value))
+        }
+        if not finding_keys and graph_asset_keys:
+            return ()
+        if (
+            finding_keys
+            and graph_asset_keys
+            and not (finding_keys & graph_asset_keys)
+        ):
+            return ()
 
     if finding_keys and scoped_present:
         matches = []
@@ -179,7 +199,7 @@ def filter_fingerprints_for_finding_asset(
                 matches.append(fingerprint)
         return tuple(matches)
 
-    if graph is not None and graph.by_kind("asset") and not finding_keys:
+    if len(graph_asset_keys) > 1:
         return ()
 
     return fingerprints
