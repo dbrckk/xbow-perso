@@ -223,14 +223,17 @@ def filter_fingerprints_for_finding_asset(
     finding_keys = set(_finding_asset_keys(finding, graph))
     scoped_present = any(item.asset_values for item in fingerprints)
     graph_asset_keys: set[str] = set()
+    graph_has_assets = False
 
     if graph is not None:
+        graph_assets = graph.by_kind("asset")
+        graph_has_assets = bool(graph_assets)
         graph_asset_keys = {
             key
-            for observation in graph.by_kind("asset")
+            for observation in graph_assets
             if (key := _asset_key(observation.value))
         }
-        if not finding_keys and graph_asset_keys:
+        if not finding_keys and graph_has_assets:
             return ()
         if (
             finding_keys
@@ -253,7 +256,7 @@ def filter_fingerprints_for_finding_asset(
                 matches.append(fingerprint)
         return tuple(matches)
 
-    if graph_asset_keys:
+    if graph_has_assets:
         # A graph asset without a linked technology observation is not
         # evidence that an unscoped fingerprint belongs to that asset.
         return ()
