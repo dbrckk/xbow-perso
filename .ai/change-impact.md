@@ -1,13 +1,13 @@
 # Change impact
 
-Base: ad273afadcd09dc4b6c1cd507c1f4d4cee0fbc64
-Head: 72eea67ce850778b7696d3a08b2b5de5f09983e6
+Base: 3826d7120a9f70210091b15b266ef190f74e0083
+Head: bf07758b07d2f52450bb5523ca4f1a65fe114c3b
 
 ## Changed files
-- M backend/app/scanner_adaptation.py
-- M backend/tests/test_htb_lab.py
-- M backend/tests/test_orchestrator.py
-- M backend/tests/test_scanner_adaptation.py
+- M backend/app/adaptive_cycle.py
+- M backend/app/no_finding_recovery.py
+- M backend/app/recon_swarm.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend

@@ -7575,8 +7575,6 @@ def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[
 ⋮----
 reviewed: set[str] = set()
 ⋮----
-def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]
-⋮----
 # Multiple observations for one worker job must not inflate negative yield.
 scan_keys: set[str] = set()
 sources: set[str] = set()
@@ -7601,8 +7599,9 @@ requeued = int(counts.get("requeued") or 0)
     permission, request or task kind can be minted by this function.
     """
 ⋮----
-allowed = {
+normalized_target_host = (
 ⋮----
+allowed = {
 finding_count = max(campaign_finding_count, len(graph.by_kind("finding")))
 surface = build_attack_surface(graph, scope_checker=scope_checker)
 ⋮----
@@ -7629,6 +7628,15 @@ parent = observations_by_id.get(parent_id)
 ⋮----
 host = asset_host_by_id.get(parent.id)
 ⋮----
+legacy_single_host = False
+⋮----
+asset_records = surface["assets"]
+# Legacy scan observations sometimes omit ancestry. They can only
+# be attributed to the target if every observed asset has its host.
+legacy_single_host = bool(asset_records) and all(
+⋮----
+def scan_matches_target(item: Any) -> bool
+⋮----
 # Orphan forms or forms from a different asset do not close a gap.
 ⋮----
 uncovered_forms = sum(
@@ -7636,6 +7644,8 @@ missing_technology = not any(
 observed_browser_work = any(
 browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
 ⋮----
+# Worker outcomes have no target lineage. Trust legacy counts only
+# when one observed asset host can be associated with the campaign.
 browser_counts = browser_job_outcomes.get("browser_flow")
 ⋮----
 observed_browser_work = (
@@ -20882,6 +20892,34 @@ def test_orphan_recon_completion_does_not_exhaust_task()
 def test_failed_or_queued_recon_task_does_not_exhaust_option()
 ⋮----
 def test_completed_recovery_cannot_create_new_authority()
+⋮----
+def test_recovery_targets_only_requested_host_in_multi_host_campaign()
+⋮----
+def test_recovery_rejects_other_authorized_host_as_target_inventory()
+⋮----
+def test_recovery_target_host_exhaustion_is_not_cross_host()
+⋮----
+def test_recovery_target_host_cannot_be_empty()
+⋮----
+def test_recovery_scopes_untrusted_endpoint_count_to_target()
+⋮----
+def test_unscoped_scan_is_not_misattributed_to_target_in_multi_host_campaign()
+⋮----
+def test_scoped_scan_on_other_host_cannot_trigger_negative_target_feedback()
+⋮----
+def test_legacy_unscoped_scan_remains_valid_for_single_observed_host()
+⋮----
+result = _feedback(_graph(scans=1), target_host="example.test")
+⋮----
+def _fully_reviewed_target_graph(*, additional_host: bool) -> ObservationGraph
+⋮----
+def test_single_host_legacy_browser_completion_prevents_recovery_loop()
+⋮----
+graph = _fully_reviewed_target_graph(additional_host=False)
+⋮----
+def test_other_host_browser_completion_cannot_exhaust_target()
+⋮----
+graph = _fully_reviewed_target_graph(additional_host=True)
 ```
 
 ## File: tests/test_nuclei_preflight.py

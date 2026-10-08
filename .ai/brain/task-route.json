@@ -4,62 +4,17 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 6,
     "tier": "bounded",
-    "top_score": 30
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "0db9ef537e82d622cf08aaceca27a3632da076890712db8e20f8b4e46c9bc819",
+    "fingerprint": "d130c04ec91729c18c212a748756792a7c2eb62b68127e2bf8da9b5c0aab15e7",
     "hit": false
   },
-  "candidate_count": 38,
+  "candidate_count": 50,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 30,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 30,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
-        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
-        "test_negative_memory_cannot_expand_scanner_configuration",
-        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
-        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines"
-      ]
-    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -89,6 +44,23 @@
         "_validation_saturated_cluster_ids",
         "advance_campaign",
         "scope_checker"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_adaptation.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "ScannerAdaptation",
+        "_engine_memory",
+        "adapt_scanner_engines",
+        "rank_key"
       ]
     },
     {
@@ -131,6 +103,30 @@
         "test_scan_engines_default_preserves_strix",
         "test_scan_engines_support_explicit_nuclei_and_fail_closed",
         "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+        "test_negative_memory_cannot_expand_scanner_configuration",
+        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines"
       ]
     },
     {

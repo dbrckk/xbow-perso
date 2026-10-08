@@ -39,31 +39,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T17:46:29Z
+Generated: 2026-10-08T18:08:43Z
 
 ### Git
 - Branch: `main`
-- Head: `72eea67ce850`
-- Commit date: 2026-10-08T19:46:17+02:00
-- Commit: fix(scanner): keep scanners available after negative findings
+- Head: `bf07758b07d2`
+- Commit date: 2026-10-08T20:08:32+02:00
+- Commit: fix(planner): scope negative-scan recovery to requested host
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/adaptive_cycle.py`
+- `backend/app/no_finding_recovery.py`
+- `backend/app/recon_swarm.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_htb_lab.py`
 - `backend/tests/test_orchestrator.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/target_memory.py`
 - `backend/tests/test_recon_swarm.py`
 - `backend/tests/test_target_memory.py`
-- `backend/app/adaptive_cycle.py`
-- `backend/app/recon_priority.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_priority.py`
 
 ### Project signals
 - `pyproject.toml`
