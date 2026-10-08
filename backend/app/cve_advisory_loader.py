@@ -119,6 +119,7 @@ def _load_pinned_catalog(
     digest_raw: str,
     source_format: str,
     source_name: str,
+    source_authority: str | None = None,
 ) -> tuple[CveAdvisoryCatalog | None, dict[str, Any] | None]:
     path_raw = path_raw.strip()
     digest_raw = digest_raw.strip().lower()
@@ -184,6 +185,7 @@ def _load_pinned_catalog(
         catalog = build_cve_advisory_catalog(
             document,
             source_name=source_name,
+            source_authority=source_authority,
             source_verified=True,
         )
     except CveAdvisoryCatalogError as exc:
@@ -207,11 +209,16 @@ def _load_verified_cve_advisory_catalog_with_diagnostics(
         _SOURCE_ENV,
         default_source_name,
     ).strip()
+    source_authority = {
+        "nvd-cve-api-v2": "nvd",
+        "osv-v1": "osv",
+    }.get(source_format, source_name.lower())
     return _load_pinned_catalog(
         path_raw=os.getenv(_PATH_ENV, ""),
         digest_raw=os.getenv(_SHA_ENV, ""),
         source_format=source_format,
         source_name=source_name,
+        source_authority=source_authority,
     )
 
 
@@ -283,6 +290,7 @@ def _named_source_status(
     sha_env: str,
     source_format: str,
     source_name: str,
+    source_authority: str,
 ) -> tuple[CveAdvisoryCatalog | None, dict[str, Any]]:
     path_raw = os.getenv(path_env, "").strip()
     digest_raw = os.getenv(sha_env, "").strip()
@@ -293,6 +301,7 @@ def _named_source_status(
             digest_raw=digest_raw,
             source_format=source_format,
             source_name=source_name,
+            source_authority=source_authority,
         )
     except CveAdvisoryCatalogLoadError as exc:
         return None, {
@@ -301,6 +310,7 @@ def _named_source_status(
             "available": False,
             "verified": False,
             "source_name": source_name,
+            "source_authority": source_authority,
             "source_format": source_format,
             "entry_count": 0,
             "adapter": None,
@@ -345,6 +355,7 @@ def load_cve_advisory_catalogs_with_status(
         sha_env=_NVD_SHA_ENV,
         source_format="nvd-cve-api-v2",
         source_name="nvd-cve-api-v2",
+        source_authority="nvd",
     )
     osv_catalog, osv_status = _named_source_status(
         source_kind="osv",
@@ -352,6 +363,7 @@ def load_cve_advisory_catalogs_with_status(
         sha_env=_OSV_SHA_ENV,
         source_format="osv-v1",
         source_name="osv-v1",
+        source_authority="osv",
     )
 
     statuses = (legacy_status, nvd_status, osv_status)
@@ -360,7 +372,7 @@ def load_cve_advisory_catalogs_with_status(
     for catalog in (legacy_catalog, nvd_catalog, osv_catalog):
         if catalog is None:
             continue
-        key = (catalog.source_name, catalog.source_digest_sha256)
+        key = (catalog.source_authority, catalog.source_digest_sha256)
         if key in seen:
             continue
         seen.add(key)
