@@ -141,7 +141,40 @@ def build_no_finding_recovery(
         )
         for item in surface["endpoints"]
     )
-    missing_technology = not bool(graph.by_kind("technology"))
+    # Technology observations without a trusted in-scope asset ancestor
+    # must not count as technology coverage of the authorized target.
+    asset_host_by_id = {
+        item["id"]: item["host"]
+        for item in surface["assets"]
+        if item["in_scope"] is True
+    }
+    observations_by_id = {item.id: item for item in graph.values()}
+
+    def has_in_scope_asset_ancestor(observation_id: str) -> bool:
+        pending = list(observations_by_id[observation_id].parent_ids)
+        seen: set[str] = set()
+        ancestor_hosts: set[str] = set()
+        while pending:
+            parent_id = pending.pop()
+            if parent_id in seen:
+                continue
+            seen.add(parent_id)
+            parent = observations_by_id.get(parent_id)
+            if parent is None:
+                continue
+            if parent.kind == "asset":
+                host = asset_host_by_id.get(parent.id)
+                if not host:
+                    return False
+                ancestor_hosts.add(host)
+            else:
+                pending.extend(parent.parent_ids)
+        return len(ancestor_hosts) == 1
+
+    missing_technology = not any(
+        has_in_scope_asset_ancestor(item.id)
+        for item in graph.by_kind("technology")
+    )
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
 
@@ -167,7 +200,14 @@ def build_no_finding_recovery(
             candidates.append((100, "map_endpoints"))
         if not endpoints:
             reasons.append("authorized endpoint inventory is missing or untrusted")
-            candidates.append((95, "crawl"))
+            # Existing untrusted endpoints make map_endpoints the available
+            # reparative task; a truly empty inventory requires crawl.
+            candidates.append((
+                95,
+                "map_endpoints"
+                if graph.by_kind("endpoint")
+                else "crawl",
+            ))
         else:
             if not forms:
                 reasons.append("form surface has not been observed")
