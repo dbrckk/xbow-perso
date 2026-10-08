@@ -608,6 +608,20 @@ def test_recovery_scopes_untrusted_endpoint_count_to_target():
     graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
     graph.add(
         Observation(
+            "scan:scoped-a",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-a",
+            },
+        )
+    )
+    graph.add(
+        Observation(
             "endpoint:orphan-b",
             "endpoint",
             "https://other.test/path",
