@@ -313,6 +313,7 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
         campaign_finding_count=len(campaign.findings),
         worker_outcomes=summarize_worker_outcomes(campaign.events),
         target_host=urlsplit(str(campaign.target.primary_url)).hostname,
+        target_url=str(campaign.target.primary_url),
     )
     priority = prioritize_recon_tasks(
         tasks,
