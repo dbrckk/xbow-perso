@@ -35,6 +35,38 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
     if not 1 <= limit <= 100:
         raise ValueError("learning memory limit must be between 1 and 100")
 
+    # A worker job may produce multiple observations or retry artifacts.
+    # These are not independent technique attempts, and different sources
+    # reporting the same job must not inflate source independence.
+    outcomes_by_job: dict[
+        tuple[str, str], dict[str, set[str]]
+    ] = {}
+    for item in graph.by_kind("evidence"):
+        technique = str(item.metadata.get("technique", "")).strip().lower()
+        outcome = str(item.metadata.get("outcome", "")).strip().lower()
+        if not technique or outcome not in {"success", "failure", "inconclusive"}:
+            continue
+        if "job_id" in item.metadata:
+            job_id = item.metadata["job_id"]
+            if (
+                not isinstance(job_id, str)
+                or not job_id.strip()
+                or len(job_id.strip()) > 128
+            ):
+                # Invalid explicit identifiers cannot be trusted to group
+                # independent events, so do not include their evidence.
+                continue
+            identity = f"job:{job_id.strip()}"
+        else:
+            # Legacy observations without a worker ID remain distinct.
+            identity = f"observation:{item.id}"
+        group = outcomes_by_job.setdefault(
+            (technique, identity),
+            {"outcomes": set(), "sources": set()},
+        )
+        group["outcomes"].add(outcome)
+        group["sources"].add(str(item.source))
+
     buckets: dict[str, dict[str, Any]] = defaultdict(
         lambda: {
             "attempts": 0,
@@ -44,21 +76,27 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
             "sources": set(),
         }
     )
-
-    for item in graph.by_kind("evidence"):
-        technique = str(item.metadata.get("technique", "")).strip().lower()
-        outcome = str(item.metadata.get("outcome", "")).strip().lower()
-        if not technique or outcome not in {"success", "failure", "inconclusive"}:
-            continue
+    for (technique, _identity), observations in outcomes_by_job.items():
         bucket = buckets[technique]
         bucket["attempts"] += 1
-        bucket["sources"].add(item.source)
+        # Contradictory job outcomes have no reliable terminal ordering;
+        # conservatively classify that job as inconclusive.
+        distinct_outcomes = observations["outcomes"]
+        outcome = (
+            next(iter(distinct_outcomes))
+            if len(distinct_outcomes) == 1
+            else "inconclusive"
+        )
         if outcome == "success":
             bucket["successes"] += 1
         elif outcome == "failure":
             bucket["failures"] += 1
         else:
             bucket["inconclusive"] += 1
+        # Each job contributes at most one source to confidence.
+        sources = observations["sources"]
+        if sources:
+            bucket["sources"].add(min(sources))
 
     memories: list[TechniqueMemory] = []
     for technique, bucket in buckets.items():
