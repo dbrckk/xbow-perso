@@ -399,3 +399,50 @@ def test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists():
     )
 
     assert matched == ()
+
+
+def test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:a",
+            "asset",
+            "https://a.example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "asset:b",
+            "asset",
+            "https://b.example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:legacy",
+            "technology",
+            "nginx/1.24.0",
+            "legacy-import",
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://a.example.test"
+
+    matched = match_finding_technology(
+        finding,
+        build_technology_fingerprints(graph),
+        graph,
+    )
+
+    assert matched == ()
