@@ -61,7 +61,10 @@ def test_endpoint_review_credit_requires_recorded_review_evidence():
             "review-recorded",
             "review-agent",
             parent_ids=("endpoint:e",),
-            metadata={"review_type": "authorization_surface_review"},
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
         )
     )
     after = build_red_team_coverage(graph)
