@@ -606,6 +606,10 @@ def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
         "XBOW_CVE_ADVISORY_CATALOG_SHA256",
         "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
         "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "XBOW_CVE_ADVISORY_NVD_PATH",
+        "XBOW_CVE_ADVISORY_NVD_SHA256",
+        "XBOW_CVE_ADVISORY_OSV_PATH",
+        "XBOW_CVE_ADVISORY_OSV_SHA256",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -621,6 +625,13 @@ def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch):
         "adapter": None,
         "error": None,
     }
+    source_set = result["reasoning"]["cve_advisory_sources"]
+    assert source_set["schema"] == "cve-advisory-source-set-v1"
+    assert source_set["configured"] is False
+    assert source_set["available"] is False
+    assert source_set["configured_source_count"] == 0
+    assert source_set["available_source_count"] == 0
+    assert source_set["invalid_source_count"] == 0
 
 
 def test_capabilities_expose_invalid_cve_catalog_without_path_leak(monkeypatch):
@@ -641,3 +652,29 @@ def test_capabilities_expose_invalid_cve_catalog_without_path_leak(monkeypatch):
     assert status["verified"] is False
     assert "configured together" in str(status["error"])
     assert "/private/secret-catalog.json" not in str(result)
+
+
+def test_capabilities_expose_invalid_named_source_without_path_leak(monkeypatch):
+    for name in (
+        "XBOW_CVE_ADVISORY_CATALOG_PATH",
+        "XBOW_CVE_ADVISORY_CATALOG_SHA256",
+        "XBOW_CVE_ADVISORY_NVD_PATH",
+        "XBOW_CVE_ADVISORY_NVD_SHA256",
+        "XBOW_CVE_ADVISORY_OSV_PATH",
+        "XBOW_CVE_ADVISORY_OSV_SHA256",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_NVD_PATH",
+        "/private/nvd-export.json",
+    )
+
+    result = main.system_capabilities()
+    status = result["reasoning"]["cve_advisory_sources"]
+
+    assert status["configured"] is True
+    assert status["available"] is False
+    assert status["verified"] is False
+    assert status["invalid_source_count"] == 1
+    assert status["error"] == "one_or_more_advisory_sources_invalid"
+    assert "/private/nvd-export.json" not in str(result)
