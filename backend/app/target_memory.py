@@ -4,7 +4,7 @@ import hashlib
 import os
 from dataclasses import asdict, dataclass
 from typing import Any
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 
 SURFACE_KINDS = ("asset", "endpoint", "form", "technology", "waf")
@@ -68,21 +68,93 @@ def target_identity(campaign: dict[str, Any]) -> str:
     return hashlib.sha256(material).hexdigest()
 
 
+def _query_parameter_names_only(query: str) -> str:
+    """Preserve coverage-relevant parameter names without retaining values."""
+    if not query:
+        return ""
+    try:
+        entries = parse_qsl(
+            query,
+            keep_blank_values=True,
+            max_num_fields=64,
+        )
+    except ValueError:
+        # Oversized/unparseable parameter lists must never fall back to raw input.
+        return ""
+    keys = sorted({
+        key
+        for key, _value in entries
+        if key and len(key) <= 120
+    })
+    return urlencode([(key, "") for key in keys])
+
+
+def _safe_absolute_url(value: str) -> str:
+    try:
+        parsed = urlsplit(value)
+        if parsed.scheme.lower() not in {"http", "https"}:
+            return ""
+        host = (parsed.hostname or "").lower().rstrip(".")
+        if not host or parsed.username is not None or parsed.password is not None:
+            return ""
+        port = parsed.port
+    except ValueError:
+        return ""
+    safe_host = f"[{host}]" if ":" in host else host
+    netloc = safe_host + (f":{port}" if port is not None else "")
+    return urlunsplit(
+        (
+            parsed.scheme.lower(),
+            netloc,
+            parsed.path or "/",
+            _query_parameter_names_only(parsed.query),
+            "",
+        )
+    )
+
+
 def _canonical_value(kind: str, value: str) -> str:
     value = str(value).strip()
     if kind == "asset":
-        return value.lower().rstrip(".")
+        # Assets may arrive as bare hosts or full URLs. Never retain their
+        # query, fragment, userinfo, or path in cross-campaign memory.
+        try:
+            parsed = urlsplit(value if "://" in value else f"//{value}")
+            host = (parsed.hostname or "").lower().rstrip(".")
+            if not host or parsed.username is not None or parsed.password is not None:
+                return ""
+            port = parsed.port
+        except ValueError:
+            return ""
+        safe_host = f"[{host}]" if ":" in host else host
+        authority = safe_host + (f":{port}" if port is not None else "")
+        if parsed.scheme.lower() in {"http", "https"}:
+            return f"{parsed.scheme.lower()}://{authority}"
+        if parsed.scheme:
+            return ""
+        return authority
     if kind == "endpoint":
-        parsed = urlsplit(value)
-        if not parsed.scheme or not parsed.netloc:
-            return value
-        host = (parsed.hostname or "").lower().rstrip(".")
-        if not host:
-            return value
-        port = f":{parsed.port}" if parsed.port else ""
-        netloc = host + port
-        path = parsed.path or "/"
-        return urlunsplit((parsed.scheme.lower(), netloc, path, parsed.query, ""))
+        return _safe_absolute_url(value)
+    if kind == "form":
+        fields = value.split(None, 1)
+        if len(fields) == 2 and fields[0].upper() in {
+            "GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"
+        }:
+            method, action = fields[0].upper(), fields[1].strip()
+            if action.startswith("/") and not action.startswith("//"):
+                try:
+                    parsed = urlsplit(action)
+                except ValueError:
+                    return ""
+                path = parsed.path or "/"
+                query = _query_parameter_names_only(parsed.query)
+                return f"{method} {path}" + (f"?{query}" if query else "")
+            safe_action = _safe_absolute_url(action)
+            return f"{method} {safe_action}" if safe_action else ""
+        if value.startswith(("https://", "http://")):
+            return _safe_absolute_url(value)
+        # Legacy non-URL form labels must not preserve embedded query values.
+        return " ".join(value.split("?")[0].split())
     if kind in {"technology", "waf"}:
         return " ".join(value.lower().split())
     return " ".join(value.split())
