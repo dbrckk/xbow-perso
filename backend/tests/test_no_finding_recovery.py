@@ -1982,3 +1982,99 @@ def test_queued_then_completed_scan_allows_bounded_negative_recovery():
     assert result.state == "recovery_advisory"
     assert result.trusted_completed_scan_count == 1
     assert result.contradictory_scan_terminal_jobs == 0
+
+
+def test_review_marked_completed_but_failed_outcome_keeps_endpoint_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:contradictory-endpoint",
+            "evidence",
+            "review-complete",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+                "outcome": "failure",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_endpoint_count == 1
+    assert "map_endpoints" in result.recommended_task_kinds
+
+
+def test_review_marked_reviewed_but_inconclusive_outcome_keeps_form_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:contradictory",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+            metadata={"method": "POST", "input_names": ["login"]},
+        )
+    )
+    graph.add(
+        Observation(
+            "review:contradictory-form",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("form:contradictory",),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "reviewed",
+                "outcome": "inconclusive",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_form_count == 1
+    assert "browser_observe" in result.recommended_task_kinds
+
+
+def test_explicit_completed_and_successful_review_closes_only_eligible_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:successful-endpoint",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+                "outcome": "success",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_endpoint_count == 0
+    assert "map_endpoints" not in result.recommended_task_kinds
+
+
+def test_invalid_review_outcome_type_cannot_close_endpoint_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:invalid-outcome",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "input_surface_review",
+                "status": "completed",
+                "outcome": {"status": "success"},
+            },
+        )
+    )
+
+    assert _feedback(graph).uncovered_endpoint_count == 1
