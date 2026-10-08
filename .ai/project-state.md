@@ -39,30 +39,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T08:02:18Z
+Generated: 2026-10-08T08:07:17Z
 
 ### Git
 - Branch: `main`
-- Head: `a759362713c0`
-- Commit date: 2026-10-08T10:02:06+02:00
-- Commit: feat(vuln): prevent advisory consensus source inflation
+- Head: `80fc182627ea`
+- Commit date: 2026-10-08T10:07:03+02:00
+- Commit: feat(vuln): downgrade multi-source not-affected consensus
 - Tracked files: 681
 
 ### Recently changed files
-- `backend/app/cve_advisory_catalog.py`
 - `backend/app/cve_advisory_consensus.py`
-- `backend/app/cve_advisory_loader.py`
 - `backend/app/finding_intelligence.py`
-- `backend/tests/test_cve_advisory_catalog.py`
 - `backend/tests/test_cve_advisory_consensus.py`
-- `backend/tests/test_cve_advisory_loader.py`
 - `backend/tests/test_finding_intelligence.py`
+- `backend/app/cve_advisory_catalog.py`
+- `backend/app/cve_advisory_loader.py`
+- `backend/tests/test_cve_advisory_catalog.py`
+- `backend/tests/test_cve_advisory_loader.py`
 - `backend/app/deployment_preflight.py`
 - `backend/app/main.py`
 - `backend/tests/test_deployment_preflight.py`
 - `backend/tests/test_runtime_capabilities.py`
-- `backend/app/osv_advisory_adapter.py`
-- `backend/tests/test_osv_advisory_adapter.py`
 
 ### Project signals
 - `pyproject.toml`

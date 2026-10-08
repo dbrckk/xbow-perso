@@ -2188,6 +2188,7 @@ evidence: tuple[AdvisorySourceEvidence, ...]
 ambiguity_reasons: tuple[str, ...]
 range_sets_equal: bool
 cross_source_agreement: bool
+agreed_applicability_state: str | None
 exploitability_confirmed: bool
 ⋮----
 def _identity_key(entry: CveAdvisoryEntry) -> str
@@ -2218,6 +2219,7 @@ source_instance_count = len(source_instances)
 ⋮----
 ambiguity: set[str] = set()
 agreement = False
+agreed_applicability_state: str | None = None
 ⋮----
 applicability_states = {
 ⋮----
@@ -2229,6 +2231,9 @@ state = "single_source"
 ⋮----
 state = "exact_identity_applicability_agreement"
 agreement = True
+agreed_applicability_state = "affected"
+⋮----
+agreed_applicability_state = "not_affected"
 ⋮----
 state = "exact_identity_applicability_conflict"
 ⋮----
@@ -16534,6 +16539,8 @@ new_snapshot = _catalog(
 def test_distinct_authorities_can_still_form_exact_identity_consensus()
 ⋮----
 vendor = _catalog(
+⋮----
+def test_exact_identity_sources_agreeing_not_affected_downgrade_candidate()
 ```
 
 ## File: tests/test_cve_advisory_loader.py
@@ -17589,6 +17596,10 @@ def test_same_advisory_authority_snapshot_conflict_forces_passive_review()
 ⋮----
 old_snapshot = build_cve_advisory_catalog(
 new_snapshot = build_cve_advisory_catalog(
+⋮----
+def test_cross_source_not_affected_consensus_forces_passive_review()
+⋮----
+vendor = build_cve_advisory_catalog(
 ```
 
 ## File: tests/test_finding_lifecycle.py
