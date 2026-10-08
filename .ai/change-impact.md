@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 3826d7120a9f70210091b15b266ef190f74e0083
-Head: bf07758b07d2f52450bb5523ca4f1a65fe114c3b
+Base: ca07438839563593787678106a2ab74586472e77
+Head: bf26dfe153239d8047ab45b626e98c4fb70ef478
 
 ## Changed files
-- M backend/app/adaptive_cycle.py
-- M backend/app/no_finding_recovery.py
 - M backend/app/recon_swarm.py
-- M backend/tests/test_no_finding_recovery.py
+- M backend/tests/test_recon_swarm.py
 
 ## Affected areas
 - backend

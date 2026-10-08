@@ -10955,30 +10955,55 @@ _CAPABILITIES = (
 ⋮----
 def recon_capabilities() -> tuple[ReconCapability, ...]
 ⋮----
-def _asset_host(value: str) -> str
+raw = str(value or "").strip()
 ⋮----
-parsed = urlsplit(value if "://" in value else f"//{value}")
+parsed = urlsplit(
+scheme = parsed.scheme.lower() or None
+host = (parsed.hostname or "").lower().rstrip(".")
+port = parsed.port
+⋮----
+port = 443
+⋮----
+port = 80
 ⋮----
 def _safe_target(value: str) -> tuple[str, str]
 ⋮----
+identity = _origin_identity(value)
+⋮----
+raw_host = f"[{host}]" if ":" in host else host
+default_port = 443 if scheme == "https" else 80
+netloc = (
 parsed = urlsplit(value)
-scheme = parsed.scheme.lower()
-host = (parsed.hostname or "").lower().rstrip(".")
 ⋮----
-port = parsed.port
+def _same_origin(value: str, target_origin: tuple[str, str | None, int | None]) -> bool
 ⋮----
-netloc = f"{host}:{port}"
+candidate = _origin_identity(value)
 ⋮----
-netloc = host
+identity = _origin_identity(value, allow_hostname=True)
+⋮----
+pending = list(item.parent_ids)
+seen: set[str] = set()
+linked_assets: list[Any] = []
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = observations.get(parent_id)
+⋮----
+# Legacy unlinked observations cannot be assigned to one of many assets.
 ⋮----
 """Build a bounded passive/low-impact recon plan without executing requests."""
 ⋮----
-observed_assets = {
+assets = graph.by_kind("asset")
+target_origin = _origin_identity(safe_target)
 ⋮----
-endpoints = graph.by_kind("endpoint")
-forms = graph.by_kind("form")
-technologies = graph.by_kind("technology")
-wafs = graph.by_kind("waf")
+observations = {item.id: item for item in graph.values()}
+⋮----
+def matching(kind: str) -> list[Any]
+⋮----
+endpoints = matching("endpoint")
+forms = matching("form")
+technologies = matching("technology")
+wafs = matching("waf")
 tasks: list[ReconTask] = []
 ⋮----
 @router.get("/api/recon-swarm/capabilities")
@@ -23453,6 +23478,26 @@ adjustments = {
 ⋮----
 # Surface diff, temporal, confidence and target memory must also redact
 # parameter values before the full API response is returned.
+⋮----
+def test_multi_host_recon_ignores_inventory_from_other_authorized_host()
+⋮----
+value = (
+⋮----
+def test_recon_does_not_reuse_http_inventory_on_https_origin()
+⋮----
+def test_recon_does_not_reuse_another_port_form_or_technology()
+⋮----
+kinds = [task.kind for task in tasks]
+⋮----
+def test_unlinked_observation_from_multi_asset_graph_is_not_coverage()
+⋮----
+def test_single_host_legacy_unlinked_endpoint_still_counts_when_origin_matches()
+⋮----
+def test_recon_rejects_non_http_or_credential_bearing_target()
+⋮----
+def test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits()
+⋮----
+db = str(tmp_path / "multi-host-recon.sqlite3")
 ````
 
 ## File: backend/tests/test_recon_worker.py

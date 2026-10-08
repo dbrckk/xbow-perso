@@ -39,19 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:08:43Z
+Generated: 2026-10-08T18:18:43Z
 
 ### Git
 - Branch: `main`
-- Head: `bf07758b07d2`
-- Commit date: 2026-10-08T20:08:32+02:00
-- Commit: fix(planner): scope negative-scan recovery to requested host
+- Head: `bf26dfe15323`
+- Commit date: 2026-10-08T20:18:13+02:00
+- Commit: fix(recon): scope reconnaissance inventory to exact target origin
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/recon_swarm.py`
+- `backend/tests/test_recon_swarm.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
-- `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_htb_lab.py`
@@ -59,9 +60,6 @@ Generated: 2026-10-08T18:08:43Z
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/target_memory.py`
-- `backend/tests/test_recon_swarm.py`
-- `backend/tests/test_target_memory.py`
 
 ### Project signals
 - `pyproject.toml`
