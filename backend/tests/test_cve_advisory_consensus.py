@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 from app.cve_advisory_catalog import build_cve_advisory_catalog
@@ -22,12 +23,19 @@ def _finding():
     )
 
 
-def _catalog(source_name, entry, *, source_authority=None):
+def _catalog(
+    source_name,
+    entry,
+    *,
+    source_authority=None,
+    source_snapshot_at=None,
+):
     return build_cve_advisory_catalog(
         {"count": 1, "entries": [entry]},
         source_name=source_name,
         source_authority=source_authority,
         source_verified=True,
+        source_snapshot_at=source_snapshot_at,
     )
 
 
@@ -327,3 +335,85 @@ def test_exact_identity_sources_agreeing_not_affected_downgrade_candidate():
         item.applicability_state for item in result.evidence
     } == {"not_affected"}
     assert result.exploitability_confirmed is False
+
+
+def test_stale_advisory_source_cannot_form_cross_source_agreement():
+    stale = _catalog(
+        "nvd",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="nvd",
+        source_snapshot_at="2026-08-01T00:00:00+00:00",
+    )
+    fresh = _catalog(
+        "vendor",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": [">=5.0,<5.2.0"],
+        },
+        source_authority="vendor",
+        source_snapshot_at="2026-10-07T00:00:00+00:00",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (stale, fresh),
+        fingerprint_versions=("5.1.4",),
+        now=datetime(2026, 10, 8, tzinfo=timezone.utc),
+        max_source_age_days=30,
+    )
+
+    assert result.state == "stale_source_evidence"
+    assert result.cross_source_agreement is False
+    assert result.agreed_applicability_state is None
+    assert result.stale_source_count == 1
+    assert result.unknown_freshness_source_count == 0
+    assert "stale_advisory_source" in result.ambiguity_reasons
+    by_source = {
+        item.source_name: item
+        for item in result.evidence
+    }
+    assert by_source["nvd"].source_freshness == "stale"
+    assert by_source["vendor"].source_freshness == "fresh"
+
+
+def test_unknown_snapshot_age_does_not_invent_staleness():
+    first = _catalog(
+        "source-a",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="a",
+    )
+    second = _catalog(
+        "source-b",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="b",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (first, second),
+        fingerprint_versions=("5.1.4",),
+        now=datetime(2026, 10, 8, tzinfo=timezone.utc),
+    )
+
+    assert result.state == "exact_identity_applicability_agreement"
+    assert result.cross_source_agreement is True
+    assert result.stale_source_count == 0
+    assert result.unknown_freshness_source_count == 2
+    assert "stale_advisory_source" not in result.ambiguity_reasons
