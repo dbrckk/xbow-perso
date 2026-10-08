@@ -4,6 +4,7 @@ from app.cve_advisory_catalog import (
     CVE_ADVISORY_CATALOG_SCHEMA,
     CveAdvisoryCatalogError,
     build_cve_advisory_catalog,
+    find_verified_cve_advisories,
     find_verified_cve_advisory,
 )
 
@@ -228,3 +229,49 @@ def test_advisory_identity_must_be_exactly_one_complete_kind(entry):
             source_name="fixture",
             source_verified=True,
         )
+
+
+def test_plural_lookup_preserves_exact_cpe_and_package_matches():
+    catalog = build_cve_advisory_catalog(
+        {
+            "count": 2,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-55555",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": ["<5.2.0"],
+                },
+                {
+                    "cve_id": "CVE-2026-55555",
+                    "package_ecosystem": "PyPI",
+                    "package_name": "Django",
+                    "affected_version_ranges": ["<5.2.0"],
+                },
+            ],
+        },
+        source_name="combined-fixture",
+        source_verified=True,
+    )
+
+    matches = find_verified_cve_advisories(
+        catalog,
+        cve_id="CVE-2026-55555",
+        vendor="djangoproject",
+        product="django",
+        package_ecosystem="pypi",
+        package_name="Django",
+    )
+
+    assert tuple(item.identity_kind for item in matches) == (
+        "cpe",
+        "package",
+    )
+    assert find_verified_cve_advisory(
+        catalog,
+        cve_id="CVE-2026-55555",
+        vendor="djangoproject",
+        product="django",
+        package_ecosystem="pypi",
+        package_name="Django",
+    ) is None

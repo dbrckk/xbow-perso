@@ -259,7 +259,7 @@ def build_cve_advisory_catalog(
     )
 
 
-def find_verified_cve_advisory(
+def find_verified_cve_advisories(
     catalog: CveAdvisoryCatalog,
     *,
     cve_id: str,
@@ -267,12 +267,12 @@ def find_verified_cve_advisory(
     product: str | None = None,
     package_ecosystem: str | None = None,
     package_name: str | None = None,
-) -> CveAdvisoryEntry | None:
+) -> tuple[CveAdvisoryEntry, ...]:
     if (
         catalog.schema != CVE_ADVISORY_CATALOG_SCHEMA
         or not catalog.source_verified
     ):
-        return None
+        return ()
 
     try:
         normalized_cve = _normalize_cve(cve_id)
@@ -297,15 +297,15 @@ def find_verified_cve_advisory(
             else None
         )
     except CveAdvisoryCatalogError:
-        return None
+        return ()
 
     if (normalized_vendor is None) != (normalized_product is None):
-        return None
+        return ()
     if (
         (normalized_package_ecosystem is None)
         != (normalized_package_name is None)
     ):
-        return None
+        return ()
 
     matches: list[CveAdvisoryEntry] = []
     for entry in catalog.entries:
@@ -327,6 +327,36 @@ def find_verified_cve_advisory(
             and entry.package_name == normalized_package_name
         ):
             matches.append(entry)
+
+    return tuple(
+        sorted(
+            matches,
+            key=lambda item: (
+                item.identity_kind,
+                item.vendor or item.package_ecosystem or "",
+                item.product or item.package_name or "",
+            ),
+        )
+    )
+
+
+def find_verified_cve_advisory(
+    catalog: CveAdvisoryCatalog,
+    *,
+    cve_id: str,
+    vendor: str | None = None,
+    product: str | None = None,
+    package_ecosystem: str | None = None,
+    package_name: str | None = None,
+) -> CveAdvisoryEntry | None:
+    matches = find_verified_cve_advisories(
+        catalog,
+        cve_id=cve_id,
+        vendor=vendor,
+        product=product,
+        package_ecosystem=package_ecosystem,
+        package_name=package_name,
+    )
     if len(matches) != 1:
         return None
     return matches[0]
