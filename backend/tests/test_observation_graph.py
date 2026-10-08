@@ -2,7 +2,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.observation_graph import AdaptivePlanner, Observation, ObservationGraph
+from app.observation_graph import (
+    AdaptivePlanner, Observation, ObservationGraph, load_observation_graph,
+)
 
 
 def campaign(*, automated_scanning=True, findings=()):
@@ -221,3 +223,80 @@ def test_planner_stops_when_automation_is_disabled():
     action = AdaptivePlanner().plan(campaign(automated_scanning=False), graph)[0]
     assert action.kind == "stop"
     assert "disabled" in action.reason
+
+
+def test_persisted_discovery_times_are_opt_in_and_do_not_mutate_storage_records():
+    records = [
+        {
+            "id": "asset:one",
+            "kind": "asset",
+            "value": "example.com",
+            "source": "inventory",
+            "created_at": "2026-08-01T00:00:00Z",
+            "metadata": {},
+        },
+        {
+            "id": "endpoint:one",
+            "kind": "endpoint",
+            "value": "https://example.com/new",
+            "source": "crawler",
+            "parent_ids": ("asset:one",),
+            "created_at": "2026-09-02T00:00:00Z",
+            "metadata": {"discovery_sources": ["sitemap"]},
+        },
+    ]
+    store = SimpleNamespace(list_observations=lambda _cid: records)
+
+    ordinary = load_observation_graph(store, "campaign-1")
+    enriched = load_observation_graph(
+        store, "campaign-1", include_persisted_discovery_times=True
+    )
+
+    assert ordinary.by_kind("endpoint")[0].metadata == {
+        "discovery_sources": ["sitemap"]
+    }
+    assert enriched.by_kind("endpoint")[0].metadata == {
+        "discovery_sources": ["sitemap"],
+        "first_seen_at": "2026-09-02T00:00:00Z",
+        "observed_at": "2026-09-02T00:00:00Z",
+    }
+    assert enriched.by_kind("asset")[0].metadata == {}
+    assert records[1]["metadata"] == {"discovery_sources": ["sitemap"]}
+
+
+def test_persisted_discovery_times_never_override_existing_evidence_timestamps():
+    records = [{
+        "id": "technology:one",
+        "kind": "technology",
+        "value": "nginx/1.24.0",
+        "source": "httpx",
+        "created_at": "2026-10-01T00:00:00Z",
+        "metadata": {
+            "first_seen_at": "2026-08-01T00:00:00Z",
+            "observed_at": "2026-09-01T00:00:00Z",
+        },
+    }]
+    store = SimpleNamespace(list_observations=lambda _cid: records)
+
+    enriched = load_observation_graph(
+        store, "campaign-1", include_persisted_discovery_times=True
+    )
+
+    assert enriched.by_kind("technology")[0].metadata == records[0]["metadata"]
+
+
+def test_missing_persisted_created_at_does_not_invent_discovery_evidence():
+    records = [{
+        "id": "form:one",
+        "kind": "form",
+        "value": "https://example.com/login",
+        "source": "browser",
+        "metadata": {"method": "GET"},
+    }]
+    store = SimpleNamespace(list_observations=lambda _cid: records)
+
+    enriched = load_observation_graph(
+        store, "campaign-1", include_persisted_discovery_times=True
+    )
+
+    assert enriched.by_kind("form")[0].metadata == {"method": "GET"}
