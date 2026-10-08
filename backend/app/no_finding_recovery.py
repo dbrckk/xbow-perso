@@ -47,11 +47,21 @@ class NoFindingRecovery:
         return result
 
 
-def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[str]:
+def _reviewed_ids(
+    graph: ObservationGraph,
+    review_types: frozenset[str],
+    *,
+    allowed_parent_ids: set[str],
+) -> set[str]:
+    """Only explicit, completed reviews may close in-scope coverage gaps."""
     reviewed: set[str] = set()
     for item in graph.by_kind("evidence"):
-        if item.metadata.get("review_type") in review_types:
-            reviewed.update(item.parent_ids)
+        if (
+            item.metadata.get("review_type") not in review_types
+            or item.metadata.get("status") not in {"completed", "reviewed"}
+        ):
+            continue
+        reviewed.update(set(item.parent_ids) & allowed_parent_ids)
     return reviewed
 
 
@@ -154,8 +164,11 @@ def build_no_finding_recovery(
             )
         )
     ]
-    endpoint_reviewed = _reviewed_ids(graph, _ENDPOINT_REVIEW_TYPES)
-    form_reviewed = _reviewed_ids(graph, frozenset({"form_surface_review"}))
+    endpoint_reviewed = _reviewed_ids(
+        graph,
+        _ENDPOINT_REVIEW_TYPES,
+        allowed_parent_ids={item["id"] for item in endpoints},
+    )
     uncovered_endpoints = sum(
         item["id"] not in endpoint_reviewed for item in endpoints
     )
@@ -237,6 +250,11 @@ def build_no_finding_recovery(
         item for item in forms
         if has_in_scope_asset_ancestor(item["id"])
     ]
+    form_reviewed = _reviewed_ids(
+        graph,
+        frozenset({"form_surface_review"}),
+        allowed_parent_ids={item["id"] for item in forms},
+    )
     uncovered_forms = sum(
         item["id"] not in form_reviewed for item in forms
     )
