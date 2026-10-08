@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Callable, Iterable, Mapping
 
 from .attack_surface import build_attack_surface
+from .review_evidence import is_completed_review_evidence
 from .observation_graph import ObservationGraph
 
 
@@ -50,7 +51,10 @@ class NoFindingRecovery:
 def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[str]:
     reviewed: set[str] = set()
     for item in graph.by_kind("evidence"):
-        if item.metadata.get("review_type") in review_types:
+        if (
+            item.metadata.get("review_type") in review_types
+            and is_completed_review_evidence(item)
+        ):
             reviewed.update(item.parent_ids)
     return reviewed
 
