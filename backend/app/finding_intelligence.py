@@ -80,7 +80,13 @@ def build_finding_intelligence(
     seen_advisory_catalogs: set[tuple[str, str]] = set()
     for catalog in raw_advisory_catalogs:
         key = (
-            str(getattr(catalog, "source_name", "")),
+            str(
+                getattr(
+                    catalog,
+                    "source_authority",
+                    getattr(catalog, "source_name", ""),
+                )
+            ),
             str(getattr(catalog, "source_digest_sha256", "")),
         )
         if key in seen_advisory_catalogs:
@@ -525,6 +531,11 @@ def build_finding_intelligence(
             "cross_source_advisory_conflicts": sum(
                 row["cve_advisory_consensus"]["state"]
                 == "exact_identity_applicability_conflict"
+                for row in finding_rows
+            ),
+            "same_authority_advisory_conflicts": sum(
+                row["cve_advisory_consensus"]["state"]
+                == "same_authority_snapshot_conflict"
                 for row in finding_rows
             ),
             "parallel_unbound_advisory_identities": sum(
