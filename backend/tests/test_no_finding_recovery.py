@@ -345,7 +345,7 @@ def test_browser_already_attempted_does_not_create_infinite_recovery_loop():
             "reviewed",
             "analyst",
             parent_ids=("form:one",),
-            metadata={"review_type": "form_surface_review"},
+            metadata={"review_type": "form_surface_review", "status": "completed"},
         )
     )
     before = _feedback(graph, allowed=("browser_observe",))
