@@ -1,10 +1,9 @@
 # Change impact
 
-Base: 8bee4ab63a714c9522aea8f4d6050323e5e5a7e6
-Head: 7fbfa169569d5dfa53a94598ae3b47ff33a92ca8
+Base: e4bbc956d46c06ba36bcff9e40c9ca87c3a9f40f
+Head: aa207080b6f712dc0126d9768e0077158e21015f
 
 ## Changed files
-- M backend/app/finding_intelligence.py
 - M backend/app/technology_fingerprint_intelligence.py
 - M backend/tests/test_finding_intelligence.py
 - M backend/tests/test_technology_fingerprint_intelligence.py

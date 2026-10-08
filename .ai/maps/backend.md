@@ -14305,6 +14305,9 @@ matches = []
 ⋮----
 fingerprint_keys = {
 ⋮----
+# A graph asset without a linked technology observation is not
+# evidence that an unscoped fingerprint belongs to that asset.
+⋮----
 grouped: dict[
 ⋮----
 normalized = _normalize_product(product)
@@ -25404,6 +25407,12 @@ finding = _finding("nginx request parsing discrepancy")
 def test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists()
 ⋮----
 def test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph()
+⋮----
+def test_unscoped_fingerprint_is_rejected_even_for_single_graph_asset()
+⋮----
+def test_unscoped_legacy_fingerprint_remains_supported_without_graph_assets()
+⋮----
+graph = _graph()
 ```
 
 ## File: tests/test_validation_priority.py

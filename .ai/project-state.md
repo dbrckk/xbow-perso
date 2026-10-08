@@ -39,20 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T08:17:27Z
+Generated: 2026-10-08T13:44:38Z
 
 ### Git
 - Branch: `main`
-- Head: `7fbfa169569d`
-- Commit date: 2026-10-08T10:17:16+02:00
-- Commit: feat(vuln): scope technology fingerprints by asset
+- Head: `aa207080b6f7`
+- Commit date: 2026-10-08T15:44:26+02:00
+- Commit: fix(vuln): reject unscoped fingerprints in asset graphs
 - Tracked files: 681
 
 ### Recently changed files
-- `backend/app/finding_intelligence.py`
 - `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
+- `backend/app/finding_intelligence.py`
 - `backend/app/cve_advisory_consensus.py`
 - `backend/tests/test_cve_advisory_consensus.py`
 - `backend/app/cve_advisory_catalog.py`
