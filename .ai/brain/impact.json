@@ -1,43 +1,188 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "bcb3cdd79a4784fd9a82c8a1fce7664af9b0f540",
-  "head": "6cbb509d8fddf1452aaee91747e33ec6911cad4c",
+  "base": "6cbb509d8fddf1452aaee91747e33ec6911cad4c",
+  "head": "3c81a852bece3ee6c5ae1fd6b46031e0aad3fb41",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/cve_advisory_loader.py",
+      "path": "backend/app/cve_advisory_catalog.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_cve_advisory_loader.py",
+      "path": "backend/app/cve_advisory_consensus.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/app/finding_intelligence.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_deployment_preflight.py",
+      "path": "backend/tests/test_cve_advisory_catalog.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_runtime_capabilities.py",
+      "path": "backend/tests/test_cve_advisory_consensus.py",
+      "status": "A"
+    },
+    {
+      "path": "backend/tests/test_finding_intelligence.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/cve_advisory_loader.py",
-    "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_deployment_preflight.py",
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/app/cve_advisory_catalog.py",
+    "backend/app/cve_advisory_consensus.py",
+    "backend/app/finding_intelligence.py",
+    "backend/tests/test_cve_advisory_catalog.py",
+    "backend/tests/test_cve_advisory_consensus.py",
+    "backend/tests/test_finding_intelligence.py"
   ],
   "impacted_files": [
+    "backend/app/cve_advisory_catalog.py",
+    "backend/app/cve_advisory_consensus.py",
     "backend/app/cve_advisory_loader.py",
-    "backend/app/deployment_preflight.py",
     "backend/app/finding_intelligence.py",
     "backend/app/main.py",
-    "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_deployment_preflight.py",
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/tests/test_cve_advisory_catalog.py",
+    "backend/tests/test_cve_advisory_consensus.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_vulnerability_intelligence.py"
   ],
   "impacted_symbols": [
+    {
+      "name": "CveAdvisoryCatalogError",
+      "kind": "class",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 16
+    },
+    {
+      "name": "CveAdvisoryEntry",
+      "kind": "class",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 21
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 31
+    },
+    {
+      "name": "CveAdvisoryCatalog",
+      "kind": "class",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 38
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 46
+    },
+    {
+      "name": "_text",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 52
+    },
+    {
+      "name": "_normalize_cve",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 71
+    },
+    {
+      "name": "_normalize_identity",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 79
+    },
+    {
+      "name": "_optional_identity",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 83
+    },
+    {
+      "name": "_optional_package_ecosystem",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 89
+    },
+    {
+      "name": "_optional_package_name",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 99
+    },
+    {
+      "name": "_ranges",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 109
+    },
+    {
+      "name": "_canonical_digest",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 138
+    },
+    {
+      "name": "build_cve_advisory_catalog",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 153
+    },
+    {
+      "name": "find_verified_cve_advisories",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 262
+    },
+    {
+      "name": "find_verified_cve_advisory",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_catalog.py",
+      "line": 343
+    },
+    {
+      "name": "AdvisorySourceEvidence",
+      "kind": "class",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 19
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 28
+    },
+    {
+      "name": "CveAdvisoryConsensus",
+      "kind": "class",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 38
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 53
+    },
+    {
+      "name": "_identity_key",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 64
+    },
+    {
+      "name": "build_cve_advisory_consensus",
+      "kind": "function",
+      "file": "backend/app/cve_advisory_consensus.py",
+      "line": 73
+    },
     {
       "name": "CveAdvisoryCatalogLoadError",
       "kind": "class",
@@ -81,46 +226,16 @@
       "line": 258
     },
     {
-      "name": "_configured",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 13
-    },
-    {
-      "name": "_bool_env",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 17
-    },
-    {
-      "name": "_production_mode",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 29
-    },
-    {
-      "name": "_image_digest_configured",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 33
-    },
-    {
-      "name": "build_deployment_preflight",
-      "kind": "function",
-      "file": "backend/app/deployment_preflight.py",
-      "line": 40
-    },
-    {
       "name": "build_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 40
+      "line": 41
     },
     {
       "name": "campaign_finding_intelligence",
       "kind": "function",
       "file": "backend/app/finding_intelligence.py",
-      "line": 553
+      "line": 593
     },
     {
       "name": "authenticate_control_api",
@@ -671,397 +786,381 @@
     {
       "name": "_document",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 15
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 12
     },
     {
-      "name": "_write_catalog",
+      "name": "test_verified_catalog_exposes_authoritative_entry",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 29
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 26
     },
     {
-      "name": "_clear",
+      "name": "test_unverified_catalog_never_returns_trusted_advisory",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 51
+    },
+    {
+      "name": "test_ambiguous_same_cve_without_product_binding_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 66
+    },
+    {
+      "name": "test_conflicting_duplicate_advisory_entry_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 96
+    },
+    {
+      "name": "test_invalid_lookup_identity_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 126
+    },
+    {
+      "name": "test_verified_package_advisory_matches_ecosystem_and_name",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 140
+    },
+    {
+      "name": "test_package_name_matching_is_conservative_and_case_sensitive",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 173
+    },
+    {
+      "name": "test_advisory_identity_must_be_exactly_one_complete_kind",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 225
+    },
+    {
+      "name": "test_plural_lookup_preserves_exact_cpe_and_package_matches",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_catalog.py",
+      "line": 234
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 10
+    },
+    {
+      "name": "_catalog",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 25
+    },
+    {
+      "name": "test_parallel_cpe_and_package_identities_are_not_auto_merged",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 33
+    },
+    {
+      "name": "test_exact_identity_sources_can_agree_on_applicability",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 71
+    },
+    {
+      "name": "test_exact_identity_applicability_conflict_is_ambiguous",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 105
+    },
+    {
+      "name": "test_unverified_catalog_is_ignored_by_consensus",
+      "kind": "function",
+      "file": "backend/tests/test_cve_advisory_consensus.py",
+      "line": 141
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 10
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 23
+    },
+    {
+      "name": "test_validation_worker_persists_sanitized_differential_signal_without_confirming",
+      "kind": "function",
+      "file": "backend/tests/test_differential_evidence_integration.py",
       "line": 40
     },
     {
-      "name": "test_unconfigured_loader_returns_none",
+      "name": "test_finding_intelligence_surfaces_differential_signal_and_summary",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 50
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 91
     },
     {
-      "name": "test_pinned_catalog_loads_as_verified",
+      "name": "test_red_team_decision_prioritizes_strong_signal_inside_existing_review_work",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 66
+      "file": "backend/tests/test_differential_evidence_integration.py",
+      "line": 133
     },
     {
-      "name": "test_digest_mismatch_fails_closed",
+      "name": "_finding",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 94
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 10
     },
     {
-      "name": "test_partial_configuration_fails_closed",
+      "name": "_graph",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 116
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 22
     },
     {
-      "name": "test_malformed_json_fails_closed",
+      "name": "test_finding_intelligence_consolidates_member_and_cluster_views",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 61
+    },
+    {
+      "name": "test_finding_intelligence_summary_reflects_cluster_saturation",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 96
+    },
+    {
+      "name": "test_finding_intelligence_does_not_expose_query_values",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 111
+    },
+    {
+      "name": "test_finding_intelligence_route_is_exposed",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 124
+    },
+    {
+      "name": "test_finding_intelligence_surfaces_public_duplicate_similarity_without_blocking",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
       "line": 128
     },
     {
-      "name": "test_symlink_catalog_is_rejected",
+      "name": "test_finding_intelligence_exposes_advisory_validation_priority_only",
       "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 150
-    },
-    {
-      "name": "test_pinned_raw_nvd_v2_catalog_is_adapted_and_verified",
-      "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 165
-    },
-    {
-      "name": "test_unsupported_catalog_format_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 239
-    },
-    {
-      "name": "test_pinned_raw_osv_catalog_is_adapted_and_verified",
-      "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 256
-    },
-    {
-      "name": "test_osv_adapter_diagnostics_expose_skip_counts_without_identifiers",
-      "kind": "function",
-      "file": "backend/tests/test_cve_advisory_loader.py",
-      "line": 324
-    },
-    {
-      "name": "_clear",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 32
-    },
-    {
-      "name": "_set_hardened_production",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 39
-    },
-    {
-      "name": "test_preflight_is_ok_with_optional_pentagi_disabled",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 52
-    },
-    {
-      "name": "test_preflight_errors_when_core_dependencies_are_not_ready",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 66
-    },
-    {
-      "name": "test_preflight_reports_missing_pentagi_configuration_without_values",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 77
-    },
-    {
-      "name": "test_preflight_warns_when_execution_intent_cannot_be_enforced",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 93
-    },
-    {
-      "name": "test_preflight_warns_on_orphan_pentagi_flags",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 118
-    },
-    {
-      "name": "test_preflight_reports_invalid_boolean_configuration_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 134
-    },
-    {
-      "name": "test_preflight_endpoint_uses_dependency_readiness",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 147
-    },
-    {
-      "name": "test_production_preflight_requires_hardened_backends_and_digest_pinned_images",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
+      "file": "backend/tests/test_finding_intelligence.py",
       "line": 158
     },
     {
-      "name": "test_production_preflight_accepts_hardened_distributed_configuration",
+      "name": "test_finding_intelligence_exposes_cve_risk_context_without_confirmation",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 183
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 184
     },
     {
-      "name": "test_production_preflight_rejects_mutable_tags",
+      "name": "test_finding_intelligence_counts_verified_kev_candidates",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 203
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 210
     },
     {
-      "name": "test_preflight_reports_strict_job_provenance_by_default",
+      "name": "test_finding_intelligence_exposes_bounded_cve_validation_plan",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 218
-    },
-    {
-      "name": "test_preflight_warns_when_legacy_unprovenanced_jobs_are_enabled",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 231
-    },
-    {
-      "name": "test_preflight_rejects_invalid_legacy_provenance_boolean",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 243
-    },
-    {
-      "name": "test_production_preflight_rejects_inline_vault_master_key",
-      "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
+      "file": "backend/tests/test_finding_intelligence.py",
       "line": 255
     },
     {
-      "name": "test_production_preflight_requires_redis_rate_limit_backend",
+      "name": "test_finding_intelligence_surfaces_reproducible_differential_quality",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 268
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 270
     },
     {
-      "name": "test_production_preflight_requires_vault_key_file",
+      "name": "test_finding_intelligence_surfaces_reproduced_repeat_outcome",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 281
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 326
     },
     {
-      "name": "test_preflight_allows_unconfigured_optional_cve_advisory_catalog",
+      "name": "test_finding_intelligence_surfaces_contradictory_repeat_outcome",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 294
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 380
     },
     {
-      "name": "test_preflight_rejects_partial_cve_advisory_catalog_configuration",
+      "name": "test_conflicting_product_versions_downgrade_cve_verdict",
       "kind": "function",
-      "file": "backend/tests/test_deployment_preflight.py",
-      "line": 312
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 445
     },
     {
-      "name": "_clear",
+      "name": "test_declared_cve_product_missing_from_observed_stack_downgrades_verdict",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 27
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 491
     },
     {
-      "name": "test_pentagi_capability_defaults_fail_closed",
+      "name": "test_stale_version_fingerprint_downgrades_cve_verdict",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 32
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 536
     },
     {
-      "name": "test_all_operator_gates_still_do_not_claim_pentagi_execution",
+      "name": "test_mismatched_cpe_downgrades_cve_verdict_and_risk_context",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 48
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 575
     },
     {
-      "name": "test_status_tracking_requires_integration_and_status_worker",
+      "name": "test_cpe_version_mismatch_downgrades_cve_verdict",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 619
+    },
+    {
+      "name": "test_cpe_vendor_mismatch_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 661
+    },
+    {
+      "name": "test_observed_version_outside_affected_range_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 705
+    },
+    {
+      "name": "test_observed_version_inside_affected_range_supports_candidate_without_confirmation",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 747
+    },
+    {
+      "name": "test_shared_range_across_multiple_cves_never_downgrades_as_outside_range",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 792
+    },
+    {
+      "name": "test_unverified_affected_range_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 844
+    },
+    {
+      "name": "test_verified_advisory_range_overrides_conflicting_scanner_range",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 893
+    },
+    {
+      "name": "test_unverified_advisory_catalog_cannot_override_scanner_range",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 972
+    },
+    {
+      "name": "test_package_advisory_uses_package_version_not_technology_version",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 1031
+    },
+    {
+      "name": "test_cross_source_advisory_conflict_downgrades_cve_verdict",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 1106
+    },
+    {
+      "name": "test_parallel_nvd_osv_identities_are_not_treated_as_consensus",
+      "kind": "function",
+      "file": "backend/tests/test_finding_intelligence.py",
+      "line": 1201
+    },
+    {
+      "name": "_campaign",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 11
+    },
+    {
+      "name": "_finding",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 25
+    },
+    {
+      "name": "test_nuclei_classification_preserves_cve_as_stable_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 44
+    },
+    {
+      "name": "test_known_cve_candidate_never_confirms_exploitability",
+      "kind": "function",
+      "file": "backend/tests/test_vulnerability_intelligence.py",
       "line": 70
     },
     {
-      "name": "test_invalid_boolean_configuration_fails_closed",
+      "name": "test_strong_unknown_requires_independent_corroboration_for_novel_candidate",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 83
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 85
     },
     {
-      "name": "test_capabilities_api_exposes_runtime_pentagi_state_without_secrets",
+      "name": "test_low_severity_unknown_is_not_promoted_to_novel_candidate",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 98
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 110
     },
     {
-      "name": "test_capabilities_api_reports_configuration_error_without_raising",
+      "name": "test_textual_cve_extraction_is_case_insensitive_and_deduplicated",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 118
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 121
     },
     {
-      "name": "test_scanner_runtime_capability_defaults_fail_closed",
+      "name": "test_finding_intelligence_surfaces_cve_signal_without_auto_confirmation",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 131
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 134
     },
     {
-      "name": "test_scanner_runtime_capability_reports_ready_only_with_dedicated_profile",
+      "name": "test_version_correlated_cve_raises_evidence_quality_not_confirmation",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 150
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 162
     },
     {
-      "name": "test_capabilities_api_exposes_scanner_worker_admission",
+      "name": "test_reproducible_unknown_signal_gets_high_novelty_confidence_without_zero_day_claim",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 169
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 219
     },
     {
-      "name": "test_scanner_runtime_capability_rejects_unsupported_engine",
+      "name": "test_single_unknown_signal_requires_repeat_validation",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 185
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 240
     },
     {
-      "name": "test_recon_runtime_capability_defaults_fail_closed",
+      "name": "test_known_cve_novelty_confidence_is_not_applicable",
       "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 199
-    },
-    {
-      "name": "test_external_recon_preflight_reports_missing_tools",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 212
-    },
-    {
-      "name": "test_external_recon_preflight_ready_when_every_tool_exists",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 233
-    },
-    {
-      "name": "test_recon_capability_invalid_configuration_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 247
-    },
-    {
-      "name": "test_capabilities_api_exposes_recon_preflight",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 257
-    },
-    {
-      "name": "test_strix_runtime_capability_fails_closed_without_binary_or_docker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 277
-    },
-    {
-      "name": "test_strix_runtime_capability_stays_blocked_when_cli_exists",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 294
-    },
-    {
-      "name": "test_browser_runtime_capability_fails_closed_without_runtime_marker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 378
-    },
-    {
-      "name": "test_browser_runtime_capability_ready_with_runtime_marker",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 391
-    },
-    {
-      "name": "test_browser_runtime_capability_disabled_even_when_runtime_exists",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 404
-    },
-    {
-      "name": "test_capabilities_api_exposes_browser_runtime_detail",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 417
-    },
-    {
-      "name": "test_strix_capability_preflight_state_stays_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 434
-    },
-    {
-      "name": "_clear_validation",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 490
-    },
-    {
-      "name": "test_validation_capability_defaults_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 495
-    },
-    {
-      "name": "test_repeat_validation_readiness_requires_http_and_differential",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 514
-    },
-    {
-      "name": "test_v2_planner_state_does_not_claim_network_execution",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 534
-    },
-    {
-      "name": "test_invalid_validation_configuration_fails_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 551
-    },
-    {
-      "name": "test_validation_limits_fail_closed",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 571
-    },
-    {
-      "name": "test_capabilities_api_exposes_validation_state",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 586
-    },
-    {
-      "name": "test_capabilities_expose_optional_cve_advisory_catalog_state",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 603
-    },
-    {
-      "name": "test_capabilities_expose_invalid_cve_catalog_without_path_leak",
-      "kind": "function",
-      "file": "backend/tests/test_runtime_capabilities.py",
-      "line": 626
+      "file": "backend/tests/test_vulnerability_intelligence.py",
+      "line": 255
     }
   ],
   "selected_tests": [
-    "backend/tests/test_cve_advisory_loader.py",
-    "backend/tests/test_deployment_preflight.py",
-    "backend/tests/test_runtime_capabilities.py"
+    "backend/tests/test_cve_advisory_catalog.py",
+    "backend/tests/test_cve_advisory_consensus.py",
+    "backend/tests/test_differential_evidence_integration.py",
+    "backend/tests/test_finding_intelligence.py",
+    "backend/tests/test_vulnerability_intelligence.py"
   ]
 }

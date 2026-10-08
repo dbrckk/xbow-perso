@@ -80,6 +80,7 @@ backend/
     coverage.py
     cpe_consistency.py
     cve_advisory_catalog.py
+    cve_advisory_consensus.py
     cve_advisory_loader.py
     cve_evidence_verdict.py
     cve_risk_context.py
@@ -293,6 +294,7 @@ backend/
     test_coverage.py
     test_cpe_consistency.py
     test_cve_advisory_catalog.py
+    test_cve_advisory_consensus.py
     test_cve_advisory_loader.py
     test_cve_evidence_verdict.py
     test_cve_metadata_normalization.py
@@ -2751,6 +2753,84 @@ normalized_package_ecosystem = (
 normalized_package_name = (
 ⋮----
 matches: list[CveAdvisoryEntry] = []
+⋮----
+matches = find_verified_cve_advisories(
+````
+
+## File: backend/app/cve_advisory_consensus.py
+````python
+CVE_ADVISORY_CONSENSUS_SCHEMA = "cve-advisory-consensus-v1"
+⋮----
+@dataclass(frozen=True)
+class AdvisorySourceEvidence
+⋮----
+source_name: str
+identity_kind: str
+identity_key: str
+affected_version_ranges: tuple[str, ...]
+observed_versions: tuple[str, ...]
+applicability_state: str
+trusted_affected_version_supported: bool
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+payload = asdict(self)
+⋮----
+@dataclass(frozen=True)
+class CveAdvisoryConsensus
+⋮----
+schema: str
+cve_id: str | None
+state: str
+source_count: int
+matched_advisory_count: int
+identity_count: int
+identity_kinds: tuple[str, ...]
+sources: tuple[str, ...]
+evidence: tuple[AdvisorySourceEvidence, ...]
+ambiguity_reasons: tuple[str, ...]
+range_sets_equal: bool
+cross_source_agreement: bool
+exploitability_confirmed: bool
+⋮----
+def _identity_key(entry: CveAdvisoryEntry) -> str
+⋮----
+cve_ids = finding_cve_ids(finding)
+⋮----
+cve_id = cve_ids[0]
+normalized_fingerprint_versions = tuple(
+normalized_package_version = (
+⋮----
+evidence: list[AdvisorySourceEvidence] = []
+source_ids: set[tuple[str, str]] = set()
+⋮----
+matches = find_verified_cve_advisories(
+⋮----
+observed_versions = (
+applicability = build_affected_version_range_evidence(
+⋮----
+identity_keys = {item.identity_key for item in evidence}
+identity_kinds = tuple(
+sources = tuple(sorted({item.source_name for item in evidence}))
+range_sets = {
+range_sets_equal = len(range_sets) == 1
+source_count = len(source_ids)
+⋮----
+ambiguity: set[str] = set()
+agreement = False
+⋮----
+state = "parallel_unbound_identities"
+⋮----
+state = "single_source"
+⋮----
+applicability_states = {
+⋮----
+state = "exact_identity_applicability_agreement"
+agreement = True
+⋮----
+state = "exact_identity_applicability_conflict"
+⋮----
+state = "inconclusive_cross_source"
 ````
 
 ## File: backend/app/cve_advisory_loader.py
@@ -4064,6 +4144,13 @@ differential_signals = build_differential_signals(graph)
 differential_quality = build_differential_quality(graph)
 technology_fingerprints = build_technology_fingerprints(graph)
 ⋮----
+raw_advisory_catalogs: list[Any] = []
+⋮----
+advisory_catalogs: list[Any] = []
+seen_advisory_catalogs: set[tuple[str, str]] = set()
+⋮----
+key = (
+⋮----
 readiness_by_id = {item.finding_id: item for item in readiness}
 triage_by_id = {item.finding_id: item for item in triage}
 cluster_by_member = {
@@ -4099,6 +4186,7 @@ verified_advisory = None
 verified_advisory = find_verified_cve_advisory(
 package_version_raw = getattr(finding, "package_version", None)
 package_version = (
+advisory_consensus = build_cve_advisory_consensus(
 advisory_observed_versions = fingerprint_versions
 ⋮----
 advisory_observed_versions = (
@@ -16970,6 +17058,39 @@ def test_verified_package_advisory_matches_ecosystem_and_name()
 def test_package_name_matching_is_conservative_and_case_sensitive()
 ⋮----
 def test_advisory_identity_must_be_exactly_one_complete_kind(entry)
+⋮----
+def test_plural_lookup_preserves_exact_cpe_and_package_matches()
+⋮----
+matches = find_verified_cve_advisories(
+````
+
+## File: backend/tests/test_cve_advisory_consensus.py
+````python
+def _finding()
+⋮----
+def _catalog(source_name, entry)
+⋮----
+def test_parallel_cpe_and_package_identities_are_not_auto_merged()
+⋮----
+nvd = _catalog(
+osv = _catalog(
+⋮----
+result = build_cve_advisory_consensus(
+⋮----
+def test_exact_identity_sources_can_agree_on_applicability()
+⋮----
+first = _catalog(
+second = _catalog(
+⋮----
+def test_exact_identity_applicability_conflict_is_ambiguous()
+⋮----
+fixed = _catalog(
+affected = _catalog(
+⋮----
+def test_unverified_catalog_is_ignored_by_consensus()
+⋮----
+verified = _catalog(
+unverified = build_cve_advisory_catalog(
 ````
 
 ## File: backend/tests/test_cve_advisory_loader.py
@@ -17994,6 +18115,16 @@ catalog = build_cve_advisory_catalog(
 def test_unverified_advisory_catalog_cannot_override_scanner_range()
 ⋮----
 def test_package_advisory_uses_package_version_not_technology_version()
+⋮----
+def test_cross_source_advisory_conflict_downgrades_cve_verdict()
+⋮----
+fixed = build_cve_advisory_catalog(
+affected = build_cve_advisory_catalog(
+⋮----
+def test_parallel_nvd_osv_identities_are_not_treated_as_consensus()
+⋮----
+nvd = build_cve_advisory_catalog(
+osv = build_cve_advisory_catalog(
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
