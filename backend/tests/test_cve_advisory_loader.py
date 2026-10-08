@@ -44,10 +44,13 @@ def _clear(monkeypatch):
         "XBOW_CVE_ADVISORY_CATALOG_SHA256",
         "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
         "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "XBOW_CVE_ADVISORY_CATALOG_SNAPSHOT_AT",
         "XBOW_CVE_ADVISORY_NVD_PATH",
         "XBOW_CVE_ADVISORY_NVD_SHA256",
+        "XBOW_CVE_ADVISORY_NVD_SNAPSHOT_AT",
         "XBOW_CVE_ADVISORY_OSV_PATH",
         "XBOW_CVE_ADVISORY_OSV_SHA256",
+        "XBOW_CVE_ADVISORY_OSV_SNAPSHOT_AT",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -598,3 +601,78 @@ def test_legacy_nvd_alias_and_named_nvd_same_snapshot_are_deduplicated(
     assert status["configured_source_count"] == 2
     assert status["available_source_count"] == 1
     assert status["invalid_source_count"] == 0
+
+
+def test_nvd_top_level_timestamp_becomes_catalog_snapshot(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    document = _nvd_document()
+    document["timestamp"] = "2026-10-08T07:45:00.000Z"
+    path, digest = _write_json(
+        tmp_path,
+        "nvd-with-timestamp.json",
+        document,
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", digest)
+
+    catalogs, _status = load_cve_advisory_catalogs_with_status()
+
+    assert len(catalogs) == 1
+    assert catalogs[0].source_authority == "nvd"
+    assert catalogs[0].source_snapshot_at == (
+        "2026-10-08T07:45:00+00:00"
+    )
+
+
+def test_explicit_osv_snapshot_timestamp_is_preserved(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    path, digest = _write_json(
+        tmp_path,
+        "osv-with-snapshot.json",
+        _osv_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_SHA256", digest)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_OSV_SNAPSHOT_AT",
+        "2026-10-08T08:00:00+00:00",
+    )
+
+    catalogs, _status = load_cve_advisory_catalogs_with_status()
+
+    assert len(catalogs) == 1
+    assert catalogs[0].source_authority == "osv"
+    assert catalogs[0].source_snapshot_at == (
+        "2026-10-08T08:00:00+00:00"
+    )
+
+
+def test_invalid_explicit_snapshot_timestamp_fails_source_closed(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    path, digest = _write_json(
+        tmp_path,
+        "nvd-invalid-snapshot.json",
+        _nvd_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", digest)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_NVD_SNAPSHOT_AT",
+        "not-a-timestamp",
+    )
+
+    catalogs, status = load_cve_advisory_catalogs_with_status()
+
+    assert catalogs == ()
+    assert status["invalid_source_count"] == 1
+    assert status["available"] is False
+    assert status["verified"] is False
