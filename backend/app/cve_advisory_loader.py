@@ -30,10 +30,13 @@ _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
 _FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
+_SNAPSHOT_ENV = "XBOW_CVE_ADVISORY_CATALOG_SNAPSHOT_AT"
 _NVD_PATH_ENV = "XBOW_CVE_ADVISORY_NVD_PATH"
 _NVD_SHA_ENV = "XBOW_CVE_ADVISORY_NVD_SHA256"
+_NVD_SNAPSHOT_ENV = "XBOW_CVE_ADVISORY_NVD_SNAPSHOT_AT"
 _OSV_PATH_ENV = "XBOW_CVE_ADVISORY_OSV_PATH"
 _OSV_SHA_ENV = "XBOW_CVE_ADVISORY_OSV_SHA256"
+_OSV_SNAPSHOT_ENV = "XBOW_CVE_ADVISORY_OSV_SNAPSHOT_AT"
 _ALLOWED_FORMATS = frozenset(
     {"internal-v1", "nvd-cve-api-v2", "osv-v1"}
 )
@@ -78,6 +81,25 @@ def _read_regular_file(path: Path) -> bytes:
         os.close(fd)
 
 
+def _source_snapshot_at(
+    document: dict[str, Any],
+    *,
+    source_format: str,
+    explicit_raw: str = "",
+) -> str | None:
+    explicit = explicit_raw.strip()
+    if explicit:
+        return explicit
+    candidate = document.get("snapshot_at")
+    if isinstance(candidate, str) and candidate.strip():
+        return candidate.strip()
+    if source_format == "nvd-cve-api-v2":
+        timestamp = document.get("timestamp")
+        if isinstance(timestamp, str) and timestamp.strip():
+            return timestamp.strip()
+    return None
+
+
 def _adapter_diagnostics(source_format: str, adapted: Any) -> dict[str, Any] | None:
     if source_format == "nvd-cve-api-v2":
         return {
@@ -120,6 +142,7 @@ def _load_pinned_catalog(
     source_format: str,
     source_name: str,
     source_authority: str | None = None,
+    source_snapshot_at_raw: str = "",
 ) -> tuple[CveAdvisoryCatalog | None, dict[str, Any] | None]:
     path_raw = path_raw.strip()
     digest_raw = digest_raw.strip().lower()
@@ -155,6 +178,12 @@ def _load_pinned_catalog(
             "CVE advisory catalog root must be an object"
         )
 
+    source_snapshot_at = _source_snapshot_at(
+        document,
+        source_format=source_format,
+        explicit_raw=source_snapshot_at_raw,
+    )
+
     if source_format not in _ALLOWED_FORMATS:
         raise CveAdvisoryCatalogLoadError(
             "CVE advisory catalog format is unsupported"
@@ -187,6 +216,7 @@ def _load_pinned_catalog(
             source_name=source_name,
             source_authority=source_authority,
             source_verified=True,
+            source_snapshot_at=source_snapshot_at,
         )
     except CveAdvisoryCatalogError as exc:
         raise CveAdvisoryCatalogLoadError(
@@ -219,6 +249,7 @@ def _load_verified_cve_advisory_catalog_with_diagnostics(
         source_format=source_format,
         source_name=source_name,
         source_authority=source_authority,
+        source_snapshot_at_raw=os.getenv(_SNAPSHOT_ENV, ""),
     )
 
 
@@ -291,6 +322,7 @@ def _named_source_status(
     source_format: str,
     source_name: str,
     source_authority: str,
+    snapshot_env: str,
 ) -> tuple[CveAdvisoryCatalog | None, dict[str, Any]]:
     path_raw = os.getenv(path_env, "").strip()
     digest_raw = os.getenv(sha_env, "").strip()
@@ -302,6 +334,7 @@ def _named_source_status(
             source_format=source_format,
             source_name=source_name,
             source_authority=source_authority,
+            source_snapshot_at_raw=os.getenv(snapshot_env, ""),
         )
     except CveAdvisoryCatalogLoadError as exc:
         return None, {
@@ -358,6 +391,7 @@ def load_cve_advisory_catalogs_with_status(
         source_format="nvd-cve-api-v2",
         source_name="nvd-cve-api-v2",
         source_authority="nvd",
+        snapshot_env=_NVD_SNAPSHOT_ENV,
     )
     osv_catalog, osv_status = _named_source_status(
         source_kind="osv",
@@ -366,6 +400,7 @@ def load_cve_advisory_catalogs_with_status(
         source_format="osv-v1",
         source_name="osv-v1",
         source_authority="osv",
+        snapshot_env=_OSV_SNAPSHOT_ENV,
     )
 
     statuses = (legacy_status, nvd_status, osv_status)
