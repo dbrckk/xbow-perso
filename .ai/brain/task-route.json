@@ -6,15 +6,60 @@
     "requested_max_files": 12,
     "score_margin": 0,
     "tier": "bounded",
-    "top_score": 27
+    "top_score": 30
   },
   "cache": {
-    "fingerprint": "d74d1a66f06437774bd1ec294bf80084cbde43c36b43115a04b8dcb82468e8cb",
+    "fingerprint": "0db9ef537e82d622cf08aaceca27a3632da076890712db8e20f8b4e46c9bc819",
     "hit": false
   },
-  "candidate_count": 43,
+  "candidate_count": 38,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/scanner_adaptation.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 30,
+      "symbols": [
+        "ScannerAdaptation",
+        "_engine_memory",
+        "adapt_scanner_engines",
+        "rank_key"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 30,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+        "test_negative_memory_cannot_expand_scanner_configuration",
+        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines"
+      ]
+    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -51,98 +96,6 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/scanner_adaptation.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 27,
-      "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 27,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/learning_memory.py",
-      "reasons": [
-        "impact",
-        "recently-changed",
-        "search-index"
-      ],
-      "score": 26,
-      "symbols": [
-        "TechniqueMemory",
-        "build_learning_memory",
-        "campaign_learning_memory",
-        "summarize_worker_outcomes",
-        "worker_outcome_event"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/worker_service.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 23,
-      "symbols": [
-        "CampaignCancelledError",
-        "StaleBrowserJobError",
-        "StaleValidationJobError",
-        "_active_scanner_execution_requested",
-        "_append_event_once",
-        "_campaign",
-        "_claim_for_role",
-        "_lease_heartbeat",
-        "_legacy_unprovenanced_jobs_allowed",
-        "_process_scanner_job",
-        "_record_worker_outcome",
-        "_save",
-        "_verify_policy_bound_job",
-        "_worker_bool",
-        "_worker_poll_seconds",
-        "main",
-        "process_browser_flow",
-        "process_nuclei_scan",
-        "process_one",
-        "process_recon_task"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
       "path": "backend/app/scanner_sandbox.py",
       "reasons": [
         "search-index"
@@ -158,6 +111,53 @@
         "safe_scanner_sandbox_admission",
         "scanner_sandbox_admission",
         "strix_runtime_contract_enforceable"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "_campaign",
+        "fake_execute",
+        "test_nuclei_worker_dry_run_preserves_safe_default",
+        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+        "test_scan_engines_default_preserves_strix",
+        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+        "test_sqlite_queue_accepts_nuclei_scan"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_normalization.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 21,
+      "symbols": [
+        "test_normalized_ids_are_engine_scoped_and_stable",
+        "test_normalizers_fail_closed_outside_scope",
+        "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+        "test_nuclei_jsonl_parser_rejects_invalid_line",
+        "test_nuclei_jsonl_parser_rejects_oversized_file",
+        "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+        "test_scanner_registry_dispatches_nuclei_parser",
+        "test_scanner_registry_dispatches_strix_parser",
+        "test_scanner_registry_exposes_supported_engines",
+        "test_scanner_registry_missing_run_directory_is_empty",
+        "test_scanner_registry_rejects_symlinked_artifacts",
+        "test_scanner_registry_rejects_unknown_engine",
+        "test_scanner_registry_selects_latest_artifact",
+        "test_strix_and_nuclei_normalize_to_same_canonical_shape"
       ]
     }
   ],

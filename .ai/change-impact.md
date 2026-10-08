@@ -1,11 +1,13 @@
 # Change impact
 
-Base: 71f8b0f03852af9b926b0e69a14215f1b300236a
-Head: 24fcdf5bf0b1b7ead8d7f7d06b4b2dece838a7b5
+Base: ad273afadcd09dc4b6c1cd507c1f4d4cee0fbc64
+Head: 72eea67ce850778b7696d3a08b2b5de5f09983e6
 
 ## Changed files
-- M backend/app/learning_memory.py
-- M backend/tests/test_learning_memory.py
+- M backend/app/scanner_adaptation.py
+- M backend/tests/test_htb_lab.py
+- M backend/tests/test_orchestrator.py
+- M backend/tests/test_scanner_adaptation.py
 
 ## Affected areas
 - backend

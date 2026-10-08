@@ -39,16 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T17:39:57Z
+Generated: 2026-10-08T17:46:29Z
 
 ### Git
 - Branch: `main`
-- Head: `24fcdf5bf0b1`
-- Commit date: 2026-10-08T19:39:34+02:00
-- Commit: fix(learning): learn from final worker job states
+- Head: `72eea67ce850`
+- Commit date: 2026-10-08T19:46:17+02:00
+- Commit: fix(scanner): keep scanners available after negative findings
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/scanner_adaptation.py`
+- `backend/tests/test_htb_lab.py`
+- `backend/tests/test_orchestrator.py`
+- `backend/tests/test_scanner_adaptation.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`
@@ -60,8 +64,6 @@ Generated: 2026-10-08T17:39:57Z
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_priority.py`
-- `backend/app/technology_fingerprint_intelligence.py`
-- `backend/tests/test_technology_fingerprint_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`

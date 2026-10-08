@@ -12171,18 +12171,24 @@ completed = int((outcome or {}).get("completed") or 0) if isinstance(outcome, di
 requeued = int((outcome or {}).get("requeued") or 0) if isinstance(outcome, dict) else 0
 failed = int((outcome or {}).get("failed") or 0) if isinstance(outcome, dict) else 0
 ⋮----
-strong_memory_failure = bool(
+# Technique-level "failure" may mean a valid negative security
+# result, not a scanner crash. Never suppress a configured engine
+# solely because it found no vulnerability.
 unstable_worker = (requeued + failed) >= 2 and completed == 0
-⋮----
-reason_parts = []
 ⋮----
 # Memory can reduce the configured set, but never eliminate all configured scanners.
 ⋮----
 reasons = {
 ⋮----
-def rank_key(engine: str) -> tuple[float, float, int, str]
+configured_order = {
+⋮----
+def rank_key(engine: str) -> tuple[float, float, int, int]
 ⋮----
 item = memory.get(engine)
+⋮----
+# Confidence in negative results is not scanner quality.
+# Preserve operator-specified order when positive outcomes
+# cannot reliably distinguish configured engines.
 ⋮----
 selected = tuple(
 ````
@@ -22079,7 +22085,7 @@ def test_orchestrator_exposes_advisory_only_coverage_guidance(tmp_path)
 guidance = result["intelligence"]["coverage_guidance"]
 coverage = result["intelligence"]["coverage"]
 ⋮----
-def test_orchestrator_scanner_memory_can_only_reduce_configured_engines(tmp_path, monkeypatch)
+def test_orchestrator_negative_scanner_memory_keeps_configured_engines(tmp_path, monkeypatch)
 ⋮----
 adaptation = result["intelligence"]["scanner_adaptation"]
 ⋮----
@@ -24419,13 +24425,23 @@ def test_adaptation_never_expands_configured_engines()
 ⋮----
 result = adapt_scanner_engines(
 ⋮----
-def test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists()
+def test_adaptation_preserves_engine_after_negative_technique_outcomes()
 ⋮----
 def test_adaptation_never_suppresses_last_configured_engine()
 ⋮----
 def test_adaptation_ranks_successful_memory_first()
 ⋮----
 def test_adaptation_rejects_unknown_or_duplicate_configuration()
+⋮----
+def test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists()
+⋮----
+def test_completed_scanner_run_overrides_negative_memory_for_suppression()
+⋮----
+def test_negative_memory_cannot_expand_scanner_configuration()
+⋮----
+def test_negative_only_memory_does_not_out_rank_configured_engine_order()
+⋮----
+def test_positive_scanner_evidence_can_improve_ranking_without_new_engines()
 ````
 
 ## File: backend/tests/test_scanner_ingestion.py
