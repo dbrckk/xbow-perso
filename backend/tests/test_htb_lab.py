@@ -304,7 +304,7 @@ def test_htb_global_learning_route_is_exposed():
     assert "/api/labs/htb/learning" in paths
 
 
-def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
+def test_htb_cross_lab_negative_scanner_results_keep_configured_engines(
     tmp_path,
     monkeypatch,
 ):
@@ -379,9 +379,13 @@ def test_htb_cross_lab_scanner_failures_inform_future_htb_lab_only(
     assert cross_lab["campaign_count"] == 3
     assert cross_lab["advisory_only"] is True
     assert adaptation["configured_engines"] == ["strix", "nuclei"]
-    assert adaptation["selected_engines"] == ["strix"]
-    assert adaptation["suppressed_engines"] == ["nuclei"]
-    assert [queue.get(job_id)["kind"] for job_id in result["job_ids"]] == ["strix_scan"]
+    assert set(adaptation["selected_engines"]) == {"strix", "nuclei"}
+    assert adaptation["suppressed_engines"] == []
+    assert "do not prove scanner failure" in adaptation["reasons"]["nuclei"]
+    assert set(queue.get(job_id)["kind"] for job_id in result["job_ids"]) <= {
+        "strix_scan", "nuclei_scan"
+    }
+    assert result["intelligence"]["scanner_adaptation"]["may_expand_configuration"] is False
 
 
 def test_non_htb_campaign_does_not_receive_htb_cross_lab_learning(
