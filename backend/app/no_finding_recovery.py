@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from typing import Any, Callable, Iterable, Mapping
 
 from .attack_surface import build_attack_surface
@@ -8,6 +9,13 @@ from .observation_graph import ObservationGraph
 
 
 NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
+_REVISIT_SURFACE_KINDS: dict[str, frozenset[str]] = {
+    "crawl": frozenset({"endpoint", "form"}),
+    "map_endpoints": frozenset({"endpoint"}),
+    "map_forms": frozenset({"endpoint", "form"}),
+    "detect_technology": frozenset({"endpoint", "technology", "waf"}),
+    "browser_observe": frozenset({"endpoint", "form", "technology"}),
+}
 _ALLOWED_RECON_KINDS = frozenset(
     {"crawl", "map_endpoints", "map_forms", "detect_technology", "browser_observe"}
 )
@@ -32,6 +40,7 @@ class NoFindingRecovery:
     recommended_task_kinds: tuple[str, ...]
     reasons: tuple[str, ...]
     exhausted_task_kinds: tuple[str, ...] = ()
+    reopened_task_kinds: tuple[str, ...] = ()
     advisory_only: bool = True
     may_expand_scope: bool = False
     may_increase_request_budget: bool = False
@@ -44,7 +53,23 @@ class NoFindingRecovery:
         result["recommended_task_kinds"] = list(self.recommended_task_kinds)
         result["reasons"] = list(self.reasons)
         result["exhausted_task_kinds"] = list(self.exhausted_task_kinds)
+        result["reopened_task_kinds"] = list(self.reopened_task_kinds)
         return result
+
+
+def _trusted_utc_timestamp(value: object, *, now: datetime) -> datetime | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    parsed = parsed.astimezone(timezone.utc)
+    if parsed > now:
+        return None
+    return parsed
 
 
 def _reviewed_ids(
@@ -298,15 +323,16 @@ def build_no_finding_recovery(
     # not be repeatedly promoted merely because its coverage gap persists.
     # Evidence from another asset or with missing parent lineage does not
     # exhaust the authorized target's options.
-    completed_recovery_kinds = {
-        str(item.metadata.get("task_kind"))
-        for item in graph.by_kind("evidence")
+    completed_recovery_evidence: dict[str, list[Any]] = {}
+    for item in graph.by_kind("evidence"):
+        kind = item.metadata.get("task_kind")
         if (
-            item.metadata.get("task_kind") in _ALLOWED_RECON_KINDS
+            kind in _ALLOWED_RECON_KINDS
             and item.metadata.get("status") == "completed"
             and has_in_scope_asset_ancestor(item.id)
-        )
-    }
+        ):
+            completed_recovery_evidence.setdefault(str(kind), []).append(item)
+    completed_recovery_kinds = set(completed_recovery_evidence)
 
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
@@ -370,11 +396,59 @@ def build_no_finding_recovery(
         if not candidates:
             state = "no_supported_recovery_task"
             reasons.append("no evidence-backed recon gap is available")
+    candidate_kinds = {kind for _score, kind in candidates} & allowed
+    reopened: set[str] = set()
+    if state == "recovery_advisory" and completed_recovery_evidence:
+        current_time = datetime.now(timezone.utc)
+        valid_endpoint_ids = {item["id"] for item in endpoints}
+        valid_form_ids = {item["id"] for item in forms}
+        surface_times: dict[str, list[datetime]] = {}
+        for kind in ("endpoint", "form", "technology", "waf"):
+            for item in graph.by_kind(kind):
+                if kind == "endpoint" and item.id not in valid_endpoint_ids:
+                    continue
+                if kind == "form" and item.id not in valid_form_ids:
+                    continue
+                if kind in {"technology", "waf"} and not (
+                    has_in_scope_asset_ancestor(item.id)
+                ):
+                    continue
+                timestamp = _trusted_utc_timestamp(
+                    item.metadata.get("observed_at"),
+                    now=current_time,
+                )
+                if timestamp is not None:
+                    surface_times.setdefault(kind, []).append(timestamp)
+
+        for kind in candidate_kinds & completed_recovery_kinds:
+            completed_times = [
+                _trusted_utc_timestamp(
+                    item.metadata.get("completed_at"), now=current_time
+                )
+                for item in completed_recovery_evidence[kind]
+            ]
+            # Missing or invalid completion timestamps cannot authorize a
+            # retry recommendation based on assumed chronology.
+            if not completed_times or any(
+                timestamp is None for timestamp in completed_times
+            ):
+                continue
+            latest_completion = max(completed_times)
+            if any(
+                observed_at > latest_completion
+                for surface_kind in _REVISIT_SURFACE_KINDS[kind]
+                for observed_at in surface_times.get(surface_kind, ())
+            ):
+                reopened.add(kind)
+
     exhausted = tuple(sorted(
-        {kind for _score, kind in candidates}
-        & completed_recovery_kinds
-        & allowed
+        candidate_kinds & completed_recovery_kinds - reopened
     ))
+    if reopened and state == "recovery_advisory":
+        reasons.append(
+            "new in-scope observations after recorded completion warrant "
+            "reconsidering previously exhausted read-only tasks"
+        )
     if exhausted and state == "recovery_advisory":
         reasons.append(
             "completed in-scope recovery tasks produced no sufficient new evidence; "
@@ -383,7 +457,7 @@ def build_no_finding_recovery(
     recommended = tuple(
         kind
         for _score, kind in sorted(set(candidates), key=lambda item: (-item[0], item[1]))
-        if kind in allowed and kind not in completed_recovery_kinds
+        if kind in allowed and kind not in exhausted
     )
     # A kind may appear with different scores; never recommend it twice.
     recommended = tuple(dict.fromkeys(recommended))[:3]
@@ -406,4 +480,5 @@ def build_no_finding_recovery(
         recommended_task_kinds=recommended,
         reasons=tuple(dict.fromkeys(reasons)),
         exhausted_task_kinds=exhausted,
+        reopened_task_kinds=tuple(sorted(reopened)),
     )
