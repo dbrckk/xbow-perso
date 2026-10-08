@@ -10775,6 +10775,8 @@ def to_dict(self) -> dict[str, Any]
 ⋮----
 def _ratio(numerator: int, denominator: int) -> float
 ⋮----
+# Missing observations are unknown coverage, not 100% reviewed.
+⋮----
 def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]
 ⋮----
 reviewed: set[str] = set()
@@ -10819,8 +10821,10 @@ attempted_finding_ids = set(validation.attempted_finding_ids) & finding_ids
 ⋮----
 domains = (
 ⋮----
-weighted_denominator = sum(max(1, item.observed) for item in domains)
-weighted_score = round(
+observed_domains = tuple(item for item in domains if item.observed > 0)
+unobserved_domains = tuple(
+weighted_denominator = sum(item.observed for item in observed_domains)
+weighted_score = (
 ⋮----
 gaps = []
 ⋮----
@@ -23181,6 +23185,16 @@ store = Storage(db, artifacts)
 result = campaign_red_team_coverage(campaign.id)
 ⋮----
 def test_red_team_coverage_ignores_failed_or_queued_review_evidence()
+⋮----
+def test_empty_graph_has_zero_observed_coverage_not_full_score()
+⋮----
+result = build_red_team_coverage(ObservationGraph())
+⋮----
+def test_asset_only_graph_does_not_claim_full_review_coverage()
+⋮----
+def test_completed_review_raises_observed_surface_score_without_security_claim()
+⋮----
+def test_unvalidated_finding_reduces_score_across_observed_dimensions()
 ```
 
 ## File: tests/test_red_team_decision.py

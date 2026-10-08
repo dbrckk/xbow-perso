@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:59:37Z
+Generated: 2026-10-08T19:00:27Z
 
 ### Git
 - Branch: `main`
-- Head: `e8a89d3e1824`
-- Commit date: 2026-10-08T20:59:25+02:00
-- Commit: feat(scanner): diversify configured scanning coverage after negative runs
+- Head: `047c9b964a04`
+- Commit date: 2026-10-08T21:00:16+02:00
+- Commit: fix(coverage): do not report full coverage when no surface is observed
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/red_team_coverage.py`
+- `backend/tests/test_red_team_coverage.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
@@ -57,11 +59,6 @@ Generated: 2026-10-08T18:59:37Z
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/red_team_coverage.py`
-- `backend/app/review_evidence.py`
-- `backend/tests/test_form_waf_reasoning.py`
-- `backend/tests/test_red_team_coverage.py`
-- `backend/tests/test_review_evidence.py`
 
 ### Project signals
 - `pyproject.toml`
