@@ -184,6 +184,7 @@ def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypat
             "evidence",
             "completed",
             "nuclei",
+            parent_ids=("asset:a",),
             metadata={"phase": "scan", "status": "completed"},
         ).to_dict(),
     )
