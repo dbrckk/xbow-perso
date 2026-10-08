@@ -151,31 +151,54 @@ def summarize_worker_outcomes(
         lambda: {"completed": 0, "failed": 0, "cancelled": 0, "requeued": 0}
     )
     recent: list[dict[str, Any]] = []
+    # A single job may emit queued, retry and terminal events. Learning from
+    # the event count inflates scanner failures and can suppress a healthy
+    # engine. For planning, count the last valid state of each job only.
+    final_by_job: dict[tuple[str, str], str] = {}
+    valid_events = 0
 
     for event in events:
-        if event.get("type") != "worker_outcome":
+        if not isinstance(event, dict) or event.get("type") != "worker_outcome":
             continue
         kind = str(event.get("job_kind") or "")
         status = str(event.get("status") or "")
-        if kind not in _ALLOWED_JOB_KINDS or status not in _ALLOWED_JOB_STATUSES:
+        job_id = str(event.get("job_id") or "").strip()
+        if (
+            kind not in _ALLOWED_JOB_KINDS
+            or status not in _ALLOWED_JOB_STATUSES
+            or not job_id
+            or len(job_id) > 128
+        ):
             continue
-        bucket = "requeued" if status == "queued" else status
-        totals[bucket] += 1
-        by_kind[kind][bucket] += 1
+        try:
+            attempts = int(event.get("attempts") or 0)
+        except (ValueError, TypeError):
+            continue
+        if not 0 <= attempts <= 5:
+            continue
+        valid_events += 1
+        final_by_job[(kind, job_id)] = status
         recent.append(
             {
-                "job_id": str(event.get("job_id") or ""),
+                "job_id": job_id,
                 "job_kind": kind,
                 "success": bool(event.get("success")),
                 "status": status,
-                "attempts": int(event.get("attempts") or 0),
+                "attempts": attempts,
                 "at": event.get("at"),
             }
         )
+
+    for (kind, _job_id), status in final_by_job.items():
+        bucket = "requeued" if status == "queued" else status
+        totals[bucket] += 1
+        by_kind[kind][bucket] += 1
 
     return {
         "totals": totals,
         "by_job_kind": {key: dict(value) for key, value in sorted(by_kind.items())},
         "recent_outcomes": recent[-recent_limit:],
+        "distinct_jobs": len(final_by_job),
+        "duplicate_events": valid_events - len(final_by_job),
         "contains_job_payloads": False,
     }
