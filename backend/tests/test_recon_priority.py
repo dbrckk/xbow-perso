@@ -667,3 +667,126 @@ def test_feedback_never_creates_unconfigured_recon_tasks():
     assert len(result.tasks) == 1
     assert result.tasks[0].kind == "map_endpoints"
     assert result.adjustments[0].no_finding_boost == 0
+
+
+def _safe_feedback(*, state="recovery_advisory", exhausted=(), reopened=(), recommended=()):
+    return {
+        "state": state,
+        "advisory_only": True,
+        "may_expand_scope": False,
+        "may_increase_request_budget": False,
+        "may_enable_exploitation": False,
+        "may_change_execution_gate": False,
+        "recommended_task_kinds": list(recommended),
+        "exhausted_task_kinds": list(exhausted),
+        "reopened_task_kinds": list(reopened),
+    }
+
+
+def test_negative_scan_exhaustion_deprioritizes_repeated_task_but_keeps_visibility():
+    original = [
+        task("map_endpoints", 80),
+        task("map_forms", 70),
+    ]
+    result = prioritize_recon_tasks(
+        original,
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=_safe_feedback(
+            exhausted=("map_endpoints",),
+            recommended=("map_forms",),
+        ),
+    )
+    by_kind = {item.kind: item for item in result.tasks}
+    audit = {item.kind: item for item in result.adjustments}
+
+    assert by_kind["map_forms"].priority > by_kind["map_endpoints"].priority
+    assert audit["map_endpoints"].no_finding_penalty == 20
+    assert audit["map_endpoints"].no_finding_boost == 0
+    assert audit["map_endpoints"].boost == 0
+    assert "manual review" in by_kind["map_endpoints"].reason
+    assert len(result.tasks) == len(original)
+    assert result.to_dict()["execution_influence"] == "ordering_only"
+    assert result.to_dict()["new_tasks_created"] is False
+    for item in result.tasks:
+        baseline = next(source for source in original if source.kind == item.kind)
+        assert item.target == baseline.target
+        assert item.agent == baseline.agent
+        assert item.max_requests == baseline.max_requests
+        assert item.allowed_methods == baseline.allowed_methods
+        assert item.read_only == baseline.read_only
+
+
+def test_exhaustion_prevents_historical_priority_inflation():
+    source = task("map_endpoints", 80)
+    diff = {
+        "baseline_available": True,
+        "summary": {
+            "change_count": 20,
+            "counts_by_kind": {"endpoint": {"added": 10, "removed": 0}},
+        },
+    }
+    result = prioritize_recon_tasks(
+        [source],
+        diff,
+        no_finding_feedback=_safe_feedback(exhausted=("map_endpoints",)),
+    )
+
+    assert result.tasks[0].priority == 60
+    assert result.adjustments[0].boost == 0
+    assert result.adjustments[0].no_finding_penalty == 20
+
+
+def test_reopened_recovery_kind_is_not_penalized():
+    source = task("map_forms", 70)
+    feedback = _safe_feedback(
+        exhausted=("map_forms",),
+        reopened=("map_forms",),
+        recommended=("map_forms",),
+    )
+    result = prioritize_recon_tasks(
+        [source],
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=feedback,
+    )
+
+    assert result.tasks[0].priority > source.priority
+    assert result.adjustments[0].no_finding_penalty == 0
+    assert result.adjustments[0].no_finding_boost == 24
+
+
+def test_no_supported_recovery_tasks_are_penalized_not_dispatched():
+    sources = [task("map_forms", 70), task("detect_technology", 75)]
+    result = prioritize_recon_tasks(
+        sources,
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=_safe_feedback(
+            state="no_supported_recovery_task",
+            exhausted=("map_forms", "detect_technology"),
+        ),
+    )
+
+    assert len(result.tasks) == len(sources)
+    assert all(item.no_finding_penalty == 20 for item in result.adjustments)
+    assert all(item.no_finding_boost == 0 for item in result.adjustments)
+    assert result.to_dict()["new_tasks_created"] is False
+
+
+def test_malformed_or_escalating_feedback_does_not_deprioritize():
+    source = task("map_forms", 70)
+    feedback = _safe_feedback(exhausted=("map_forms",))
+    feedback["may_enable_exploitation"] = True
+    result = prioritize_recon_tasks(
+        [source],
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=feedback,
+    )
+    assert result.tasks == (source,)
+
+    feedback = _safe_feedback(exhausted=("map_forms",))
+    feedback["reopened_task_kinds"] = [["malformed"], "map_forms"]
+    result = prioritize_recon_tasks(
+        [source],
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=feedback,
+    )
+    assert result.adjustments[0].no_finding_penalty == 0
