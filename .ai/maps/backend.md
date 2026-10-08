@@ -7683,6 +7683,7 @@ reviewed: set[str] = set()
     """
 sources_by_job: dict[str, set[str]] = {}
 invalid_jobs: set[str] = set()
+rejected_cross_origin_jobs: set[str] = set()
 ⋮----
 raw_job_id = item.metadata.get("job_id")
 job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
@@ -7690,10 +7691,20 @@ job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
 key = f"invalid:{item.id}"
 ⋮----
 key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+⋮----
+# A job observed on another origin cannot be credited through
+# a second conveniently in-scope report with the same job ID.
+# Only explicit job IDs can establish cross-observation identity.
+⋮----
 source = item.source.strip() if isinstance(item.source, str) else ""
 ⋮----
+# Fail closed on jobs with conflicting target ancestry even if scanner
+# names agree. Other-target-only jobs are not counted as ambiguous for
+# this target because they never entered the candidate set.
+cross_origin_count = sum(
+⋮----
 trusted_sources: set[str] = set()
-ambiguous = 0
+ambiguous = cross_origin_count
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
 ⋮----
@@ -21244,6 +21255,16 @@ result = _feedback(legacy, target_url="https://example.test")
 compatible = _feedback(
 ⋮----
 def test_invalid_or_mismatched_target_origin_is_rejected()
+⋮----
+def test_shared_scan_job_across_origins_cannot_prove_target_negative_yield()
+⋮----
+def test_cross_origin_job_cannot_poison_independent_target_scan()
+⋮----
+result = _feedback(graph, target_url="https://example.test")
+⋮----
+def test_same_origin_reports_of_one_job_remain_one_trusted_scan()
+⋮----
+def test_scans_exclusively_on_another_origin_are_not_target_ambiguities()
 ```
 
 ## File: tests/test_nuclei_preflight.py

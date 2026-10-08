@@ -39,25 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T19:29:39Z
+Generated: 2026-10-08T20:24:01Z
 
 ### Git
 - Branch: `main`
-- Head: `efb9161923db`
-- Commit date: 2026-10-08T21:29:25+02:00
-- Commit: fix(recovery): isolate null-scan learning by exact HTTP origin
+- Head: `2b08a3462464`
+- Commit date: 2026-10-08T22:23:48+02:00
+- Commit: fix(recovery): reject scan jobs spanning conflicting target origins
 - Tracked files: 685
 
 ### Recently changed files
-- `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
-- `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
+- `backend/app/adaptive_cycle.py`
+- `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/red_team_coverage.py`
-- `backend/tests/test_red_team_coverage.py`
 
 ### Project signals
 - `pyproject.toml`
