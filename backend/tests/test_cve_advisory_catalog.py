@@ -275,3 +275,26 @@ def test_plural_lookup_preserves_exact_cpe_and_package_matches():
         package_ecosystem="pypi",
         package_name="Django",
     ) is None
+
+
+def test_source_authority_defaults_to_source_name():
+    catalog = build_cve_advisory_catalog(
+        _document(),
+        source_name="vendor-advisory-feed",
+        source_verified=True,
+    )
+
+    assert catalog.source_authority == "vendor-advisory-feed"
+
+
+def test_explicit_source_authority_is_normalized_and_persisted():
+    catalog = build_cve_advisory_catalog(
+        _document(),
+        source_name="NVD Mirror Label",
+        source_authority="NVD",
+        source_verified=True,
+    )
+
+    assert catalog.source_name == "NVD Mirror Label"
+    assert catalog.source_authority == "nvd"
+    assert catalog.to_dict()["source_authority"] == "nvd"
