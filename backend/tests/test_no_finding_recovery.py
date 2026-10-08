@@ -895,3 +895,165 @@ def test_review_without_terminal_status_cannot_claim_coverage():
     )
 
     assert _feedback(graph).uncovered_endpoint_count == 1
+
+
+def _record_timestamped_recovery(
+    graph: ObservationGraph,
+    *,
+    kind: str = "map_forms",
+    completed_at: str = "2026-09-01T00:00:00+00:00",
+    task_id: str = "recovery:timed",
+) -> None:
+    graph.add(
+        Observation(
+            task_id,
+            "evidence",
+            "completed",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": kind,
+                "status": "completed",
+                "completed_at": completed_at,
+            },
+        )
+    )
+
+
+def test_new_target_endpoint_after_recovery_completion_reopens_bounded_task():
+    graph = _graph()
+    _record_timestamped_recovery(graph)
+    graph.add(
+        Observation(
+            "endpoint:new",
+            "endpoint",
+            "https://example.test/new-form",
+            "crawler",
+            parent_ids=("asset:a",),
+            metadata={"observed_at": "2026-09-02T00:00:00+00:00"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.reopened_task_kinds == ("map_forms",)
+    assert "map_forms" not in result.exhausted_task_kinds
+    assert result.to_dict()["reopened_task_kinds"] == ["map_forms"]
+    assert result.may_increase_request_budget is False
+    assert result.may_enable_exploitation is False
+    assert result.advisory_only is True
+
+
+def test_old_target_observation_cannot_reopen_exhausted_recon():
+    graph = _graph()
+    _record_timestamped_recovery(graph)
+    graph.add(
+        Observation(
+            "endpoint:old",
+            "endpoint",
+            "https://example.test/old",
+            "crawler",
+            parent_ids=("asset:a",),
+            metadata={"observed_at": "2026-08-01T00:00:00Z"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+
+    assert "map_forms" not in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ("map_forms",)
+    assert result.reopened_task_kinds == ()
+
+
+def test_missing_or_invalid_completion_timestamp_does_not_reopen_task():
+    for completed_at in ("", "unparseable", "2026-09-01T00:00:00"):
+        graph = _graph()
+        _record_timestamped_recovery(graph, completed_at=completed_at)
+        graph.add(
+            Observation(
+                "endpoint:new",
+                "endpoint",
+                "https://example.test/new",
+                "crawler",
+                parent_ids=("asset:a",),
+                metadata={"observed_at": "2026-09-02T00:00:00+00:00"},
+            )
+        )
+
+        result = _feedback(graph, target_host="example.test")
+        assert result.reopened_task_kinds == ()
+        assert "map_forms" in result.exhausted_task_kinds
+
+
+def test_cross_host_or_orphan_observation_does_not_reopen_target_task():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:scoped-a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "scoped-a-job",
+            },
+        )
+    )
+    _record_timestamped_recovery(graph)
+    graph.add(
+        Observation(
+            "endpoint:other",
+            "endpoint",
+            "https://other.test/new",
+            "crawler",
+            parent_ids=("asset:b",),
+            metadata={"observed_at": "2026-09-02T00:00:00+00:00"},
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:orphan",
+            "endpoint",
+            "https://example.test/unlinked",
+            "legacy-import",
+            metadata={"observed_at": "2026-09-03T00:00:00+00:00"},
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.reopened_task_kinds == ()
+    assert "map_forms" in result.exhausted_task_kinds
+    assert "map_forms" not in result.recommended_task_kinds
+
+
+def test_later_recovery_completion_prevents_repeating_old_novelty():
+    graph = _graph()
+    _record_timestamped_recovery(graph, completed_at="2026-09-01T00:00:00Z")
+    _record_timestamped_recovery(
+        graph,
+        completed_at="2026-09-04T00:00:00Z",
+        task_id="recovery:latest",
+    )
+    graph.add(
+        Observation(
+            "endpoint:new",
+            "endpoint",
+            "https://example.test/new",
+            "crawler",
+            parent_ids=("asset:a",),
+            metadata={"observed_at": "2026-09-02T00:00:00Z"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.reopened_task_kinds == ()
+    assert "map_forms" in result.exhausted_task_kinds
