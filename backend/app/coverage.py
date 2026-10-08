@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph, load_observation_graph
+from .scan_result_integrity import conflicting_scan_terminal_job_ids
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
@@ -51,6 +52,7 @@ def _completed_scans_with_provenance(
         return bool(linked_assets) and linked_assets <= approved_asset_ids
 
     jobs: dict[str, list[Any]] = {}
+    conflicting_terminal_jobs = conflicting_scan_terminal_job_ids(graph)
     untrusted_job_ids: set[str] = set()
     untrusted = 0
     accepted = 0
@@ -70,6 +72,14 @@ def _completed_scans_with_provenance(
         ):
             identity = f"job:{raw_job_id.strip()}"
         else:
+            untrusted += 1
+            continue
+        if (
+            identity.startswith("job:")
+            and identity[4:] in conflicting_terminal_jobs
+        ):
+            # A completed claim contradicted by a failed/cancelled claim
+            # for this same worker job does not prove scan completion.
             untrusted += 1
             continue
         if not trustworthy_lineage(observation):
