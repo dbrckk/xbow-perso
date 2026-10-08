@@ -624,3 +624,41 @@ def test_multiple_inconsistent_graph_ancestors_fail_closed():
         build_technology_fingerprints(graph),
         graph,
     ) == ()
+
+
+def test_different_explicit_ports_cannot_share_fingerprint_evidence():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:8443",
+            "asset",
+            "https://example.test:8443",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:8443",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:8443",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:8443",),
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test:443"
+
+    assert match_finding_technology(
+        finding,
+        build_technology_fingerprints(graph),
+        graph,
+    ) == ()
