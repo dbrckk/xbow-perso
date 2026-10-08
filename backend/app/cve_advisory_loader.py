@@ -245,7 +245,6 @@ def load_cve_advisory_catalog_with_status(
             "available": False,
             "verified": False,
             "source_name": None,
-            "source_authority": None,
             "source_format": os.getenv(
                 _FORMAT_ENV,
                 "internal-v1",
@@ -274,7 +273,6 @@ def load_cve_advisory_catalog_with_status(
         "available": True,
         "verified": True,
         "source_name": catalog.source_name,
-        "source_authority": catalog.source_authority,
         "source_format": os.getenv(
             _FORMAT_ENV,
             "internal-v1",
