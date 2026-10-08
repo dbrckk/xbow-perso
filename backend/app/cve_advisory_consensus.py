@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from typing import Any, Iterable
 
 from .affected_version_range import build_affected_version_range_evidence
@@ -19,6 +20,8 @@ CVE_ADVISORY_CONSENSUS_SCHEMA = "cve-advisory-consensus-v1"
 class AdvisorySourceEvidence:
     source_name: str
     source_authority: str
+    source_snapshot_at: str | None
+    source_freshness: str
     identity_kind: str
     identity_key: str
     affected_version_ranges: tuple[str, ...]
@@ -42,6 +45,8 @@ class CveAdvisoryConsensus:
     state: str
     source_count: int
     source_instance_count: int
+    stale_source_count: int
+    unknown_freshness_source_count: int
     matched_advisory_count: int
     identity_count: int
     identity_kinds: tuple[str, ...]
@@ -75,13 +80,49 @@ def _identity_key(entry: CveAdvisoryEntry) -> str:
     )
 
 
+def _source_freshness(
+    snapshot_at: str | None,
+    *,
+    now: datetime,
+    max_age_days: int,
+) -> str:
+    if not snapshot_at:
+        return "unknown"
+    try:
+        observed = datetime.fromisoformat(
+            str(snapshot_at).replace("Z", "+00:00")
+        )
+    except ValueError:
+        return "invalid"
+    if observed.tzinfo is None:
+        return "invalid"
+    age_seconds = (
+        now - observed.astimezone(timezone.utc)
+    ).total_seconds()
+    if age_seconds < 0:
+        return "future"
+    if age_seconds > max_age_days * 86400:
+        return "stale"
+    return "fresh"
+
+
 def build_cve_advisory_consensus(
     finding: Any,
     catalogs: Iterable[CveAdvisoryCatalog],
     *,
     fingerprint_versions: Iterable[str] = (),
     package_version: str | None = None,
+    now: datetime | None = None,
+    max_source_age_days: int = 30,
 ) -> CveAdvisoryConsensus:
+    if max_source_age_days < 1:
+        raise ValueError("max_source_age_days must be positive")
+
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+    current = current.astimezone(timezone.utc)
+
     cve_ids = finding_cve_ids(finding)
     if len(cve_ids) != 1:
         return CveAdvisoryConsensus(
@@ -90,6 +131,8 @@ def build_cve_advisory_consensus(
             state="not_applicable",
             source_count=0,
             source_instance_count=0,
+            stale_source_count=0,
+            unknown_freshness_source_count=0,
             matched_advisory_count=0,
             identity_count=0,
             identity_kinds=(),
@@ -174,6 +217,12 @@ def build_cve_advisory_consensus(
                 AdvisorySourceEvidence(
                     source_name=catalog.source_name,
                     source_authority=catalog.source_authority,
+                    source_snapshot_at=catalog.source_snapshot_at,
+                    source_freshness=_source_freshness(
+                        catalog.source_snapshot_at,
+                        now=current,
+                        max_age_days=max_source_age_days,
+                    ),
                     identity_kind=entry.identity_kind,
                     identity_key=_identity_key(entry),
                     affected_version_ranges=(
@@ -202,6 +251,8 @@ def build_cve_advisory_consensus(
             state="not_available",
             source_count=0,
             source_instance_count=0,
+            stale_source_count=0,
+            unknown_freshness_source_count=0,
             matched_advisory_count=0,
             identity_count=0,
             identity_kinds=(),
@@ -228,6 +279,20 @@ def build_cve_advisory_consensus(
     range_sets_equal = len(range_sets) == 1
     source_count = len(source_authorities)
     source_instance_count = len(source_instances)
+    stale_authorities = {
+        item.source_authority
+        for item in evidence
+        if item.source_freshness in {"stale", "future", "invalid"}
+    }
+    unknown_freshness_authorities = {
+        item.source_authority
+        for item in evidence
+        if item.source_freshness == "unknown"
+    }
+    stale_source_count = len(stale_authorities)
+    unknown_freshness_source_count = len(
+        unknown_freshness_authorities
+    )
 
     ambiguity: set[str] = set()
     agreement = False
@@ -273,12 +338,21 @@ def build_cve_advisory_consensus(
             state = "inconclusive_cross_source"
             ambiguity.add("inconclusive_cross_source_advisory")
 
+    if stale_source_count:
+        ambiguity.add("stale_advisory_source")
+        if agreement:
+            state = "stale_source_evidence"
+            agreement = False
+            agreed_applicability_state = None
+
     return CveAdvisoryConsensus(
         schema=CVE_ADVISORY_CONSENSUS_SCHEMA,
         cve_id=cve_id,
         state=state,
         source_count=source_count,
         source_instance_count=source_instance_count,
+        stale_source_count=stale_source_count,
+        unknown_freshness_source_count=unknown_freshness_source_count,
         matched_advisory_count=len(evidence),
         identity_count=len(identity_keys),
         identity_kinds=identity_kinds,
