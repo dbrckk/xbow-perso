@@ -2614,6 +2614,32 @@ malformed = any(
 inconsistent = (
 missing_recorded_findings = (
 ⋮----
+"""Describe observed endpoint-level evidence, never infer unseen coverage.
+
+    A completed scan linked only to an asset is not proof of which of the
+    asset's individual endpoints the scanner checked. Only explicit
+    endpoint ancestry of a trusted completed scan contributes here.
+    """
+eligible_ids = {
+⋮----
+documented_ids: set[str] = set()
+⋮----
+pending = list(scan.parent_ids)
+visited: set[str] = set()
+⋮----
+# A direct endpoint reference is the unit of attribution;
+# it does not imply scanning neighboring endpoints.
+⋮----
+state = "no_completed_scan_evidence"
+fraction = None
+⋮----
+state = "no_eligible_observed_endpoints"
+⋮----
+state = "endpoint_scope_unrecorded"
+⋮----
+fraction = round(len(documented_ids) / len(eligible_ids), 4)
+state = (
+⋮----
 surface = build_attack_surface(graph, scope_checker=scope_checker)
 summary = surface["summary"]
 discovery = float(summary["enrichment_score"])
@@ -2621,6 +2647,7 @@ discovery = float(summary["enrichment_score"])
 scanner_sources = sorted({
 scan_count = len(scan_evidence)
 scan_score = 1.0 if scan_evidence else 0.0
+endpoint_attribution = _endpoint_scan_attribution(
 ⋮----
 validation = analyze_validation_state(graph)
 finding_count = len(validation.finding_ids)
@@ -17718,6 +17745,17 @@ def test_unreconciled_scan_guidance_never_modifies_planned_scan_authority()
 def test_conflicting_terminal_scan_job_is_not_credited_as_completed()
 ⋮----
 def test_queued_then_completed_scan_keeps_coverage_credit()
+⋮----
+def test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage()
+⋮----
+result = build_evidence_coverage(
+attribution = result["evidence"]["endpoint_scan_attribution"]
+⋮----
+def test_endpoint_linked_scan_documents_only_its_observed_endpoint()
+⋮----
+def test_independent_endpoint_scan_records_document_all_observed_endpoints()
+⋮----
+def test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage()
 ````
 
 ## File: backend/tests/test_cpe_consistency.py

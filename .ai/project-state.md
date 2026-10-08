@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:54:53Z
+Generated: 2026-10-08T22:56:33Z
 
 ### Git
 - Branch: `main`
-- Head: `e0c0b4b549c6`
-- Commit date: 2026-10-09T00:54:32+02:00
-- Commit: fix(recovery): require confirmed discovery before reopening exhausted recon
+- Head: `9f221e2355f9`
+- Commit date: 2026-10-09T00:56:22+02:00
+- Commit: feat(coverage): report verified endpoint-level scan attribution
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/observation_graph.py`
@@ -57,8 +59,6 @@ Generated: 2026-10-08T22:54:53Z
 - `backend/tests/test_observation_graph.py`
 - `backend/app/attack_surface.py`
 - `backend/tests/test_attack_surface.py`
-- `backend/app/recon_priority.py`
-- `backend/tests/test_recon_priority.py`
 
 ### Project signals
 - `pyproject.toml`
