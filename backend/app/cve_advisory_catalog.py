@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
@@ -40,6 +41,7 @@ class CveAdvisoryCatalog:
     source_name: str
     source_authority: str
     source_verified: bool
+    source_snapshot_at: str | None
     source_digest_sha256: str
     entries: tuple[CveAdvisoryEntry, ...]
     entry_count: int
@@ -79,6 +81,29 @@ def _normalize_cve(value: object) -> str:
 
 def _normalize_identity(value: object, *, name: str) -> str:
     return _text(value, name=name, max_len=200).lower()
+
+
+def _optional_snapshot_at(value: object) -> str | None:
+    if value is None or value == "":
+        return None
+    raw = _text(
+        value,
+        name="source_snapshot_at",
+        max_len=80,
+    )
+    try:
+        parsed = datetime.fromisoformat(
+            raw.replace("Z", "+00:00")
+        )
+    except ValueError as exc:
+        raise CveAdvisoryCatalogError(
+            "source_snapshot_at is invalid"
+        ) from exc
+    if parsed.tzinfo is None:
+        raise CveAdvisoryCatalogError(
+            "source_snapshot_at must include a timezone"
+        )
+    return parsed.astimezone(timezone.utc).isoformat()
 
 
 def _optional_identity(value: object, *, name: str) -> str | None:
@@ -157,6 +182,7 @@ def build_cve_advisory_catalog(
     source_name: str,
     source_authority: str | None = None,
     source_verified: bool = False,
+    source_snapshot_at: str | None = None,
 ) -> CveAdvisoryCatalog:
     if not isinstance(document, Mapping):
         raise CveAdvisoryCatalogError(
@@ -172,6 +198,9 @@ def build_cve_advisory_catalog(
         name="source_authority",
         max_len=120,
     ).lower()
+    normalized_snapshot_at = _optional_snapshot_at(
+        source_snapshot_at
+    )
     raw_entries = document.get("entries")
     if not isinstance(raw_entries, list):
         raise CveAdvisoryCatalogError("advisory entries must be a list")
@@ -261,6 +290,7 @@ def build_cve_advisory_catalog(
         source_name=normalized_source,
         source_authority=normalized_authority,
         source_verified=bool(source_verified),
+        source_snapshot_at=normalized_snapshot_at,
         source_digest_sha256=_canonical_digest(document),
         entries=entries,
         entry_count=len(entries),
