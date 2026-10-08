@@ -138,6 +138,7 @@ def build_finding_intelligence(
         matched_fingerprints = match_finding_technology(
             finding,
             technology_fingerprints,
+            graph,
         )
         versioned_fingerprint_match_count = sum(
             item.version is not None for item in matched_fingerprints
@@ -152,6 +153,7 @@ def build_finding_intelligence(
         product_ambiguity = finding_product_ambiguity_reasons(
             finding,
             technology_fingerprints,
+            graph,
         )
         freshness_ambiguity = fingerprint_staleness_reasons(
             matched_fingerprints,

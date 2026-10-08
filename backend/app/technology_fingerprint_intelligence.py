@@ -4,6 +4,7 @@ import re
 from datetime import datetime, timezone
 from dataclasses import asdict, dataclass
 from typing import Any
+from urllib.parse import urlsplit
 
 from .observation_graph import ObservationGraph
 
@@ -23,12 +24,18 @@ class TechnologyFingerprint:
     confidence: float
     sources: tuple[str, ...]
     observation_ids: tuple[str, ...]
+    asset_observation_ids: tuple[str, ...] = ()
+    asset_values: tuple[str, ...] = ()
     latest_observed_at: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["sources"] = list(self.sources)
         payload["observation_ids"] = list(self.observation_ids)
+        payload["asset_observation_ids"] = list(
+            self.asset_observation_ids
+        )
+        payload["asset_values"] = list(self.asset_values)
         return payload
 
 
@@ -47,29 +54,191 @@ def _parse_technology(value: str) -> tuple[str, str | None]:
     return raw[:120], None
 
 
+def _asset_key(value: object) -> str:
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    parsed = urlsplit(raw if "://" in raw else f"//{raw}")
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if not host:
+        return ""
+    try:
+        port = parsed.port
+    except ValueError:
+        return ""
+    scheme = parsed.scheme.lower()
+    if port is None:
+        if scheme == "https":
+            port = 443
+        elif scheme == "http":
+            port = 80
+    if scheme in {"http", "https"} and port is not None:
+        return f"{scheme}://{host}:{port}"
+    if port is not None:
+        return f"{host}:{port}"
+    return host
+
+
+def _asset_ancestor_ids(
+    graph: ObservationGraph,
+    observation_id: str,
+) -> tuple[str, ...]:
+    items = {item.id: item for item in graph.values()}
+    pending = (
+        list(items[observation_id].parent_ids)
+        if observation_id in items
+        else []
+    )
+    seen: set[str] = set()
+    assets: set[str] = set()
+    while pending:
+        parent_id = pending.pop()
+        if parent_id in seen:
+            continue
+        seen.add(parent_id)
+        parent = items.get(parent_id)
+        if parent is None:
+            continue
+        if parent.kind == "asset":
+            assets.add(parent.id)
+            continue
+        pending.extend(parent.parent_ids)
+    return tuple(sorted(assets))
+
+
+def _asset_scope(
+    graph: ObservationGraph,
+    observation_id: str,
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    items = {item.id: item for item in graph.values()}
+    asset_ids = _asset_ancestor_ids(graph, observation_id)
+    asset_values = tuple(
+        sorted(
+            {
+                str(items[asset_id].value)
+                for asset_id in asset_ids
+                if asset_id in items
+            }
+        )
+    )
+    asset_keys = tuple(
+        sorted(
+            {
+                key
+                for value in asset_values
+                if (key := _asset_key(value))
+            }
+        )
+    )
+    return asset_ids, asset_values, asset_keys
+
+
+def _finding_asset_keys(
+    finding: Any,
+    graph: ObservationGraph | None,
+) -> tuple[str, ...]:
+    keys: set[str] = set()
+    direct = _asset_key(getattr(finding, "asset", ""))
+    if direct:
+        keys.add(direct)
+    if graph is None:
+        return tuple(sorted(keys))
+
+    finding_id = str(getattr(finding, "id", "") or "")
+    for observation in graph.by_kind("finding"):
+        if (
+            observation.id == f"finding:{finding_id}"
+            or observation.id == finding_id
+            or str(observation.value) == finding_id
+        ):
+            _asset_ids, asset_values, _asset_keys = _asset_scope(
+                graph,
+                observation.id,
+            )
+            keys.update(
+                key
+                for value in asset_values
+                if (key := _asset_key(value))
+            )
+    return tuple(sorted(keys))
+
+
+def filter_fingerprints_for_finding_asset(
+    finding: Any,
+    fingerprints: tuple[TechnologyFingerprint, ...],
+    graph: ObservationGraph | None = None,
+) -> tuple[TechnologyFingerprint, ...]:
+    finding_keys = set(_finding_asset_keys(finding, graph))
+    scoped_present = any(item.asset_values for item in fingerprints)
+    graph_asset_keys: set[str] = set()
+
+    if graph is not None:
+        graph_asset_keys = {
+            key
+            for observation in graph.by_kind("asset")
+            if (key := _asset_key(observation.value))
+        }
+        if not finding_keys and graph_asset_keys:
+            return ()
+        if (
+            finding_keys
+            and graph_asset_keys
+            and not (finding_keys & graph_asset_keys)
+        ):
+            return ()
+
+    if finding_keys and scoped_present:
+        matches = []
+        for fingerprint in fingerprints:
+            fingerprint_keys = {
+                key
+                for value in fingerprint.asset_values
+                if (key := _asset_key(value))
+            }
+            if fingerprint_keys & finding_keys:
+                matches.append(fingerprint)
+        return tuple(matches)
+
+    if len(graph_asset_keys) > 1:
+        return ()
+
+    return fingerprints
+
+
 def build_technology_fingerprints(
     graph: ObservationGraph,
 ) -> tuple[TechnologyFingerprint, ...]:
-    grouped: dict[tuple[str, str | None], dict[str, Any]] = {}
+    grouped: dict[
+        tuple[tuple[str, ...], str, str | None],
+        dict[str, Any],
+    ] = {}
 
     for observation in graph.by_kind("technology"):
         product, version = _parse_technology(observation.value)
         normalized = _normalize_product(product)
         if not normalized:
             continue
-        key = (normalized, version)
+        asset_ids, asset_values, asset_keys = _asset_scope(
+            graph,
+            observation.id,
+        )
+        key = (asset_keys, normalized, version)
         current = grouped.setdefault(
             key,
             {
                 "product": product,
                 "sources": set(),
                 "observation_ids": set(),
+                "asset_observation_ids": set(),
+                "asset_values": set(),
                 "explicit_confidences": [],
                 "observed_at": [],
             },
         )
         current["sources"].add(str(observation.source))
         current["observation_ids"].add(str(observation.id))
+        current["asset_observation_ids"].update(asset_ids)
+        current["asset_values"].update(asset_values)
         for timestamp_key in ("observed_at", "collected_at", "timestamp"):
             raw_timestamp = observation.metadata.get(timestamp_key)
             if not raw_timestamp:
@@ -96,7 +265,7 @@ def build_technology_fingerprints(
             current["explicit_confidences"].append(confidence)
 
     result: list[TechnologyFingerprint] = []
-    for (normalized, version), payload in grouped.items():
+    for (_asset_keys, normalized, version), payload in grouped.items():
         sources = tuple(sorted(payload["sources"]))
         explicit = payload["explicit_confidences"]
         base = 0.45
@@ -115,6 +284,10 @@ def build_technology_fingerprints(
                 confidence=confidence,
                 sources=sources,
                 observation_ids=tuple(sorted(payload["observation_ids"])),
+                asset_observation_ids=tuple(
+                    sorted(payload["asset_observation_ids"])
+                ),
+                asset_values=tuple(sorted(payload["asset_values"])),
                 latest_observed_at=(
                     max(payload["observed_at"]).isoformat()
                     if payload["observed_at"]
@@ -126,6 +299,7 @@ def build_technology_fingerprints(
     result.sort(
         key=lambda item: (
             -item.confidence,
+            tuple(_asset_key(value) for value in item.asset_values),
             item.normalized_product,
             item.version or "",
         )
@@ -136,6 +310,7 @@ def build_technology_fingerprints(
 def match_finding_technology(
     finding: Any,
     fingerprints: tuple[TechnologyFingerprint, ...],
+    graph: ObservationGraph | None = None,
 ) -> tuple[TechnologyFingerprint, ...]:
     parts = []
     for name in ("title", "summary", "impact", "remediation", "product"):
@@ -148,7 +323,12 @@ def match_finding_technology(
     haystack = _normalize_product(" ".join(parts))
 
     matches = []
-    for fingerprint in fingerprints:
+    scoped_fingerprints = filter_fingerprints_for_finding_asset(
+        finding,
+        fingerprints,
+        graph,
+    )
+    for fingerprint in scoped_fingerprints:
         product = fingerprint.normalized_product
         if product and product in haystack:
             matches.append(fingerprint)
@@ -160,14 +340,20 @@ def match_finding_technology(
 def finding_product_ambiguity_reasons(
     finding: Any,
     fingerprints: tuple[TechnologyFingerprint, ...],
+    graph: ObservationGraph | None = None,
 ) -> tuple[str, ...]:
     declared = _normalize_product(str(getattr(finding, "product", "") or ""))
     if not declared or not fingerprints:
         return ()
 
+    scoped_fingerprints = filter_fingerprints_for_finding_asset(
+        finding,
+        fingerprints,
+        graph,
+    )
     observed = {
         item.normalized_product
-        for item in fingerprints
+        for item in scoped_fingerprints
         if item.normalized_product
     }
     if declared in observed:
@@ -246,7 +432,11 @@ def build_finding_fingerprint_intelligence(
     fingerprints = build_technology_fingerprints(graph)
     rows = []
     for finding in sorted(findings, key=lambda item: str(getattr(item, "id", ""))):
-        matched = match_finding_technology(finding, fingerprints)
+        matched = match_finding_technology(
+            finding,
+            fingerprints,
+            graph,
+        )
         rows.append(
             {
                 "finding_id": str(getattr(finding, "id", "")),

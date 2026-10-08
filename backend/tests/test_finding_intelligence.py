@@ -1533,3 +1533,97 @@ def test_cross_source_not_affected_consensus_forces_passive_review():
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
     assert row["cve_advisory_consensus"]["exploitability_confirmed"] is False
     assert result["summary"]["cross_source_advisory_not_affected"] == 1
+
+
+def test_cross_asset_technology_version_does_not_contaminate_cve_evidence():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.asset = "https://example.test"
+    finding.title = "django request parsing issue"
+    finding.vendor = "djangoproject"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:a",
+            "asset",
+            "https://example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "asset:b",
+            "asset",
+            "https://other.example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a-httpx",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            parent_ids=("asset:a",),
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-08T00:00:00+00:00",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a-wappalyzer",
+            "technology",
+            "django 5.1.4",
+            "wappalyzer",
+            parent_ids=("asset:a",),
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-08T00:00:00+00:00",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:b",
+            "technology",
+            "django/4.2.0",
+            "httpx",
+            parent_ids=("asset:b",),
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-08T00:00:00+00:00",
+            },
+        )
+    )
+
+    result = build_finding_intelligence([finding], graph)
+    row = result["findings"][0]
+
+    matched = row["technology"]["matched_fingerprints"]
+    assert len(matched) == 1
+    assert matched[0]["version"] == "5.1.4"
+    assert matched[0]["asset_values"] == ["https://example.test"]
+    assert "conflicting_version_fingerprints" not in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert row["technology"]["versioned_match_count"] == 1
+    assert row["technology"]["high_confidence_match_count"] == 1
