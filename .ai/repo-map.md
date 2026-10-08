@@ -1303,7 +1303,7 @@ def campaign_adaptive_cycle(campaign_id: str)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
 store = storage()
-graph = load_observation_graph(store, campaign.id)
+graph = load_observation_graph(
 rules = campaign.target.rules
 ⋮----
 def scope_checker(host: str) -> bool
@@ -8549,7 +8549,11 @@ valid_endpoint_ids = {item["id"] for item in endpoints}
 valid_form_ids = {item["id"] for item in forms}
 surface_times: dict[str, list[datetime]] = {}
 ⋮----
-timestamp = _trusted_utc_timestamp(
+# A fresh observation timestamp may merely be a refresh
+# of an old endpoint. Reconsider an exhausted task only when
+# a trusted first-discovery time proves genuinely new surface.
+first_seen = _trusted_utc_timestamp(
+observed_at = _trusted_utc_timestamp(
 ⋮----
 completed_times = [
 # Missing or invalid completion timestamps cannot authorize a
@@ -8728,9 +8732,21 @@ def values(self) -> list[Observation]
 ⋮----
 def by_kind(self, kind: ObservationKind) -> list[Observation]
 ⋮----
-def load_observation_graph(store: Any, campaign_id: str) -> ObservationGraph
+"""Load a campaign graph, optionally exposing durable first-insert times.
+
+    The optional metadata is for advisory recon recovery only: it lets the
+    planner distinguish a newly persisted surface from a refreshed record
+    without changing the persisted observation or other consumers' views.
+    """
+records = store.list_observations(campaign_id)
 ⋮----
-"""Load the durable observation graph for a campaign from storage."""
+# Do not mutate records returned by storage or graph objects built
+# from the same records without timestamp enrichment.
+records = [
+⋮----
+created_at = record.get("created_at")
+⋮----
+metadata = dict(record.get("metadata") or {})
 ⋮----
 def _campaign_finding_id(observation: Observation) -> str
 ⋮----
@@ -11305,7 +11321,7 @@ def recon_swarm_capabilities()
 def campaign_recon_plan(campaign_id: str, limit: int = 10)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
-graph = load_observation_graph(storage(), campaign.id)
+graph = load_observation_graph(
 rules = campaign.target.rules
 ⋮----
 def scope_checker(host: str) -> bool
@@ -21993,6 +22009,18 @@ def test_no_finding_recon_completion_still_counts_as_a_completed_attempt()
 def test_malformed_outcome_does_not_claim_completed_recon()
 ⋮----
 def test_failed_browser_observation_does_not_stop_recovery_advisory()
+⋮----
+def test_refreshing_old_endpoint_cannot_reopen_completed_recon()
+⋮----
+def test_observation_refresh_without_first_discovery_is_not_novelty()
+⋮----
+def test_impossible_or_untrusted_first_discovery_never_reopens_task()
+⋮----
+"2026-09-04T00:00:00Z",  # later than observation
+"2026-09-02T00:00:00",  # no timezone
+"2099-09-02T00:00:00Z",  # future
+⋮----
+def test_confirmed_new_form_can_reopen_completed_form_mapping()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
@@ -22196,6 +22224,20 @@ def test_planner_requires_validation_source_independence()
 def test_planner_stops_when_automation_is_disabled()
 ⋮----
 action = AdaptivePlanner().plan(campaign(automated_scanning=False), graph)[0]
+⋮----
+def test_persisted_discovery_times_are_opt_in_and_do_not_mutate_storage_records()
+⋮----
+records = [
+store = SimpleNamespace(list_observations=lambda _cid: records)
+⋮----
+ordinary = load_observation_graph(store, "campaign-1")
+enriched = load_observation_graph(
+⋮----
+def test_persisted_discovery_times_never_override_existing_evidence_timestamps()
+⋮----
+records = [{
+⋮----
+def test_missing_persisted_created_at_does_not_invent_discovery_evidence()
 ````
 
 ## File: backend/tests/test_observation_writer_provenance.py

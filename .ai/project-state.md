@@ -39,18 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:34:53Z
+Generated: 2026-10-08T22:54:53Z
 
 ### Git
 - Branch: `main`
-- Head: `0c6960667995`
-- Commit date: 2026-10-09T00:34:40+02:00
-- Commit: fix(recovery): distinguish recon completion from failed outcomes
+- Head: `e0c0b4b549c6`
+- Commit date: 2026-10-09T00:54:32+02:00
+- Commit: fix(recovery): require confirmed discovery before reopening exhausted recon
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
+- `backend/app/observation_graph.py`
+- `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
+- `backend/tests/test_observation_graph.py`
 - `backend/app/attack_surface.py`
 - `backend/tests/test_attack_surface.py`
 - `backend/app/recon_priority.py`

@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 1,
     "tier": "bounded",
-    "top_score": 23
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "5e900a82e5f3965aedfd197221230386ac7a6f4a9b6c7468c108242c628b6c5a",
+    "fingerprint": "cad1ddb1351cfc0a0f263583c137c5a2028f402733cbcba85ad0289adc15963e",
     "hit": false
   },
-  "candidate_count": 43,
+  "candidate_count": 144,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,31 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/learning_memory.py",
+      "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
         "search-index"
       ],
-      "score": 23,
-      "symbols": [
-        "TechniqueMemory",
-        "_target_scoped_evidence_ids",
-        "build_learning_memory",
-        "campaign_learning_memory",
-        "summarize_worker_outcomes",
-        "worker_outcome_event"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -70,16 +51,34 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/scanner_adaptation.py",
+      "path": "backend/tests/test_observation_graph.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 21,
+      "score": 26,
       "symbols": [
-        "ScannerAdaptation",
-        "_engine_memory",
-        "adapt_scanner_engines",
-        "rank_key"
+        "campaign",
+        "finding",
+        "test_graph_rejects_unknown_parent",
+        "test_graph_restore_rejects_missing_or_cyclic_parents",
+        "test_graph_restores_without_relying_on_row_order",
+        "test_missing_persisted_created_at_does_not_invent_discovery_evidence",
+        "test_persisted_discovery_times_are_opt_in_and_do_not_mutate_storage_records",
+        "test_persisted_discovery_times_never_override_existing_evidence_timestamps",
+        "test_planner_counts_validations_by_finding_relationship",
+        "test_planner_does_not_generate_report_when_all_findings_are_rejected",
+        "test_planner_does_not_report_after_dry_run_or_error_validation",
+        "test_planner_fails_closed_when_campaign_contains_untracked_finding_before_report",
+        "test_planner_fails_closed_when_campaign_findings_lack_graph_state",
+        "test_planner_fails_closed_when_graph_and_campaign_finding_ids_differ_before_validation",
+        "test_planner_fails_closed_when_graph_findings_lack_campaign_state",
+        "test_planner_progresses_through_bounded_phases",
+        "test_planner_requires_validation_source_independence",
+        "test_planner_starts_with_inventory",
+        "test_planner_stops_after_completed_scan_without_findings",
+        "test_planner_stops_when_automation_is_disabled"
       ]
     },
     {
@@ -87,21 +86,19 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/scanner_sandbox.py",
+      "path": "backend/app/learning_memory.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 23,
       "symbols": [
-        "ScannerSandboxAdmission",
-        "ScannerSandboxConfigError",
-        "_allowed_engines",
-        "_runtime_hardening_attestation",
-        "_strict_bool",
-        "require_scanner_sandbox",
-        "safe_scanner_sandbox_admission",
-        "scanner_sandbox_admission",
-        "strix_runtime_contract_enforceable"
+        "TechniqueMemory",
+        "_target_scoped_evidence_ids",
+        "build_learning_memory",
+        "campaign_learning_memory",
+        "summarize_worker_outcomes",
+        "worker_outcome_event"
       ]
     },
     {
@@ -109,19 +106,52 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+      "path": "backend/app/scanner_worker.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 23,
       "symbols": [
+        "ScannerJobResult",
+        "_record_scan_observation",
+        "_state_after_scan",
+        "run_nuclei_job",
+        "run_strix_job"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "CampaignCancelledError",
+        "StaleBrowserJobError",
+        "StaleValidationJobError",
+        "_active_scanner_execution_requested",
+        "_append_event_once",
         "_campaign",
-        "fake_execute",
-        "test_nuclei_worker_dry_run_preserves_safe_default",
-        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-        "test_scan_engines_default_preserves_strix",
-        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-        "test_sqlite_queue_accepts_nuclei_scan"
+        "_claim_for_role",
+        "_lease_heartbeat",
+        "_legacy_unprovenanced_jobs_allowed",
+        "_process_scanner_job",
+        "_record_worker_outcome",
+        "_save",
+        "_verify_policy_bound_job",
+        "_worker_bool",
+        "_worker_poll_seconds",
+        "main",
+        "process_browser_flow",
+        "process_nuclei_scan",
+        "process_one",
+        "process_recon_task"
       ]
     },
     {
@@ -129,28 +159,19 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/tests/test_scanner_adaptation.py",
+      "path": "backend/tests/test_hackerone_nuclei_e2e.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 23,
       "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
-        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
-        "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
-        "test_negative_memory_cannot_expand_scanner_configuration",
-        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
-        "test_no_completed_history_does_not_invent_scanner_rotation",
-        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
-        "test_positive_security_signal_prevents_negative_yield_rotation",
-        "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
-        "test_scanner_rotation_never_overrides_safety_suppression"
+        "_launch_payload",
+        "_resource",
+        "fake_execute",
+        "fake_recon",
+        "test_hackerone_launch_reaches_nuclei_ingestion_and_validation_queue",
+        "test_hackerone_worker_automatically_advances_from_recon_to_nuclei"
       ]
     }
   ],
