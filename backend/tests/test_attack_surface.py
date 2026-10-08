@@ -321,3 +321,15 @@ def test_canonical_host_rejects_credential_bearing_or_unsupported_asset():
     assert canonical_host("https://user:secret@example.test") == ""
     assert canonical_host("ftp://example.test") == ""
     assert canonical_host("https://example.test") == "example.test"
+
+
+def test_url_control_characters_cannot_change_host_identity():
+    # urllib.parse removes tabs/newlines unless rejected before parsing.
+    values = ("https://exa\\nmple.test/path", "https://example.test\\t/path")
+    for escaped in values:
+        raw = escaped.encode("utf-8").decode("unicode_escape")
+        assert canonical_host(raw) == ""
+        item = canonical_endpoint(raw)
+        assert item["valid"] is False
+        assert item["error"] == "invalid_url"
+        assert item["url"] == ""
