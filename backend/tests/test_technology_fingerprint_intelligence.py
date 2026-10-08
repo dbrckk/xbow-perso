@@ -662,3 +662,178 @@ def test_different_explicit_ports_cannot_share_fingerprint_evidence():
         build_technology_fingerprints(graph),
         graph,
     ) == ()
+
+
+def test_technology_with_two_distinct_parent_hosts_never_correlates_to_one():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://a.example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:b", "asset", "https://b.example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:shared",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a", "asset:b"),
+        )
+    )
+
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://a.example.test"
+
+    fingerprints = build_technology_fingerprints(graph)
+    assert len(fingerprints) == 1
+    assert len(fingerprints[0].asset_values) == 2
+    assert match_finding_technology(finding, fingerprints, graph) == ()
+
+
+def test_technology_linked_to_distinct_schemes_cannot_prove_one_origin():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:http", "asset", "http://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:https",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:shared",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:http", "asset:https"),
+        )
+    )
+
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test"
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
+
+
+def test_duplicate_asset_observations_of_same_origin_still_match():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:b", "asset", "https://example.test/", "httpx")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:both",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a", "asset:b"),
+        )
+    )
+
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test"
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    )
+
+    assert len(matched) == 1
+    assert matched[0].version == "1.24.0"
+
+
+def test_graph_only_finding_with_conflicting_asset_parents_is_not_correlated():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://a.example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:b", "asset", "https://b.example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a", "asset:b"),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    finding = _finding("nginx request parsing discrepancy")
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
+
+
+def test_graph_only_finding_can_use_equivalent_duplicate_asset_origins():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:b", "asset", "https://example.test/", "httpx")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:a", "asset:b"),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    finding = _finding("nginx request parsing discrepancy")
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    )
+    assert len(matched) == 1
+    assert matched[0].version == "1.24.0"
