@@ -798,3 +798,71 @@ def test_other_host_browser_completion_cannot_exhaust_target():
     assert result.state == "recovery_advisory"
     assert result.recommended_task_kinds == ("browser_observe",)
     assert result.exhausted_task_kinds == ()
+
+
+def test_failed_review_does_not_exhaust_form_recovery_coverage():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:pending",
+            "form",
+            "https://example.test/login",
+            "form-discovery",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:failed",
+            "evidence",
+            "review-attempted",
+            "review-agent",
+            parent_ids=("form:pending",),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "failed",
+            },
+        )
+    )
+
+    result = _feedback(graph)
+    assert result.in_scope_form_count == 1
+    assert result.uncovered_form_count == 1
+    assert "browser_observe" in result.recommended_task_kinds
+
+    graph.add(
+        Observation(
+            "review:completed",
+            "evidence",
+            "reviewed",
+            "review-agent",
+            parent_ids=("form:pending",),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+    updated = _feedback(graph)
+    assert updated.uncovered_form_count == 0
+
+
+def test_queued_endpoint_review_does_not_erase_remaining_coverage_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:queued",
+            "evidence",
+            "review-scheduled",
+            "review-agent",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "queued",
+            },
+        )
+    )
+
+    result = _feedback(graph)
+    assert result.uncovered_endpoint_count == 1
+    assert "map_endpoints" in result.recommended_task_kinds
