@@ -15,7 +15,7 @@ router.routes.extend(hypothesis_router.routes)
 
 def canonical_host(value: str) -> str:
     raw = str(value or "").strip()
-    if not raw:
+    if not raw or any(ord(char) < 32 or ord(char) == 127 for char in raw):
         return ""
     try:
         parsed = urlsplit(raw if "://" in raw else f"//{raw}")
@@ -35,7 +35,10 @@ def canonical_host(value: str) -> str:
 def canonical_endpoint(value: str) -> dict[str, Any]:
     """Normalize web endpoints without trusting unsupported URL origins."""
     try:
-        parsed = urlsplit(str(value or ""))
+        raw = str(value or "")
+        if any(ord(char) < 32 or ord(char) == 127 for char in raw):
+            raise ValueError("control character in URL")
+        parsed = urlsplit(raw)
         scheme = parsed.scheme.lower()
         host = (parsed.hostname or "").lower().rstrip(".")
         path = parsed.path or "/"
