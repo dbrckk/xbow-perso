@@ -293,3 +293,118 @@ def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count():
     assert outcomes["totals"]["requeued"] == 0
     assert feedback.state == "recovery_advisory"
     assert feedback.recommended_task_kinds == ("crawl",)
+
+
+def test_technique_memory_deduplicates_evidence_from_one_worker_job():
+    graph = ObservationGraph()
+    for index, source in enumerate(("scanner-a", "scanner-b", "scanner-b")):
+        graph.add(
+            Observation(
+                f"evidence:{index}",
+                "evidence",
+                "same-job-outcome",
+                source,
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": "job-1",
+                },
+            )
+        )
+    memory = build_learning_memory(graph)[0]
+
+    assert memory.attempts == 1
+    assert memory.successes == 1
+    assert memory.failures == 0
+    assert memory.source_count == 1
+    assert memory.confidence == 0.1
+
+
+def test_technique_memory_conflicting_job_outcomes_are_inconclusive():
+    graph = ObservationGraph()
+    for index, outcome in enumerate(("failure", "success", "failure")):
+        graph.add(
+            Observation(
+                f"evidence:{index}",
+                "evidence",
+                "conflicting-job-outcome",
+                "scanner-a",
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": outcome,
+                    "job_id": "job-1",
+                },
+            )
+        )
+    memory = build_learning_memory(graph)[0]
+
+    assert memory.attempts == 1
+    assert memory.successes == 0
+    assert memory.failures == 0
+    assert memory.inconclusive == 1
+    assert memory.confidence == 0.0
+
+
+def test_technique_memory_keeps_independent_jobs_and_techniques_distinct():
+    graph = ObservationGraph()
+    for index, (technique, job_id) in enumerate((
+        ("scanner:nuclei", "shared-job"),
+        ("scanner:nuclei", "other-job"),
+        ("scanner:strix", "shared-job"),
+    )):
+        graph.add(
+            Observation(
+                f"evidence:{index}",
+                "evidence",
+                "job-result",
+                "scanner-a",
+                metadata={
+                    "technique": technique,
+                    "outcome": "success",
+                    "job_id": job_id,
+                },
+            )
+        )
+    memories = {item.technique: item for item in build_learning_memory(graph)}
+
+    assert memories["scanner:nuclei"].attempts == 2
+    assert memories["scanner:nuclei"].successes == 2
+    assert memories["scanner:strix"].attempts == 1
+
+
+def test_technique_memory_ignores_invalid_explicit_job_identifiers():
+    graph = ObservationGraph()
+    for index, job_id in enumerate(("", None, 123, "x" * 129)):
+        graph.add(
+            Observation(
+                f"evidence:invalid:{index}",
+                "evidence",
+                "invalid-job-result",
+                "scanner-a",
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": job_id,
+                },
+            )
+        )
+    assert build_learning_memory(graph) == []
+
+
+def test_technique_memory_preserves_legacy_evidence_without_job_identifiers():
+    graph = ObservationGraph()
+    for index in range(3):
+        graph.add(
+            Observation(
+                f"legacy:{index}",
+                "evidence",
+                "legacy-result",
+                "validator-a",
+                metadata={"technique": "form-review", "outcome": "failure"},
+            )
+        )
+    memory = build_learning_memory(graph)[0]
+
+    assert memory.attempts == 3
+    assert memory.failures == 3
+    assert memory.source_count == 1
