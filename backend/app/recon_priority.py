@@ -236,26 +236,30 @@ def prioritize_recon_tasks(
         and no_finding_feedback.get("advisory_only") is True
         and no_finding_feedback.get("may_expand_scope") is False
         and no_finding_feedback.get("may_increase_request_budget") is False
-        and no_finding_feedback.get("may_enable_exploitation") is False
-        and no_finding_feedback.get("may_change_execution_gate") is False
     )
     if valid_feedback:
-        raw_exhausted = no_finding_feedback.get("exhausted_task_kinds")
-        raw_reopened = no_finding_feedback.get("reopened_task_kinds")
-        reopened = (
-            set(raw_reopened)
-            if isinstance(raw_reopened, (list, tuple))
-            and all(isinstance(kind, str) for kind in raw_reopened[:25])
-            else set()
+        # Exhaustion is an additional decision signal: require explicit
+        # non-escalation flags, rather than trusting incomplete legacy data.
+        safe_exhaustion = (
+            no_finding_feedback.get("may_enable_exploitation") is False
+            and no_finding_feedback.get("may_change_execution_gate") is False
         )
-        if isinstance(raw_exhausted, (list, tuple)):
-            exhausted_kinds = frozenset(
-                kind
-                for kind in raw_exhausted[:25]
-                if isinstance(kind, str)
-                and kind in _TASK_SIGNALS
-                and kind not in reopened
+        if safe_exhaustion:
+            raw_exhausted = no_finding_feedback.get("exhausted_task_kinds")
+            raw_reopened = no_finding_feedback.get("reopened_task_kinds")
+            reopened = (
+                {kind for kind in raw_reopened[:25] if isinstance(kind, str)}
+                if isinstance(raw_reopened, (list, tuple))
+                else set()
             )
+            if isinstance(raw_exhausted, (list, tuple)):
+                exhausted_kinds = frozenset(
+                    kind
+                    for kind in raw_exhausted[:25]
+                    if isinstance(kind, str)
+                    and kind in _TASK_SIGNALS
+                    and kind not in reopened
+                )
         if no_finding_feedback.get("state") == "recovery_advisory":
             raw_kinds = no_finding_feedback.get("recommended_task_kinds")
             if isinstance(raw_kinds, (list, tuple)):
