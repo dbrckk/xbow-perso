@@ -16,8 +16,8 @@ def _completed_scans_with_provenance(
     surface: dict[str, Any],
     *,
     scope_checker: Callable[[str], bool] | None,
-) -> tuple[list[Any], int, int]:
-    """Deduplicate completed scan jobs and reject untrusted scope lineage."""
+) -> tuple[list[Any], int, int, int]:
+    """Deduplicate completed scan jobs and reject untrusted scope or reports."""
     items = {item.id: item for item in graph.values()}
     assets = graph.by_kind("asset")
     approved_asset_ids = {
@@ -89,6 +89,8 @@ def _completed_scans_with_provenance(
             untrusted += count
 
     representatives: list[Any] = []
+    unreconciled = 0
+    recorded_findings = len(graph.by_kind("finding"))
     for _identity, records in sorted(jobs.items()):
         # Multiple reporters attached to one execution do not prove
         # independence. Conflicting or missing source labels make the entire
@@ -101,8 +103,35 @@ def _completed_scans_with_provenance(
             untrusted += len(records)
             accepted -= len(records)
             continue
+        reported_findings = [
+            item.metadata["findings"]
+            for item in records
+            if "findings" in item.metadata
+        ]
+        # A completed scan claiming findings while the graph has none is
+        # an ingestion discrepancy, not trustworthy negative-yield evidence.
+        # Contradictory or malformed duplicate reports also taint that job.
+        malformed = any(
+            isinstance(value, bool)
+            or not isinstance(value, int)
+            or value < 0
+            for value in reported_findings
+        )
+        inconsistent = (
+            not malformed and len(set(reported_findings)) > 1
+        )
+        missing_recorded_findings = (
+            not malformed
+            and recorded_findings == 0
+            and any(value > 0 for value in reported_findings)
+        )
+        if malformed or inconsistent or missing_recorded_findings:
+            unreconciled += len(records)
+            untrusted += len(records)
+            accepted -= len(records)
+            continue
         representatives.append(min(records, key=lambda item: item.id))
-    return representatives, accepted - len(representatives), untrusted
+    return representatives, accepted - len(representatives), untrusted, unreconciled
 
 
 def build_evidence_coverage(
@@ -114,7 +143,12 @@ def build_evidence_coverage(
     summary = surface["summary"]
     discovery = float(summary["enrichment_score"])
 
-    scan_evidence, duplicate_scans, untrusted_scans = _completed_scans_with_provenance(
+    (
+        scan_evidence,
+        duplicate_scans,
+        untrusted_scans,
+        unreconciled_scans,
+    ) = _completed_scans_with_provenance(
         graph,
         surface,
         scope_checker=scope_checker,
@@ -178,6 +212,7 @@ def build_evidence_coverage(
             "completed_scans": scan_count,
             "duplicate_scan_observations": duplicate_scans,
             "untrusted_scan_observations": untrusted_scans,
+            "unreconciled_scan_observations": unreconciled_scans,
             "findings": finding_count,
             "independently_observed_findings": validated_count,
         },
@@ -211,8 +246,19 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     validation = dimensions.get("independent_validation")
     diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
     marginal_yield = dimensions.get("marginal_scan_yield")
+    unreconciled = max(
+        0, int((coverage.get("evidence") or {}).get(
+            "unreconciled_scan_observations"
+        ) or 0),
+    )
 
-    if discovery < 0.40:
+    if unreconciled:
+        focus = "scan_result_reconciliation"
+        reason = (
+            "completed scan reports disagree with recorded findings; "
+            "reconcile evidence before interpreting negative scan yield"
+        )
+    elif discovery < 0.40:
         focus = "surface_discovery"
         reason = "surface evidence is still sparse"
     elif scanner < 1.0:
@@ -235,7 +281,9 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
         "marginal_scan_yield": marginal_yield,
         "diminishing_returns": diminishing_returns,
         "recommended_strategy": (
-            "rotate_to_underexplored_in_scope_surface"
+            "reconcile_scan_reports_before_replanning"
+            if focus == "scan_result_reconciliation"
+            else "rotate_to_underexplored_in_scope_surface"
             if focus == "surface_rotation"
             else "continue_current_coverage_plan"
         ),
