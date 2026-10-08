@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph
+from .scan_result_integrity import conflicting_scan_terminal_job_ids
 
 
 NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
@@ -43,6 +44,7 @@ class NoFindingRecovery:
     exhausted_task_kinds: tuple[str, ...] = ()
     reopened_task_kinds: tuple[str, ...] = ()
     ambiguous_scan_source_jobs: int = 0
+    contradictory_scan_terminal_jobs: int = 0
     unreconciled_scan_reports: int = 0
     trusted_completed_scan_count: int = 0
     worker_health_attribution: str = "campaign_aggregate"
@@ -151,14 +153,17 @@ def _completed_scan_evidence(
     graph: ObservationGraph,
     *,
     evidence_filter: Callable[[Any], bool] | None = None,
-) -> tuple[int, int, int, int]:
+) -> tuple[int, int, int, int, int]:
     """Count completed jobs without treating duplicate reporters as independent.
 
     A scanner job contributes an independent source only if *all* completed
     observations for that job name exactly one non-empty source.
     """
     sources_by_job: dict[str, set[str]] = {}
-    invalid_jobs: set[str] = set()
+    invalid_jobs: set[str] = {
+        f"job:{job_id}"
+        for job_id in conflicting_scan_terminal_job_ids(graph)
+    }
     rejected_cross_origin_jobs: set[str] = set()
     for item in graph.by_kind("evidence"):
         if (
@@ -199,13 +204,16 @@ def _completed_scan_evidence(
     trusted_sources: set[str] = set()
     trusted_job_count = 0
     ambiguous = cross_origin_count
+    contradictions = sum(job in invalid_jobs and job.startswith("job:")
+                         for job in sources_by_job)
     for job, reporters in sources_by_job.items():
         if job in invalid_jobs or len(reporters) != 1 or "" in reporters:
             ambiguous += 1
         else:
             trusted_job_count += 1
             trusted_sources.update(reporters)
-    return len(sources_by_job), len(trusted_sources), ambiguous, trusted_job_count
+    return (len(sources_by_job), len(trusted_sources), ambiguous,
+            trusted_job_count, contradictions)
 
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:
     by_kind = (outcomes or {}).get("by_job_kind")
@@ -400,7 +408,7 @@ def build_no_finding_recovery(
     if normalized_target_host is None:
         (
             completed_scans, scanner_sources, ambiguous_sources,
-            trusted_completed_scans,
+            trusted_completed_scans, contradictory_scan_jobs,
         ) = _completed_scan_evidence(graph)
     else:
         asset_records = surface["assets"]
@@ -424,7 +432,7 @@ def build_no_finding_recovery(
         scan_filter = scan_matches_target
         (
             completed_scans, scanner_sources, ambiguous_sources,
-            trusted_completed_scans,
+            trusted_completed_scans, contradictory_scan_jobs,
         ) = _completed_scan_evidence(
             graph,
             evidence_filter=scan_filter,
@@ -561,6 +569,12 @@ def build_no_finding_recovery(
     elif worker_instability_applied:
         state = "execution_unstable"
         reasons.append("repeated scanner worker errors require operator review")
+    elif contradictory_scan_jobs:
+        state = "scan_status_unreconciled"
+        reasons.append(
+            "a scan job has contradictory terminal completion and failure "
+            "records; reconcile execution state before negative-result learning"
+        )
     elif unreconciled_scan_reports:
         state = "scan_findings_unreconciled"
         reasons.append(
@@ -711,6 +725,7 @@ def build_no_finding_recovery(
         exhausted_task_kinds=exhausted,
         reopened_task_kinds=tuple(sorted(reopened)),
         ambiguous_scan_source_jobs=ambiguous_sources,
+        contradictory_scan_terminal_jobs=contradictory_scan_jobs,
         unreconciled_scan_reports=unreconciled_scan_reports,
         trusted_completed_scan_count=trusted_completed_scans,
         worker_health_attribution=worker_health_attribution,
