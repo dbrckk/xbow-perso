@@ -6,9 +6,9 @@ from fastapi import APIRouter
 
 from .affected_version_range import build_affected_version_range_evidence
 from .cpe_consistency import build_cpe_consistency
-from .cve_advisory_catalog import find_verified_cve_advisory
+from .cve_advisory_catalog import find_verified_cve_advisories
 from .cve_advisory_consensus import build_cve_advisory_consensus
-from .cve_advisory_loader import load_cve_advisory_catalog_with_status
+from .cve_advisory_loader import load_cve_advisory_catalogs_with_status
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
 from .cve_validation_priority import build_cve_validation_plan
@@ -161,19 +161,34 @@ def build_finding_intelligence(
         )
         cve_ids = finding_cve_ids(finding)
         verified_advisory = None
-        if cve_advisory_catalog is not None and len(cve_ids) == 1:
-            verified_advisory = find_verified_cve_advisory(
-                cve_advisory_catalog,
-                cve_id=cve_ids[0],
-                vendor=getattr(finding, "vendor", None),
-                product=getattr(finding, "product", None),
-                package_ecosystem=getattr(
-                    finding,
-                    "package_ecosystem",
-                    None,
-                ),
-                package_name=getattr(finding, "package_name", None),
-            )
+        verified_advisory_catalog = None
+        exact_advisory_matches: list[tuple[Any, Any]] = []
+        if len(cve_ids) == 1:
+            for catalog in advisory_catalogs:
+                for advisory in find_verified_cve_advisories(
+                    catalog,
+                    cve_id=cve_ids[0],
+                    vendor=getattr(finding, "vendor", None),
+                    product=getattr(finding, "product", None),
+                    package_ecosystem=getattr(
+                        finding,
+                        "package_ecosystem",
+                        None,
+                    ),
+                    package_name=getattr(
+                        finding,
+                        "package_name",
+                        None,
+                    ),
+                ):
+                    exact_advisory_matches.append(
+                        (catalog, advisory)
+                    )
+        if len(exact_advisory_matches) == 1:
+            (
+                verified_advisory_catalog,
+                verified_advisory,
+            ) = exact_advisory_matches[0]
         package_version_raw = getattr(finding, "package_version", None)
         package_version = (
             str(package_version_raw).strip()
@@ -220,8 +235,8 @@ def build_finding_intelligence(
                 else None
             ),
             range_source_override=(
-                f"{cve_advisory_catalog.source_name}:{verified_advisory.cve_id}"
-                if verified_advisory
+                f"{verified_advisory_catalog.source_name}:{verified_advisory.cve_id}"
+                if verified_advisory and verified_advisory_catalog
                 else None
             ),
             range_source_verified_override=(
@@ -340,13 +355,14 @@ def build_finding_intelligence(
                         else None
                     ),
                     "source_name": (
-                        cve_advisory_catalog.source_name
-                        if verified_advisory
+                        verified_advisory_catalog.source_name
+                        if verified_advisory and verified_advisory_catalog
                         else None
                     ),
                     "source_verified": bool(
                         verified_advisory
-                        and cve_advisory_catalog.source_verified
+                        and verified_advisory_catalog
+                        and verified_advisory_catalog.source_verified
                     ),
                     "scanner_range_conflict": advisory_range_conflict,
                 },
@@ -614,8 +630,8 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
                 program_handle = handle
         break
 
-    cve_advisory_catalog, cve_advisory_catalog_status = (
-        load_cve_advisory_catalog_with_status()
+    cve_advisory_catalogs, cve_advisory_catalog_status = (
+        load_cve_advisory_catalogs_with_status()
     )
     payload = build_finding_intelligence(
         campaign.findings,
@@ -624,7 +640,7 @@ def campaign_finding_intelligence(campaign_id: str, threshold: float = 0.75):
         threshold=threshold,
         public_reports=public_reports,
         program_handle=program_handle,
-        cve_advisory_catalog=cve_advisory_catalog,
+        cve_advisory_catalogs=cve_advisory_catalogs,
     )
     return {
         "campaign_id": campaign.id,

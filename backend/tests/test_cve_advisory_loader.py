@@ -8,6 +8,7 @@ from app.cve_advisory_loader import (
     CveAdvisoryCatalogLoadError,
     cve_advisory_catalog_runtime_status,
     load_cve_advisory_catalog_with_status,
+    load_cve_advisory_catalogs_with_status,
     load_verified_cve_advisory_catalog,
 )
 
@@ -43,6 +44,10 @@ def _clear(monkeypatch):
         "XBOW_CVE_ADVISORY_CATALOG_SHA256",
         "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
         "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "XBOW_CVE_ADVISORY_NVD_PATH",
+        "XBOW_CVE_ADVISORY_NVD_SHA256",
+        "XBOW_CVE_ADVISORY_OSV_PATH",
+        "XBOW_CVE_ADVISORY_OSV_SHA256",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -373,3 +378,157 @@ def test_osv_adapter_diagnostics_expose_skip_counts_without_identifiers(
     assert "GHSA-private-marker" not in rendered
     assert "CVE-2026-70001" not in rendered
     assert "PrivatePackageMarker" not in rendered
+
+
+def _write_json(tmp_path, name, document):
+    path = tmp_path / name
+    payload = json.dumps(
+        document,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    path.write_bytes(payload)
+    return path, hashlib.sha256(payload).hexdigest()
+
+
+def _nvd_document():
+    return {
+        "vulnerabilities": [
+            {
+                "cve": {
+                    "id": "CVE-2026-54321",
+                    "configurations": [
+                        {
+                            "nodes": [
+                                {
+                                    "operator": "OR",
+                                    "negate": False,
+                                    "cpeMatch": [
+                                        {
+                                            "vulnerable": True,
+                                            "criteria": (
+                                                "cpe:2.3:a:djangoproject:"
+                                                "django:*:*:*:*:*:*:*:*"
+                                            ),
+                                            "versionStartIncluding": "5.0",
+                                            "versionEndExcluding": "5.2.0",
+                                        }
+                                    ],
+                                }
+                            ]
+                        }
+                    ],
+                }
+            }
+        ]
+    }
+
+
+def _osv_document():
+    return {
+        "id": "GHSA-multisource-fixture",
+        "aliases": ["CVE-2026-54321"],
+        "affected": [
+            {
+                "package": {
+                    "ecosystem": "PyPI",
+                    "name": "Django",
+                },
+                "ranges": [
+                    {
+                        "type": "SEMVER",
+                        "events": [
+                            {"introduced": "5.0.0"},
+                            {"fixed": "5.2.0"},
+                        ],
+                    }
+                ],
+                "versions": [],
+            }
+        ],
+    }
+
+
+def test_independently_pinned_nvd_and_osv_load_together(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    nvd_path, nvd_digest = _write_json(
+        tmp_path,
+        "nvd-multi.json",
+        _nvd_document(),
+    )
+    osv_path, osv_digest = _write_json(
+        tmp_path,
+        "osv-multi.json",
+        _osv_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(nvd_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", nvd_digest)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_PATH", str(osv_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_SHA256", osv_digest)
+
+    catalogs, status = load_cve_advisory_catalogs_with_status()
+
+    assert tuple(item.source_name for item in catalogs) == (
+        "nvd-cve-api-v2",
+        "osv-v1",
+    )
+    assert tuple(item.source_verified for item in catalogs) == (
+        True,
+        True,
+    )
+    assert status["schema"] == "cve-advisory-source-set-v1"
+    assert status["configured"] is True
+    assert status["available"] is True
+    assert status["verified"] is True
+    assert status["configured_source_count"] == 2
+    assert status["available_source_count"] == 2
+    assert status["invalid_source_count"] == 0
+    assert status["error"] is None
+    by_kind = {
+        item["source_kind"]: item
+        for item in status["sources"]
+    }
+    assert by_kind["nvd"]["entry_count"] == 1
+    assert by_kind["nvd"]["verified"] is True
+    assert by_kind["osv"]["entry_count"] == 1
+    assert by_kind["osv"]["verified"] is True
+    assert by_kind["legacy"]["configured"] is False
+
+
+def test_invalid_osv_does_not_disable_valid_nvd_but_marks_set_degraded(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    nvd_path, nvd_digest = _write_json(
+        tmp_path,
+        "nvd-valid.json",
+        _nvd_document(),
+    )
+    osv_path, _osv_digest = _write_json(
+        tmp_path,
+        "osv-invalid-pin.json",
+        _osv_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(nvd_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", nvd_digest)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_PATH", str(osv_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_SHA256", "0" * 64)
+
+    catalogs, status = load_cve_advisory_catalogs_with_status()
+
+    assert tuple(item.source_name for item in catalogs) == (
+        "nvd-cve-api-v2",
+    )
+    assert status["available"] is True
+    assert status["verified"] is False
+    assert status["configured_source_count"] == 2
+    assert status["available_source_count"] == 1
+    assert status["invalid_source_count"] == 1
+    assert status["error"] == "one_or_more_advisory_sources_invalid"
+    rendered = str(status)
+    assert str(osv_path) not in rendered
+    assert "SHA-256 mismatch" in rendered

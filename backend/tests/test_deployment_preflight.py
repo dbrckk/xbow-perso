@@ -26,6 +26,10 @@ _ENV_NAMES = (
     "XBOW_CVE_ADVISORY_CATALOG_SHA256",
     "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
     "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+    "XBOW_CVE_ADVISORY_NVD_PATH",
+    "XBOW_CVE_ADVISORY_NVD_SHA256",
+    "XBOW_CVE_ADVISORY_OSV_PATH",
+    "XBOW_CVE_ADVISORY_OSV_SHA256",
 )
 
 
@@ -329,3 +333,24 @@ def test_preflight_rejects_partial_cve_advisory_catalog_configuration(
     assert status["available"] is False
     assert status["verified"] is False
     assert "/private/catalog.json" not in str(result)
+
+
+def test_preflight_rejects_invalid_named_advisory_source(monkeypatch):
+    _clear(monkeypatch)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_OSV_PATH",
+        "/private/osv.json",
+    )
+
+    result = build_deployment_preflight({"ok": True})
+
+    assert result["status"] == "error"
+    assert "cve_advisory_catalog_invalid" in {
+        item["code"] for item in result["issues"]
+    }
+    sources = result["cve_advisory_sources"]
+    assert sources["configured_source_count"] == 1
+    assert sources["available_source_count"] == 0
+    assert sources["invalid_source_count"] == 1
+    assert sources["verified"] is False
+    assert "/private/osv.json" not in str(result)

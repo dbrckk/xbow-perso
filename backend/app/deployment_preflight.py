@@ -3,7 +3,10 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from .cve_advisory_loader import cve_advisory_catalog_runtime_status
+from .cve_advisory_loader import (
+    cve_advisory_catalog_runtime_status,
+    cve_advisory_source_set_runtime_status,
+)
 from .runtime_capabilities import (
     safe_pentagi_runtime_capability,
     safe_scanner_runtime_capability,
@@ -45,6 +48,7 @@ def build_deployment_preflight(
     pentagi = safe_pentagi_runtime_capability()
     scanner = safe_scanner_runtime_capability()
     cve_advisory_catalog = cve_advisory_catalog_runtime_status()
+    cve_advisory_sources = cve_advisory_source_set_runtime_status()
     issues: list[dict[str, Any]] = []
     production = _production_mode()
     legacy_jobs_enabled, legacy_jobs_valid = _bool_env(
@@ -184,10 +188,7 @@ def build_deployment_preflight(
             }
         )
 
-    if (
-        cve_advisory_catalog.get("configured")
-        and not cve_advisory_catalog.get("available")
-    ):
+    if cve_advisory_sources.get("invalid_source_count", 0):
         issues.append(
             {
                 "code": "cve_advisory_catalog_invalid",
@@ -350,6 +351,7 @@ def build_deployment_preflight(
             "dispatch_ready": bool(scanner.get("dispatch_ready")),
         },
         "cve_advisory_catalog": cve_advisory_catalog,
+        "cve_advisory_sources": cve_advisory_sources,
         "job_provenance": {
             "strict_by_default": True,
             "legacy_unprovenanced_jobs_enabled": legacy_jobs_enabled,

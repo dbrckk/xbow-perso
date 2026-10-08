@@ -365,6 +365,7 @@ def deployment_preflight():
 def system_capabilities():
     from .cve_advisory_loader import (
         cve_advisory_catalog_runtime_status,
+        cve_advisory_source_set_runtime_status,
     )
     from .runtime_capabilities import (
         safe_browser_runtime_capability,
@@ -380,6 +381,7 @@ def system_capabilities():
     recon = safe_recon_runtime_capability()
     validation = safe_validation_runtime_capability()
     cve_advisory_catalog = cve_advisory_catalog_runtime_status()
+    cve_advisory_sources = cve_advisory_source_set_runtime_status()
     return {
         "campaign_control": {
             "scope_enforcement": True,
@@ -432,6 +434,7 @@ def system_capabilities():
             "review_queue": "read_only",
             "decision_consensus": "read_only",
             "cve_advisory_catalog": cve_advisory_catalog,
+            "cve_advisory_sources": cve_advisory_sources,
         },
         "reporting": {
             "report_generation": True,
