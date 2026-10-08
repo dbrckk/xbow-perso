@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T13:51:18Z
+Generated: 2026-10-08T14:02:17Z
 
 ### Git
 - Branch: `main`
-- Head: `00144b5cfc6a`
-- Commit date: 2026-10-08T15:51:06+02:00
-- Commit: fix(vuln): reject conflicting asset ancestry in fingerprints
+- Head: `1416c60f4bda`
+- Commit date: 2026-10-08T16:02:03+02:00
+- Commit: fix(vuln): fail closed on ambiguous multi-asset fingerprint provenance
 - Tracked files: 681
 
 ### Recently changed files
@@ -55,10 +55,6 @@ Generated: 2026-10-08T13:51:18Z
 - `backend/app/finding_intelligence.py`
 - `backend/app/cve_advisory_consensus.py`
 - `backend/tests/test_cve_advisory_consensus.py`
-- `backend/app/cve_advisory_catalog.py`
-- `backend/app/cve_advisory_loader.py`
-- `backend/tests/test_cve_advisory_catalog.py`
-- `backend/tests/test_cve_advisory_loader.py`
 
 ### Project signals
 - `pyproject.toml`

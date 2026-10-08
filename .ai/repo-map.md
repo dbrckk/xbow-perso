@@ -14874,20 +14874,20 @@ version = match.group("version")
 ⋮----
 def _asset_key(value: object) -> str
 ⋮----
+identity = _asset_identity(value)
+⋮----
+def _asset_identity(value: object) -> tuple[str, str | None, int | None] | None
+⋮----
 parsed = urlsplit(raw if "://" in raw else f"//{raw}")
 host = (parsed.hostname or "").lower().rstrip(".")
 ⋮----
-port = parsed.port
+scheme = parsed.scheme.lower() or None
 ⋮----
-scheme = parsed.scheme.lower()
+port = parsed.port
 ⋮----
 port = 443
 ⋮----
 port = 80
-⋮----
-def _asset_identity(value: object) -> tuple[str, str | None, int | None] | None
-⋮----
-scheme = parsed.scheme.lower() or None
 ⋮----
 def _compatible_asset_identity(direct_value: object, graph_value: object) -> bool
 ⋮----
@@ -14913,19 +14913,36 @@ direct_value = str(getattr(finding, "asset", "") or "").strip()
 direct = _asset_key(direct_value)
 ⋮----
 finding_id = str(getattr(finding, "id", "") or "")
+linked_asset_values: set[str] = set()
 ⋮----
 # Declared asset and graph lineage disagree: do not merge
 # their keys into a false corroboration.
 ⋮----
+# A hostname-only declared asset must not hide contradictory
+# origin-specific graph parents (such as HTTP and HTTPS).
+⋮----
+raw_asset = str(getattr(finding, "asset", "") or "").strip()
+⋮----
+# Never fall back to legacy unscoped evidence for malformed assets.
+⋮----
 finding_keys = set(_finding_asset_keys(finding, graph))
 scoped_present = any(item.asset_values for item in fingerprints)
 graph_asset_keys: set[str] = set()
+graph_has_assets = False
 ⋮----
+graph_assets = graph.by_kind("asset")
+graph_has_assets = bool(graph_assets)
 graph_asset_keys = {
 ⋮----
 matches = []
 ⋮----
+# Do not silently discard malformed linked assets and then
+# trust the remaining valid one.
+⋮----
 fingerprint_keys = {
+⋮----
+# One observation linked to multiple distinct origins
+# cannot count as evidence for just one of those origins.
 ⋮----
 # A graph asset without a linked technology observation is not
 # evidence that an unscoped fingerprint belongs to that asset.
@@ -26045,6 +26062,26 @@ def test_linked_hostname_only_can_match_explicit_https_origin()
 def test_multiple_inconsistent_graph_ancestors_fail_closed()
 ⋮----
 def test_different_explicit_ports_cannot_share_fingerprint_evidence()
+⋮----
+def test_technology_with_two_distinct_parent_hosts_never_correlates_to_one()
+⋮----
+def test_technology_linked_to_distinct_schemes_cannot_prove_one_origin()
+⋮----
+def test_duplicate_asset_observations_of_same_origin_still_match()
+⋮----
+def test_graph_only_finding_with_conflicting_asset_parents_is_not_correlated()
+⋮----
+def test_graph_only_finding_can_use_equivalent_duplicate_asset_origins()
+⋮----
+def test_hostname_only_finding_cannot_bridge_http_and_https_ancestors()
+⋮----
+def test_malformed_finding_asset_does_not_reuse_legacy_evidence()
+⋮----
+def test_credentialed_graph_asset_never_matches_clean_finding()
+⋮----
+def test_malformed_graph_asset_does_not_enable_unscoped_legacy_fingerprint()
+⋮----
+def test_valid_and_malformed_technology_ancestors_fail_closed()
 ````
 
 ## File: backend/tests/test_validation_priority.py
