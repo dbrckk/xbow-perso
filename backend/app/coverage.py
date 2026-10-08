@@ -246,8 +246,19 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     validation = dimensions.get("independent_validation")
     diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
     marginal_yield = dimensions.get("marginal_scan_yield")
+    unreconciled = max(
+        0, int((coverage.get("evidence") or {}).get(
+            "unreconciled_scan_observations"
+        ) or 0),
+    )
 
-    if discovery < 0.40:
+    if unreconciled:
+        focus = "scan_result_reconciliation"
+        reason = (
+            "completed scan reports disagree with recorded findings; "
+            "reconcile evidence before interpreting negative scan yield"
+        )
+    elif discovery < 0.40:
         focus = "surface_discovery"
         reason = "surface evidence is still sparse"
     elif scanner < 1.0:
@@ -270,7 +281,9 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
         "marginal_scan_yield": marginal_yield,
         "diminishing_returns": diminishing_returns,
         "recommended_strategy": (
-            "rotate_to_underexplored_in_scope_surface"
+            "reconcile_scan_reports_before_replanning"
+            if focus == "scan_result_reconciliation"
+            else "rotate_to_underexplored_in_scope_surface"
             if focus == "surface_rotation"
             else "continue_current_coverage_plan"
         ),
