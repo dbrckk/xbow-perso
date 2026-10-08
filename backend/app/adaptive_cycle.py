@@ -38,11 +38,21 @@ class AdaptiveCycle:
 
 
 def _suppressed_techniques(memories: list[TechniqueMemory]) -> tuple[str, ...]:
+    """Negative scanner findings are not an operational scanner failure.
+
+    Scanner worker failures are evaluated separately from job outcomes;
+    technique memory must not silently remove a configured scanner.
+    """
     return tuple(
         sorted(
             item.technique
             for item in memories
-            if item.failures >= 2 and item.successes == 0 and item.confidence >= 0.2
+            if (
+                not item.technique.startswith("scanner:")
+                and item.failures >= 2
+                and item.successes == 0
+                and item.confidence >= 0.2
+            )
         )
     )
 
