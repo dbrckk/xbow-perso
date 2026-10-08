@@ -65,22 +65,24 @@ def adapt_scanner_engines(
         requeued = int((outcome or {}).get("requeued") or 0) if isinstance(outcome, dict) else 0
         failed = int((outcome or {}).get("failed") or 0) if isinstance(outcome, dict) else 0
 
-        strong_memory_failure = bool(
+        # Technique-level "failure" may mean a valid negative security
+        # result, not a scanner crash. Never suppress a configured engine
+        # solely because it found no vulnerability.
+        unstable_worker = (requeued + failed) >= 2 and completed == 0
+        if unstable_worker:
+            reasons[engine] = (
+                "worker outcomes show repeated unstable execution"
+            )
+            suppressed.add(engine)
+        elif (
             technique
             and technique.failures >= 2
             and technique.successes == 0
-            and technique.confidence >= 0.4
-        )
-        unstable_worker = (requeued + failed) >= 2 and completed == 0
-
-        if strong_memory_failure or unstable_worker:
-            reason_parts = []
-            if strong_memory_failure:
-                reason_parts.append("evidence memory shows repeated scanner failures")
-            if unstable_worker:
-                reason_parts.append("worker outcomes show repeated unstable execution")
-            reasons[engine] = "; ".join(reason_parts)
-            suppressed.add(engine)
+        ):
+            reasons[engine] = (
+                "negative technique outcomes do not prove scanner failure; "
+                "engine remains configured"
+            )
 
     # Memory can reduce the configured set, but never eliminate all configured scanners.
     if suppressed == set(configured_engines):
@@ -90,11 +92,23 @@ def adapt_scanner_engines(
             for engine in configured_engines
         }
 
-    def rank_key(engine: str) -> tuple[float, float, int, str]:
+    configured_order = {
+        engine: index for index, engine in enumerate(configured_engines)
+    }
+
+    def rank_key(engine: str) -> tuple[float, float, int, int]:
         item = memory.get(engine)
-        if item is None:
-            return (0.0, 0.0, 0, engine)
-        return (-item.confidence, -item.success_rate, -item.successes, engine)
+        if item is None or item.successes <= 0:
+            # Confidence in negative results is not scanner quality.
+            # Preserve operator-specified order when positive outcomes
+            # cannot reliably distinguish configured engines.
+            return (0.0, 0.0, 0, configured_order[engine])
+        return (
+            -item.confidence,
+            -item.success_rate,
+            -item.successes,
+            configured_order[engine],
+        )
 
     selected = tuple(
         engine

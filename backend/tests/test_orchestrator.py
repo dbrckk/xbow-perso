@@ -518,7 +518,7 @@ def test_orchestrator_exposes_advisory_only_coverage_guidance(tmp_path):
     assert coverage["interpretation"] == "evidence_coverage_not_unknown_surface_completeness"
 
 
-def test_orchestrator_scanner_memory_can_only_reduce_configured_engines(tmp_path, monkeypatch):
+def test_orchestrator_negative_scanner_memory_keeps_configured_engines(tmp_path, monkeypatch):
     db = str(tmp_path / "db.sqlite3")
     store = Storage(db, str(tmp_path / "artifacts"))
     queue = JobQueue(db)
@@ -571,11 +571,12 @@ def test_orchestrator_scanner_memory_can_only_reduce_configured_engines(tmp_path
     assert result["action"]["kind"] == "scan"
     adaptation = result["intelligence"]["scanner_adaptation"]
     assert adaptation["configured_engines"] == ["strix", "nuclei"]
-    assert adaptation["selected_engines"] == ["strix"]
-    assert adaptation["suppressed_engines"] == ["nuclei"]
+    assert set(adaptation["selected_engines"]) == {"strix", "nuclei"}
+    assert adaptation["suppressed_engines"] == []
+    assert "do not prove scanner failure" in adaptation["reasons"]["nuclei"]
     assert adaptation["may_expand_configuration"] is False
     jobs = [queue.get(job_id) for job_id in result["job_ids"]]
-    assert [job["kind"] for job in jobs] == ["strix_scan"]
+    assert set(job["kind"] for job in jobs) <= {"strix_scan", "nuclei_scan"}
 
 
 def test_orchestrator_caps_multi_engine_scan_fanout_to_remaining_budget(tmp_path, monkeypatch):

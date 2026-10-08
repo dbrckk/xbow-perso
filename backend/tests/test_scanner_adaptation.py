@@ -30,16 +30,16 @@ def test_adaptation_never_expands_configured_engines():
     assert result.may_expand_configuration is False
 
 
-def test_adaptation_suppresses_repeatedly_failing_engine_when_alternative_exists():
+def test_adaptation_preserves_engine_after_negative_technique_outcomes():
     result = adapt_scanner_engines(
         ("strix", "nuclei"),
         [_memory("nuclei", failures=2, confidence=0.8, success_rate=0.0)],
         {},
     )
 
-    assert result.selected_engines == ("strix",)
-    assert result.suppressed_engines == ("nuclei",)
-    assert "repeated scanner failures" in result.reasons["nuclei"]
+    assert set(result.selected_engines) == {"strix", "nuclei"}
+    assert result.suppressed_engines == ()
+    assert "do not prove scanner failure" in result.reasons["nuclei"]
 
 
 def test_adaptation_never_suppresses_last_configured_engine():
@@ -83,3 +83,83 @@ def test_adaptation_rejects_unknown_or_duplicate_configuration():
 
     with pytest.raises(ValueError, match="must be unique"):
         adapt_scanner_engines(("strix", "strix"), [], {})
+
+
+def test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [_memory("nuclei", failures=4, confidence=1.0)],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {
+                    "completed": 0,
+                    "failed": 2,
+                    "requeued": 1,
+                }
+            }
+        },
+    )
+
+    assert result.selected_engines == ("strix",)
+    assert result.suppressed_engines == ("nuclei",)
+    assert "unstable execution" in result.reasons["nuclei"]
+
+
+def test_completed_scanner_run_overrides_negative_memory_for_suppression():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [_memory("nuclei", failures=8, confidence=1.0)],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {
+                    "completed": 1,
+                    "failed": 2,
+                    "requeued": 2,
+                }
+            }
+        },
+    )
+
+    assert "nuclei" in result.selected_engines
+    assert result.suppressed_engines == ()
+    assert "do not prove scanner failure" in result.reasons["nuclei"]
+
+
+def test_negative_memory_cannot_expand_scanner_configuration():
+    result = adapt_scanner_engines(
+        ("nuclei",),
+        [_memory("nuclei", failures=6, confidence=1.0)],
+        {},
+    )
+
+    assert result.selected_engines == ("nuclei",)
+    assert result.configured_engines == ("nuclei",)
+    assert result.may_expand_configuration is False
+    assert result.advisory_only is True
+
+
+def test_negative_only_memory_does_not_out_rank_configured_engine_order():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [_memory("nuclei", failures=10, confidence=1.0)],
+        {},
+    )
+
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.ranked_engines == ("strix", "nuclei")
+    assert result.suppressed_engines == ()
+
+
+def test_positive_scanner_evidence_can_improve_ranking_without_new_engines():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [
+            _memory("strix", failures=9, confidence=1.0),
+            _memory("nuclei", successes=2, confidence=0.4, success_rate=1.0),
+        ],
+        {},
+    )
+
+    assert result.ranked_engines == ("nuclei", "strix")
+    assert result.configured_engines == ("strix", "nuclei")
+    assert result.may_expand_configuration is False
