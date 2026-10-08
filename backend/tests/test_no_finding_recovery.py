@@ -232,7 +232,7 @@ def test_reviewed_forms_no_longer_count_as_review_gap():
             "reviewed",
             "analyst",
             parent_ids=("form:one",),
-            metadata={"review_type": "form_surface_review"},
+            metadata={"review_type": "form_surface_review", "status": "completed"},
         )
     )
     result = _feedback(graph)
@@ -335,7 +335,7 @@ def test_browser_already_attempted_does_not_create_infinite_recovery_loop():
             "reviewed",
             "analyst",
             parent_ids=("endpoint:a",),
-            metadata={"review_type": "authorization_surface_review"},
+            metadata={"review_type": "authorization_surface_review", "status": "completed"},
         )
     )
     graph.add(
@@ -737,7 +737,7 @@ def _fully_reviewed_target_graph(*, additional_host: bool) -> ObservationGraph:
                 "reviewed",
                 "analyst",
                 parent_ids=(parent,),
-                metadata={"review_type": kind},
+                metadata={"review_type": kind, "status": "completed"},
             )
         )
     return graph
@@ -798,3 +798,100 @@ def test_other_host_browser_completion_cannot_exhaust_target():
     assert result.state == "recovery_advisory"
     assert result.recommended_task_kinds == ("browser_observe",)
     assert result.exhausted_task_kinds == ()
+
+
+def test_queued_endpoint_review_does_not_close_coverage_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:queued",
+            "evidence",
+            "review-queued",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "queued",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_endpoint_count == 1
+    assert "map_endpoints" in result.recommended_task_kinds
+
+
+def test_failed_form_review_does_not_close_coverage_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "form-discovery",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:failed",
+            "evidence",
+            "review-failed",
+            "analyst",
+            parent_ids=("form:a",),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "failed",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_form_count == 1
+    assert "browser_observe" in result.recommended_task_kinds
+
+
+def test_completed_scoped_review_closes_only_its_own_endpoint_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:second",
+            "endpoint",
+            "https://example.test/profile",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:done",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert result.uncovered_endpoint_count == 1
+    assert "map_endpoints" in result.recommended_task_kinds
+
+
+def test_review_without_terminal_status_cannot_claim_coverage():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:unknown",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={"review_type": "authorization_surface_review"},
+        )
+    )
+
+    assert _feedback(graph).uncovered_endpoint_count == 1
