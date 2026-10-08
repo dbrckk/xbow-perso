@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T23:07:43Z
+Generated: 2026-10-08T23:11:28Z
 
 ### Git
 - Branch: `main`
-- Head: `28209bf1437e`
-- Commit date: 2026-10-09T01:07:32+02:00
-- Commit: feat(coverage): expose undocumented endpoint scope after negative scans
+- Head: `1616eff77eb6`
+- Commit date: 2026-10-09T01:11:15+02:00
+- Commit: fix(coverage): quarantine conflicting endpoint claims from one scan job
 - Tracked files: 687
 
 ### Recently changed files

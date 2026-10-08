@@ -21,7 +21,7 @@
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 233,
+          "line": 270,
           "preview": ") = _completed_scans_with_provenance(",
           "definition_candidate": false
         }
@@ -67,8 +67,31 @@
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 245,
+          "line": 282,
           "preview": "endpoint_attribution = _endpoint_scan_attribution(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "explicit_endpoint_ancestry": {
+      "definition": {
+        "file": "backend/app/coverage.py",
+        "line": 174,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/coverage.py",
+          "line": 174,
+          "preview": "def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 223,
+          "preview": "explicit_endpoint_ancestry(item) for item in reports",
           "definition_candidate": false
         }
       ],
@@ -77,20 +100,20 @@
     "build_evidence_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 219,
+        "line": 256,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 219,
+          "line": 256,
           "preview": "def build_evidence_coverage(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 320,
+          "line": 357,
           "preview": "coverage = build_evidence_coverage(",
           "definition_candidate": false
         },
@@ -273,21 +296,45 @@
           "line": 1086,
           "preview": "build_evidence_coverage(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1182,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1201,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1218,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1235,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 32
+      "occurrence_count": 36
     },
     "campaign_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 314,
+        "line": 351,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 314,
+          "line": 351,
           "preview": "def campaign_coverage(campaign_id: str):",
           "definition_candidate": true
         }
@@ -297,14 +344,14 @@
     "build_coverage_guidance": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 331,
+        "line": 368,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 331,
+          "line": 368,
           "preview": "def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
@@ -398,14 +445,14 @@
     "prioritize_action_with_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 410,
+        "line": 447,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 410,
+          "line": 447,
           "preview": "def prioritize_action_with_coverage(",
           "definition_candidate": true
         },
@@ -1044,6 +1091,186 @@
           "file": "backend/tests/test_coverage.py",
           "line": 1118,
           "preview": "def test_scan_report_conflict_outranks_missing_endpoint_provenance():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_two_endpoint_scan_scope_graph": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1143,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1143,
+          "preview": "def _two_endpoint_scan_scope_graph():",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1178,
+          "preview": "graph = _two_endpoint_scan_scope_graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1197,
+          "preview": "graph = _two_endpoint_scan_scope_graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1214,
+          "preview": "graph = _two_endpoint_scan_scope_graph()",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1230,
+          "preview": "graph = _two_endpoint_scan_scope_graph()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_record_scan_scope": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1159,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1159,
+          "preview": "def _record_scan_scope(graph, observation_id, parent_id, job_id):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1179,
+          "preview": "_record_scan_scope(graph, \"scan:1\", \"endpoint:1\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1180,
+          "preview": "_record_scan_scope(graph, \"scan:2\", \"endpoint:2\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1198,
+          "preview": "_record_scan_scope(graph, \"scan:1\", \"endpoint:1\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1199,
+          "preview": "_record_scan_scope(graph, \"scan:2\", \"endpoint:1\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1215,
+          "preview": "_record_scan_scope(graph, \"scan:asset\", \"asset:a\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1216,
+          "preview": "_record_scan_scope(graph, \"scan:endpoint\", \"endpoint:1\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1231,
+          "preview": "_record_scan_scope(graph, \"scan:conflict-1\", \"endpoint:1\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1232,
+          "preview": "_record_scan_scope(graph, \"scan:conflict-2\", \"endpoint:2\", \"shared-job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1233,
+          "preview": "_record_scan_scope(graph, \"scan:independent\", \"endpoint:1\", \"other-job\")",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1177,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1177,
+          "preview": "def test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_consistent_duplicate_reports_preserve_documented_endpoint_scope": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1196,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1196,
+          "preview": "def test_consistent_duplicate_reports_preserve_documented_endpoint_scope():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1213,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1213,
+          "preview": "def test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job": {
+      "definition": {
+        "file": "backend/tests/test_coverage.py",
+        "line": 1229,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 1229,
+          "preview": "def test_ambiguous_job_does_not_discard_separately_documented_endpoint_job():",
           "definition_candidate": true
         }
       ],

@@ -2622,13 +2622,28 @@ missing_recorded_findings = (
     """
 eligible_ids = {
 ⋮----
-documented_ids: set[str] = set()
+def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]
 ⋮----
 pending = list(scan.parent_ids)
 visited: set[str] = set()
+endpoints: set[str] = set()
 ⋮----
-# A direct endpoint reference is the unit of attribution;
-# it does not imply scanning neighboring endpoints.
+# Do not infer another endpoint from the same asset.
+⋮----
+reports_by_job: dict[str, list[Any]] = {}
+⋮----
+job_id = observation.metadata.get("job_id")
+⋮----
+documented_ids: set[str] = set()
+ambiguous_scope_jobs = 0
+⋮----
+job_id = scan.metadata.get("job_id")
+reports = (
+# Job-level completion has already been reconciled. Endpoint scope
+# is a separate claim: conflicting duplicate reports cannot prove
+# either endpoint set, nor can an asset-only report corroborate
+# a report asserting an individual endpoint.
+endpoint_claims = {
 ⋮----
 state = "no_completed_scan_evidence"
 fraction = None
@@ -17773,6 +17788,20 @@ def test_documented_scans_keep_existing_low_yield_surface_rotation()
 def test_incomplete_endpoint_provenance_never_changes_scan_authority()
 ⋮----
 def test_scan_report_conflict_outranks_missing_endpoint_provenance()
+⋮----
+def _two_endpoint_scan_scope_graph()
+⋮----
+def _record_scan_scope(graph, observation_id, parent_id, job_id)
+⋮----
+def test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either()
+⋮----
+graph = _two_endpoint_scan_scope_graph()
+⋮----
+def test_consistent_duplicate_reports_preserve_documented_endpoint_scope()
+⋮----
+def test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope()
+⋮----
+def test_ambiguous_job_does_not_discard_separately_documented_endpoint_job()
 ````
 
 ## File: backend/tests/test_cpe_consistency.py
