@@ -246,3 +246,63 @@ def test_feedback_rejects_negative_campaign_finding_count():
 
     with pytest.raises(ValueError, match="campaign_finding_count"):
         _feedback(_graph(), campaign_finding_count=-1)
+
+
+def test_out_of_scope_technology_does_not_satisfy_authorized_inventory():
+    graph = _graph()
+    graph.add(
+        Observation("asset:other", "asset", "other.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "technology:other",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:other",),
+        )
+    )
+
+    result = _feedback(graph)
+
+    assert result.missing_technology_context is True
+    assert "detect_technology" in result.recommended_task_kinds
+
+
+def test_orphan_form_does_not_close_authorized_form_inventory_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:orphan",
+            "form",
+            "https://example.test/login",
+            "browser",
+            metadata={"method": "POST", "input_names": ["login"]},
+        )
+    )
+
+    result = _feedback(graph)
+
+    assert result.in_scope_form_count == 0
+    assert result.recommended_task_kinds[0] == "map_forms"
+
+
+def test_out_of_scope_form_does_not_close_authorized_form_inventory_gap():
+    graph = _graph()
+    graph.add(
+        Observation("asset:other", "asset", "other.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "form:other",
+            "form",
+            "https://other.test/login",
+            "browser",
+            parent_ids=("asset:other",),
+        )
+    )
+
+    result = _feedback(graph)
+
+    assert result.in_scope_form_count == 0
+    assert "map_forms" in result.recommended_task_kinds
