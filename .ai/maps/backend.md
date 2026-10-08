@@ -661,6 +661,12 @@ payload = asdict(self)
 ⋮----
 def _suppressed_techniques(memories: list[TechniqueMemory]) -> tuple[str, ...]
 ⋮----
+"""Negative scanner findings are not an operational scanner failure.
+
+    Scanner worker failures are evaluated separately from job outcomes;
+    technique memory must not silently remove a configured scanner.
+    """
+⋮----
 def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ...]
 ⋮----
 by_kind = worker_outcomes.get("by_job_kind")
@@ -15783,6 +15789,10 @@ def test_cycle_halts_for_human_review_after_repeated_requeues_without_success()
 worker_outcomes = {
 ⋮----
 def test_cycle_does_not_suppress_recovered_worker_kind()
+⋮----
+def test_negative_scanner_memory_does_not_suppress_authorized_scanner()
+⋮----
+def test_operational_scanner_worker_instability_still_requires_human_review()
 ```
 
 ## File: tests/test_affected_version_range.py

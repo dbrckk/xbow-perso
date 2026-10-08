@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 5691e9a4645383d5336de880ce475e7272fd995e
-Head: e5b316f84fc2d9697cd77b0a749aa58b8312bd98
+Base: 96239f8f23b67d2fc9021b64bed1e0a9259aeb23
+Head: 4584211a6f0fd26169a1239ecfb6b634fdd72388
 
 ## Changed files
-- M backend/app/no_finding_recovery.py
-- M backend/tests/test_no_finding_recovery.py
+- M backend/app/adaptive_cycle.py
+- M backend/tests/test_adaptive_cycle.py
 
 ## Affected areas
 - backend

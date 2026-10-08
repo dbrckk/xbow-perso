@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:33:31Z
+Generated: 2026-10-08T18:58:45Z
 
 ### Git
 - Branch: `main`
-- Head: `e5b316f84fc2`
-- Commit date: 2026-10-08T20:28:33+02:00
-- Commit: fix(recovery): isolate campaign worker failures from target-specific feedback
+- Head: `4584211a6f0f`
+- Commit date: 2026-10-08T20:58:32+02:00
+- Commit: fix(cycle): keep negative scanner outcomes distinct from crashes
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/adaptive_cycle.py`
+- `backend/tests/test_adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/learning_memory.py`
@@ -58,8 +60,6 @@ Generated: 2026-10-08T18:33:31Z
 - `backend/tests/test_form_waf_reasoning.py`
 - `backend/tests/test_red_team_coverage.py`
 - `backend/tests/test_review_evidence.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_swarm.py`
 
 ### Project signals
 - `pyproject.toml`

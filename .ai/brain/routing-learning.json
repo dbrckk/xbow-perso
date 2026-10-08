@@ -38,27 +38,6 @@
       ],
       "tests": [],
       "useful": [
-        "backend/app/strix_runner_rpc.py",
-        "backend/tests/test_strix_runner_rpc.py"
-      ]
-    },
-    {
-      "rejected": [],
-      "task": "Harden the fail-closed Strix runner RPC while the Python bootstrap remains blocked",
-      "terms": [
-        "blocked",
-        "bootstrap",
-        "fail-closed",
-        "harden",
-        "python",
-        "remains",
-        "rpc",
-        "runner",
-        "strix",
-        "while"
-      ],
-      "tests": [],
-      "useful": [
         "backend/app/strix_python_compat_probe.py",
         "backend/tests/test_strix_python_compat_probe.py"
       ]
@@ -1425,6 +1404,26 @@
         "backend/tests/test_no_finding_recovery.py",
         "backend/tests/test_red_team_coverage.py",
         "backend/tests/test_review_evidence.py"
+      ]
+    },
+    {
+      "rejected": [],
+      "task": "Define a pinned Strix-compatible remote client/session interface without enabling remote operations",
+      "terms": [
+        "client/session",
+        "define",
+        "enabling",
+        "interface",
+        "operations",
+        "pinned",
+        "remote",
+        "strix-compatible",
+        "without"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/adaptive_cycle.py",
+        "backend/tests/test_adaptive_cycle.py"
       ]
     }
   ],
@@ -3277,7 +3276,7 @@
     },
     "client/session": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -3319,6 +3318,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -3329,7 +3329,6 @@
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
-      "backend/tests/test_differential_quality.py": 4,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_learning_memory.py": 8,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -3686,7 +3685,7 @@
     },
     "define": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -3970,7 +3969,7 @@
     },
     "enabling": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -4013,6 +4012,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -4021,7 +4021,6 @@
       "backend/tests/test_cve_evidence_verdict.py": 4,
       "backend/tests/test_cve_metadata_normalization.py": 16,
       "backend/tests/test_cve_risk_context.py": 8,
-      "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -4824,7 +4823,7 @@
     },
     "interface": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -4866,6 +4865,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -4876,7 +4876,6 @@
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
-      "backend/tests/test_differential_quality.py": 4,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_learning_memory.py": 8,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -5477,7 +5476,7 @@
     },
     "operations": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -5519,6 +5518,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -5529,7 +5529,6 @@
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
-      "backend/tests/test_differential_quality.py": 4,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_learning_memory.py": 8,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -5715,7 +5714,7 @@
     },
     "pinned": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -5760,12 +5759,12 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
       "backend/tests/test_cve_advisory_consensus.py": 12,
       "backend/tests/test_cve_advisory_loader.py": 24,
-      "backend/tests/test_cve_evidence_verdict.py": 4,
       "backend/tests/test_cve_metadata_normalization.py": 16,
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_deployment_preflight.py": 16,
@@ -6369,7 +6368,7 @@
     },
     "remote": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -6411,6 +6410,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -6421,7 +6421,6 @@
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
-      "backend/tests/test_differential_quality.py": 4,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_learning_memory.py": 8,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -7184,7 +7183,7 @@
     },
     "strix-compatible": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -7226,6 +7225,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -7236,7 +7236,6 @@
       "backend/tests/test_cve_risk_context.py": 8,
       "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
-      "backend/tests/test_differential_quality.py": 4,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_learning_memory.py": 8,
       "backend/tests/test_no_finding_recovery.py": 20,
@@ -7652,7 +7651,7 @@
     },
     "without": {
       "backend/app/active_validation.py": 4,
-      "backend/app/adaptive_cycle.py": 8,
+      "backend/app/adaptive_cycle.py": 12,
       "backend/app/affected_version_range.py": 16,
       "backend/app/cpe_consistency.py": 12,
       "backend/app/cve_advisory_catalog.py": 16,
@@ -7695,6 +7694,7 @@
       "backend/app/version_ambiguity.py": 4,
       "backend/app/vulnerability_intelligence.py": 8,
       "backend/tests/test_active_validation.py": 4,
+      "backend/tests/test_adaptive_cycle.py": 4,
       "backend/tests/test_affected_version_range.py": 12,
       "backend/tests/test_cpe_consistency.py": 12,
       "backend/tests/test_cve_advisory_catalog.py": 16,
@@ -7703,7 +7703,6 @@
       "backend/tests/test_cve_evidence_verdict.py": 4,
       "backend/tests/test_cve_metadata_normalization.py": 16,
       "backend/tests/test_cve_risk_context.py": 8,
-      "backend/tests/test_cve_validation_priority.py": 4,
       "backend/tests/test_deployment_preflight.py": 16,
       "backend/tests/test_finding_intelligence.py": 40,
       "backend/tests/test_no_finding_recovery.py": 20,
