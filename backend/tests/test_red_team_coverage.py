@@ -266,3 +266,161 @@ def test_unvalidated_finding_reduces_score_across_observed_dimensions():
     assert result["summary"]["observed_domain_count"] == 2
     assert "finding_validation" not in result["unobserved_domains"]
     assert "evidence_quality" not in result["unobserved_domains"]
+
+
+def test_mixed_parent_endpoint_review_cannot_close_in_scope_gap():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "other.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/settings",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:mixed",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a", "asset:b"),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert result["summary"]["observed_endpoints"] == 1
+    assert result["summary"]["reviewed_endpoints"] == 0
+    assert result["domains"][0]["gaps"] == 1
+    assert result["read_only"] is True
+
+
+def test_review_spanning_in_scope_and_out_of_scope_endpoints_is_not_credited():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "other.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/settings",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://other.test/settings",
+            "recon",
+            parent_ids=("asset:b",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:both",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a", "endpoint:b"),
+            metadata={
+                "review_type": "input_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert result["summary"]["observed_endpoints"] == 1
+    assert result["summary"]["reviewed_endpoints"] == 0
+
+
+def test_form_review_with_mixed_endpoint_parent_does_not_close_form_gap():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/login",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:mixed-form",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("form:a", "endpoint:a"),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = build_red_team_coverage(graph)
+
+    assert result["summary"]["observed_forms"] == 1
+    assert result["summary"]["reviewed_forms"] == 0
+
+
+def test_completed_review_of_multiple_eligible_endpoints_is_creditable():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for name in ("one", "two"):
+        graph.add(
+            Observation(
+                f"endpoint:{name}",
+                "endpoint",
+                f"https://example.test/{name}",
+                "recon",
+                parent_ids=("asset:a",),
+            )
+        )
+    graph.add(
+        Observation(
+            "review:both",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:one", "endpoint:two"),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert result["summary"]["reviewed_endpoints"] == 2
+    assert result["summary"]["observed_endpoints"] == 2
+    assert result["domains"][0]["gaps"] == 0
