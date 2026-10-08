@@ -675,12 +675,23 @@ def build_no_finding_recovery(
                     has_in_scope_asset_ancestor(item.id)
                 ):
                     continue
-                timestamp = _trusted_utc_timestamp(
+                # A fresh observation timestamp may merely be a refresh
+                # of an old endpoint. Reconsider an exhausted task only when
+                # a trusted first-discovery time proves genuinely new surface.
+                first_seen = _trusted_utc_timestamp(
+                    item.metadata.get("first_seen_at"),
+                    now=current_time,
+                )
+                observed_at = _trusted_utc_timestamp(
                     item.metadata.get("observed_at"),
                     now=current_time,
                 )
-                if timestamp is not None:
-                    surface_times.setdefault(kind, []).append(timestamp)
+                if (
+                    first_seen is not None
+                    and observed_at is not None
+                    and first_seen <= observed_at
+                ):
+                    surface_times.setdefault(kind, []).append(first_seen)
 
         for kind in candidate_kinds & completed_recovery_kinds:
             completed_times = [
@@ -708,8 +719,8 @@ def build_no_finding_recovery(
     ))
     if reopened and state == "recovery_advisory":
         reasons.append(
-            "new in-scope observations after recorded completion warrant "
-            "reconsidering previously exhausted read-only tasks"
+            "confirmed first discovery of new in-scope surface after "
+            "recorded completion warrants reconsidering read-only tasks"
         )
     if exhausted and state == "recovery_advisory":
         reasons.append(
