@@ -1437,3 +1437,99 @@ def test_same_advisory_authority_snapshot_conflict_forces_passive_review():
     )
     assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
     assert result["summary"]["same_authority_advisory_conflicts"] == 1
+
+
+def test_cross_source_not_affected_consensus_forces_passive_review():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.vendor = "djangoproject"
+    finding.product = "django"
+    finding.cve_ids = ["CVE-2026-12345"]
+    finding.evidence = ["cve-id:CVE-2026-12345"]
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-a",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-08T00:00:00+00:00",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:django-b",
+            "technology",
+            "django 5.1.4",
+            "wappalyzer",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-08T00:00:00+00:00",
+            },
+        )
+    )
+
+    nvd = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-12345",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": ["<5.1.3"],
+                }
+            ],
+        },
+        source_name="nvd-cve-api-v2",
+        source_authority="nvd",
+        source_verified=True,
+    )
+    vendor = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-12345",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": ["<5.1.4"],
+                }
+            ],
+        },
+        source_name="vendor-advisory",
+        source_authority="vendor",
+        source_verified=True,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        graph,
+        cve_advisory_catalogs=(nvd, vendor),
+    )
+    row = result["findings"][0]
+
+    assert row["cve_advisory_consensus"]["state"] == (
+        "exact_identity_applicability_agreement"
+    )
+    assert row["cve_advisory_consensus"]["agreed_applicability_state"] == (
+        "not_affected"
+    )
+    assert "cross_source_advisory_not_affected" in row["technology"][
+        "ambiguity_reasons"
+    ]
+    assert row["cve_evidence_verdict"]["verdict"] == (
+        "ambiguous_version_candidate"
+    )
+    assert row["cve_validation_plan"]["validation_mode"] == "passive_recheck"
+    assert row["cve_advisory_consensus"]["exploitability_confirmed"] is False
+    assert result["summary"]["cross_source_advisory_not_affected"] == 1
