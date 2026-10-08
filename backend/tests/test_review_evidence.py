@@ -8,9 +8,9 @@ from app.review_evidence import is_completed_review_evidence
     ("status", "accepted"),
     [
         ("completed", True),
-        ("success", True),
+        ("success", False),
         ("reviewed", True),
-        ("observed", True),
+        ("observed", False),
         ("queued", False),
         ("in_progress", False),
         ("failed", False),
@@ -35,7 +35,7 @@ def test_review_completion_requires_accepted_explicit_status(status, accepted):
     assert is_completed_review_evidence(record) is accepted
 
 
-def test_legacy_review_record_without_status_remains_compatible():
+def test_review_without_status_does_not_silently_close_coverage():
     record = Observation(
         "review:legacy",
         "evidence",
@@ -44,7 +44,7 @@ def test_legacy_review_record_without_status_remains_compatible():
         metadata={"review_type": "form_surface_review"},
     )
 
-    assert is_completed_review_evidence(record) is True
+    assert is_completed_review_evidence(record) is False
 
 
 def test_inconclusive_or_failed_outcome_does_not_close_gap():
