@@ -895,3 +895,120 @@ def test_review_without_terminal_status_cannot_claim_coverage():
     )
 
     assert _feedback(graph).uncovered_endpoint_count == 1
+
+
+def _unattributed_scanner_failures():
+    return {
+        "by_job_kind": {
+            "nuclei_scan": {
+                "completed": 0,
+                "failed": 3,
+                "requeued": 1,
+            }
+        }
+    }
+
+
+def test_global_worker_failures_do_not_block_different_target_recovery():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:for-a",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "scan-a",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        worker_outcomes=_unattributed_scanner_failures(),
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.worker_health_attribution == "unattributed_multi_host"
+    assert result.worker_instability_observed is True
+    assert result.worker_instability_applied is False
+    assert any("cannot be attributed" in reason for reason in result.reasons)
+    assert result.may_expand_scope is False
+    assert result.may_enable_exploitation is False
+    assert result.to_dict()["worker_instability_applied"] is False
+
+
+def test_global_worker_failures_cannot_create_missing_target_scan_evidence():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        worker_outcomes=_unattributed_scanner_failures(),
+    )
+
+    assert result.state == "no_completed_scans"
+    assert result.recommended_task_kinds == ()
+    assert result.worker_instability_applied is False
+
+
+def test_single_observed_host_still_blocks_recovery_on_real_worker_failure():
+    result = _feedback(
+        _graph(),
+        target_host="example.test",
+        worker_outcomes=_unattributed_scanner_failures(),
+    )
+
+    assert result.state == "execution_unstable"
+    assert result.recommended_task_kinds == ()
+    assert result.worker_health_attribution == "single_observed_host"
+    assert result.worker_instability_observed is True
+    assert result.worker_instability_applied is True
+
+
+def test_legacy_campaign_wide_health_retains_conservative_gate():
+    result = _feedback(
+        _graph(),
+        worker_outcomes=_unattributed_scanner_failures(),
+    )
+    assert result.state == "execution_unstable"
+    assert result.worker_health_attribution == "campaign_aggregate"
+    assert result.worker_instability_applied is True
+
+
+def test_healthy_multi_host_worker_summary_does_not_claim_attribution():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:for-a",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "scan-a",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        worker_outcomes={"by_job_kind": {}},
+    )
+    assert result.state == "recovery_advisory"
+    assert result.worker_instability_observed is False
+    assert result.worker_instability_applied is False
+    assert result.worker_health_attribution == "unattributed_multi_host"
+    assert not any("cannot be attributed" in reason for reason in result.reasons)
