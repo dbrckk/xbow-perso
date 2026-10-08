@@ -120,3 +120,58 @@ def test_cycle_does_not_suppress_recovered_worker_kind():
     assert cycle.state == "recon"
     assert cycle.safe_to_progress is True
     assert cycle.retry_suppressed_job_kinds == ()
+
+
+def test_negative_scanner_memory_does_not_suppress_authorized_scanner():
+    memory = TechniqueMemory(
+        technique="scanner:nuclei",
+        attempts=10,
+        successes=0,
+        failures=10,
+        inconclusive=0,
+        success_rate=0.0,
+        confidence=1.0,
+        source_count=2,
+    )
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("scan", "example.test", "review", 80)],
+        [memory],
+    )
+
+    assert cycle.retry_suppressed_techniques == ()
+    assert cycle.next_action == "scan"
+    assert cycle.state == "review"
+    assert cycle.safe_to_progress is True
+
+
+def test_operational_scanner_worker_instability_still_requires_human_review():
+    memory = TechniqueMemory(
+        technique="scanner:nuclei",
+        attempts=3,
+        successes=0,
+        failures=3,
+        inconclusive=0,
+        success_rate=0.0,
+        confidence=1.0,
+        source_count=2,
+    )
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("scan", "example.test", "review", 80)],
+        [memory],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {
+                    "completed": 0,
+                    "requeued": 3,
+                }
+            }
+        },
+    )
+
+    assert cycle.retry_suppressed_techniques == ()
+    assert cycle.retry_suppressed_job_kinds == ("nuclei_scan",)
+    assert cycle.state == "human_review"
+    assert cycle.safe_to_progress is False
+    assert cycle.requires_human is True
