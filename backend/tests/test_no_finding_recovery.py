@@ -1189,7 +1189,10 @@ def test_new_target_endpoint_after_recovery_completion_reopens_bounded_task():
             "https://example.test/new-form",
             "crawler",
             parent_ids=("asset:a",),
-            metadata={"observed_at": "2026-09-02T00:00:00+00:00"},
+            metadata={
+                "observed_at": "2026-09-02T00:00:00+00:00",
+                "first_seen_at": "2026-09-02T00:00:00+00:00",
+            },
         )
     )
 
@@ -2211,3 +2214,99 @@ def test_failed_browser_observation_does_not_stop_recovery_advisory():
     assert result.state == "recovery_advisory"
     assert result.recommended_task_kinds == ("browser_observe",)
     assert result.exhausted_task_kinds == ()
+
+
+def test_refreshing_old_endpoint_cannot_reopen_completed_recon():
+    graph = _graph()
+    _record_timestamped_recovery(graph)
+    graph.add(
+        Observation(
+            "endpoint:refreshed",
+            "endpoint",
+            "https://example.test/known",
+            "crawler",
+            parent_ids=("asset:a",),
+            metadata={
+                "first_seen_at": "2026-08-01T00:00:00Z",
+                "observed_at": "2026-09-03T00:00:00Z",
+            },
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.reopened_task_kinds == ()
+    assert "map_forms" in result.exhausted_task_kinds
+    assert "map_forms" not in result.recommended_task_kinds
+
+
+def test_observation_refresh_without_first_discovery_is_not_novelty():
+    graph = _graph()
+    _record_timestamped_recovery(graph)
+    graph.add(
+        Observation(
+            "endpoint:timestamp-only",
+            "endpoint",
+            "https://example.test/unproven",
+            "crawler",
+            parent_ids=("asset:a",),
+            metadata={"observed_at": "2026-09-03T00:00:00Z"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.reopened_task_kinds == ()
+    assert "map_forms" in result.exhausted_task_kinds
+
+
+def test_impossible_or_untrusted_first_discovery_never_reopens_task():
+    for first_seen in (
+        "not-a-timestamp",
+        "2026-09-04T00:00:00Z",  # later than observation
+        "2026-09-02T00:00:00",  # no timezone
+        "2099-09-02T00:00:00Z",  # future
+    ):
+        graph = _graph()
+        _record_timestamped_recovery(graph)
+        graph.add(
+            Observation(
+                "endpoint:bad-discovery",
+                "endpoint",
+                "https://example.test/old-or-unknown",
+                "crawler",
+                parent_ids=("asset:a",),
+                metadata={
+                    "first_seen_at": first_seen,
+                    "observed_at": "2026-09-03T00:00:00Z",
+                },
+            )
+        )
+
+        result = _feedback(graph, target_host="example.test")
+        assert result.reopened_task_kinds == ()
+        assert "map_forms" in result.exhausted_task_kinds
+
+
+def test_confirmed_new_form_can_reopen_completed_form_mapping():
+    graph = _graph()
+    _record_timestamped_recovery(graph, kind="browser_observe")
+    graph.add(
+        Observation(
+            "form:new",
+            "form",
+            "https://example.test/new-form",
+            "browser",
+            parent_ids=("asset:a",),
+            metadata={
+                "first_seen_at": "2026-09-05T00:00:00Z",
+                "observed_at": "2026-09-06T00:00:00Z",
+                "method": "GET",
+            },
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.reopened_task_kinds == ("browser_observe",)
+    assert "browser_observe" in result.recommended_task_kinds
+    assert result.may_enable_exploitation is False
+    assert result.may_increase_request_budget is False
