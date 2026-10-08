@@ -55,23 +55,10 @@ def _parse_technology(value: str) -> tuple[str, str | None]:
 
 
 def _asset_key(value: object) -> str:
-    raw = str(value or "").strip()
-    if not raw:
+    identity = _asset_identity(value)
+    if identity is None:
         return ""
-    parsed = urlsplit(raw if "://" in raw else f"//{raw}")
-    host = (parsed.hostname or "").lower().rstrip(".")
-    if not host:
-        return ""
-    try:
-        port = parsed.port
-    except ValueError:
-        return ""
-    scheme = parsed.scheme.lower()
-    if port is None:
-        if scheme == "https":
-            port = 443
-        elif scheme == "http":
-            port = 80
+    host, scheme, port = identity
     if scheme in {"http", "https"} and port is not None:
         return f"{scheme}://{host}:{port}"
     if port is not None:
@@ -189,6 +176,7 @@ def _finding_asset_keys(
         return tuple(sorted(keys))
 
     finding_id = str(getattr(finding, "id", "") or "")
+    linked_asset_values: set[str] = set()
     for observation in graph.by_kind("finding"):
         if (
             observation.id == f"finding:{finding_id}"
@@ -199,6 +187,7 @@ def _finding_asset_keys(
                 graph,
                 observation.id,
             )
+            linked_asset_values.update(asset_values)
             if direct_value and any(
                 not _compatible_asset_identity(direct_value, value)
                 for value in asset_values
@@ -211,6 +200,14 @@ def _finding_asset_keys(
                 for value in asset_values
                 if (key := _asset_key(value))
             )
+    if any(
+        not _compatible_asset_identity(left, right)
+        for left in linked_asset_values
+        for right in linked_asset_values
+    ):
+        # A hostname-only declared asset must not hide contradictory
+        # origin-specific graph parents (such as HTTP and HTTPS).
+        return ()
     return tuple(sorted(keys))
 
 
@@ -219,17 +216,24 @@ def filter_fingerprints_for_finding_asset(
     fingerprints: tuple[TechnologyFingerprint, ...],
     graph: ObservationGraph | None = None,
 ) -> tuple[TechnologyFingerprint, ...]:
+    raw_asset = str(getattr(finding, "asset", "") or "").strip()
+    if raw_asset and not _asset_key(raw_asset):
+        # Never fall back to legacy unscoped evidence for malformed assets.
+        return ()
     finding_keys = set(_finding_asset_keys(finding, graph))
     scoped_present = any(item.asset_values for item in fingerprints)
     graph_asset_keys: set[str] = set()
+    graph_has_assets = False
 
     if graph is not None:
+        graph_assets = graph.by_kind("asset")
+        graph_has_assets = bool(graph_assets)
         graph_asset_keys = {
             key
-            for observation in graph.by_kind("asset")
+            for observation in graph_assets
             if (key := _asset_key(observation.value))
         }
-        if not finding_keys and graph_asset_keys:
+        if not finding_keys and graph_has_assets:
             return ()
         if (
             finding_keys
@@ -241,16 +245,21 @@ def filter_fingerprints_for_finding_asset(
     if finding_keys and scoped_present:
         matches = []
         for fingerprint in fingerprints:
+            # Do not silently discard malformed linked assets and then
+            # trust the remaining valid one.
+            if any(not _asset_key(value) for value in fingerprint.asset_values):
+                continue
             fingerprint_keys = {
-                key
+                _asset_key(value)
                 for value in fingerprint.asset_values
-                if (key := _asset_key(value))
             }
-            if fingerprint_keys & finding_keys:
+            if fingerprint_keys and fingerprint_keys <= finding_keys:
+                # One observation linked to multiple distinct origins
+                # cannot count as evidence for just one of those origins.
                 matches.append(fingerprint)
         return tuple(matches)
 
-    if graph_asset_keys:
+    if graph_has_assets:
         # A graph asset without a linked technology observation is not
         # evidence that an unscoped fingerprint belongs to that asset.
         return ()
