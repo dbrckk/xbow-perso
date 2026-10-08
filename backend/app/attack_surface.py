@@ -14,31 +14,71 @@ router.routes.extend(hypothesis_router.routes)
 
 
 def canonical_host(value: str) -> str:
-    parsed = urlsplit(value if "://" in value else f"//{value}")
-    return (parsed.hostname or value).strip().lower().rstrip(".")
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    try:
+        parsed = urlsplit(raw if "://" in raw else f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        if (
+            parsed.username is not None
+            or parsed.password is not None
+            or (parsed.scheme and parsed.scheme.lower() not in {"http", "https"})
+        ):
+            return ""
+        _port = parsed.port
+    except ValueError:
+        return ""
+    return host
 
 
 def canonical_endpoint(value: str) -> dict[str, Any]:
-    parsed = urlsplit(value)
-    scheme = parsed.scheme.lower()
-    host = (parsed.hostname or "").lower().rstrip(".")
+    """Normalize web endpoints without trusting unsupported URL origins."""
     try:
-        port = parsed.port
+        parsed = urlsplit(str(value or ""))
+        scheme = parsed.scheme.lower()
+        host = (parsed.hostname or "").lower().rstrip(".")
+        path = parsed.path or "/"
+        parameter_names = sorted({
+            key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)
+        })
+        try:
+            port = parsed.port
+        except ValueError:
+            port = None
+            error = "invalid_port"
+        else:
+            if scheme not in {"http", "https"}:
+                error = "unsupported_scheme" if scheme else "missing_scheme_or_host"
+            elif not host:
+                error = "missing_scheme_or_host"
+            elif parsed.username is not None or parsed.password is not None:
+                error = "embedded_credentials"
+            elif port == 0:
+                error = "invalid_port"
+            else:
+                error = None
     except ValueError:
+        scheme = ""
+        host = ""
+        path = "/"
+        parameter_names = []
         port = None
-        valid = False
-        error = "invalid_port"
-    else:
-        valid = bool(scheme and host)
-        error = None if valid else "missing_scheme_or_host"
+        error = "invalid_url"
 
-    if port and not ((scheme == "http" and port == 80) or (scheme == "https" and port == 443)):
-        netloc = f"{host}:{port}"
+    valid = error is None
+    if valid:
+        # urlunsplit requires brackets around IPv6 literals.
+        netloc = f"[{host}]" if ":" in host else host
+        if port is not None and not (
+            (scheme == "http" and port == 80)
+            or (scheme == "https" and port == 443)
+        ):
+            netloc = f"{netloc}:{port}"
+        canonical_url = urlunsplit((scheme, netloc, path, "", ""))
     else:
-        netloc = host
-    path = parsed.path or "/"
-    canonical_url = urlunsplit((scheme, netloc, path, "", "")) if valid else ""
-    parameter_names = sorted({key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)})
+        canonical_url = ""
+
     return {
         "url": canonical_url,
         "scheme": scheme,
