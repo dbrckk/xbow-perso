@@ -528,6 +528,12 @@ def build_finding_intelligence(
                 row["cve_advisory_consensus"]["cross_source_agreement"]
                 for row in finding_rows
             ),
+            "cross_source_advisory_not_affected": sum(
+                row["cve_advisory_consensus"][
+                    "agreed_applicability_state"
+                ] == "not_affected"
+                for row in finding_rows
+            ),
             "cross_source_advisory_conflicts": sum(
                 row["cve_advisory_consensus"]["state"]
                 == "exact_identity_applicability_conflict"
