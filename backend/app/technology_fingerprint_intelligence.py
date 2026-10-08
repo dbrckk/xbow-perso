@@ -199,7 +199,9 @@ def filter_fingerprints_for_finding_asset(
                 matches.append(fingerprint)
         return tuple(matches)
 
-    if len(graph_asset_keys) > 1:
+    if graph_asset_keys:
+        # A graph asset without a linked technology observation is not
+        # evidence that an unscoped fingerprint belongs to that asset.
         return ()
 
     return fingerprints

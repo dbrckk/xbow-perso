@@ -460,6 +460,7 @@ def test_conflicting_product_versions_downgrade_cve_verdict():
             "technology",
             "nginx/1.24.0",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={"confidence": 0.9},
         )
     )
@@ -469,6 +470,7 @@ def test_conflicting_product_versions_downgrade_cve_verdict():
             "technology",
             "nginx/1.25.5",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={"confidence": 0.9},
         )
     )
@@ -507,6 +509,7 @@ def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict():
             "technology",
             "nginx/1.24.0",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={"confidence": 0.9},
         )
     )
@@ -516,6 +519,7 @@ def test_declared_cve_product_missing_from_observed_stack_downgrades_verdict():
             "technology",
             "nginx 1.24.0",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={"confidence": 0.9},
         )
     )
@@ -552,6 +556,7 @@ def test_stale_version_fingerprint_downgrades_cve_verdict():
             "technology",
             "nginx/1.24.0",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-08-01T00:00:00+00:00",
@@ -594,6 +599,7 @@ def test_mismatched_cpe_downgrades_cve_verdict_and_risk_context():
             "technology",
             "django/5.1.2",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -638,6 +644,7 @@ def test_cpe_version_mismatch_downgrades_cve_verdict():
             "technology",
             "django/5.1.2",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -681,6 +688,7 @@ def test_cpe_vendor_mismatch_downgrades_cve_verdict():
             "technology",
             "django/5.1.2",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -722,6 +730,7 @@ def test_observed_version_outside_affected_range_downgrades_cve_verdict():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -766,6 +775,7 @@ def test_observed_version_inside_affected_range_supports_candidate_without_confi
             "technology",
             "django/5.1.2",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -812,6 +822,7 @@ def test_shared_range_across_multiple_cves_never_downgrades_as_outside_range():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -863,6 +874,7 @@ def test_unverified_affected_range_downgrades_cve_verdict():
             "technology",
             "django/5.1.2",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -913,6 +925,7 @@ def test_verified_advisory_range_overrides_conflicting_scanner_range():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -925,6 +938,7 @@ def test_verified_advisory_range_overrides_conflicting_scanner_range():
             "technology",
             "django 5.1.4",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -991,6 +1005,7 @@ def test_unverified_advisory_catalog_cannot_override_scanner_range():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -1127,6 +1142,7 @@ def test_cross_source_advisory_conflict_downgrades_cve_verdict():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -1139,6 +1155,7 @@ def test_cross_source_advisory_conflict_downgrades_cve_verdict():
             "technology",
             "django 5.1.4",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -1222,6 +1239,7 @@ def test_parallel_nvd_osv_identities_are_not_treated_as_consensus():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -1304,6 +1322,7 @@ def test_single_named_catalog_can_supply_verified_range_without_legacy_slot():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-07T00:00:00+00:00",
@@ -1364,6 +1383,7 @@ def test_same_advisory_authority_snapshot_conflict_forces_passive_review():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-08T00:00:00+00:00",
@@ -1376,6 +1396,7 @@ def test_same_advisory_authority_snapshot_conflict_forces_passive_review():
             "technology",
             "django 5.1.4",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-08T00:00:00+00:00",
@@ -1459,6 +1480,7 @@ def test_cross_source_not_affected_consensus_forces_passive_review():
             "technology",
             "django/5.1.4",
             "httpx",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-08T00:00:00+00:00",
@@ -1471,6 +1493,7 @@ def test_cross_source_not_affected_consensus_forces_passive_review():
             "technology",
             "django 5.1.4",
             "wappalyzer",
+            parent_ids=("asset:a",),
             metadata={
                 "confidence": 0.95,
                 "observed_at": "2026-10-08T00:00:00+00:00",

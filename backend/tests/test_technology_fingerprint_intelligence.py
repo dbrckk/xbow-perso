@@ -446,3 +446,43 @@ def test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph():
     )
 
     assert matched == ()
+
+
+def test_unscoped_fingerprint_is_rejected_even_for_single_graph_asset():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://a.example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "tech:legacy",
+            "technology",
+            "nginx/1.24.0",
+            "legacy-import",
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://a.example.test"
+
+    matched = match_finding_technology(
+        finding,
+        build_technology_fingerprints(graph),
+        graph,
+    )
+
+    assert matched == ()
+
+
+def test_unscoped_legacy_fingerprint_remains_supported_without_graph_assets():
+    graph = _graph()
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://a.example.test"
+
+    matched = match_finding_technology(
+        finding,
+        build_technology_fingerprints(graph),
+        graph,
+    )
+
+    assert len(matched) == 1
+    assert matched[0].version == "1.24.0"
