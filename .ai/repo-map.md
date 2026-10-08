@@ -2691,6 +2691,7 @@ class CveAdvisoryCatalog
 ⋮----
 schema: str
 source_name: str
+source_authority: str
 source_verified: bool
 source_digest_sha256: str
 entries: tuple[CveAdvisoryEntry, ...]
@@ -2723,6 +2724,7 @@ def _canonical_digest(document: Mapping[str, Any]) -> str
 encoded = json.dumps(
 ⋮----
 normalized_source = _text(
+normalized_authority = _text(
 raw_entries = document.get("entries")
 ⋮----
 declared_count = document.get("count")
@@ -2765,6 +2767,7 @@ CVE_ADVISORY_CONSENSUS_SCHEMA = "cve-advisory-consensus-v1"
 class AdvisorySourceEvidence
 ⋮----
 source_name: str
+source_authority: str
 identity_kind: str
 identity_key: str
 affected_version_ranges: tuple[str, ...]
@@ -2783,10 +2786,12 @@ schema: str
 cve_id: str | None
 state: str
 source_count: int
+source_instance_count: int
 matched_advisory_count: int
 identity_count: int
 identity_kinds: tuple[str, ...]
 sources: tuple[str, ...]
+authorities: tuple[str, ...]
 evidence: tuple[AdvisorySourceEvidence, ...]
 ambiguity_reasons: tuple[str, ...]
 range_sets_equal: bool
@@ -2802,7 +2807,8 @@ normalized_fingerprint_versions = tuple(
 normalized_package_version = (
 ⋮----
 evidence: list[AdvisorySourceEvidence] = []
-source_ids: set[tuple[str, str]] = set()
+source_instances: set[tuple[str, str, str]] = set()
+source_authorities: set[str] = set()
 ⋮----
 matches = find_verified_cve_advisories(
 ⋮----
@@ -2812,18 +2818,22 @@ applicability = build_affected_version_range_evidence(
 identity_keys = {item.identity_key for item in evidence}
 identity_kinds = tuple(
 sources = tuple(sorted({item.source_name for item in evidence}))
+authorities = tuple(sorted(source_authorities))
 range_sets = {
 range_sets_equal = len(range_sets) == 1
-source_count = len(source_ids)
+source_count = len(source_authorities)
+source_instance_count = len(source_instances)
 ⋮----
 ambiguity: set[str] = set()
 agreement = False
 ⋮----
+applicability_states = {
+⋮----
 state = "parallel_unbound_identities"
 ⋮----
-state = "single_source"
+state = "same_authority_snapshot_conflict"
 ⋮----
-applicability_states = {
+state = "single_source"
 ⋮----
 state = "exact_identity_applicability_agreement"
 agreement = True
@@ -2885,6 +2895,7 @@ catalog = build_cve_advisory_catalog(
 source_format = os.getenv(
 default_source_name = {
 source_name = os.getenv(
+source_authority = {
 ⋮----
 def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None
 ⋮----
@@ -2900,7 +2911,7 @@ statuses = (legacy_status, nvd_status, osv_status)
 catalogs: list[CveAdvisoryCatalog] = []
 seen: set[tuple[str, str]] = set()
 ⋮----
-key = (catalog.source_name, catalog.source_digest_sha256)
+key = (catalog.source_authority, catalog.source_digest_sha256)
 ⋮----
 configured_count = sum(
 invalid_count = sum(
@@ -17087,13 +17098,17 @@ def test_advisory_identity_must_be_exactly_one_complete_kind(entry)
 def test_plural_lookup_preserves_exact_cpe_and_package_matches()
 ⋮----
 matches = find_verified_cve_advisories(
+⋮----
+def test_source_authority_defaults_to_source_name()
+⋮----
+def test_explicit_source_authority_is_normalized_and_persisted()
 ````
 
 ## File: backend/tests/test_cve_advisory_consensus.py
 ````python
 def _finding()
 ⋮----
-def _catalog(source_name, entry)
+def _catalog(source_name, entry, *, source_authority=None)
 ⋮----
 def test_parallel_cpe_and_package_identities_are_not_auto_merged()
 ⋮----
@@ -17116,6 +17131,17 @@ def test_unverified_catalog_is_ignored_by_consensus()
 ⋮----
 verified = _catalog(
 unverified = build_cve_advisory_catalog(
+⋮----
+def test_same_authority_aliases_do_not_create_cross_source_agreement()
+⋮----
+def test_same_authority_conflicting_snapshots_are_ambiguous()
+⋮----
+old_snapshot = _catalog(
+new_snapshot = _catalog(
+⋮----
+def test_distinct_authorities_can_still_form_exact_identity_consensus()
+⋮----
+vendor = _catalog(
 ````
 
 ## File: backend/tests/test_cve_advisory_loader.py
@@ -18166,6 +18192,11 @@ nvd = build_cve_advisory_catalog(
 osv = build_cve_advisory_catalog(
 ⋮----
 def test_single_named_catalog_can_supply_verified_range_without_legacy_slot()
+⋮----
+def test_same_advisory_authority_snapshot_conflict_forces_passive_review()
+⋮----
+old_snapshot = build_cve_advisory_catalog(
+new_snapshot = build_cve_advisory_catalog(
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
