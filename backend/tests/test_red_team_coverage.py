@@ -183,3 +183,86 @@ def test_red_team_coverage_ignores_failed_or_queued_review_evidence():
     assert after["summary"]["reviewed_endpoints"] == 1
     assert after["score"] >= before["score"]
     assert after["read_only"] is True
+
+
+def test_empty_graph_has_zero_observed_coverage_not_full_score():
+    result = build_red_team_coverage(ObservationGraph())
+
+    assert result["score"] == 0.0
+    assert result["observation_state"] == "no_observed_surface"
+    assert result["summary"]["observed_domain_count"] == 0
+    assert result["summary"]["unobserved_domain_count"] == 6
+    assert len(result["unobserved_domains"]) == 6
+    assert all(item["score"] == 0.0 for item in result["domains"])
+    assert result["read_only"] is True
+    assert result["safe_validation_only"] is True
+
+
+def test_asset_only_graph_does_not_claim_full_review_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    result = build_red_team_coverage(graph)
+
+    assert result["score"] == 0.0
+    assert result["observation_state"] == "no_observed_surface"
+    assert result["unobserved_domains"]
+    assert result["score_interpretation"].endswith("not_security_assurance")
+
+
+def test_completed_review_raises_observed_surface_score_without_security_claim():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    before = build_red_team_coverage(graph)
+    graph.add(
+        Observation(
+            "review:endpoint",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:e",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+    after = build_red_team_coverage(graph)
+
+    assert before["score"] == 0.0
+    assert after["score"] == 1.0
+    assert after["observation_state"] == "observed_surface_only"
+    assert after["summary"]["observed_domain_count"] == 1
+    assert after["summary"]["unobserved_domain_count"] == 5
+    assert "form_surface" in after["unobserved_domains"]
+    assert "not_security_assurance" in after["score_interpretation"]
+
+
+def test_unvalidated_finding_reduces_score_across_observed_dimensions():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "scanner",
+            parent_ids=("asset:a",),
+        )
+    )
+    result = build_red_team_coverage(graph)
+
+    assert result["observation_state"] == "observed_surface_only"
+    assert result["score"] == 0.0
+    assert result["summary"]["observed_domain_count"] == 2
+    assert "finding_validation" not in result["unobserved_domains"]
+    assert "evidence_quality" not in result["unobserved_domains"]
