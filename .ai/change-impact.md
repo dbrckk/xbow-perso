@@ -1,11 +1,11 @@
 # Change impact
 
-Base: ca07438839563593787678106a2ab74586472e77
-Head: bf26dfe153239d8047ab45b626e98c4fb70ef478
+Base: aaef9e4b7f8c278ce1e0b5d123e30925be346099
+Head: a06dc471f61221d5411a46cee805f2504e1311be
 
 ## Changed files
-- M backend/app/recon_swarm.py
-- M backend/tests/test_recon_swarm.py
+- M backend/app/no_finding_recovery.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend

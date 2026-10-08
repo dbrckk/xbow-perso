@@ -7571,8 +7571,7 @@ def to_dict(self) -> dict[str, Any]
 ⋮----
 result = asdict(self)
 ⋮----
-def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[str]
-⋮----
+"""Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
 ⋮----
 # Multiple observations for one worker job must not inflate negative yield.
@@ -7607,8 +7606,7 @@ surface = build_attack_surface(graph, scope_checker=scope_checker)
 ⋮----
 endpoints = [
 forms = [
-endpoint_reviewed = _reviewed_ids(graph, _ENDPOINT_REVIEW_TYPES)
-form_reviewed = _reviewed_ids(graph, frozenset({"form_surface_review"}))
+endpoint_reviewed = _reviewed_ids(
 uncovered_endpoints = sum(
 scope_issues = sum(
 # Technology observations without a trusted in-scope asset ancestor
@@ -7639,6 +7637,7 @@ def scan_matches_target(item: Any) -> bool
 ⋮----
 # Orphan forms or forms from a different asset do not close a gap.
 ⋮----
+form_reviewed = _reviewed_ids(
 uncovered_forms = sum(
 missing_technology = not any(
 observed_browser_work = any(
@@ -20945,6 +20944,14 @@ graph = _fully_reviewed_target_graph(additional_host=False)
 def test_other_host_browser_completion_cannot_exhaust_target()
 ⋮----
 graph = _fully_reviewed_target_graph(additional_host=True)
+⋮----
+def test_queued_endpoint_review_does_not_close_coverage_gap()
+⋮----
+def test_failed_form_review_does_not_close_coverage_gap()
+⋮----
+def test_completed_scoped_review_closes_only_its_own_endpoint_gap()
+⋮----
+def test_review_without_terminal_status_cannot_claim_coverage()
 ```
 
 ## File: tests/test_nuclei_preflight.py

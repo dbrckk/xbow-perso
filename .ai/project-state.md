@@ -39,21 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:18:43Z
+Generated: 2026-10-08T18:21:37Z
 
 ### Git
 - Branch: `main`
-- Head: `bf26dfe15323`
-- Commit date: 2026-10-08T20:18:13+02:00
-- Commit: fix(recon): scope reconnaissance inventory to exact target origin
+- Head: `a06dc471f612`
+- Commit date: 2026-10-08T20:21:17+02:00
+- Commit: fix(recovery): require completed evidence for surface review coverage
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
 - `backend/app/adaptive_cycle.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_htb_lab.py`
 - `backend/tests/test_orchestrator.py`
