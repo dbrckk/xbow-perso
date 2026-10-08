@@ -182,6 +182,27 @@ def build_no_finding_recovery(
         has_in_scope_asset_ancestor(item.id)
         for item in graph.by_kind("technology")
     )
+    observed_browser_work = any(
+        item.source in {"browser", "browser-agent", "recon:browser_observe"}
+        for kind in ("endpoint", "form", "technology")
+        for item in graph.by_kind(kind)
+    ) or any(
+        item.metadata.get("task_kind") == "browser_observe"
+        and item.metadata.get("status") == "completed"
+        for item in graph.by_kind("evidence")
+    )
+    browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
+    if isinstance(browser_job_outcomes, Mapping):
+        browser_counts = browser_job_outcomes.get("browser_flow")
+        if isinstance(browser_counts, Mapping):
+            try:
+                observed_browser_work = (
+                    observed_browser_work
+                    or int(browser_counts.get("completed") or 0) > 0
+                )
+            except (TypeError, ValueError):
+                observed_browser_work = True  # fail closed on invalid worker data
+
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
 
@@ -230,8 +251,10 @@ def build_no_finding_recovery(
                 candidates.append((75, "map_endpoints"))
             if completed_scans >= 3:
                 reasons.append("repeated completed scans yielded no observed finding; rotate coverage rather than repeat identical tests")
-                candidates.append((55, "browser_observe"))
-                candidates.append((50, "map_endpoints"))
+                if not observed_browser_work:
+                    candidates.append((55, "browser_observe"))
+                else:
+                    reasons.append("browser observation already attempted; no automatic repeat of exhausted recovery")
         if not candidates:
             state = "no_supported_recovery_task"
             reasons.append("no evidence-backed recon gap is available")
