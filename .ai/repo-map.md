@@ -8302,6 +8302,14 @@ NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
 _REVISIT_SURFACE_KINDS: dict[str, frozenset[str]] = {
 _ALLOWED_RECON_KINDS = frozenset(
 _ENDPOINT_REVIEW_TYPES = frozenset(
+_SUCCESSFUL_RECON_OUTCOMES = frozenset(
+⋮----
+def _is_completed_recon_step(observation: Any) -> bool
+⋮----
+"""Do not exhaust a recovery task on contradictory terminal evidence."""
+metadata = observation.metadata
+⋮----
+outcome = metadata.get("outcome")
 ⋮----
 @dataclass(frozen=True)
 class NoFindingRecovery
@@ -21973,6 +21981,18 @@ def test_review_marked_reviewed_but_inconclusive_outcome_keeps_form_gap()
 def test_explicit_completed_and_successful_review_closes_only_eligible_gap()
 ⋮----
 def test_invalid_review_outcome_type_cannot_close_endpoint_gap()
+⋮----
+def test_failed_outcome_does_not_exhaust_completed_recon_task()
+⋮----
+def test_inconclusive_outcome_does_not_exhaust_completed_recon_task()
+⋮----
+def test_successful_completed_recon_remains_exhausted_without_new_surface()
+⋮----
+def test_no_finding_recon_completion_still_counts_as_a_completed_attempt()
+⋮----
+def test_malformed_outcome_does_not_claim_completed_recon()
+⋮----
+def test_failed_browser_observation_does_not_stop_recovery_advisory()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py

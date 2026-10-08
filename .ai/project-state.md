@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:30:41Z
+Generated: 2026-10-08T22:34:53Z
 
 ### Git
 - Branch: `main`
-- Head: `5ec95da6a05f`
-- Commit date: 2026-10-09T00:30:30+02:00
-- Commit: fix(recovery): reconcile terminal review outcomes before closing gaps
+- Head: `0c6960667995`
+- Commit date: 2026-10-09T00:34:40+02:00
+- Commit: fix(recovery): distinguish recon completion from failed outcomes
 - Tracked files: 687
 
 ### Recently changed files
@@ -55,9 +55,6 @@ Generated: 2026-10-08T22:30:41Z
 - `backend/tests/test_attack_surface.py`
 - `backend/app/recon_priority.py`
 - `backend/tests/test_recon_priority.py`
-- `backend/app/learning_memory.py`
-- `backend/app/orchestrator.py`
-- `backend/tests/test_learning_memory.py`
 
 ### Project signals
 - `pyproject.toml`

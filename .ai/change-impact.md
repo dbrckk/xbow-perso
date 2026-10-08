@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 22fa635e72665c1fead44bd825e22f4023a72f9e
-Head: 5ec95da6a05ffbd2fca3b4b082c45fbede2c6149
+Base: c61632f6aa5d074b9e10ba01df34e69b722d9fa8
+Head: 0c69606679957c202ec5cad72bdb107b35108fb4
 
 ## Changed files
 - M backend/app/no_finding_recovery.py
