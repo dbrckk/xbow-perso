@@ -1316,3 +1316,182 @@ def test_later_recovery_completion_prevents_repeating_old_novelty():
     result = _feedback(graph, target_host="example.test")
     assert result.reopened_task_kinds == ()
     assert "map_forms" in result.exhausted_task_kinds
+
+
+def _two_origin_graph() -> ObservationGraph:
+    graph = ObservationGraph()
+    for scheme in ("http", "https"):
+        graph.add(
+            Observation(
+                f"asset:{scheme}",
+                "asset",
+                f"{scheme}://example.test",
+                "inventory",
+            )
+        )
+        graph.add(
+            Observation(
+                f"endpoint:{scheme}",
+                "endpoint",
+                f"{scheme}://example.test/account",
+                "crawler",
+                parent_ids=(f"asset:{scheme}",),
+            )
+        )
+    return graph
+
+
+def test_negative_scan_on_http_does_not_trigger_https_recovery():
+    graph = _two_origin_graph()
+    graph.add(
+        Observation(
+            "scan:http",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:http",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "http-job",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        allowed=("map_forms", "map_endpoints"),
+    )
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.in_scope_endpoint_count == 1
+    assert result.recommended_task_kinds == ()
+
+
+def test_origin_scoped_scan_recovers_only_its_endpoint_inventory():
+    graph = _two_origin_graph()
+    graph.add(
+        Observation(
+            "scan:https",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:https",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "https-job",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "form:http",
+            "form",
+            "http://example.test/login",
+            "browser",
+            parent_ids=("asset:http",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:http",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:http",),
+        )
+    )
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert result.in_scope_endpoint_count == 1
+    assert result.in_scope_form_count == 0
+    assert result.missing_technology_context is True
+    assert "map_forms" in result.recommended_task_kinds
+    assert "detect_technology" in result.recommended_task_kinds
+
+
+def test_endpoint_linked_to_different_port_does_not_fill_target_gap():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:other", "asset", "https://example.test:8443", "inventory")
+    )
+    graph.add(
+        Observation("asset:target", "asset", "https://example.test:443", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:wrong-ancestor",
+            "endpoint",
+            "https://example.test:443/account",
+            "crawler",
+            parent_ids=("asset:other",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:target",
+            "evidence",
+            "complete",
+            "nuclei",
+            parent_ids=("asset:target",),
+            metadata={"phase": "scan", "status": "completed"},
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        allowed=("crawl", "map_endpoints"),
+    )
+    assert result.state == "recovery_advisory"
+    assert result.in_scope_endpoint_count == 0
+    assert result.scope_integrity_issues >= 1
+    assert "map_endpoints" in result.recommended_task_kinds
+
+
+def test_legacy_unlinked_scan_requires_explicit_matching_asset_origin():
+    legacy = _graph(scans=1)
+    result = _feedback(legacy, target_url="https://example.test")
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "scan:unlinked",
+            "evidence",
+            "complete",
+            "nuclei",
+            metadata={"phase": "scan", "status": "completed"},
+        )
+    )
+    compatible = _feedback(
+        graph,
+        target_url="https://example.test",
+        allowed=("crawl",),
+    )
+    assert compatible.completed_scan_count == 1
+    assert compatible.state == "recovery_advisory"
+
+
+def test_invalid_or_mismatched_target_origin_is_rejected():
+    import pytest
+
+    for invalid in ("", "ftp://example.test", "https://user@example.test", "https://example.test:99999"):
+        with pytest.raises(ValueError, match="target_url"):
+            _feedback(_graph(), target_url=invalid)
+    with pytest.raises(ValueError, match="target_host and target_url"):
+        _feedback(
+            _graph(),
+            target_host="other.test",
+            target_url="https://example.test",
+        )
