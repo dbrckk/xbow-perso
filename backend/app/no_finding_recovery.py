@@ -32,6 +32,9 @@ class NoFindingRecovery:
     recommended_task_kinds: tuple[str, ...]
     reasons: tuple[str, ...]
     exhausted_task_kinds: tuple[str, ...] = ()
+    worker_health_attribution: str = "campaign_aggregate"
+    worker_instability_observed: bool = False
+    worker_instability_applied: bool = False
     advisory_only: bool = True
     may_expand_scope: bool = False
     may_increase_request_budget: bool = False
@@ -308,8 +311,30 @@ def build_no_finding_recovery(
         )
     }
 
+    worker_instability_observed = _unstable_scanner_outcomes(worker_outcomes)
+    # Worker outcome summaries are campaign-wide and carry no asset identity.
+    # Do not attribute a failure on host B to a completed scan of host A.
+    worker_health_attributable = (
+        normalized_target_host is None or legacy_single_host
+    )
+    worker_health_attribution = (
+        "campaign_aggregate"
+        if normalized_target_host is None
+        else "single_observed_host"
+        if legacy_single_host
+        else "unattributed_multi_host"
+    )
+    worker_instability_applied = (
+        worker_instability_observed and worker_health_attributable
+    )
+
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
+    if worker_instability_observed and not worker_health_attributable:
+        reasons.append(
+            "campaign-wide scanner worker errors cannot be attributed "
+            "to the selected target; target-specific health is unknown"
+        )
 
     if finding_count:
         state = "findings_present"
@@ -320,7 +345,7 @@ def build_no_finding_recovery(
     elif not asset_host_by_id:
         state = "scope_unverified"
         reasons.append("no observed asset matches the authorized target for recovery")
-    elif _unstable_scanner_outcomes(worker_outcomes):
+    elif worker_instability_applied:
         state = "execution_unstable"
         reasons.append("repeated scanner worker errors require operator review")
     elif not completed_scans:
@@ -406,4 +431,7 @@ def build_no_finding_recovery(
         recommended_task_kinds=recommended,
         reasons=tuple(dict.fromkeys(reasons)),
         exhausted_task_kinds=exhausted,
+        worker_health_attribution=worker_health_attribution,
+        worker_instability_observed=worker_instability_observed,
+        worker_instability_applied=worker_instability_applied,
     )
