@@ -666,3 +666,84 @@ def test_explicit_findings_report_does_not_discard_scans_with_recorded_finding()
 
     assert coverage["evidence"]["completed_scans"] == 1
     assert coverage["evidence"]["unreconciled_scan_observations"] == 0
+
+
+def test_unreconciled_scan_report_takes_precedence_over_low_yield_rotation():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/settings",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index, count in enumerate((0, 0, 0, 1)):
+        graph.add(
+            Observation(
+                f"scan:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                    "findings": count,
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    guidance = build_coverage_guidance(coverage)
+
+    assert coverage["evidence"]["completed_scans"] == 3
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 1
+    assert coverage["dimensions"]["diminishing_returns"] >= 0.5
+    assert guidance["focus"] == "scan_result_reconciliation"
+    assert guidance["recommended_strategy"] == (
+        "reconcile_scan_reports_before_replanning"
+    )
+    assert guidance["advisory_only"] is True
+    assert guidance["may_unlock_actions"] is False
+
+
+def test_unreconciled_scan_guidance_never_modifies_planned_scan_authority():
+    action = PlannedAction(
+        kind="scan",
+        target="https://example.test/",
+        reason="scanner is already authorized",
+        priority=80,
+    )
+    adjusted, signal = prioritize_action_with_coverage(
+        action,
+        {"focus": "scan_result_reconciliation", "diminishing_returns": 1.0},
+    )
+
+    assert adjusted == action
+    assert signal["applied"] is False
+    assert signal["action_kind_unchanged"] is True
+    assert signal["target_unchanged"] is True
