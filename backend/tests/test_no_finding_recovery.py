@@ -673,3 +673,114 @@ def test_legacy_unscoped_scan_remains_valid_for_single_observed_host():
     assert result.state == "recovery_advisory"
     assert result.completed_scan_count == 1
     assert result.recommended_task_kinds
+
+
+def _fully_reviewed_target_graph(*, additional_host: bool) -> ObservationGraph:
+    graph = _graph(scans=0)
+    if additional_host:
+        graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "form-discovery",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index in range(4):
+        graph.add(
+            Observation(
+                f"scan:scoped-{index}",
+                "evidence",
+                "scan-complete",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-scoped-{index}",
+                },
+            )
+        )
+    for kind, parent in (
+        ("authorization_surface_review", "endpoint:a"),
+        ("form_surface_review", "form:a"),
+    ):
+        graph.add(
+            Observation(
+                f"review:{kind}",
+                "evidence",
+                "reviewed",
+                "analyst",
+                parent_ids=(parent,),
+                metadata={"review_type": kind},
+            )
+        )
+    return graph
+
+
+def test_single_host_legacy_browser_completion_prevents_recovery_loop():
+    graph = _fully_reviewed_target_graph(additional_host=False)
+    graph.add(
+        Observation(
+            "browser:legacy",
+            "evidence",
+            "completed",
+            "browser-agent",
+            metadata={
+                "task_kind": "browser_observe",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        allowed=("browser_observe",),
+    )
+    assert result.state == "no_supported_recovery_task"
+    assert result.completed_scan_count == 4
+    assert result.recommended_task_kinds == ()
+
+
+def test_other_host_browser_completion_cannot_exhaust_target():
+    graph = _fully_reviewed_target_graph(additional_host=True)
+    graph.add(
+        Observation(
+            "browser:other",
+            "evidence",
+            "completed",
+            "browser-agent",
+            parent_ids=("asset:b",),
+            metadata={
+                "task_kind": "browser_observe",
+                "status": "completed",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        allowed=("browser_observe",),
+        worker_outcomes={
+            "by_job_kind": {
+                "browser_flow": {"completed": 1}
+            }
+        },
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.recommended_task_kinds == ("browser_observe",)
+    assert result.exhausted_task_kinds == ()
