@@ -11633,6 +11633,8 @@ selected_engines: tuple[str, ...]
 suppressed_engines: tuple[str, ...]
 ranked_engines: tuple[str, ...]
 reasons: dict[str, str]
+coverage_rotation_applied: bool = False
+no_completed_run_engines: tuple[str, ...] = ()
 advisory_only: bool = True
 may_expand_configuration: bool = False
 ⋮----
@@ -11654,13 +11656,20 @@ memory = _engine_memory(memories)
 by_kind = (worker_outcomes or {}).get("by_job_kind") or {}
 reasons: dict[str, str] = {}
 suppressed: set[str] = set()
+completed_by_engine: dict[str, int] = {}
 ⋮----
 technique = memory.get(engine)
 job_kind = f"{engine}_scan"
 outcome = by_kind.get(job_kind) if isinstance(by_kind, dict) else None
-completed = int((outcome or {}).get("completed") or 0) if isinstance(outcome, dict) else 0
-requeued = int((outcome or {}).get("requeued") or 0) if isinstance(outcome, dict) else 0
-failed = int((outcome or {}).get("failed") or 0) if isinstance(outcome, dict) else 0
+⋮----
+completed = int(outcome.get("completed") or 0)
+requeued = int(outcome.get("requeued") or 0)
+failed = int(outcome.get("failed") or 0)
+⋮----
+# Untrusted or corrupt counters cannot justify suppressing
+# an engine or boosting a coverage recommendation.
+⋮----
+completed = requeued = failed = 0
 ⋮----
 # Technique-level "failure" may mean a valid negative security
 # result, not a scanner crash. Never suppress a configured engine
@@ -11672,9 +11681,17 @@ unstable_worker = (requeued + failed) >= 2 and completed == 0
 reasons = {
 ⋮----
 configured_order = {
+healthy = tuple(engine for engine in configured_engines if engine not in suppressed)
+valid_counters = all(completed_by_engine[engine] >= 0 for engine in healthy)
+positive_memory = any(
+rotation = bool(
+no_completed = tuple(
 ⋮----
-def rank_key(engine: str) -> tuple[float, float, int, int]
+explanation = (
 ⋮----
+def rank_key(engine: str) -> tuple[int, float, float, int, int]
+⋮----
+rotation_rank = (
 item = memory.get(engine)
 ⋮----
 # Confidence in negative results is not scanner quality.
@@ -24036,6 +24053,16 @@ def test_negative_memory_cannot_expand_scanner_configuration()
 def test_negative_only_memory_does_not_out_rank_configured_engine_order()
 ⋮----
 def test_positive_scanner_evidence_can_improve_ranking_without_new_engines()
+⋮----
+def test_repeated_negative_runs_prioritize_unobserved_configured_engine()
+⋮----
+def test_positive_security_signal_prevents_negative_yield_rotation()
+⋮----
+def test_no_completed_history_does_not_invent_scanner_rotation()
+⋮----
+def test_scanner_rotation_never_overrides_safety_suppression()
+⋮----
+def test_corrupt_worker_counts_do_not_crash_or_change_execution_authority()
 ```
 
 ## File: tests/test_scanner_ingestion.py

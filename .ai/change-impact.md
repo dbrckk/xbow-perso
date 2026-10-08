@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 96239f8f23b67d2fc9021b64bed1e0a9259aeb23
-Head: 4584211a6f0fd26169a1239ecfb6b634fdd72388
+Base: 7f7504f90251e2a7e6a36c8a76f842936f9efa51
+Head: e8a89d3e182418a6ea4e8977f4eb50a6b7cf5175
 
 ## Changed files
-- M backend/app/adaptive_cycle.py
-- M backend/tests/test_adaptive_cycle.py
+- M backend/app/scanner_adaptation.py
+- M backend/tests/test_scanner_adaptation.py
 
 ## Affected areas
 - backend

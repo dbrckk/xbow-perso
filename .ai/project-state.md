@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T18:58:45Z
+Generated: 2026-10-08T18:59:37Z
 
 ### Git
 - Branch: `main`
-- Head: `4584211a6f0f`
-- Commit date: 2026-10-08T20:58:32+02:00
-- Commit: fix(cycle): keep negative scanner outcomes distinct from crashes
+- Head: `e8a89d3e1824`
+- Commit date: 2026-10-08T20:59:25+02:00
+- Commit: feat(scanner): diversify configured scanning coverage after negative runs
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/scanner_adaptation.py`
+- `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/tests/test_adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`

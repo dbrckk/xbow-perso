@@ -1,72 +1,29 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e5b316f84fc2d9697cd77b0a749aa58b8312bd98",
-  "head": "4584211a6f0fd26169a1239ecfb6b634fdd72388",
+  "base": "4584211a6f0fd26169a1239ecfb6b634fdd72388",
+  "head": "e8a89d3e182418a6ea4e8977f4eb50a6b7cf5175",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/adaptive_cycle.py",
+      "path": "backend/app/scanner_adaptation.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_adaptive_cycle.py",
+      "path": "backend/tests/test_scanner_adaptation.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/adaptive_cycle.py",
-    "backend/tests/test_adaptive_cycle.py"
+    "backend/app/scanner_adaptation.py",
+    "backend/tests/test_scanner_adaptation.py"
   ],
   "impacted_files": [
-    "backend/app/adaptive_cycle.py",
     "backend/app/orchestrator.py",
-    "backend/app/recon_swarm.py",
-    "backend/tests/test_adaptive_cycle.py"
+    "backend/app/scanner_adaptation.py",
+    "backend/tests/test_scanner_adaptation.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "AdaptiveCycle",
-      "kind": "class",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 24
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 33
-    },
-    {
-      "name": "_suppressed_techniques",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 40
-    },
-    {
-      "name": "_unstable_job_kinds",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 60
-    },
-    {
-      "name": "build_adaptive_cycle",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 77
-    },
-    {
-      "name": "campaign_adaptive_cycle",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 152
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 160
-    },
     {
       "name": "_stable_id",
       "kind": "function",
@@ -170,157 +127,133 @@
       "line": 696
     },
     {
-      "name": "ReconCapability",
+      "name": "ScannerAdaptation",
       "kind": "class",
-      "file": "backend/app/recon_swarm.py",
-      "line": 27
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 12
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 38
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 23
     },
     {
-      "name": "ReconTask",
-      "kind": "class",
-      "file": "backend/app/recon_swarm.py",
-      "line": 46
-    },
-    {
-      "name": "to_dict",
+      "name": "_engine_memory",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 57
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 33
     },
     {
-      "name": "recon_capabilities",
+      "name": "adapt_scanner_engines",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 72
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 45
     },
     {
-      "name": "_origin_identity",
+      "name": "rank_key",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 76
+      "file": "backend/app/scanner_adaptation.py",
+      "line": 144
     },
     {
-      "name": "_safe_target",
+      "name": "_memory",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 109
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 7
     },
     {
-      "name": "_same_origin",
+      "name": "test_adaptation_never_expands_configured_engines",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 127
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 20
     },
     {
-      "name": "_compatible_asset",
+      "name": "test_adaptation_preserves_engine_after_negative_technique_outcomes",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 132
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 33
     },
     {
-      "name": "_recon_observation_is_for_target",
+      "name": "test_adaptation_never_suppresses_last_configured_engine",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 148
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 45
     },
     {
-      "name": "build_recon_plan",
+      "name": "test_adaptation_ranks_successful_memory_first",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 186
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 66
     },
     {
-      "name": "matching",
+      "name": "test_adaptation_rejects_unknown_or_duplicate_configuration",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 213
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 80
     },
     {
-      "name": "recon_swarm_capabilities",
+      "name": "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 265
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 88
     },
     {
-      "name": "campaign_recon_plan",
+      "name": "test_completed_scanner_run_overrides_negative_memory_for_suppression",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 274
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 108
     },
     {
-      "name": "scope_checker",
+      "name": "test_negative_memory_cannot_expand_scanner_configuration",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 281
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 128
     },
     {
-      "name": "_gate",
+      "name": "test_negative_only_memory_does_not_out_rank_configured_engine_order",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 8
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 141
     },
     {
-      "name": "test_cycle_halts_when_gate_is_blocked",
+      "name": "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 18
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 153
     },
     {
-      "name": "test_cycle_maps_safe_planner_actions_to_bounded_states",
+      "name": "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 29
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 168
     },
     {
-      "name": "test_cycle_requires_human_for_report_focus",
+      "name": "test_positive_security_signal_prevents_negative_yield_rotation",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 40
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 189
     },
     {
-      "name": "test_cycle_suppresses_repeated_failed_techniques",
+      "name": "test_no_completed_history_does_not_invent_scanner_rotation",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 51
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 201
     },
     {
-      "name": "test_adaptive_cycle_route_is_exposed",
+      "name": "test_scanner_rotation_never_overrides_safety_suppression",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 71
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 212
     },
     {
-      "name": "test_cycle_halts_for_human_review_after_repeated_requeues_without_success",
+      "name": "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 75
-    },
-    {
-      "name": "test_cycle_does_not_suppress_recovered_worker_kind",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 101
-    },
-    {
-      "name": "test_negative_scanner_memory_does_not_suppress_authorized_scanner",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 125
-    },
-    {
-      "name": "test_operational_scanner_worker_instability_still_requires_human_review",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 148
+      "file": "backend/tests/test_scanner_adaptation.py",
+      "line": 229
     }
   ],
   "selected_tests": [
-    "backend/tests/test_adaptive_cycle.py"
+    "backend/tests/test_scanner_adaptation.py"
   ]
 }

@@ -5,42 +5,29 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "AdaptiveCycle": {
+    "ScannerAdaptation": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 24,
-        "end": 37
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "to_dict": {
-      "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 33,
-        "end": 37
+        "file": "backend/app/scanner_adaptation.py",
+        "start": 12,
+        "end": 30
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_suppressed_techniques": {
+    "to_dict": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 40,
-        "end": 57
+        "file": "backend/app/scanner_adaptation.py",
+        "start": 23,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_engine_memory": {
+      "source": {
+        "file": "backend/app/scanner_adaptation.py",
+        "start": 33,
+        "end": 42
       },
       "symbol_dependencies": [
         {
@@ -58,31 +45,133 @@
       ],
       "dependency_count": 1
     },
-    "_unstable_job_kinds": {
+    "adapt_scanner_engines": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 60,
-        "end": 74
+        "file": "backend/app/scanner_adaptation.py",
+        "start": 45,
+        "end": 175
       },
       "symbol_dependencies": [
         {
-          "symbol": "by_kind",
+          "symbol": "ScannerAdaptation",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
-              "kind": "function",
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "TechniqueMemory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 15,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "values",
+          "symbol": "_engine_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "rank_key",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 144,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "rank_key": {
+      "source": {
+        "file": "backend/app/scanner_adaptation.py",
+        "start": 144,
+        "end": 264
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ScannerAdaptation",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_memory": {
+      "source": {
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 7,
+        "end": 17
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "TechniqueMemory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_adaptation_never_expands_configured_engines": {
+      "source": {
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 20,
+        "end": 30
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_memory",
+          "definitions": [
+            {
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -92,67 +181,19 @@
       ],
       "dependency_count": 2
     },
-    "build_adaptive_cycle": {
+    "test_adaptation_preserves_engine_after_negative_technique_outcomes": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 77,
-        "end": 148
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 33,
+        "end": 42
       },
       "symbol_dependencies": [
         {
-          "symbol": "AdaptiveCycle",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "AutonomyGate",
-          "definitions": [
-            {
-              "file": "backend/app/autonomy_gate.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_suppressed_techniques",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 40,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -160,93 +201,33 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_unstable_job_kinds",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 60,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 2
     },
-    "campaign_adaptive_cycle": {
+    "test_adaptation_never_suppresses_last_configured_engine": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 152,
-        "end": 218
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 45,
+        "end": 63
       },
       "symbol_dependencies": [
         {
-          "symbol": "AdaptivePlanner",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 110,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignRuntimeLimit",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_runtime.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PlannerBudget",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 223,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "budget_usage",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -254,249 +235,33 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_autonomy_gate",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/autonomy_gate.py",
-              "line": 33,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "build_campaign_risk",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_risk.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_decision_consensus",
-          "definitions": [
-            {
-              "file": "backend/app/decision_consensus.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_no_finding_recovery",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 114,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_recon_plan",
-          "definitions": [
-            {
-              "file": "backend/app/recon_swarm.py",
-              "line": 186,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_red_team_decisions",
-          "definitions": [
-            {
-              "file": "backend/app/red_team_decision.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_observation_graph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "runtime_status",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_runtime.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "scope_checker",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 160,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 176,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
-      "dependency_count": 21
+      "dependency_count": 2
     },
-    "scope_checker": {
+    "test_adaptation_ranks_successful_memory_first": {
       "source": {
-        "file": "backend/app/adaptive_cycle.py",
-        "start": 160,
-        "end": 280
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 66,
+        "end": 77
       },
       "symbol_dependencies": [
         {
-          "symbol": "AdaptivePlanner",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 110,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "CampaignRuntimeLimit",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_runtime.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "PlannerBudget",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "budget_usage",
-          "definitions": [
-            {
-              "file": "backend/app/planner_budget.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -504,166 +269,34 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_autonomy_gate",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/autonomy_gate.py",
-              "line": 33,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "build_campaign_risk",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_risk.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_decision_consensus",
-          "definitions": [
-            {
-              "file": "backend/app/decision_consensus.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_no_finding_recovery",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 114,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_recon_plan",
-          "definitions": [
-            {
-              "file": "backend/app/recon_swarm.py",
-              "line": 186,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_red_team_decisions",
-          "definitions": [
-            {
-              "file": "backend/app/red_team_decision.py",
-              "line": 47,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "queue",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "runtime_status",
-          "definitions": [
-            {
-              "file": "backend/app/campaign_runtime.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 176,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "to_dict",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
-      "dependency_count": 17
+      "dependency_count": 2
     },
-    "_gate": {
+    "test_adaptation_rejects_unknown_or_duplicate_configuration": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 8,
-        "end": 15
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 80,
+        "end": 85
       },
       "symbol_dependencies": [
         {
-          "symbol": "AutonomyGate",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/autonomy_gate.py",
-              "line": 19,
-              "kind": "class",
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -672,31 +305,19 @@
       ],
       "dependency_count": 1
     },
-    "test_cycle_halts_when_gate_is_blocked": {
+    "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 18,
-        "end": 26
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 88,
+        "end": 105
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -704,11 +325,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_adaptive_cycle",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -716,33 +337,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     },
-    "test_cycle_maps_safe_planner_actions_to_bounded_states": {
+    "test_completed_scanner_run_overrides_negative_memory_for_suppression": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 29,
-        "end": 37
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 108,
+        "end": 125
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -750,11 +359,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_adaptive_cycle",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -762,33 +371,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     },
-    "test_cycle_requires_human_for_report_focus": {
+    "test_negative_memory_cannot_expand_scanner_configuration": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 40,
-        "end": 48
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 128,
+        "end": 138
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -796,11 +393,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_adaptive_cycle",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -808,45 +405,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     },
-    "test_cycle_suppresses_repeated_failed_techniques": {
+    "test_negative_only_memory_does_not_out_rank_configured_engine_order": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 51,
-        "end": 68
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 141,
+        "end": 150
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
@@ -854,11 +427,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "build_adaptive_cycle",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -866,23 +439,125 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_adaptive_cycle_route_is_exposed": {
+    "test_positive_scanner_evidence_can_improve_ranking_without_new_engines": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 71,
-        "end": 72
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 153,
+        "end": 165
       },
       "symbol_dependencies": [
         {
-          "symbol": "api",
+          "symbol": "_memory",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
               "kind": "function",
-              "language": "javascript"
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_repeated_negative_runs_prioritize_unobserved_configured_engine": {
+      "source": {
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 168,
+        "end": 186
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_memory",
+          "definitions": [
+            {
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_positive_security_signal_prevents_negative_yield_rotation": {
+      "source": {
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 189,
+        "end": 198
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_memory",
+          "definitions": [
+            {
+              "file": "backend/tests/test_scanner_adaptation.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_completed_history_does_not_invent_scanner_rotation": {
+      "source": {
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 201,
+        "end": 209
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "adapt_scanner_engines",
+          "definitions": [
+            {
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
             }
           ],
           "relation": "imported_module"
@@ -890,43 +565,19 @@
       ],
       "dependency_count": 1
     },
-    "test_cycle_halts_for_human_review_after_repeated_requeues_without_success": {
+    "test_scanner_rotation_never_overrides_safety_suppression": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 75,
-        "end": 98
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 212,
+        "end": 226
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -934,45 +585,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 1
     },
-    "test_cycle_does_not_suppress_recovered_worker_kind": {
+    "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority": {
       "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 101,
-        "end": 122
+        "file": "backend/tests/test_scanner_adaptation.py",
+        "start": 229,
+        "end": 245
       },
       "symbol_dependencies": [
         {
-          "symbol": "PlannedAction",
+          "symbol": "adapt_scanner_engines",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
+              "file": "backend/app/scanner_adaptation.py",
+              "line": 45,
               "kind": "function",
               "language": "python"
             }
@@ -980,123 +607,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
-    },
-    "test_negative_scanner_memory_does_not_suppress_authorized_scanner": {
-      "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 125,
-        "end": 145
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_operational_scanner_worker_instability_still_requires_human_review": {
-      "source": {
-        "file": "backend/tests/test_adaptive_cycle.py",
-        "start": 148,
-        "end": 177
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 15,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_gate",
-          "definitions": [
-            {
-              "file": "backend/tests/test_adaptive_cycle.py",
-              "line": 8,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_adaptive_cycle",
-          "definitions": [
-            {
-              "file": "backend/app/adaptive_cycle.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
+      "dependency_count": 1
     }
   }
 }
