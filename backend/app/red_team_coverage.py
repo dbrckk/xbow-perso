@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from .attack_surface import build_attack_surface
 from .evidence_chain import build_evidence_chains
 from .hypothesis_engine import build_hypotheses
+from .review_evidence import is_completed_review_evidence
 from .observation_graph import ObservationGraph, load_observation_graph
 from .validation_state import analyze_validation_state
 
@@ -34,7 +35,10 @@ def _ratio(numerator: int, denominator: int) -> float:
 def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]:
     reviewed: set[str] = set()
     for item in graph.by_kind("evidence"):
-        if item.metadata.get("review_type") not in review_types:
+        if (
+            item.metadata.get("review_type") not in review_types
+            or not is_completed_review_evidence(item)
+        ):
             continue
         reviewed.update(item.parent_ids)
     return reviewed

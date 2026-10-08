@@ -78,7 +78,10 @@ def test_coverage_requires_recorded_form_and_waf_review_evidence():
             "review-recorded",
             "review-agent",
             parent_ids=("form:login",),
-            metadata={"review_type": "form_surface_review"},
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "completed",
+            },
         )
     )
     graph.add(
@@ -88,7 +91,10 @@ def test_coverage_requires_recorded_form_and_waf_review_evidence():
             "review-recorded",
             "review-agent",
             parent_ids=("waf:edge",),
-            metadata={"review_type": "protection_surface_review"},
+            metadata={
+                "review_type": "protection_surface_review",
+                "status": "completed",
+            },
         )
     )
     after = build_red_team_coverage(graph)
