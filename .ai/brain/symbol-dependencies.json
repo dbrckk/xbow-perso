@@ -5,28 +5,118 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "TechnologyFingerprint": {
+    "AdaptiveCycle": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 20,
-        "end": 39
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 23,
+        "end": 36
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "to_dict": {
+      "source": {
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 32,
+        "end": 36
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "to_dict": {
+    "_suppressed_techniques": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 31,
-        "end": 151
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 39,
+        "end": 46
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "TechniqueMemory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_unstable_job_kinds": {
+      "source": {
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 49,
+        "end": 63
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "by_kind",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "build_adaptive_cycle": {
+      "source": {
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 66,
+        "end": 137
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AdaptiveCycle",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "AutonomyGate",
+          "definitions": [
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 19,
               "kind": "class",
               "language": "python"
             }
@@ -34,11 +124,129 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_asset_ancestor_ids",
+          "symbol": "PlannedAction",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TechniqueMemory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_suppressed_techniques",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_unstable_job_kinds",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "campaign_adaptive_cycle": {
+      "source": {
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 141,
+        "end": 206
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AdaptivePlanner",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
               "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignRuntimeLimit",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannerBudget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_adaptive_cycle",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 66,
               "kind": "function",
               "language": "python"
             }
@@ -46,82 +254,130 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_asset_identity",
+          "symbol": "build_autonomy_gate",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 69,
+              "file": "backend/app/autonomy_gate.py",
+              "line": 33,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_asset_key",
+          "symbol": "build_campaign_risk",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 57,
+              "file": "backend/app/campaign_risk.py",
+              "line": 35,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_asset_scope",
+          "symbol": "build_decision_consensus",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 137,
+              "file": "backend/app/decision_consensus.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_compatible_asset_identity",
+          "symbol": "build_learning_memory",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 92,
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_normalize_product",
+          "symbol": "build_no_finding_recovery",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 42,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 93,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_parse_technology",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_decisions",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_decision.py",
               "line": 47,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "add",
+          "symbol": "load_observation_graph",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "runtime_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
               "line": 55,
               "kind": "function",
               "language": "python"
@@ -130,11 +386,304 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "values",
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 149,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 21
+    },
+    "scope_checker": {
+      "source": {
+        "file": "backend/app/adaptive_cycle.py",
+        "start": 149,
+        "end": 269
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AdaptivePlanner",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 92,
+              "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CampaignRuntimeLimit",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PlannerBudget",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_usage",
+          "definitions": [
+            {
+              "file": "backend/app/planner_budget.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_adaptive_cycle",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 66,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_autonomy_gate",
+          "definitions": [
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_campaign_risk",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_risk.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_decision_consensus",
+          "definitions": [
+            {
+              "file": "backend/app/decision_consensus.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_learning_memory",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_decisions",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_decision.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "queue",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "runtime_status",
+          "definitions": [
+            {
+              "file": "backend/app/campaign_runtime.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "NoFindingRecovery": {
+      "source": {
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 20,
+        "end": 45
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_reviewed_ids": {
+      "source": {
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 48,
+        "end": 53
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
@@ -142,84 +691,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 10
+      "dependency_count": 2
     },
-    "_normalize_product": {
+    "_completed_scan_evidence": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 42,
-        "end": 44
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_parse_technology": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 47,
-        "end": 54
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_asset_key": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 57,
-        "end": 66
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_identity",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_asset_identity": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 69,
-        "end": 89
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_compatible_asset_identity": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 92,
-        "end": 107
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_identity",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_asset_ancestor_ids": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 110,
-        "end": 134
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 56,
+        "end": 71
       },
       "symbol_dependencies": [
         {
@@ -247,11 +725,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "values",
+          "symbol": "by_kind",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 92,
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
@@ -261,13 +739,47 @@
       ],
       "dependency_count": 3
     },
-    "_asset_scope": {
+    "_unstable_scanner_outcomes": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 137,
-        "end": 161
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 74,
+        "end": 90
       },
       "symbol_dependencies": [
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "build_no_finding_recovery": {
+      "source": {
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 93,
+        "end": 286
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "NoFindingRecovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -281,11 +793,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_asset_ancestor_ids",
+          "symbol": "_completed_scan_evidence",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 110,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -293,16 +805,88 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_asset_key",
+          "symbol": "_reviewed_ids",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 57,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 48,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "_unstable_scanner_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 74,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_attack_surface",
+          "definitions": [
+            {
+              "file": "backend/app/attack_surface.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "has_in_scope_asset_ancestor",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 152,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "values",
@@ -317,57 +901,33 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 11
     },
-    "_finding_asset_keys": {
+    "has_in_scope_asset_ancestor": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 164,
-        "end": 211
+        "file": "backend/app/no_finding_recovery.py",
+        "start": 152,
+        "end": 272
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "NoFindingRecovery",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 20,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_asset_key",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
           "relation": "same_file"
         },
         {
-          "symbol": "_asset_scope",
+          "symbol": "_unstable_scanner_outcomes",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 137,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_compatible_asset_identity",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 92,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 74,
               "kind": "function",
               "language": "python"
             }
@@ -397,71 +957,13 @@
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "filter_fingerprints_for_finding_asset": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 214,
-        "end": 267
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "plan",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechnologyFingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_asset_key",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_finding_asset_keys",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 164,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "by_kind",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
+              "line": 113,
               "kind": "function",
               "language": "python"
             }
@@ -471,11 +973,301 @@
       ],
       "dependency_count": 5
     },
-    "build_technology_fingerprints": {
+    "_high_value_task_boost": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 270,
-        "end": 369
+        "file": "backend/app/recon_priority.py",
+        "start": 28,
+        "end": 53
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ReconPriorityAdjustment": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 57,
+        "end": 79
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ReconPriorityResult": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 83,
+        "end": 100
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPriorityAdjustment",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_signal_counts": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 103,
+        "end": 114
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_historical_kind_scores": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 119,
+        "end": 141
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_temporal_kind_scores": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 156,
+        "end": 178
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_confidence_kind_scores": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 182,
+        "end": 202
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "prioritize_recon_tasks": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 204,
+        "end": 358
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPriorityAdjustment",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconPriorityResult",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_confidence_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 182,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_high_value_task_boost",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_historical_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 119,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_signal_counts",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 103,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_temporal_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 156,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "ReconCapability": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 27,
+        "end": 42
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "ReconTask": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 46,
+        "end": 60
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "recon_capabilities": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 72,
+        "end": 73
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconCapability",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_asset_host": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 76,
+        "end": 78
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_safe_target": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 81,
+        "end": 95
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_recon_plan": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 98,
+        "end": 157
       },
       "symbol_dependencies": [
         {
@@ -491,11 +1283,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "TechnologyFingerprint",
+          "symbol": "ReconTask",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
               "kind": "class",
               "language": "python"
             }
@@ -503,11 +1295,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_asset_key",
+          "symbol": "_asset_host",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 57,
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
               "kind": "function",
               "language": "python"
             }
@@ -515,35 +1307,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_asset_scope",
+          "symbol": "_safe_target",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 137,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_product",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_parse_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 47,
+              "file": "backend/app/recon_swarm.py",
+              "line": 81,
               "kind": "function",
               "language": "python"
             }
@@ -568,6 +1336,2212 @@
             {
               "file": "backend/app/observation_graph.py",
               "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "recon_swarm_capabilities": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 161,
+        "end": 166
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaign_recon_plan": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 170,
+        "end": 234
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "_graph": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 7,
+        "end": 34
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_feedback": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 37,
+        "end": 45
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_negative_scan_shifts_focus_to_unobserved_in_scope_surfaces": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 48,
+        "end": 63
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_repeated_completed_scans_rotate_instead_of_repeating_scan": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 66,
+        "end": 72
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_duplicate_observations_for_one_scan_job_do_not_inflate_yield": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 75,
+        "end": 94
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_failed_scans_do_not_count_as_null_findings": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 97,
+        "end": 112
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_campaign_findings_disable_no_finding_recovery_even_without_graph_record": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 115,
+        "end": 120
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_existing_graph_finding_disables_null_scan_recovery": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 123,
+        "end": 134
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_out_of_scope_asset_cannot_trigger_recovery": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 137,
+        "end": 143
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_missing_scope_checker_disables_recommendations": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 146,
+        "end": 154
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 93,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_repeated_failed_worker_requires_review_not_retry": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 157,
+        "end": 172
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_feedback_never_invents_task_kinds_or_expands_configured_set": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 175,
+        "end": 182
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_unavailable_recovery_tasks_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 185,
+        "end": 189
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_endpoints_prefers_existing_bounded_crawl": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 192,
+        "end": 196
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_scope_integrity_gap_prioritized_before_more_scanning": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 199,
+        "end": 213
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_reviewed_forms_no_longer_count_as_review_gap": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 216,
+        "end": 241
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_feedback_rejects_negative_campaign_finding_count": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 244,
+        "end": 248
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_out_of_scope_technology_does_not_satisfy_authorized_inventory": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 251,
+        "end": 269
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_orphan_form_does_not_close_authorized_form_inventory_gap": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 272,
+        "end": 287
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_out_of_scope_form_does_not_close_authorized_form_inventory_gap": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 290,
+        "end": 308
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_browser_already_attempted_does_not_create_infinite_recovery_loop": {
+      "source": {
+        "file": "backend/tests/test_no_finding_recovery.py",
+        "start": 311,
+        "end": 366
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_graph",
+          "definitions": [
+            {
+              "file": "backend/tests/test_no_finding_recovery.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "task": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 7,
+        "end": 22
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_diff_priority_only_reorders_existing_authorized_tasks": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 25,
+        "end": 66
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_diff_priority_does_nothing_without_baseline": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 69,
+        "end": 88
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_diff_priority_is_bounded_to_fifteen_points": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 91,
+        "end": 107
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_historical_novelty_adds_small_bounded_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 110,
+        "end": 142
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_reappearing_surface_has_less_history_weight_than_novel_surface": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 145,
+        "end": 185
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_total_priority_boost_is_bounded_to_twenty_points": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 188,
+        "end": 230
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_temporal_novelty_favors_never_seen_surface_over_returning_churn": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 233,
+        "end": 282
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_intermittent_surface_has_low_temporal_weight": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 285,
+        "end": 311
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_temporal_scoring_never_breaks_total_boost_cap": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 314,
+        "end": 358
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_low_confidence_dampens_recon_boost_without_changing_authority": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 361,
+        "end": 395
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_confidence_preserves_full_bounded_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 398,
+        "end": 429
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_missing_confidence_is_neutral_and_never_increases_cap": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 432,
+        "end": 449
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_value_focus_boosts_matching_existing_task_only": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 453,
+        "end": 487
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_value_boost_preserves_recon_authority_fields": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 490,
+        "end": 520
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_fully_covered_high_value_family_does_not_receive_extra_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 524,
+        "end": 550
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_undercovered_high_value_score_drives_existing_task_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 553,
+        "end": 579
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_recovery_reorders_existing_recon_without_expanding_authority": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 582,
+        "end": 616
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_feedback_cannot_override_authority_fields": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 619,
+        "end": 634
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_feedback_ignored_when_findings_present": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 637,
+        "end": 652
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_feedback_never_creates_unconfigured_recon_tasks": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 655,
+        "end": 669
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_capabilities_are_bounded_read_only_and_get_head_only": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 7,
+        "end": 21
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_recon_plan_bootstraps_crawl_and_technology_context": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 24,
+        "end": 37
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_recon_plan_adds_form_and_browser_mapping_after_endpoints_exist": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 40,
+        "end": 65
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_recon_plan_fails_closed_out_of_scope_and_invalid_limits": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 68,
+        "end": 88
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_recon_plan_route_is_exposed_and_scope_aware": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 91,
+        "end": 118
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 170,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 208,
               "kind": "function",
               "language": "python"
             }
@@ -577,283 +3551,11 @@
       ],
       "dependency_count": 8
     },
-    "_contains_token_phrase": {
+    "test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists": {
       "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 372,
-        "end": 381
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_finding_product_mention_tokens": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 384,
-        "end": 403
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "match_finding_technology": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 406,
-        "end": 436
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechnologyFingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_contains_token_phrase",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 372,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_finding_product_mention_tokens",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 384,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_product",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "filter_fingerprints_for_finding_asset",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 214,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "finding_product_ambiguity_reasons": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 441,
-        "end": 463
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechnologyFingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_normalize_product",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "filter_fingerprints_for_finding_asset",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 214,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "fingerprint_ambiguity_reasons": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 465,
-        "end": 483
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "TechnologyFingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "values",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "fingerprint_staleness_reasons": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 486,
-        "end": 527
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "TechnologyFingerprint",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_finding_fingerprint_intelligence": {
-      "source": {
-        "file": "backend/app/technology_fingerprint_intelligence.py",
-        "start": 529,
-        "end": 570
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_graph": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 15,
-        "end": 43
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 121,
+        "end": 131
       },
       "symbol_dependencies": [
         {
@@ -891,124 +3593,13 @@
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_finding": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 46,
-        "end": 54
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_versioned_technology_fingerprints_are_aggregated_by_source": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 57,
-        "end": 67
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "build_technology_fingerprints",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_unversioned_technology_remains_advisory": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 70,
-        "end": 75
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_finding_matches_observed_product_without_guessing_version": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 78,
-        "end": 87
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
               "kind": "function",
               "language": "python"
             }
@@ -1016,279 +3607,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "match_finding_technology",
+          "symbol": "scope_checker",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_unrelated_finding_does_not_receive_fingerprint": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 90,
-        "end": 96
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_fingerprint_intelligence_never_enables_exploitation": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 99,
-        "end": 108
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_finding_fingerprint_intelligence",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 529,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_conflicting_versions_are_marked_ambiguous": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 111,
-        "end": 139
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_ambiguity_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_multi_source_same_version_is_not_ambiguous": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 142,
-        "end": 148
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_ambiguity_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
               "kind": "function",
               "language": "python"
             }
@@ -1298,43 +3621,43 @@
       ],
       "dependency_count": 5
     },
-    "test_declared_product_is_matched_even_when_title_is_generic": {
+    "test_recon_plan_accepts_matching_bare_asset_host": {
       "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 151,
-        "end": 163
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 134,
+        "end": 145
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_graph",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_technology_fingerprints",
+          "symbol": "add",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
@@ -1342,11 +3665,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "finding_product_ambiguity_reasons",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 441,
+              "file": "backend/app/recon_swarm.py",
+              "line": 98,
               "kind": "function",
               "language": "python"
             }
@@ -1354,11 +3677,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "match_finding_technology",
+          "symbol": "scope_checker",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
+              "file": "backend/app/recon_swarm.py",
+              "line": 177,
               "kind": "function",
               "language": "python"
             }
@@ -1368,71 +3691,25 @@
       ],
       "dependency_count": 5
     },
-    "test_unobserved_declared_product_is_marked_ambiguous": {
+    "test_recon_plan_reorders_existing_tasks_after_null_scans": {
       "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 166,
-        "end": 174
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 148,
+        "end": 212
       },
       "symbol_dependencies": [
         {
-          "symbol": "_finding",
+          "symbol": "Campaign",
           "definitions": [
             {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
-        {
-          "symbol": "finding_product_ambiguity_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 441,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_old_timestamped_version_is_marked_stale": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 177,
-        "end": 201
-      },
-      "symbol_dependencies": [
         {
           "symbol": "Observation",
           "definitions": [
@@ -1446,11 +3723,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "ProgramRules",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/main.py",
+              "line": 83,
               "kind": "class",
               "language": "python"
             }
@@ -1458,23 +3735,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_finding",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "add",
+          "symbol": "TargetInput",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 170,
               "kind": "function",
               "language": "python"
             }
@@ -1482,35 +3771,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_technology_fingerprints",
+          "symbol": "save_campaign",
           "definitions": [
             {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_staleness_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 486,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
+              "file": "backend/app/main.py",
+              "line": 208,
               "kind": "function",
               "language": "python"
             }
@@ -1519,2180 +3784,6 @@
         }
       ],
       "dependency_count": 7
-    },
-    "test_recent_timestamped_version_is_not_stale": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 204,
-        "end": 227
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_staleness_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 486,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_missing_timestamp_does_not_invent_staleness": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 230,
-        "end": 240
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_staleness_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 486,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_same_asset_sources_aggregate_even_with_distinct_asset_observation_ids": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 243,
-        "end": 290
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_finding_technology_match_is_scoped_to_its_asset": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 293,
-        "end": 353
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "fingerprint_ambiguity_reasons",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 465,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_unscoped_legacy_fingerprint_is_not_used_when_scoped_data_exists": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 356,
-        "end": 401
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_unscoped_legacy_fingerprints_fail_closed_in_multi_asset_graph": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 404,
-        "end": 448
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_unscoped_fingerprint_is_rejected_even_for_single_graph_asset": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 451,
-        "end": 473
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_unscoped_legacy_fingerprint_remains_supported_without_graph_assets": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 476,
-        "end": 488
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_mismatched_declared_and_linked_asset_never_matches_fingerprint": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 491,
-        "end": 522
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_mismatched_http_https_origin_does_not_reuse_technology": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 525,
-        "end": 555
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_linked_hostname_only_can_match_explicit_https_origin": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 558,
-        "end": 590
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_multiple_inconsistent_graph_ancestors_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 593,
-        "end": 626
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_different_explicit_ports_cannot_share_fingerprint_evidence": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 629,
-        "end": 664
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_technology_with_two_distinct_parent_hosts_never_correlates_to_one": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 667,
-        "end": 700
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_technology_linked_to_distinct_schemes_cannot_prove_one_origin": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 703,
-        "end": 734
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_duplicate_asset_observations_of_same_origin_still_match": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 737,
-        "end": 771
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_graph_only_finding_with_conflicting_asset_parents_is_not_correlated": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 774,
-        "end": 804
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_graph_only_finding_can_use_equivalent_duplicate_asset_origins": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 807,
-        "end": 839
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_hostname_only_finding_cannot_bridge_http_and_https_ancestors": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 842,
-        "end": 873
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_malformed_finding_asset_does_not_reuse_legacy_evidence": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 876,
-        "end": 883
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_credentialed_graph_asset_never_matches_clean_finding": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 886,
-        "end": 910
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_malformed_graph_asset_does_not_enable_unscoped_legacy_fingerprint": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 913,
-        "end": 936
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_valid_and_malformed_technology_ancestors_fail_closed": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 939,
-        "end": 975
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_product_name_inside_larger_token_does_not_match_fingerprint": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 978,
-        "end": 984
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_explicit_product_identity_overrides_unrelated_title_mentions": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 987,
-        "end": 994
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_product_in_remediation_only_is_not_vulnerability_evidence": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 997,
-        "end": 1004
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_product_mentioned_after_long_title_remains_matchable": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 1007,
-        "end": 1017
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_multiword_technology_requires_contiguous_whole_token_phrase": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 1020,
-        "end": 1033
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_explicit_product_can_match_without_textual_product_mentions": {
-      "source": {
-        "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-        "start": 1036,
-        "end": 1044
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_finding",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_technology_fingerprint_intelligence.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_technology_fingerprints",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 270,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "match_finding_technology",
-          "definitions": [
-            {
-              "file": "backend/app/technology_fingerprint_intelligence.py",
-              "line": 406,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
     }
   }
 }

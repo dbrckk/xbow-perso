@@ -126,6 +126,7 @@ app/
   local_outcome_intelligence.py
   main.py
   metrics.py
+  no_finding_recovery.py
   nuclei_parser.py
   nvd_advisory_adapter.py
   observation_graph.py
@@ -372,6 +373,7 @@ tests/
   test_metrics.py
   test_mobile_production_update_script.py
   test_mobile_reset_api_token.py
+  test_no_finding_recovery.py
   test_nuclei_preflight.py
   test_nuclei_queue_lifecycle.py
   test_nuclei_worker_plan.py
@@ -700,6 +702,12 @@ planned = AdaptivePlanner().plan(campaign, graph)
 memories = build_learning_memory(graph)
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
+⋮----
+# A terminal no-finding scan is not authorization to repeat or escalate.
+# Report eligible existing recon gaps without overriding planner/gate state.
+⋮----
+existing_recon_tasks = (
+recovery = build_no_finding_recovery(
 ```
 
 ## File: app/affected_version_range.py
@@ -7521,6 +7529,133 @@ watchdog = {
 def operational_metrics()
 ```
 
+## File: app/no_finding_recovery.py
+```python
+NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
+_ALLOWED_RECON_KINDS = frozenset(
+_ENDPOINT_REVIEW_TYPES = frozenset(
+⋮----
+@dataclass(frozen=True)
+class NoFindingRecovery
+⋮----
+schema: str
+state: str
+completed_scan_count: int
+scanner_source_count: int
+finding_count: int
+in_scope_endpoint_count: int
+in_scope_form_count: int
+uncovered_endpoint_count: int
+uncovered_form_count: int
+missing_technology_context: bool
+scope_integrity_issues: int
+recommended_task_kinds: tuple[str, ...]
+reasons: tuple[str, ...]
+advisory_only: bool = True
+may_expand_scope: bool = False
+may_increase_request_budget: bool = False
+may_enable_exploitation: bool = False
+may_change_execution_gate: bool = False
+negative_result_proves_safe: bool = False
+⋮----
+def to_dict(self) -> dict[str, Any]
+⋮----
+result = asdict(self)
+⋮----
+def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[str]
+⋮----
+reviewed: set[str] = set()
+⋮----
+def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]
+⋮----
+# Multiple observations for one worker job must not inflate negative yield.
+scan_keys: set[str] = set()
+sources: set[str] = set()
+⋮----
+job_id = str(item.metadata.get("job_id") or "").strip()
+key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+⋮----
+def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
+⋮----
+by_kind = (outcomes or {}).get("by_job_kind")
+⋮----
+counts = by_kind.get(kind)
+⋮----
+completed = int(counts.get("completed") or 0)
+failed = int(counts.get("failed") or 0)
+requeued = int(counts.get("requeued") or 0)
+⋮----
+"""Rank *existing* authorized recon task kinds after evidence-backed null scans.
+
+    This is observation-only feedback, not a scanner/exploit dispatcher. Missing
+    findings are not evidence that a target is safe. No new target, capability,
+    permission, request or task kind can be minted by this function.
+    """
+⋮----
+allowed = {
+⋮----
+finding_count = max(campaign_finding_count, len(graph.by_kind("finding")))
+surface = build_attack_surface(graph, scope_checker=scope_checker)
+⋮----
+endpoints = [
+forms = [
+endpoint_reviewed = _reviewed_ids(graph, _ENDPOINT_REVIEW_TYPES)
+form_reviewed = _reviewed_ids(graph, frozenset({"form_surface_review"}))
+uncovered_endpoints = sum(
+scope_issues = sum(
+# Technology observations without a trusted in-scope asset ancestor
+# must not count as technology coverage of the authorized target.
+asset_host_by_id = {
+observations_by_id = {item.id: item for item in graph.values()}
+⋮----
+def has_in_scope_asset_ancestor(observation_id: str) -> bool
+⋮----
+pending = list(observations_by_id[observation_id].parent_ids)
+seen: set[str] = set()
+ancestor_hosts: set[str] = set()
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = observations_by_id.get(parent_id)
+⋮----
+host = asset_host_by_id.get(parent.id)
+⋮----
+# Orphan forms or forms from a different asset do not close a gap.
+⋮----
+uncovered_forms = sum(
+missing_technology = not any(
+observed_browser_work = any(
+browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
+⋮----
+browser_counts = browser_job_outcomes.get("browser_flow")
+⋮----
+observed_browser_work = (
+⋮----
+observed_browser_work = True  # fail closed on invalid worker data
+⋮----
+reasons: list[str] = []
+candidates: list[tuple[int, str]] = []
+⋮----
+state = "findings_present"
+⋮----
+state = "scope_unverified"
+⋮----
+state = "execution_unstable"
+⋮----
+state = "no_completed_scans"
+⋮----
+state = "recovery_advisory"
+⋮----
+# Existing untrusted endpoints make map_endpoints the available
+# reparative task; a truly empty inventory requires crawl.
+⋮----
+state = "no_supported_recovery_task"
+⋮----
+recommended = tuple(
+# A kind may appear with different scores; never recommend it twice.
+recommended = tuple(dict.fromkeys(recommended))[:3]
+```
+
 ## File: app/nuclei_parser.py
 ```python
 class NucleiParserError(RuntimeError)
@@ -10023,6 +10158,7 @@ history_boost: int
 temporal_boost: int
 confidence_factor: float
 high_value_boost: int
+no_finding_boost: int
 high_value_families: tuple[str, ...]
 signals: tuple[str, ...]
 historical_signals: tuple[str, ...]
@@ -10107,6 +10243,12 @@ confidence_scores = _confidence_kind_scores(surface_confidence)
 baseline_available = bool(surface_diff.get("baseline_available"))
 changed_surface_count = max(
 ⋮----
+recommended_kinds = ()
+⋮----
+raw_kinds = no_finding_feedback.get("recommended_task_kinds")
+⋮----
+recommended_kinds = tuple(
+⋮----
 adjusted: list[ReconTask] = []
 audit: list[ReconPriorityAdjustment] = []
 ⋮----
@@ -10121,6 +10263,7 @@ confidence_values = [
 confidence_factor = (
 ⋮----
 baseline_boost = min(
+no_finding_boost = (
 raw_boost = min(
 boost = min(25, int(round(raw_boost * confidence_factor)))
 effective = min(100, int(task.priority) + boost)
@@ -10223,6 +10366,7 @@ memory = build_target_memory(store, campaign_doc)
 surface_diff = build_surface_diff_intelligence(memory)
 surface_temporal = build_temporal_surface_profile(store, campaign_doc)
 surface_confidence = build_surface_confidence(memory, surface_temporal)
+feedback = build_no_finding_recovery(
 priority = prioritize_recon_tasks(
 ```
 
@@ -20575,6 +20719,85 @@ def test_mobile_github_learning_token_setup_is_vault_only_and_non_echoing()
 script = (ROOT / "scripts" / "mobile-set-github-learning-token.sh").read_text(encoding="utf-8")
 ```
 
+## File: tests/test_no_finding_recovery.py
+```python
+def _graph(*, scans: int = 1, with_endpoint: bool = True)
+⋮----
+graph = ObservationGraph()
+⋮----
+def _feedback(graph, *, allowed=None, scope=None, **kwargs)
+⋮----
+def test_negative_scan_shifts_focus_to_unobserved_in_scope_surfaces()
+⋮----
+result = _feedback(_graph())
+⋮----
+def test_repeated_completed_scans_rotate_instead_of_repeating_scan()
+⋮----
+result = _feedback(_graph(scans=4))
+⋮----
+def test_duplicate_observations_for_one_scan_job_do_not_inflate_yield()
+⋮----
+graph = _graph(scans=1)
+⋮----
+result = _feedback(graph)
+⋮----
+def test_failed_scans_do_not_count_as_null_findings()
+⋮----
+graph = _graph(scans=0)
+⋮----
+def test_campaign_findings_disable_no_finding_recovery_even_without_graph_record()
+⋮----
+result = _feedback(_graph(), campaign_finding_count=1)
+⋮----
+def test_existing_graph_finding_disables_null_scan_recovery()
+⋮----
+graph = _graph()
+⋮----
+def test_out_of_scope_asset_cannot_trigger_recovery()
+⋮----
+result = _feedback(graph, scope=lambda _host: False)
+⋮----
+def test_missing_scope_checker_disables_recommendations()
+⋮----
+result = build_no_finding_recovery(
+⋮----
+def test_repeated_failed_worker_requires_review_not_retry()
+⋮----
+result = _feedback(
+⋮----
+def test_feedback_never_invents_task_kinds_or_expands_configured_set()
+⋮----
+def test_unavailable_recovery_tasks_fail_closed()
+⋮----
+result = _feedback(_graph(), allowed=("browser_observe",))
+⋮----
+def test_no_endpoints_prefers_existing_bounded_crawl()
+⋮----
+result = _feedback(_graph(with_endpoint=False), allowed=("crawl", "detect_technology"))
+⋮----
+def test_scope_integrity_gap_prioritized_before_more_scanning()
+⋮----
+def test_reviewed_forms_no_longer_count_as_review_gap()
+⋮----
+graph = _graph(scans=3)
+⋮----
+def test_feedback_rejects_negative_campaign_finding_count()
+⋮----
+def test_out_of_scope_technology_does_not_satisfy_authorized_inventory()
+⋮----
+def test_orphan_form_does_not_close_authorized_form_inventory_gap()
+⋮----
+def test_out_of_scope_form_does_not_close_authorized_form_inventory_gap()
+⋮----
+def test_browser_already_attempted_does_not_create_infinite_recovery_loop()
+⋮----
+graph = _graph(scans=4)
+⋮----
+before = _feedback(graph, allowed=("browser_observe",))
+⋮----
+after = _feedback(graph, allowed=("browser_observe",))
+```
+
 ## File: tests/test_nuclei_preflight.py
 ```python
 _SCANNER_ENV = (
@@ -22443,6 +22666,21 @@ def test_fully_covered_high_value_family_does_not_receive_extra_boost()
 original = [task("map_endpoints", 60)]
 ⋮----
 def test_undercovered_high_value_score_drives_existing_task_boost()
+⋮----
+def test_no_finding_recovery_reorders_existing_recon_without_expanding_authority()
+⋮----
+feedback = {
+⋮----
+source = before[item.kind]
+⋮----
+def test_no_finding_feedback_cannot_override_authority_fields()
+⋮----
+original = [task("map_forms", 70)]
+invalid_feedback = {
+⋮----
+def test_no_finding_feedback_ignored_when_findings_present()
+⋮----
+def test_feedback_never_creates_unconfigured_recon_tasks()
 ```
 
 ## File: tests/test_recon_swarm.py
@@ -22474,6 +22712,12 @@ result = campaign_recon_plan(campaign.id)
 def test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists()
 ⋮----
 def test_recon_plan_accepts_matching_bare_asset_host()
+⋮----
+def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypatch)
+⋮----
+feedback = result["no_finding_feedback"]
+⋮----
+adjustments = {
 ```
 
 ## File: tests/test_recon_worker.py
