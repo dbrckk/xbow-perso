@@ -3,17 +3,18 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 
-_COMPLETED_REVIEW_STATES = frozenset(
+_COMPLETED_REVIEW_STATES = frozenset({"completed", "reviewed"})
+_SUCCESSFUL_REVIEW_OUTCOMES = frozenset(
     {"completed", "success", "reviewed", "observed"}
 )
 
 
 def is_completed_review_evidence(observation: Any) -> bool:
-    """Credit a review only when explicit execution fields support completion.
+    """Credit a review only with explicit terminal completion metadata.
 
-    Historical review records have no status or outcome metadata. They remain
-    compatible, but explicit failure, cancellation, queueing, or inconclusive
-    values must never close an evidence-coverage gap.
+    Align with no-finding recovery's terminal review policy: missing,
+    queued, cancelled, failed or inconclusive reviews do not close coverage
+    gaps. Additional outcome metadata may not contradict completion.
     """
     metadata = getattr(observation, "metadata", None)
     if not isinstance(metadata, Mapping):
@@ -22,13 +23,16 @@ def is_completed_review_evidence(observation: Any) -> bool:
     if not isinstance(review_type, str) or not review_type.strip():
         return False
 
-    for field in ("status", "outcome"):
-        value = metadata.get(field)
-        if value is None:
-            continue
-        if (
-            not isinstance(value, str)
-            or value.strip().lower() not in _COMPLETED_REVIEW_STATES
-        ):
-            return False
+    status = metadata.get("status")
+    if (
+        not isinstance(status, str)
+        or status.strip().lower() not in _COMPLETED_REVIEW_STATES
+    ):
+        return False
+    outcome = metadata.get("outcome")
+    if outcome is not None and (
+        not isinstance(outcome, str)
+        or outcome.strip().lower() not in _SUCCESSFUL_REVIEW_OUTCOMES
+    ):
+        return False
     return True
