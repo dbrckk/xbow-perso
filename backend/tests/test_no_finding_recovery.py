@@ -479,3 +479,119 @@ def test_completed_recovery_cannot_create_new_authority():
     assert result.advisory_only is True
     assert result.may_expand_scope is False
     assert result.may_enable_exploitation is False
+
+
+def test_recovery_targets_only_requested_host_in_multi_host_campaign():
+    graph = _graph(scans=1)
+    graph.add(
+        Observation("asset:b", "asset", "other.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://other.test/api",
+            "crawler",
+            parent_ids=("asset:b",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:b",
+            "form",
+            "https://other.test/login",
+            "browser",
+            parent_ids=("asset:b",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:b",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:b",),
+        )
+    )
+    _completed_recon_evidence(
+        graph,
+        task_kind="map_forms",
+        asset_id="asset:b",
+        evidence_id="recovery:b",
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.in_scope_endpoint_count == 1
+    assert result.in_scope_form_count == 0
+    assert result.missing_technology_context is True
+    assert "map_forms" in result.recommended_task_kinds
+    assert "detect_technology" in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ()
+
+
+def test_recovery_rejects_other_authorized_host_as_target_inventory():
+    graph = _graph(scans=1)
+    result = _feedback(
+        graph,
+        target_host="other.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.state == "scope_unverified"
+    assert result.recommended_task_kinds == ()
+    assert result.in_scope_endpoint_count == 0
+
+
+def test_recovery_target_host_exhaustion_is_not_cross_host():
+    graph = _graph(scans=1)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    _completed_recon_evidence(
+        graph,
+        task_kind="map_forms",
+        asset_id="asset:a",
+    )
+
+    result = _feedback(
+        graph,
+        target_host="other.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        allowed=("crawl", "map_forms"),
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.recommended_task_kinds == ("crawl",)
+    assert result.exhausted_task_kinds == ()
+
+
+def test_recovery_target_host_cannot_be_empty():
+    import pytest
+
+    with pytest.raises(ValueError, match="target_host"):
+        _feedback(_graph(), target_host="   ")
+
+
+def test_recovery_scopes_untrusted_endpoint_count_to_target():
+    graph = _graph(scans=1)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:orphan-b",
+            "endpoint",
+            "https://other.test/path",
+            "crawler",
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.scope_integrity_issues == 0
+    assert "map_forms" in result.recommended_task_kinds
