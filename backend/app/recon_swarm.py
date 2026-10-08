@@ -275,7 +275,9 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     from .main import assert_campaign_exists, is_host_allowed, storage
 
     campaign = assert_campaign_exists(campaign_id)
-    graph = load_observation_graph(storage(), campaign.id)
+    graph = load_observation_graph(
+        storage(), campaign.id, include_persisted_discovery_times=True
+    )
     rules = campaign.target.rules
 
     def scope_checker(host: str) -> bool:
