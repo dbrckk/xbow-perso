@@ -210,7 +210,12 @@ def summarize_worker_outcomes(
         if not 0 <= attempts <= 5:
             continue
         valid_events += 1
-        final_by_job[(kind, job_id)] = status
+        key = (kind, job_id)
+        # A completed worker job is terminal. A delayed queued or failed
+        # event for the same job cannot retroactively erase proof that the
+        # scanner completed successfully. Retries use a new job identity.
+        if final_by_job.get(key) != "completed":
+            final_by_job[key] = status
         recent.append(
             {
                 "job_id": job_id,

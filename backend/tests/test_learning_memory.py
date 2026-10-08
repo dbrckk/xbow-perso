@@ -406,3 +406,71 @@ def test_malformed_job_id_cannot_create_extra_technique_confidence():
     assert memory.inconclusive == 1
     assert memory.successes == 0
     assert memory.confidence == 0.0
+
+
+
+def test_worker_completed_state_survives_late_failed_and_queued_events():
+    from app.learning_memory import summarize_worker_outcomes
+
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": "scanner-job-1",
+            "job_kind": "nuclei_scan",
+            "status": status,
+            "attempts": 1,
+        }
+        for status in ("queued", "completed", "failed", "queued")
+    ]
+    result = summarize_worker_outcomes(events)
+
+    assert result["by_job_kind"]["nuclei_scan"]["completed"] == 1
+    assert result["by_job_kind"]["nuclei_scan"]["failed"] == 0
+    assert result["by_job_kind"]["nuclei_scan"]["requeued"] == 0
+    assert result["distinct_jobs"] == 1
+    assert result["duplicate_events"] == 3
+    assert [item["status"] for item in result["recent_outcomes"]] == [
+        "queued", "completed", "failed", "queued",
+    ]
+
+
+def test_failed_job_without_completion_can_still_be_requeued():
+    from app.learning_memory import summarize_worker_outcomes
+
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": "scanner-job-2",
+            "job_kind": "nuclei_scan",
+            "status": status,
+            "attempts": 1,
+        }
+        for status in ("failed", "queued")
+    ]
+    result = summarize_worker_outcomes(events)
+
+    assert result["totals"]["requeued"] == 1
+    assert result["totals"]["failed"] == 0
+
+
+def test_terminal_worker_state_prevents_false_scanner_instability():
+    from app.learning_memory import summarize_worker_outcomes
+    from app.scanner_adaptation import adapt_scanner_engines
+
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": "scanner-job-1",
+            "job_kind": "nuclei_scan",
+            "status": status,
+            "attempts": 1,
+        }
+        for status in ("completed", "failed", "queued")
+    ]
+    outcomes = summarize_worker_outcomes(events)
+    adaptation = adapt_scanner_engines(("nuclei", "strix"), [], outcomes)
+
+    assert outcomes["by_job_kind"]["nuclei_scan"]["completed"] == 1
+    assert adaptation.suppressed_engines == ()
+    assert "nuclei" in adaptation.selected_engines
+    assert adaptation.may_expand_configuration is False
