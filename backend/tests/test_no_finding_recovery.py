@@ -306,3 +306,61 @@ def test_out_of_scope_form_does_not_close_authorized_form_inventory_gap():
 
     assert result.in_scope_form_count == 0
     assert "map_forms" in result.recommended_task_kinds
+
+
+def test_browser_already_attempted_does_not_create_infinite_recovery_loop():
+    graph = _graph(scans=4)
+    graph.add(
+        Observation(
+            "form:one",
+            "form",
+            "https://example.test/login",
+            "form-discovery",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:one",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:endpoint",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={"review_type": "authorization_surface_review"},
+        )
+    )
+    graph.add(
+        Observation(
+            "review:form",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("form:one",),
+            metadata={"review_type": "form_surface_review"},
+        )
+    )
+    before = _feedback(graph, allowed=("browser_observe",))
+    assert before.recommended_task_kinds == ("browser_observe",)
+
+    graph.add(
+        Observation(
+            "review:browser",
+            "evidence",
+            "completed",
+            "browser-agent",
+            metadata={"task_kind": "browser_observe", "status": "completed"},
+        )
+    )
+    after = _feedback(graph, allowed=("browser_observe",))
+    assert after.state == "no_supported_recovery_task"
+    assert after.recommended_task_kinds == ()
+    assert any("no automatic repeat" in reason for reason in after.reasons)
