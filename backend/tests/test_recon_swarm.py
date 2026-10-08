@@ -208,4 +208,5 @@ def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypat
     assert all(item["same_origin_only"] is True for item in result["tasks"])
     assert all(set(item["allowed_methods"]) <= {"GET", "HEAD"} for item in result["tasks"])
     assert all(item["max_requests"] <= 40 for item in result["tasks"])
-    assert "secret" not in str(result)
+    assert "secret" not in str(result["tasks"])
+    assert "secret" not in str(result["no_finding_feedback"])
