@@ -163,3 +163,83 @@ def test_positive_scanner_evidence_can_improve_ranking_without_new_engines():
     assert result.ranked_engines == ("nuclei", "strix")
     assert result.configured_engines == ("strix", "nuclei")
     assert result.may_expand_configuration is False
+
+
+def test_repeated_negative_runs_prioritize_unobserved_configured_engine():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [_memory("nuclei", failures=4, confidence=0.8)],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {"completed": 4, "failed": 0, "requeued": 0},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.ranked_engines == ("strix", "nuclei")
+    assert result.no_completed_run_engines == ("strix",)
+    assert result.coverage_rotation_applied is True
+    assert result.suppressed_engines == ()
+    assert result.to_dict()["no_completed_run_engines"] == ["strix"]
+    assert result.may_expand_configuration is False
+    assert "configured scanner diversity" in result.reasons["strix"]
+
+
+def test_positive_security_signal_prevents_negative_yield_rotation():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [_memory("nuclei", successes=1, confidence=0.8, success_rate=1.0)],
+        {"by_job_kind": {"nuclei_scan": {"completed": 4}}},
+    )
+
+    assert result.selected_engines == ("nuclei", "strix")
+    assert result.coverage_rotation_applied is False
+    assert result.no_completed_run_engines == ()
+
+
+def test_no_completed_history_does_not_invent_scanner_rotation():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [],
+        {"by_job_kind": {"nuclei_scan": {"completed": 1}}},
+    )
+
+    assert result.selected_engines == ("nuclei", "strix")
+    assert result.coverage_rotation_applied is False
+
+
+def test_scanner_rotation_never_overrides_safety_suppression():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {"completed": 4},
+                "strix_scan": {"failed": 3, "completed": 0},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("nuclei",)
+    assert result.suppressed_engines == ("strix",)
+    assert result.coverage_rotation_applied is False
+
+
+def test_corrupt_worker_counts_do_not_crash_or_change_execution_authority():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {"completed": "invalid"},
+                "strix_scan": {"completed": 0},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("nuclei", "strix")
+    assert result.suppressed_engines == ()
+    assert result.coverage_rotation_applied is False
+    assert "operator review" in result.reasons["nuclei"]
+    assert result.may_expand_configuration is False
