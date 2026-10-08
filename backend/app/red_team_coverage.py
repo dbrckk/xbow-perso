@@ -29,7 +29,8 @@ class CoverageDomain:
 
 
 def _ratio(numerator: int, denominator: int) -> float:
-    return round(numerator / denominator, 4) if denominator else 1.0
+    # Missing observations are unknown coverage, not 100% reviewed.
+    return round(numerator / denominator, 4) if denominator else 0.0
 
 
 def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]:
@@ -174,10 +175,19 @@ def build_red_team_coverage(
         ),
     )
 
-    weighted_denominator = sum(max(1, item.observed) for item in domains)
-    weighted_score = round(
-        sum(item.score * max(1, item.observed) for item in domains) / weighted_denominator,
-        4,
+    observed_domains = tuple(item for item in domains if item.observed > 0)
+    unobserved_domains = tuple(
+        item.name for item in domains if item.observed == 0
+    )
+    weighted_denominator = sum(item.observed for item in observed_domains)
+    weighted_score = (
+        round(
+            sum(item.score * item.observed for item in observed_domains)
+            / weighted_denominator,
+            4,
+        )
+        if weighted_denominator
+        else 0.0
     )
 
     gaps = []
@@ -206,7 +216,14 @@ def build_red_team_coverage(
         "score": weighted_score,
         "domains": [item.to_dict() for item in domains],
         "gaps": gaps,
+        "observation_state": (
+            "observed_surface_only" if observed_domains else "no_observed_surface"
+        ),
+        "unobserved_domains": list(unobserved_domains),
+        "score_interpretation": "review_coverage_of_observed_surface_not_security_assurance",
         "summary": {
+            "observed_domain_count": len(observed_domains),
+            "unobserved_domain_count": len(unobserved_domains),
             "observed_endpoints": endpoints,
             "reviewed_endpoints": len(endpoint_reviewed_ids),
             "observed_forms": forms,
