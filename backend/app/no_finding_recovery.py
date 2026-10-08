@@ -43,6 +43,7 @@ class NoFindingRecovery:
     exhausted_task_kinds: tuple[str, ...] = ()
     reopened_task_kinds: tuple[str, ...] = ()
     ambiguous_scan_source_jobs: int = 0
+    trusted_completed_scan_count: int = 0
     worker_health_attribution: str = "campaign_aggregate"
     worker_instability_observed: bool = False
     worker_instability_applied: bool = False
@@ -143,7 +144,7 @@ def _completed_scan_evidence(
     graph: ObservationGraph,
     *,
     evidence_filter: Callable[[Any], bool] | None = None,
-) -> tuple[int, int, int]:
+) -> tuple[int, int, int, int]:
     """Count completed jobs without treating duplicate reporters as independent.
 
     A scanner job contributes an independent source only if *all* completed
@@ -189,13 +190,15 @@ def _completed_scan_evidence(
         sources_by_job.pop(key, None)
 
     trusted_sources: set[str] = set()
+    trusted_job_count = 0
     ambiguous = cross_origin_count
     for job, reporters in sources_by_job.items():
         if job in invalid_jobs or len(reporters) != 1 or "" in reporters:
             ambiguous += 1
         else:
+            trusted_job_count += 1
             trusted_sources.update(reporters)
-    return len(sources_by_job), len(trusted_sources), ambiguous
+    return len(sources_by_job), len(trusted_sources), ambiguous, trusted_job_count
 
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:
     by_kind = (outcomes or {}).get("by_job_kind")
@@ -387,7 +390,10 @@ def build_no_finding_recovery(
 
     legacy_single_host = False
     if normalized_target_host is None:
-        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(graph)
+        (
+            completed_scans, scanner_sources, ambiguous_sources,
+            trusted_completed_scans,
+        ) = _completed_scan_evidence(graph)
     else:
         asset_records = surface["assets"]
         # Legacy scan observations sometimes omit ancestry. They can only
@@ -407,7 +413,10 @@ def build_no_finding_recovery(
                 return has_in_scope_asset_ancestor(item.id)
             return legacy_single_host
 
-        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(
+        (
+            completed_scans, scanner_sources, ambiguous_sources,
+            trusted_completed_scans,
+        ) = _completed_scan_evidence(
             graph,
             evidence_filter=scan_matches_target,
         )
@@ -522,7 +531,7 @@ def build_no_finding_recovery(
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
-    elif not scanner_sources:
+    elif not trusted_completed_scans:
         state = "scan_source_unverified"
         reasons.append(
             "no completed scan has unambiguous source provenance; "
@@ -567,7 +576,7 @@ def build_no_finding_recovery(
             if uncovered_endpoints:
                 reasons.append("observed endpoints lack recorded review evidence")
                 candidates.append((75, "map_endpoints"))
-            if completed_scans >= 3:
+            if trusted_completed_scans >= 3:
                 reasons.append("repeated completed scans yielded no observed finding; rotate coverage rather than repeat identical tests")
                 if not observed_browser_work:
                     candidates.append((55, "browser_observe"))
@@ -662,6 +671,7 @@ def build_no_finding_recovery(
         exhausted_task_kinds=exhausted,
         reopened_task_kinds=tuple(sorted(reopened)),
         ambiguous_scan_source_jobs=ambiguous_sources,
+        trusted_completed_scan_count=trusted_completed_scans,
         worker_health_attribution=worker_health_attribution,
         worker_instability_observed=worker_instability_observed,
         worker_instability_applied=worker_instability_applied,
