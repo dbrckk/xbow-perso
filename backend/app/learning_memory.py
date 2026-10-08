@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .no_finding_recovery import _asset_matches_origin, _origin
 from .observation_graph import ObservationGraph, load_observation_graph
 
 router = APIRouter()
@@ -26,7 +27,61 @@ class TechniqueMemory:
         return asdict(self)
 
 
-def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[TechniqueMemory]:
+def _target_scoped_evidence_ids(
+    graph: ObservationGraph,
+    target_url: str,
+) -> frozenset[str]:
+    """Find evidence tied exclusively to the requested authorized origin."""
+    target = _origin(target_url)
+    if target is None:
+        raise ValueError("target_url must identify an HTTP(S) origin")
+    items = {item.id: item for item in graph.values()}
+    assets = graph.by_kind("asset")
+    approved = {
+        item.id
+        for item in assets
+        if _asset_matches_origin(item.value, target)
+    }
+    # Unlinked legacy evidence is safe to assign only when the graph
+    # identifies exactly one unambiguous asset for this origin.
+    legacy_single_asset = len(assets) == 1 and assets[0].id in approved
+    accepted: set[str] = set()
+    for item in graph.by_kind("evidence"):
+        if not item.parent_ids:
+            if legacy_single_asset:
+                accepted.add(item.id)
+            continue
+        pending = list(item.parent_ids)
+        seen: set[str] = set()
+        ancestors: set[str] = set()
+        valid = True
+        while pending:
+            parent_id = pending.pop()
+            if parent_id in seen:
+                continue
+            seen.add(parent_id)
+            parent = items.get(parent_id)
+            if parent is None:
+                valid = False
+                break
+            if parent.kind == "asset":
+                if parent.id not in approved:
+                    valid = False
+                    break
+                ancestors.add(parent.id)
+            else:
+                pending.extend(parent.parent_ids)
+        if valid and ancestors:
+            accepted.add(item.id)
+    return frozenset(accepted)
+
+
+def build_learning_memory(
+    graph: ObservationGraph,
+    *,
+    limit: int = 50,
+    target_url: str | None = None,
+) -> list[TechniqueMemory]:
     """Aggregate safe technique outcomes from existing evidence only.
 
     Evidence contributes only when it carries an explicit technique and outcome.
@@ -35,6 +90,28 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
     if not 1 <= limit <= 100:
         raise ValueError("learning memory limit must be between 1 and 100")
 
+    scoped_ids = (
+        _target_scoped_evidence_ids(graph, target_url)
+        if target_url is not None
+        else None
+    )
+    # A reused worker job ID observed on a different origin must not be
+    # partially credited through only its convenient in-scope reporter.
+    out_of_scope_jobs: set[tuple[str, str]] = set()
+    if scoped_ids is not None:
+        for item in graph.by_kind("evidence"):
+            if item.id in scoped_ids:
+                continue
+            technique = str(item.metadata.get("technique") or "").strip().lower()
+            job_id = item.metadata.get("job_id")
+            if (
+                technique
+                and isinstance(job_id, str)
+                and 0 < len(job_id.strip()) <= 128
+                and not any(ord(char) < 32 for char in job_id)
+            ):
+                out_of_scope_jobs.add((technique, f"job:{job_id.strip()}"))
+
     # One scanner or validation job may emit multiple evidence observations.
     # Counting each observation as an independent attempt inflates both
     # failure/success rates and technique confidence. Deduplicate only when
@@ -42,6 +119,8 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
     # job ID remain independently accountable by observation ID.
     attempts: dict[tuple[str, str], dict[str, set[str]]] = {}
     for item in graph.by_kind("evidence"):
+        if scoped_ids is not None and item.id not in scoped_ids:
+            continue
         technique = str(item.metadata.get("technique", "")).strip().lower()
         outcome = str(item.metadata.get("outcome", "")).strip().lower()
         if not technique or outcome not in {"success", "failure", "inconclusive"}:
@@ -57,6 +136,8 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
             identity = f"job:{job_id.strip()}"
         else:
             # Invalid job identity cannot establish independent evidence.
+            continue
+        if (technique, identity) in out_of_scope_jobs:
             continue
         attempt = attempts.setdefault(
             (technique, identity),
