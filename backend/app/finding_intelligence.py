@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from .affected_version_range import build_affected_version_range_evidence
 from .cpe_consistency import build_cpe_consistency
 from .cve_advisory_catalog import find_verified_cve_advisory
+from .cve_advisory_consensus import build_cve_advisory_consensus
 from .cve_advisory_loader import load_cve_advisory_catalog_with_status
 from .cve_evidence_verdict import build_cve_evidence_verdict
 from .cve_risk_context import build_cve_risk_context
@@ -47,6 +48,7 @@ def build_finding_intelligence(
     program_handle: str | None = None,
     kev_catalog: Any | None = None,
     cve_advisory_catalog: Any | None = None,
+    cve_advisory_catalogs: tuple[Any, ...] | None = None,
 ) -> dict[str, Any]:
     readiness = build_finding_readiness(
         findings,
@@ -69,6 +71,22 @@ def build_finding_intelligence(
     differential_signals = build_differential_signals(graph)
     differential_quality = build_differential_quality(graph)
     technology_fingerprints = build_technology_fingerprints(graph)
+
+    raw_advisory_catalogs: list[Any] = []
+    if cve_advisory_catalog is not None:
+        raw_advisory_catalogs.append(cve_advisory_catalog)
+    raw_advisory_catalogs.extend(cve_advisory_catalogs or ())
+    advisory_catalogs: list[Any] = []
+    seen_advisory_catalogs: set[tuple[str, str]] = set()
+    for catalog in raw_advisory_catalogs:
+        key = (
+            str(getattr(catalog, "source_name", "")),
+            str(getattr(catalog, "source_digest_sha256", "")),
+        )
+        if key in seen_advisory_catalogs:
+            continue
+        seen_advisory_catalogs.add(key)
+        advisory_catalogs.append(catalog)
 
     readiness_by_id = {item.finding_id: item for item in readiness}
     triage_by_id = {item.finding_id: item for item in triage}
@@ -163,6 +181,12 @@ def build_finding_intelligence(
             and package_version_raw.strip()
             else None
         )
+        advisory_consensus = build_cve_advisory_consensus(
+            finding,
+            tuple(advisory_catalogs),
+            fingerprint_versions=fingerprint_versions,
+            package_version=package_version,
+        )
         advisory_observed_versions = fingerprint_versions
         if (
             verified_advisory
@@ -242,6 +266,7 @@ def build_finding_intelligence(
                 | set(freshness_ambiguity)
                 | set(cpe_ambiguity)
                 | set(range_ambiguity)
+                | set(advisory_consensus.ambiguity_reasons)
             )
         )
         vulnerability = build_vulnerability_signal(
@@ -306,6 +331,7 @@ def build_finding_intelligence(
                 "cve_risk_context": cve_risk_context.to_dict(),
                 "cpe_consistency": cpe_consistency.to_dict(),
                 "affected_version_range": affected_version_range.to_dict(),
+                "cve_advisory_consensus": advisory_consensus.to_dict(),
                 "cve_advisory": {
                     "matched": verified_advisory is not None,
                     "identity_kind": (
@@ -474,6 +500,20 @@ def build_finding_intelligence(
             ),
             "scanner_advisory_range_conflicts": sum(
                 row["cve_advisory"]["scanner_range_conflict"]
+                for row in finding_rows
+            ),
+            "cross_source_advisory_agreements": sum(
+                row["cve_advisory_consensus"]["cross_source_agreement"]
+                for row in finding_rows
+            ),
+            "cross_source_advisory_conflicts": sum(
+                row["cve_advisory_consensus"]["state"]
+                == "exact_identity_applicability_conflict"
+                for row in finding_rows
+            ),
+            "parallel_unbound_advisory_identities": sum(
+                row["cve_advisory_consensus"]["state"]
+                == "parallel_unbound_identities"
                 for row in finding_rows
             ),
             "high_confidence_version_correlated_cve_candidates": sum(
