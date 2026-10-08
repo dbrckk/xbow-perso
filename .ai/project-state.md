@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:19:54Z
+Generated: 2026-10-08T22:21:41Z
 
 ### Git
 - Branch: `main`
-- Head: `17c67cf8e698`
-- Commit date: 2026-10-09T00:19:44+02:00
-- Commit: fix(surface): reject invalid web origins before crediting coverage
+- Head: `46e6a5c386e9`
+- Commit date: 2026-10-09T00:21:24+02:00
+- Commit: feat(recon): deprioritize exhausted recovery tasks after null scans
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/recon_priority.py`
+- `backend/tests/test_recon_priority.py`
 - `backend/app/attack_surface.py`
 - `backend/tests/test_attack_surface.py`
 - `backend/app/learning_memory.py`
@@ -60,8 +62,6 @@ Generated: 2026-10-08T22:19:54Z
 - `backend/tests/test_coverage.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_scan_result_integrity.py`
-- `backend/app/red_team_coverage.py`
-- `backend/tests/test_red_team_coverage.py`
 
 ### Project signals
 - `pyproject.toml`

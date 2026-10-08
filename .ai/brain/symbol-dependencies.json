@@ -5,256 +5,144 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "canonical_host": {
+    "_high_value_task_boost": {
       "source": {
-        "file": "backend/app/attack_surface.py",
-        "start": 16,
-        "end": 32
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "canonical_endpoint": {
-      "source": {
-        "file": "backend/app/attack_surface.py",
-        "start": 35,
-        "end": 93
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_safe_form": {
-      "source": {
-        "file": "backend/app/attack_surface.py",
-        "start": 96,
-        "end": 113
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canonical_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_attack_surface": {
-      "source": {
-        "file": "backend/app/attack_surface.py",
-        "start": 116,
-        "end": 244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_safe_form",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 96,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "by_kind",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "canonical_host",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "campaign_attack_surface": {
-      "source": {
-        "file": "backend/app/attack_surface.py",
-        "start": 248,
-        "end": 261
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "assert_campaign_exists",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 223,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load_observation_graph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 99,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "storage",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_canonical_host_normalizes_case_and_trailing_dot": {
-      "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 7,
-        "end": 9
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canonical_host",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_canonical_endpoint_redacts_query_values_and_default_port": {
-      "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 12,
-        "end": 25
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_canonical_endpoint_flags_invalid_port_without_leaking_query_values": {
-      "source": {
-        "file": "backend/tests/test_attack_surface.py",
+        "file": "backend/app/recon_priority.py",
         "start": 28,
-        "end": 35
+        "end": 53
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ReconPriorityAdjustment": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 57,
+        "end": 80
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "to_dict": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 74,
+        "end": 194
       },
       "symbol_dependencies": [
         {
-          "symbol": "api",
+          "symbol": "ReconPriorityAdjustment",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
+              "file": "backend/app/recon_priority.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconPriorityResult",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 84,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_endpoint",
+          "symbol": "_confidence_kind_scores",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
+              "file": "backend/app/recon_priority.py",
+              "line": 183,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_historical_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_signal_counts",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_temporal_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 157,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "ReconPriorityResult": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 84,
+        "end": 101
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconPriorityAdjustment",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -263,205 +151,79 @@
       ],
       "dependency_count": 2
     },
-    "test_attack_surface_snapshot_is_deterministic_and_read_only": {
+    "_signal_counts": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 38,
-        "end": 83
+        "file": "backend/app/recon_priority.py",
+        "start": 104,
+        "end": 115
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_attack_surface_models_forms_and_waf_without_secrets": {
+    "_historical_kind_scores": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 86,
-        "end": 130
+        "file": "backend/app/recon_priority.py",
+        "start": 120,
+        "end": 142
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_attack_surface_counts_canonical_duplicates_and_invalid_entries": {
+    "_temporal_kind_scores": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 133,
-        "end": 148
+        "file": "backend/app/recon_priority.py",
+        "start": 157,
+        "end": 179
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_attack_surface_route_is_exposed_and_reads_durable_graph": {
+    "_confidence_kind_scores": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 151,
-        "end": 190
+        "file": "backend/app/recon_priority.py",
+        "start": 183,
+        "end": 203
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "prioritize_recon_tasks": {
+      "source": {
+        "file": "backend/app/recon_priority.py",
+        "start": 205,
+        "end": 400
       },
       "symbol_dependencies": [
         {
-          "symbol": "Campaign",
+          "symbol": "ReconPriorityAdjustment",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 178,
+              "file": "backend/app/recon_priority.py",
+              "line": 57,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconPriorityResult",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 84,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
               "kind": "class",
               "language": "python"
             }
@@ -469,164 +231,82 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Observation",
+          "symbol": "_confidence_kind_scores",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProgramRules",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 83,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "Storage",
-          "definitions": [
-            {
-              "file": "backend/app/storage.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TargetInput",
-          "definitions": [
-            {
-              "file": "backend/app/main.py",
-              "line": 96,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 248,
+              "file": "backend/app/recon_priority.py",
+              "line": 183,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "save_campaign",
+          "symbol": "_high_value_task_boost",
           "definitions": [
             {
-              "file": "backend/app/main.py",
-              "line": 208,
+              "file": "backend/app/recon_priority.py",
+              "line": 28,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_historical_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_signal_counts",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_temporal_kind_scores",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 157,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 8
     },
-    "test_attack_surface_enrichment_score_rewards_cross_source_context": {
+    "task": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 193,
-        "end": 229
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 7,
+        "end": 22
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "ReconTask",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_canonical_endpoint_rejects_unsupported_web_schemes_and_credentials": {
-      "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 232,
-        "end": 244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canonical_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
-              "kind": "function",
               "language": "python"
             }
           ],
@@ -635,43 +315,19 @@
       ],
       "dependency_count": 1
     },
-    "test_malformed_ipv6_does_not_crash_attack_surface_summary": {
+    "test_diff_priority_only_reorders_existing_authorized_tasks": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 247,
-        "end": 270
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 25,
+        "end": 66
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "prioritize_recon_tasks",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -679,103 +335,33 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_attack_surface",
+          "symbol": "task",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_host",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_canonical_ipv6_endpoint_keeps_valid_brackets_and_port": {
-      "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 273,
-        "end": 280
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_endpoint",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 2
     },
-    "test_invalid_protocol_and_credentialed_form_do_not_raise_surface_coverage": {
+    "test_diff_priority_does_nothing_without_baseline": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 283,
-        "end": 317
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 69,
+        "end": 88
       },
       "symbol_dependencies": [
         {
-          "symbol": "Observation",
+          "symbol": "prioritize_recon_tasks",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -783,55 +369,67 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_attack_surface",
+          "symbol": "task",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
-    "test_canonical_host_rejects_credential_bearing_or_unsupported_asset": {
+    "test_diff_priority_is_bounded_to_fifteen_points": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 320,
-        "end": 323
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 91,
+        "end": 107
       },
       "symbol_dependencies": [
         {
-          "symbol": "canonical_host",
+          "symbol": "prioritize_recon_tasks",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 16,
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 2
     },
-    "test_url_control_characters_cannot_change_host_identity": {
+    "test_historical_novelty_adds_small_bounded_boost": {
       "source": {
-        "file": "backend/tests/test_attack_surface.py",
-        "start": 326,
-        "end": 335
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 110,
+        "end": 142
       },
       "symbol_dependencies": [
         {
-          "symbol": "canonical_endpoint",
+          "symbol": "prioritize_recon_tasks",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -839,11 +437,33 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_host",
+          "symbol": "task",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 16,
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_reappearing_surface_has_less_history_weight_than_novel_surface": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 145,
+        "end": 185
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -851,16 +471,765 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "values",
+          "symbol": "task",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 92,
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_total_priority_boost_is_bounded_to_twenty_points": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 188,
+        "end": 230
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_temporal_novelty_favors_never_seen_surface_over_returning_churn": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 233,
+        "end": 282
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_intermittent_surface_has_low_temporal_weight": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 285,
+        "end": 311
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_temporal_scoring_never_breaks_total_boost_cap": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 314,
+        "end": 358
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_low_confidence_dampens_recon_boost_without_changing_authority": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 361,
+        "end": 395
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_confidence_preserves_full_bounded_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 398,
+        "end": 429
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_missing_confidence_is_neutral_and_never_increases_cap": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 432,
+        "end": 449
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_value_focus_boosts_matching_existing_task_only": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 453,
+        "end": 487
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_high_value_boost_preserves_recon_authority_fields": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 490,
+        "end": 520
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_fully_covered_high_value_family_does_not_receive_extra_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 524,
+        "end": 550
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_undercovered_high_value_score_drives_existing_task_boost": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 553,
+        "end": 579
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_recovery_reorders_existing_recon_without_expanding_authority": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 582,
+        "end": 616
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_feedback_cannot_override_authority_fields": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 619,
+        "end": 634
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_no_finding_feedback_ignored_when_findings_present": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 637,
+        "end": 652
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_feedback_never_creates_unconfigured_recon_tasks": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 655,
+        "end": 669
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_safe_feedback": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 672,
+        "end": 683
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_negative_scan_exhaustion_deprioritizes_repeated_task_but_keeps_visibility": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 686,
+        "end": 716
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 672,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_exhaustion_prevents_historical_priority_inflation": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 719,
+        "end": 736
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 672,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_reopened_recovery_kind_is_not_penalized": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 739,
+        "end": 754
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 672,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_no_supported_recovery_tasks_are_penalized_not_dispatched": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 757,
+        "end": 771
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 672,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_malformed_or_escalating_feedback_does_not_deprioritize": {
+      "source": {
+        "file": "backend/tests/test_recon_priority.py",
+        "start": 774,
+        "end": 792
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_feedback",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 672,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "task",
+          "definitions": [
+            {
+              "file": "backend/tests/test_recon_priority.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 3

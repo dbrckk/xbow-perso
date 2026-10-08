@@ -11059,6 +11059,7 @@ temporal_boost: int
 confidence_factor: float
 high_value_boost: int
 no_finding_boost: int
+no_finding_penalty: int
 high_value_families: tuple[str, ...]
 signals: tuple[str, ...]
 historical_signals: tuple[str, ...]
@@ -11144,6 +11145,18 @@ baseline_available = bool(surface_diff.get("baseline_available"))
 changed_surface_count = max(
 ⋮----
 recommended_kinds = ()
+exhausted_kinds: frozenset[str] = frozenset()
+valid_feedback = (
+⋮----
+# Exhaustion is an additional decision signal: require explicit
+# non-escalation flags, rather than trusting incomplete legacy data.
+safe_exhaustion = (
+⋮----
+raw_exhausted = no_finding_feedback.get("exhausted_task_kinds")
+raw_reopened = no_finding_feedback.get("reopened_task_kinds")
+reopened = (
+⋮----
+exhausted_kinds = frozenset(
 ⋮----
 raw_kinds = no_finding_feedback.get("recommended_task_kinds")
 ⋮----
@@ -11163,10 +11176,14 @@ confidence_values = [
 confidence_factor = (
 ⋮----
 baseline_boost = min(
+is_exhausted = task.kind in exhausted_kinds
 no_finding_boost = (
 raw_boost = min(
-boost = min(25, int(round(raw_boost * confidence_factor)))
-effective = min(100, int(task.priority) + boost)
+boost = (
+# Priority/order only: an exhausted task is still visible for manual
+# review but cannot win new priority from stale discovery signals.
+no_finding_penalty = min(20, max(0, int(task.priority))) if is_exhausted else 0
+effective = max(0, min(100, int(task.priority) + boost - no_finding_penalty))
 reason = task.reason
 active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
 historical_active = tuple(
@@ -23831,6 +23848,31 @@ invalid_feedback = {
 def test_no_finding_feedback_ignored_when_findings_present()
 ⋮----
 def test_feedback_never_creates_unconfigured_recon_tasks()
+⋮----
+def _safe_feedback(*, state="recovery_advisory", exhausted=(), reopened=(), recommended=())
+⋮----
+def test_negative_scan_exhaustion_deprioritizes_repeated_task_but_keeps_visibility()
+⋮----
+audit = {item.kind: item for item in result.adjustments}
+⋮----
+baseline = next(source for source in original if source.kind == item.kind)
+⋮----
+def test_exhaustion_prevents_historical_priority_inflation()
+⋮----
+source = task("map_endpoints", 80)
+⋮----
+def test_reopened_recovery_kind_is_not_penalized()
+⋮----
+source = task("map_forms", 70)
+feedback = _safe_feedback(
+⋮----
+def test_no_supported_recovery_tasks_are_penalized_not_dispatched()
+⋮----
+sources = [task("map_forms", 70), task("detect_technology", 75)]
+⋮----
+def test_malformed_or_escalating_feedback_does_not_deprioritize()
+⋮----
+feedback = _safe_feedback(exhausted=("map_forms",))
 ````
 
 ## File: backend/tests/test_recon_swarm.py

@@ -1,11 +1,11 @@
 # Change impact
 
-Base: dc7bca139e0738041004c917c773e7d252319b2b
-Head: 17c67cf8e698e6402259ea0579a6ef023350c776
+Base: d50dd41c85642a059ff48b98edf40fed23d4a38e
+Head: 46e6a5c386e9faa0bc97e06d70ab524bac808d42
 
 ## Changed files
-- M backend/app/attack_surface.py
-- M backend/tests/test_attack_surface.py
+- M backend/app/recon_priority.py
+- M backend/tests/test_recon_priority.py
 
 ## Affected areas
 - backend
