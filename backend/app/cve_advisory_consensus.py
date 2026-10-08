@@ -18,6 +18,7 @@ CVE_ADVISORY_CONSENSUS_SCHEMA = "cve-advisory-consensus-v1"
 @dataclass(frozen=True)
 class AdvisorySourceEvidence:
     source_name: str
+    source_authority: str
     identity_kind: str
     identity_key: str
     affected_version_ranges: tuple[str, ...]
@@ -40,10 +41,12 @@ class CveAdvisoryConsensus:
     cve_id: str | None
     state: str
     source_count: int
+    source_instance_count: int
     matched_advisory_count: int
     identity_count: int
     identity_kinds: tuple[str, ...]
     sources: tuple[str, ...]
+    authorities: tuple[str, ...]
     evidence: tuple[AdvisorySourceEvidence, ...]
     ambiguity_reasons: tuple[str, ...]
     range_sets_equal: bool
@@ -54,6 +57,7 @@ class CveAdvisoryConsensus:
         payload = asdict(self)
         payload["identity_kinds"] = list(self.identity_kinds)
         payload["sources"] = list(self.sources)
+        payload["authorities"] = list(self.authorities)
         payload["evidence"] = [
             item.to_dict() for item in self.evidence
         ]
@@ -84,10 +88,12 @@ def build_cve_advisory_consensus(
             cve_id=None,
             state="not_applicable",
             source_count=0,
+            source_instance_count=0,
             matched_advisory_count=0,
             identity_count=0,
             identity_kinds=(),
             sources=(),
+            authorities=(),
             evidence=(),
             ambiguity_reasons=(),
             range_sets_equal=False,
@@ -113,7 +119,8 @@ def build_cve_advisory_consensus(
     )
 
     evidence: list[AdvisorySourceEvidence] = []
-    source_ids: set[tuple[str, str]] = set()
+    source_instances: set[tuple[str, str, str]] = set()
+    source_authorities: set[str] = set()
 
     for catalog in catalogs:
         matches = find_verified_cve_advisories(
@@ -131,9 +138,14 @@ def build_cve_advisory_consensus(
         if not matches:
             continue
 
-        source_ids.add(
-            (catalog.source_name, catalog.source_digest_sha256)
+        source_instances.add(
+            (
+                catalog.source_authority,
+                catalog.source_name,
+                catalog.source_digest_sha256,
+            )
         )
+        source_authorities.add(catalog.source_authority)
         for entry in matches:
             observed_versions = (
                 (normalized_package_version,)
@@ -159,6 +171,7 @@ def build_cve_advisory_consensus(
             evidence.append(
                 AdvisorySourceEvidence(
                     source_name=catalog.source_name,
+                    source_authority=catalog.source_authority,
                     identity_kind=entry.identity_kind,
                     identity_key=_identity_key(entry),
                     affected_version_ranges=(
@@ -175,6 +188,7 @@ def build_cve_advisory_consensus(
     evidence.sort(
         key=lambda item: (
             item.identity_key,
+            item.source_authority,
             item.source_name,
             item.affected_version_ranges,
         )
@@ -185,10 +199,12 @@ def build_cve_advisory_consensus(
             cve_id=cve_id,
             state="not_available",
             source_count=0,
+            source_instance_count=0,
             matched_advisory_count=0,
             identity_count=0,
             identity_kinds=(),
             sources=(),
+            authorities=(),
             evidence=(),
             ambiguity_reasons=(),
             range_sets_equal=False,
@@ -201,25 +217,37 @@ def build_cve_advisory_consensus(
         sorted({item.identity_kind for item in evidence})
     )
     sources = tuple(sorted({item.source_name for item in evidence}))
+    authorities = tuple(sorted(source_authorities))
     range_sets = {
         tuple(sorted(item.affected_version_ranges))
         for item in evidence
     }
     range_sets_equal = len(range_sets) == 1
-    source_count = len(source_ids)
+    source_count = len(source_authorities)
+    source_instance_count = len(source_instances)
 
     ambiguity: set[str] = set()
     agreement = False
 
+    applicability_states = {
+        item.applicability_state for item in evidence
+    }
     if len(identity_keys) > 1:
         state = "parallel_unbound_identities"
         ambiguity.add("parallel_unbound_advisory_identities")
     elif source_count < 2:
-        state = "single_source"
+        if (
+            source_instance_count > 1
+            and "affected" in applicability_states
+            and "not_affected" in applicability_states
+        ):
+            state = "same_authority_snapshot_conflict"
+            ambiguity.add(
+                "same_authority_advisory_snapshot_conflict"
+            )
+        else:
+            state = "single_source"
     else:
-        applicability_states = {
-            item.applicability_state for item in evidence
-        }
         if applicability_states in ({"affected"}, {"not_affected"}):
             state = "exact_identity_applicability_agreement"
             agreement = True
@@ -240,10 +268,12 @@ def build_cve_advisory_consensus(
         cve_id=cve_id,
         state=state,
         source_count=source_count,
+        source_instance_count=source_instance_count,
         matched_advisory_count=len(evidence),
         identity_count=len(identity_keys),
         identity_kinds=identity_kinds,
         sources=sources,
+        authorities=authorities,
         evidence=tuple(evidence),
         ambiguity_reasons=tuple(sorted(ambiguity)),
         range_sets_equal=range_sets_equal,
