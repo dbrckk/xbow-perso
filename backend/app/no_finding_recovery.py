@@ -31,6 +31,7 @@ class NoFindingRecovery:
     scope_integrity_issues: int
     recommended_task_kinds: tuple[str, ...]
     reasons: tuple[str, ...]
+    exhausted_task_kinds: tuple[str, ...] = ()
     advisory_only: bool = True
     may_expand_scope: bool = False
     may_increase_request_budget: bool = False
@@ -42,6 +43,7 @@ class NoFindingRecovery:
         result = asdict(self)
         result["recommended_task_kinds"] = list(self.recommended_task_kinds)
         result["reasons"] = list(self.reasons)
+        result["exhausted_task_kinds"] = list(self.exhausted_task_kinds)
         return result
 
 
@@ -203,6 +205,20 @@ def build_no_finding_recovery(
             except (TypeError, ValueError):
                 observed_browser_work = True  # fail closed on invalid worker data
 
+    # A completed, asset-linked recovery step with no new findings should
+    # not be repeatedly promoted merely because its coverage gap persists.
+    # Evidence from another asset or with missing parent lineage does not
+    # exhaust the authorized target's options.
+    completed_recovery_kinds = {
+        str(item.metadata.get("task_kind"))
+        for item in graph.by_kind("evidence")
+        if (
+            item.metadata.get("task_kind") in _ALLOWED_RECON_KINDS
+            and item.metadata.get("status") == "completed"
+            and has_in_scope_asset_ancestor(item.id)
+        )
+    }
+
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
 
@@ -258,10 +274,20 @@ def build_no_finding_recovery(
         if not candidates:
             state = "no_supported_recovery_task"
             reasons.append("no evidence-backed recon gap is available")
+    exhausted = tuple(sorted(
+        {kind for _score, kind in candidates}
+        & completed_recovery_kinds
+        & allowed
+    ))
+    if exhausted and state == "recovery_advisory":
+        reasons.append(
+            "completed in-scope recovery tasks produced no sufficient new evidence; "
+            "do not repeat them automatically"
+        )
     recommended = tuple(
         kind
         for _score, kind in sorted(set(candidates), key=lambda item: (-item[0], item[1]))
-        if kind in allowed
+        if kind in allowed and kind not in completed_recovery_kinds
     )
     # A kind may appear with different scores; never recommend it twice.
     recommended = tuple(dict.fromkeys(recommended))[:3]
@@ -283,4 +309,5 @@ def build_no_finding_recovery(
         scope_integrity_issues=scope_issues,
         recommended_task_kinds=recommended,
         reasons=tuple(dict.fromkeys(reasons)),
+        exhausted_task_kinds=exhausted,
     )
