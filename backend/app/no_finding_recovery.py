@@ -43,6 +43,7 @@ class NoFindingRecovery:
     exhausted_task_kinds: tuple[str, ...] = ()
     reopened_task_kinds: tuple[str, ...] = ()
     ambiguous_scan_source_jobs: int = 0
+    unreconciled_scan_reports: int = 0
     trusted_completed_scan_count: int = 0
     worker_health_attribution: str = "campaign_aggregate"
     worker_instability_observed: bool = False
@@ -389,6 +390,7 @@ def build_no_finding_recovery(
         )
 
     legacy_single_host = False
+    scan_filter: Callable[[Any], bool] | None = None
     if normalized_target_host is None:
         (
             completed_scans, scanner_sources, ambiguous_sources,
@@ -413,13 +415,38 @@ def build_no_finding_recovery(
                 return has_in_scope_asset_ancestor(item.id)
             return legacy_single_host
 
+        scan_filter = scan_matches_target
         (
             completed_scans, scanner_sources, ambiguous_sources,
             trusted_completed_scans,
         ) = _completed_scan_evidence(
             graph,
-            evidence_filter=scan_matches_target,
+            evidence_filter=scan_filter,
         )
+
+    # A completed worker may report findings before their records reach the
+    # campaign. Treat an explicitly positive or malformed finding count as
+    # an ingestion/reconciliation issue, never as evidence of a null scan.
+    # Older evidence without this field remains supported but is not upgraded
+    # into proof of safety.
+    unreconciled_scan_reports = 0
+    if finding_count == 0:
+        for item in graph.by_kind("evidence"):
+            if (
+                item.metadata.get("phase") != "scan"
+                or item.metadata.get("status") != "completed"
+                or "findings" not in item.metadata
+                or (scan_filter is not None and not scan_filter(item))
+            ):
+                continue
+            reported = item.metadata["findings"]
+            if (
+                isinstance(reported, bool)
+                or not isinstance(reported, int)
+                or reported < 0
+                or reported > 0
+            ):
+                unreconciled_scan_reports += 1
 
     # Orphan forms or forms from a different asset do not close a gap.
     forms = [
@@ -528,6 +555,13 @@ def build_no_finding_recovery(
     elif worker_instability_applied:
         state = "execution_unstable"
         reasons.append("repeated scanner worker errors require operator review")
+    elif unreconciled_scan_reports:
+        state = "scan_findings_unreconciled"
+        reasons.append(
+            "completed scan reports include positive or invalid finding counts "
+            "without matching recorded findings; reconcile ingestion before "
+            "interpreting results as negative"
+        )
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
@@ -671,6 +705,7 @@ def build_no_finding_recovery(
         exhausted_task_kinds=exhausted,
         reopened_task_kinds=tuple(sorted(reopened)),
         ambiguous_scan_source_jobs=ambiguous_sources,
+        unreconciled_scan_reports=unreconciled_scan_reports,
         trusted_completed_scan_count=trusted_completed_scans,
         worker_health_attribution=worker_health_attribution,
         worker_instability_observed=worker_instability_observed,

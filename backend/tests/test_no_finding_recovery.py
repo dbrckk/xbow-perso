@@ -1662,3 +1662,102 @@ def test_cross_origin_ambiguity_does_not_reduce_separate_trusted_job_count():
     assert result.trusted_completed_scan_count == 1
     assert result.ambiguous_scan_source_jobs == 1
     assert result.state == "recovery_advisory"
+
+
+
+def _scan_report(
+    graph: ObservationGraph,
+    *,
+    report_id: str,
+    findings: object,
+    asset_id: str = "asset:a",
+) -> None:
+    graph.add(
+        Observation(
+            report_id,
+            "evidence",
+            "completed-scan",
+            "nuclei",
+            parent_ids=(asset_id,),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": report_id,
+                "findings": findings,
+            },
+        )
+    )
+
+
+def test_positive_scan_count_with_no_recorded_finding_blocks_negative_recovery():
+    graph = _graph(scans=0)
+    _scan_report(graph, report_id="scan:positive", findings=2)
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "scan_findings_unreconciled"
+    assert result.unreconciled_scan_reports == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.recommended_task_kinds == ()
+    assert result.negative_result_proves_safe is False
+    assert result.may_enable_exploitation is False
+
+
+def test_explicit_zero_finding_count_retains_safe_recovery_guidance():
+    graph = _graph(scans=0)
+    _scan_report(graph, report_id="scan:zero", findings=0)
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "recovery_advisory"
+    assert result.unreconciled_scan_reports == 0
+    assert "map_forms" in result.recommended_task_kinds
+
+
+def test_malformed_finding_counter_requires_ingestion_reconciliation():
+    for value in (-1, True, "0", None, 1.5):
+        graph = _graph(scans=0)
+        _scan_report(graph, report_id="scan:malformed", findings=value)
+        result = _feedback(graph, target_url="https://example.test")
+
+        assert result.state == "scan_findings_unreconciled"
+        assert result.unreconciled_scan_reports == 1
+        assert result.recommended_task_kinds == ()
+
+
+def test_other_origin_scan_finding_count_does_not_block_target_recovery():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:other", "asset", "other.test", "inventory"))
+    _scan_report(
+        graph,
+        report_id="scan:other-positive",
+        findings=3,
+        asset_id="asset:other",
+    )
+    _scan_report(graph, report_id="scan:target-zero", findings=0)
+
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.unreconciled_scan_reports == 0
+    assert result.trusted_completed_scan_count == 1
+
+
+def test_existing_findings_do_not_get_misclassified_as_missing_ingestion():
+    graph = _graph(scans=0)
+    _scan_report(graph, report_id="scan:positive", findings=1)
+    graph.add(
+        Observation(
+            "finding:present",
+            "finding",
+            "candidate",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "findings_present"
+    assert result.unreconciled_scan_reports == 0
