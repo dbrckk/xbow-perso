@@ -96,9 +96,33 @@ class ObservationGraph:
         return [item for item in self._items.values() if item.kind == kind]
 
 
-def load_observation_graph(store: Any, campaign_id: str) -> ObservationGraph:
-    """Load the durable observation graph for a campaign from storage."""
-    return ObservationGraph.from_records(store.list_observations(campaign_id))
+def load_observation_graph(
+    store: Any,
+    campaign_id: str,
+    *,
+    include_persisted_discovery_times: bool = False,
+) -> ObservationGraph:
+    """Load a campaign graph, optionally exposing durable first-insert times.
+
+    The optional metadata is for advisory recon recovery only: it lets the
+    planner distinguish a newly persisted surface from a refreshed record
+    without changing the persisted observation or other consumers' views.
+    """
+    records = store.list_observations(campaign_id)
+    if include_persisted_discovery_times:
+        for record in records:
+            if record.get("kind") not in {
+                "endpoint", "form", "technology", "waf"
+            }:
+                continue
+            created_at = record.get("created_at")
+            if not isinstance(created_at, str) or not created_at.strip():
+                continue
+            metadata = dict(record.get("metadata") or {})
+            metadata.setdefault("first_seen_at", created_at)
+            metadata.setdefault("observed_at", created_at)
+            record["metadata"] = metadata
+    return ObservationGraph.from_records(records)
 
 
 def _campaign_finding_id(observation: Observation) -> str:
