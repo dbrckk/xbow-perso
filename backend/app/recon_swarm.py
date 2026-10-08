@@ -184,6 +184,8 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
         limit=limit,
     )
 
+    from .learning_memory import summarize_worker_outcomes
+    from .no_finding_recovery import build_no_finding_recovery
     from .recon_priority import prioritize_recon_tasks
     from .surface_confidence import build_surface_confidence
     from .surface_diff import build_surface_diff_intelligence
@@ -196,12 +198,24 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
     surface_diff = build_surface_diff_intelligence(memory)
     surface_temporal = build_temporal_surface_profile(store, campaign_doc)
     surface_confidence = build_surface_confidence(memory, surface_temporal)
+    feedback = build_no_finding_recovery(
+        graph,
+        scope_checker=scope_checker,
+        available_task_kinds=(
+            (task.kind for task in tasks)
+            if rules.automated_scanning
+            else ()
+        ),
+        campaign_finding_count=len(campaign.findings),
+        worker_outcomes=summarize_worker_outcomes(campaign.events),
+    )
     priority = prioritize_recon_tasks(
         tasks,
         surface_diff,
         memory,
         surface_temporal,
         surface_confidence,
+        no_finding_feedback=feedback.to_dict(),
     )
 
     return {
@@ -209,6 +223,7 @@ def campaign_recon_plan(campaign_id: str, limit: int = 10):
         "tasks": [item.to_dict() for item in priority.tasks],
         "summary": {"total": len(priority.tasks)},
         "diff_priority": priority.to_dict(),
+        "no_finding_feedback": feedback.to_dict(),
         "surface_diff": surface_diff,
         "surface_temporal": surface_temporal,
         "surface_confidence": surface_confidence,

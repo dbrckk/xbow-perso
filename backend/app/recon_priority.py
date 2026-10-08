@@ -64,6 +64,7 @@ class ReconPriorityAdjustment:
     temporal_boost: int
     confidence_factor: float
     high_value_boost: int
+    no_finding_boost: int
     high_value_families: tuple[str, ...]
     signals: tuple[str, ...]
     historical_signals: tuple[str, ...]
@@ -207,6 +208,7 @@ def prioritize_recon_tasks(
     surface_temporal: dict[str, Any] | None = None,
     surface_confidence: dict[str, Any] | None = None,
     high_value_intelligence: dict[str, Any] | None = None,
+    no_finding_feedback: dict[str, Any] | None = None,
 ) -> ReconPriorityResult:
     """Reorder an already-authorized recon plan using historical change signals.
 
@@ -222,6 +224,24 @@ def prioritize_recon_tasks(
         0,
         int(dict(surface_diff.get("summary") or {}).get("change_count") or 0),
     )
+
+    recommended_kinds = ()
+    if (
+        isinstance(no_finding_feedback, dict)
+        and no_finding_feedback.get("state") == "recovery_advisory"
+        and no_finding_feedback.get("advisory_only") is True
+        and no_finding_feedback.get("may_expand_scope") is False
+        and no_finding_feedback.get("may_increase_request_budget") is False
+    ):
+        raw_kinds = no_finding_feedback.get("recommended_task_kinds")
+        if isinstance(raw_kinds, (list, tuple)):
+            recommended_kinds = tuple(
+                dict.fromkeys(
+                    kind
+                    for kind in raw_kinds[:3]
+                    if isinstance(kind, str) and kind in _TASK_SIGNALS
+                )
+            )
 
     adjusted: list[ReconTask] = []
     audit: list[ReconPriorityAdjustment] = []
@@ -252,9 +272,14 @@ def prioritize_recon_tasks(
             20,
             diff_boost + history_boost + temporal_boost,
         )
+        no_finding_boost = (
+            max(0, 24 - 8 * recommended_kinds.index(task.kind))
+            if task.kind in recommended_kinds
+            else 0
+        )
         raw_boost = min(
             25,
-            baseline_boost + high_value_boost,
+            baseline_boost + high_value_boost + no_finding_boost,
         )
         boost = min(25, int(round(raw_boost * confidence_factor)))
         effective = min(100, int(task.priority) + boost)
@@ -276,6 +301,8 @@ def prioritize_recon_tasks(
                 details.append(f"temporal +{temporal_boost}")
             if high_value_boost:
                 details.append(f"high-value +{high_value_boost}")
+            if no_finding_boost:
+                details.append(f"no-finding recovery +{no_finding_boost}")
             if confidence_factor < 0.999:
                 details.append(f"confidence x{confidence_factor:.2f}")
             reason = (
@@ -312,6 +339,7 @@ def prioritize_recon_tasks(
                 temporal_boost=temporal_boost,
                 confidence_factor=round(confidence_factor, 4),
                 high_value_boost=high_value_boost,
+                no_finding_boost=no_finding_boost,
                 high_value_families=high_value_families,
                 signals=active,
                 historical_signals=historical_active,

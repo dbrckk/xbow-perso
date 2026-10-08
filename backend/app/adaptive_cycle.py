@@ -172,9 +172,34 @@ def campaign_adaptive_cycle(campaign_id: str):
     memories = build_learning_memory(graph)
     worker_outcomes = summarize_worker_outcomes(campaign.events)
     cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
+
+    # A terminal no-finding scan is not authorization to repeat or escalate.
+    # Report eligible existing recon gaps without overriding planner/gate state.
+    from .no_finding_recovery import build_no_finding_recovery
+    from .recon_swarm import build_recon_plan
+
+    existing_recon_tasks = (
+        build_recon_plan(
+            str(campaign.target.primary_url),
+            graph,
+            scope_checker=scope_checker,
+            limit=10,
+        )
+        if gate.safe_autonomy_ready and not cycle.retry_suppressed_job_kinds
+        else []
+    )
+    recovery = build_no_finding_recovery(
+        graph,
+        scope_checker=scope_checker,
+        available_task_kinds=(task.kind for task in existing_recon_tasks),
+        campaign_finding_count=len(campaign.findings),
+        worker_outcomes=worker_outcomes,
+    )
     return {
         "campaign_id": campaign.id,
         "cycle": cycle.to_dict(),
+        "no_finding_feedback": recovery.to_dict(),
+        "recovery_requires_new_authorized_planning": True,
         "read_only": True,
         "bounded": True,
         "fail_closed": True,
