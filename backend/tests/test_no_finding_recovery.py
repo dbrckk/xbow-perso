@@ -2078,3 +2078,136 @@ def test_invalid_review_outcome_type_cannot_close_endpoint_gap():
     )
 
     assert _feedback(graph).uncovered_endpoint_count == 1
+
+
+def test_failed_outcome_does_not_exhaust_completed_recon_task():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:failed-outcome",
+            "evidence",
+            "task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "map_forms",
+                "status": "completed",
+                "outcome": "failure",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ()
+
+
+def test_inconclusive_outcome_does_not_exhaust_completed_recon_task():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:inconclusive",
+            "evidence",
+            "task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "map_forms",
+                "status": "completed",
+                "outcome": "inconclusive",
+            },
+        )
+    )
+    result = _feedback(graph)
+
+    assert "map_forms" in result.recommended_task_kinds
+    assert "map_forms" not in result.exhausted_task_kinds
+
+
+def test_successful_completed_recon_remains_exhausted_without_new_surface():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:successful",
+            "evidence",
+            "task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "map_forms",
+                "status": "completed",
+                "outcome": "success",
+            },
+        )
+    )
+
+    result = _feedback(graph)
+    assert "map_forms" not in result.recommended_task_kinds
+    assert "map_forms" in result.exhausted_task_kinds
+
+
+def test_no_finding_recon_completion_still_counts_as_a_completed_attempt():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:empty",
+            "evidence",
+            "task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "map_forms",
+                "status": "completed",
+                "outcome": "no_findings",
+            },
+        )
+    )
+
+    assert "map_forms" in _feedback(graph).exhausted_task_kinds
+
+
+def test_malformed_outcome_does_not_claim_completed_recon():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:bad-outcome",
+            "evidence",
+            "task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "map_forms",
+                "status": "completed",
+                "outcome": {"error": "invalid"},
+            },
+        )
+    )
+
+    assert "map_forms" not in _feedback(graph).exhausted_task_kinds
+
+
+def test_failed_browser_observation_does_not_stop_recovery_advisory():
+    graph = _fully_reviewed_target_graph(additional_host=False)
+    graph.add(
+        Observation(
+            "recovery:browser-failed",
+            "evidence",
+            "browser-task-ended",
+            "recon-worker",
+            parent_ids=("asset:a",),
+            metadata={
+                "task_kind": "browser_observe",
+                "status": "completed",
+                "outcome": "failure",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        allowed=("browser_observe",),
+        target_url="https://example.test",
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.recommended_task_kinds == ("browser_observe",)
+    assert result.exhausted_task_kinds == ()
