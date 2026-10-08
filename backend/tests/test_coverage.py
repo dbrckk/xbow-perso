@@ -159,8 +159,14 @@ def test_coverage_detects_diminishing_scan_returns_without_findings():
     assert coverage["evidence"]["completed_scans"] == 4
     assert coverage["dimensions"]["marginal_scan_yield"] == 0.0
     assert coverage["dimensions"]["diminishing_returns"] >= 0.5
-    assert guidance["focus"] == "surface_rotation"
-    assert guidance["recommended_strategy"] == "rotate_to_underexplored_in_scope_surface"
+    assert guidance["focus"] == "endpoint_scan_scope_review"
+    assert guidance["recommended_strategy"] == (
+        "review_endpoint_scan_provenance_before_more_scans"
+    )
+    assert guidance["endpoint_scan_attribution_state"] == (
+        "endpoint_scope_unrecorded"
+    )
+    assert guidance["documented_endpoint_scan_fraction"] is None
     assert guidance["advisory_only"] is True
     assert guidance["may_unlock_actions"] is False
 
@@ -964,3 +970,171 @@ def test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage():
     assert attribution["eligible_observed_endpoints"] == 1
     assert attribution["documented_scanned_endpoints"] == 0
     assert attribution["documented_fraction"] is None
+
+
+def test_partial_endpoint_scan_documentation_prioritizes_provenance_review():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index in (1, 2):
+        graph.add(
+            Observation(
+                f"endpoint:{index}",
+                "endpoint",
+                f"https://example.test/api/{index}",
+                "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+    for index in range(4):
+        graph.add(
+            Observation(
+                f"scan:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("endpoint:1",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                    "findings": 0,
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    guidance = build_coverage_guidance(coverage)
+
+    assert coverage["dimensions"]["diminishing_returns"] >= 0.5
+    assert guidance["focus"] == "endpoint_scan_scope_review"
+    assert guidance["endpoint_scan_attribution_state"] == (
+        "partial_endpoint_documentation"
+    )
+    assert guidance["documented_endpoint_scan_fraction"] == 0.5
+    assert guidance["recommended_strategy"] == (
+        "review_endpoint_scan_provenance_before_more_scans"
+    )
+    assert guidance["may_unlock_actions"] is False
+
+
+def test_documented_scans_keep_existing_low_yield_surface_rotation():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index in range(4):
+        graph.add(
+            Observation(
+                f"scan:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("endpoint:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": f"job-{index}",
+                },
+            )
+        )
+    guidance = build_coverage_guidance(
+        build_evidence_coverage(
+            graph, scope_checker=lambda host: host == "example.test"
+        )
+    )
+    assert guidance["focus"] == "surface_rotation"
+    assert guidance["endpoint_scan_attribution_state"] == (
+        "all_observed_endpoints_documented"
+    )
+    assert guidance["documented_endpoint_scan_fraction"] == 1.0
+
+
+def test_incomplete_endpoint_provenance_never_changes_scan_authority():
+    action = PlannedAction(
+        kind="scan",
+        target="https://example.test/",
+        reason="preauthorized",
+        priority=80,
+    )
+    adjusted, signal = prioritize_action_with_coverage(
+        action,
+        {
+            "focus": "endpoint_scan_scope_review",
+            "diminishing_returns": 1.0,
+        },
+    )
+
+    assert adjusted == action
+    assert signal["applied"] is False
+    assert signal["action_kind_unchanged"] is True
+    assert signal["target_unchanged"] is True
+
+
+def test_scan_report_conflict_outranks_missing_endpoint_provenance():
+    guidance = build_coverage_guidance(
+        {
+            "score": 0.8,
+            "dimensions": {
+                "surface_discovery": 0.8,
+                "scanner_execution": 1.0,
+                "independent_validation": None,
+                "diminishing_returns": 1.0,
+            },
+            "evidence": {
+                "unreconciled_scan_observations": 1,
+                "endpoint_scan_attribution": {
+                    "state": "endpoint_scope_unrecorded",
+                },
+            },
+        }
+    )
+
+    assert guidance["focus"] == "scan_result_reconciliation"
+    assert guidance["recommended_strategy"] == (
+        "reconcile_scan_reports_before_replanning"
+    )

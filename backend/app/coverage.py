@@ -335,6 +335,15 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     validation = dimensions.get("independent_validation")
     diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
     marginal_yield = dimensions.get("marginal_scan_yield")
+    endpoint_attribution = (coverage.get("evidence") or {}).get(
+        "endpoint_scan_attribution"
+    ) or {}
+    if not isinstance(endpoint_attribution, dict):
+        endpoint_attribution = {}
+    endpoint_state = str(endpoint_attribution.get("state") or "unknown")
+    # This is documented evidence, not a completeness claim. Do not infer
+    # endpoint-wide coverage from a completed asset-level scan.
+    endpoint_fraction = dimensions.get("documented_endpoint_scan_fraction")
     unreconciled = max(
         0, int((coverage.get("evidence") or {}).get(
             "unreconciled_scan_observations"
@@ -356,6 +365,17 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     elif validation is not None and float(validation) < 1.0:
         focus = "independent_validation"
         reason = "not all observed findings have independent validation evidence"
+    elif diminishing_returns >= 0.5 and endpoint_state in {
+        "endpoint_scope_unrecorded",
+        "partial_endpoint_documentation",
+    }:
+        focus = "endpoint_scan_scope_review"
+        reason = (
+            "repeated completed scans produced low finding yield, but "
+            "their recorded endpoint scope is missing or incomplete; "
+            "review existing in-scope endpoint scan provenance before "
+            "interpreting the negative result"
+        )
     elif diminishing_returns >= 0.5:
         focus = "surface_rotation"
         reason = "repeated completed scans show low marginal finding yield; prefer an underexplored in-scope surface"
@@ -369,8 +389,12 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
         "coverage_score": float(coverage.get("score") or 0.0),
         "marginal_scan_yield": marginal_yield,
         "diminishing_returns": diminishing_returns,
+        "endpoint_scan_attribution_state": endpoint_state,
+        "documented_endpoint_scan_fraction": endpoint_fraction,
         "recommended_strategy": (
-            "reconcile_scan_reports_before_replanning"
+            "review_endpoint_scan_provenance_before_more_scans"
+            if focus == "endpoint_scan_scope_review"
+            else "reconcile_scan_reports_before_replanning"
             if focus == "scan_result_reconciliation"
             else "rotate_to_underexplored_in_scope_surface"
             if focus == "surface_rotation"
