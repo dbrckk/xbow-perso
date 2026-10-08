@@ -143,3 +143,62 @@ def test_recon_plan_accepts_matching_bare_asset_host():
 
     assert tasks
     assert all(item.target == "https://example.test/" for item in tasks)
+
+
+def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypatch):
+    db = str(tmp_path / "db.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    campaign = Campaign(
+        id="recon-null-feedback",
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["example.test"],
+            ),
+        ),
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    store.put_observation(
+        campaign.id,
+        Observation("asset:a", "asset", "example.test", "inventory").to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/account?id=secret",
+            "crawler",
+            parent_ids=("asset:a",),
+        ).to_dict(),
+    )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "scan:completed",
+            "evidence",
+            "completed",
+            "nuclei",
+            metadata={"phase": "scan", "status": "completed"},
+        ).to_dict(),
+    )
+
+    result = campaign_recon_plan(campaign.id)
+    feedback = result["no_finding_feedback"]
+
+    assert feedback["state"] == "recovery_advisory"
+    assert feedback["completed_scan_count"] == 1
+    assert feedback["recommended_task_kinds"][:2] == [
+        "map_forms", "detect_technology"
+    ]
+    assert result["tasks"][0]["kind"] == "map_forms"
+    assert result["diff_priority"]["new_tasks_created"] is False
+    assert all(item["same_origin_only"] is True for item in result["tasks"])
+    assert all(set(item["allowed_methods"]) <= {"GET", "HEAD"} for item in result["tasks"])
+    assert all(item["max_requests"] <= 40 for item in result["tasks"])
+    assert "secret" not in str(result)
