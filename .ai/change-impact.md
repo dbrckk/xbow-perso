@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 79ebb449980ab4c4578e03a889064e4545e9d7f8
-Head: 700bf7f4c94574ac13dd073ddc072543cf765375
+Base: 2bae911bf9a68d150dc465af1dac1c467526f02d
+Head: ce99506f5b39717cb1f4a25812a6cda4f5463e10
 
 ## Changed files
-- M backend/app/learning_memory.py
-- M backend/tests/test_learning_memory.py
+- M backend/app/red_team_coverage.py
+- M backend/tests/test_red_team_coverage.py
 
 ## Affected areas
 - backend

@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T21:31:36Z
+Generated: 2026-10-08T21:48:42Z
 
 ### Git
 - Branch: `main`
-- Head: `700bf7f4c945`
-- Commit date: 2026-10-08T23:31:07+02:00
-- Commit: fix(learning): preserve completed scanner jobs against late status events
+- Head: `ce99506f5b39`
+- Commit date: 2026-10-08T23:48:10+02:00
+- Commit: fix(coverage): reject mixed-parent review evidence
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/red_team_coverage.py`
+- `backend/tests/test_red_team_coverage.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`

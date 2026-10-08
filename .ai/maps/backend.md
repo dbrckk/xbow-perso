@@ -10923,9 +10923,14 @@ def _ratio(numerator: int, denominator: int) -> float
 ⋮----
 # Missing observations are unknown coverage, not 100% reviewed.
 ⋮----
-def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]
-⋮----
+"""Credit a review only when all direct parents are eligible surfaces.
+
+    A record linking an in-scope endpoint and an unrelated asset/finding (or
+    out-of-scope endpoint) must not close the endpoint's review gap.
+    """
 reviewed: set[str] = set()
+⋮----
+parents = set(item.parent_ids)
 ⋮----
 """Summarize bounded, evidence-backed and optionally scope-aware coverage."""
 surface = build_attack_surface(graph, scope_checker=scope_checker)
@@ -10959,9 +10964,9 @@ complete_chain_ids = {item.finding_id for item in chains if item.complete}
 complete_chains = len(complete_chain_ids & finding_ids)
 ⋮----
 endpoint_reviewed_ids = _reviewed_parent_ids(
-form_reviewed_ids = _reviewed_parent_ids(graph, {"form_surface_review"}) & valid_form_ids
+form_reviewed_ids = _reviewed_parent_ids(
 technology_reviewed_ids = _reviewed_parent_ids(
-waf_reviewed_ids = _reviewed_parent_ids(graph, {"protection_surface_review"}) & waf_ids
+waf_reviewed_ids = _reviewed_parent_ids(
 validated_finding_ids = set(validation.observed_independent_finding_ids) & finding_ids
 attempted_finding_ids = set(validation.attempted_finding_ids) & finding_ids
 ⋮----
@@ -23456,6 +23461,16 @@ def test_asset_only_graph_does_not_claim_full_review_coverage()
 def test_completed_review_raises_observed_surface_score_without_security_claim()
 ⋮----
 def test_unvalidated_finding_reduces_score_across_observed_dimensions()
+⋮----
+def test_mixed_parent_endpoint_review_cannot_close_in_scope_gap()
+⋮----
+result = build_red_team_coverage(
+⋮----
+def test_review_spanning_in_scope_and_out_of_scope_endpoints_is_not_credited()
+⋮----
+def test_form_review_with_mixed_endpoint_parent_does_not_close_form_gap()
+⋮----
+def test_completed_review_of_multiple_eligible_endpoints_is_creditable()
 ```
 
 ## File: tests/test_red_team_decision.py
