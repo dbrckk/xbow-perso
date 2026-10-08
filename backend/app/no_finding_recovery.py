@@ -251,6 +251,10 @@ def build_no_finding_recovery(
     )
     # Technology observations without a trusted in-scope asset ancestor
     # must not count as technology coverage of the authorized target.
+    asset_values_by_id = {
+        observation.id: observation.value
+        for observation in graph.by_kind("asset")
+    }
     asset_host_by_id = {
         item["id"]: item["host"]
         for item in surface["assets"]
@@ -263,11 +267,7 @@ def build_no_finding_recovery(
             and (
                 target_origin is None
                 or _asset_matches_origin(
-                    next(
-                        observation.value
-                        for observation in graph.by_kind("asset")
-                        if observation.id == item["id"]
-                    ),
+                    asset_values_by_id[item["id"]],
                     target_origin,
                 )
             )
@@ -299,6 +299,29 @@ def build_no_finding_recovery(
             or normalized_target_host in ancestor_hosts
         )
 
+    if target_origin is not None:
+        # Matching the endpoint URL is insufficient if its graph ancestor
+        # identifies a different scheme or port on the same host.
+        excluded_endpoints = [
+            item
+            for item in endpoints
+            if not has_in_scope_asset_ancestor(item["id"])
+        ]
+        endpoints = [
+            item
+            for item in endpoints
+            if has_in_scope_asset_ancestor(item["id"])
+        ]
+        scope_issues += len(excluded_endpoints)
+        endpoint_reviewed = _reviewed_ids(
+            graph,
+            _ENDPOINT_REVIEW_TYPES,
+            allowed_parent_ids={item["id"] for item in endpoints},
+        )
+        uncovered_endpoints = sum(
+            item["id"] not in endpoint_reviewed for item in endpoints
+        )
+
     legacy_single_host = False
     if normalized_target_host is None:
         completed_scans, scanner_sources = _completed_scan_evidence(graph)
@@ -312,11 +335,7 @@ def build_no_finding_recovery(
             and (
                 target_origin is None
                 or _origin(
-                    next(
-                        observation.value
-                        for observation in graph.by_kind("asset")
-                        if observation.id == item["id"]
-                    )
+                    asset_values_by_id[item["id"]]
                 ) == target_origin
             )
             for item in asset_records
