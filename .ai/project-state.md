@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T19:12:26Z
+Generated: 2026-10-08T19:14:34Z
 
 ### Git
 - Branch: `main`
-- Head: `3584bc334532`
-- Commit date: 2026-10-08T21:12:13+02:00
-- Commit: fix(recovery): verify scan-source provenance before negative feedback
+- Head: `9415ba4a4758`
+- Commit date: 2026-10-08T21:14:22+02:00
+- Commit: fix(coverage): count unique trusted completed scan jobs
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/red_team_coverage.py`

@@ -1922,12 +1922,52 @@ alerts = {
 ```python
 router = APIRouter()
 ⋮----
+"""Deduplicate completed scan jobs and reject untrusted scope lineage."""
+items = {item.id: item for item in graph.values()}
+assets = graph.by_kind("asset")
+approved_asset_ids = {
+⋮----
+def trustworthy_lineage(observation: Any) -> bool
+⋮----
+# Legacy scans without an asset reference are only assignable
+# when exactly one observed asset exists and it is authorized.
+⋮----
+pending = list(observation.parent_ids)
+seen: set[str] = set()
+linked_assets: set[str] = set()
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = items.get(parent_id)
+⋮----
+jobs: dict[str, list[Any]] = {}
+untrusted_job_ids: set[str] = set()
+untrusted = 0
+accepted = 0
+⋮----
+raw_job_id = observation.metadata.get("job_id")
+⋮----
+identity = f"observation:{observation.id}"
+⋮----
+identity = f"job:{raw_job_id.strip()}"
+⋮----
+# A job documented on incompatible assets cannot be
+# credited through just its convenient in-scope record.
+⋮----
+count = len(jobs.pop(identity))
+⋮----
+representatives: list[Any] = []
+⋮----
+# Multiple reporters attached to one execution do not prove
+# independence. Conflicting or missing source labels make the entire
+# job unsuitable for source and coverage metrics.
+sources = {
+⋮----
 surface = build_attack_surface(graph, scope_checker=scope_checker)
 summary = surface["summary"]
 discovery = float(summary["enrichment_score"])
 ⋮----
-scan_evidence = [
-scanner_sources = sorted({item.source for item in scan_evidence})
+scanner_sources = sorted({
 scan_count = len(scan_evidence)
 scan_score = 1.0 if scan_evidence else 0.0
 ⋮----
@@ -16833,6 +16873,28 @@ def test_low_yield_scan_deprioritization_preserves_kind_and_target()
 action = PlannedAction(
 ⋮----
 def test_coverage_priority_never_changes_non_scan_action()
+⋮----
+def test_completed_scan_duplicates_do_not_inflate_rotation_guidance()
+⋮----
+coverage = build_evidence_coverage(
+⋮----
+def test_only_in_scope_linked_scan_evidence_contributes_to_coverage()
+⋮----
+updated = build_evidence_coverage(
+⋮----
+def test_single_asset_legacy_completed_scan_remains_compatible()
+⋮----
+def test_scan_with_conflicting_asset_ancestors_is_not_trusted()
+⋮----
+def test_completed_scan_through_endpoint_ancestry_is_counted()
+⋮----
+def test_invalid_scan_job_identifiers_do_not_inflate_coverage()
+⋮----
+def test_same_job_reported_on_out_of_scope_asset_taints_entire_scan()
+⋮----
+def test_conflicting_reporters_for_same_scan_job_are_not_credited()
+⋮----
+def test_missing_source_on_duplicate_scan_taints_job()
 ```
 
 ## File: tests/test_cpe_consistency.py
