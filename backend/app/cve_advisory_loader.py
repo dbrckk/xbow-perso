@@ -393,3 +393,8 @@ def load_cve_advisory_catalogs_with_status(
 def cve_advisory_catalog_runtime_status() -> dict[str, Any]:
     _catalog, status = load_cve_advisory_catalog_with_status()
     return status
+
+
+def cve_advisory_source_set_runtime_status() -> dict[str, Any]:
+    _catalogs, status = load_cve_advisory_catalogs_with_status()
+    return status
