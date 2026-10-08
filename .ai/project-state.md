@@ -39,21 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T21:29:39Z
+Generated: 2026-10-08T21:31:36Z
 
 ### Git
 - Branch: `main`
-- Head: `744b96fc8fb2`
-- Commit date: 2026-10-08T23:29:19+02:00
-- Commit: fix(recovery): reject ambiguous mixed-parent review evidence
+- Head: `700bf7f4c945`
+- Commit date: 2026-10-08T23:31:07+02:00
+- Commit: fix(learning): preserve completed scanner jobs against late status events
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/learning_memory.py`
+- `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/adaptive_cycle.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_swarm.py`
 
 ### Project signals
 - `pyproject.toml`

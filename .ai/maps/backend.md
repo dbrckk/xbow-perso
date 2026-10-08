@@ -6968,6 +6968,11 @@ job_id = str(event.get("job_id") or "").strip()
 ⋮----
 attempts = int(event.get("attempts") or 0)
 ⋮----
+key = (kind, job_id)
+# A completed worker job is terminal. A delayed queued or failed
+# event for the same job cannot retroactively erase proof that the
+# scanner completed successfully. Retries use a new job identity.
+⋮----
 bucket = "requeued" if status == "queued" else status
 ```
 
@@ -20908,6 +20913,16 @@ def test_distinct_job_ids_remain_independent_technique_attempts()
 def test_legacy_observations_without_job_id_keep_independent_evidence()
 ⋮----
 def test_malformed_job_id_cannot_create_extra_technique_confidence()
+⋮----
+def test_worker_completed_state_survives_late_failed_and_queued_events()
+⋮----
+result = summarize_worker_outcomes(events)
+⋮----
+def test_failed_job_without_completion_can_still_be_requeued()
+⋮----
+def test_terminal_worker_state_prevents_false_scanner_instability()
+⋮----
+adaptation = adapt_scanner_engines(("nuclei", "strix"), [], outcomes)
 ```
 
 ## File: tests/test_live_activation_profile.py
