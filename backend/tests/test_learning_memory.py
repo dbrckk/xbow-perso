@@ -293,3 +293,116 @@ def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count():
     assert outcomes["totals"]["requeued"] == 0
     assert feedback.state == "recovery_advisory"
     assert feedback.recommended_task_kinds == ("crawl",)
+
+
+def _technique_job_observation(
+    item_id: str,
+    *,
+    job_id: str | None,
+    outcome: str,
+    source: str = "validator-a",
+) -> Observation:
+    metadata = {"technique": "scanner:nuclei", "outcome": outcome}
+    if job_id is not None:
+        metadata["job_id"] = job_id
+    return Observation(item_id, "evidence", "review", source, metadata=metadata)
+
+
+def test_technique_memory_deduplicates_multiple_observations_from_same_job():
+    graph = ObservationGraph()
+    graph.add(_technique_job_observation(
+        "evidence:a", job_id="job-1", outcome="failure", source="scanner-a"
+    ))
+    graph.add(_technique_job_observation(
+        "evidence:b", job_id="job-1", outcome="failure", source="scanner-b"
+    ))
+    graph.add(_technique_job_observation(
+        "evidence:c", job_id="job-1", outcome="failure", source="scanner-a"
+    ))
+
+    memory = build_learning_memory(graph)[0]
+    assert memory.attempts == 1
+    assert memory.failures == 1
+    assert memory.successes == 0
+    assert memory.source_count == 1
+    assert memory.confidence < 0.2
+
+
+def test_contradictory_job_results_are_inconclusive_regardless_of_order():
+    records = [
+        _technique_job_observation(
+            "evidence:success", job_id="job-1", outcome="success"
+        ),
+        _technique_job_observation(
+            "evidence:failure", job_id="job-1", outcome="failure",
+            source="validator-b",
+        ),
+    ]
+    for order in (records, list(reversed(records))):
+        graph = ObservationGraph()
+        for item in order:
+            graph.add(item)
+        memory = build_learning_memory(graph)[0]
+        assert memory.attempts == 1
+        assert memory.successes == 0
+        assert memory.failures == 0
+        assert memory.inconclusive == 1
+        assert memory.confidence == 0.0
+        assert memory.success_rate == 0.0
+
+
+def test_distinct_job_ids_remain_independent_technique_attempts():
+    graph = ObservationGraph()
+    graph.add(_technique_job_observation(
+        "evidence:a", job_id="job-1", outcome="success", source="validator-a"
+    ))
+    graph.add(_technique_job_observation(
+        "evidence:b", job_id="job-2", outcome="failure", source="validator-b"
+    ))
+
+    memory = build_learning_memory(graph)[0]
+    assert memory.attempts == 2
+    assert memory.successes == 1
+    assert memory.failures == 1
+    assert memory.source_count == 2
+    assert memory.success_rate == 0.5
+
+
+def test_legacy_observations_without_job_id_keep_independent_evidence():
+    graph = ObservationGraph()
+    graph.add(_technique_job_observation(
+        "evidence:a", job_id=None, outcome="success", source="validator-a"
+    ))
+    graph.add(_technique_job_observation(
+        "evidence:b", job_id=None, outcome="failure", source="validator-b"
+    ))
+
+    memory = build_learning_memory(graph)[0]
+    assert memory.attempts == 2
+    assert memory.successes == 1
+    assert memory.failures == 1
+
+
+def test_malformed_job_id_cannot_create_extra_technique_confidence():
+    graph = ObservationGraph()
+    for index, bad in enumerate(("", "  ", "a" * 129, "job\nother")):
+        graph.add(Observation(
+            f"evidence:bad-{index}",
+            "evidence",
+            "review",
+            "scanner-a",
+            metadata={
+                "technique": "scanner:nuclei",
+                "outcome": "success",
+                "job_id": bad,
+            },
+        ))
+    graph.add(_technique_job_observation(
+        "evidence:good", job_id="job-good", outcome="inconclusive"
+    ))
+
+    memory = build_learning_memory(graph)[0]
+    assert memory.attempts == 1
+    assert memory.inconclusive == 1
+    assert memory.successes == 0
+    assert memory.confidence == 0.0
