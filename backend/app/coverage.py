@@ -11,6 +11,100 @@ from .validation_state import analyze_validation_state
 router = APIRouter()
 
 
+def _completed_scans_with_provenance(
+    graph: ObservationGraph,
+    surface: dict[str, Any],
+    *,
+    scope_checker: Callable[[str], bool] | None,
+) -> tuple[list[Any], int, int]:
+    """Deduplicate completed scan jobs and reject untrusted scope lineage."""
+    items = {item.id: item for item in graph.values()}
+    assets = graph.by_kind("asset")
+    approved_asset_ids = {
+        item["id"]
+        for item in surface["assets"]
+        if item["in_scope"] is True
+    }
+
+    def trustworthy_lineage(observation: Any) -> bool:
+        if scope_checker is None:
+            return True
+        # Legacy scans without an asset reference are only assignable
+        # when exactly one observed asset exists and it is authorized.
+        if not observation.parent_ids:
+            return len(assets) == 1 and assets[0].id in approved_asset_ids
+        pending = list(observation.parent_ids)
+        seen: set[str] = set()
+        linked_assets: set[str] = set()
+        while pending:
+            parent_id = pending.pop()
+            if parent_id in seen:
+                continue
+            seen.add(parent_id)
+            parent = items.get(parent_id)
+            if parent is None:
+                return False
+            if parent.kind == "asset":
+                linked_assets.add(parent.id)
+            else:
+                pending.extend(parent.parent_ids)
+        return bool(linked_assets) and linked_assets <= approved_asset_ids
+
+    jobs: dict[str, list[Any]] = {}
+    untrusted_job_ids: set[str] = set()
+    untrusted = 0
+    accepted = 0
+    for observation in graph.by_kind("evidence"):
+        if (
+            observation.metadata.get("phase") != "scan"
+            or observation.metadata.get("status") != "completed"
+        ):
+            continue
+        raw_job_id = observation.metadata.get("job_id")
+        if raw_job_id is None:
+            identity = f"observation:{observation.id}"
+        elif (
+            isinstance(raw_job_id, str)
+            and 0 < len(raw_job_id.strip()) <= 128
+            and not any(ord(char) < 32 for char in raw_job_id)
+        ):
+            identity = f"job:{raw_job_id.strip()}"
+        else:
+            untrusted += 1
+            continue
+        if not trustworthy_lineage(observation):
+            untrusted += 1
+            if identity.startswith("job:"):
+                # A job documented on incompatible assets cannot be
+                # credited through just its convenient in-scope record.
+                untrusted_job_ids.add(identity)
+            continue
+        accepted += 1
+        jobs.setdefault(identity, []).append(observation)
+
+    for identity in untrusted_job_ids:
+        if identity in jobs:
+            count = len(jobs.pop(identity))
+            accepted -= count
+            untrusted += count
+
+    representatives: list[Any] = []
+    for _identity, records in sorted(jobs.items()):
+        # Multiple reporters attached to one execution do not prove
+        # independence. Conflicting or missing source labels make the entire
+        # job unsuitable for source and coverage metrics.
+        sources = {
+            item.source.strip() if isinstance(item.source, str) else ""
+            for item in records
+        }
+        if len(sources) != 1 or "" in sources:
+            untrusted += len(records)
+            accepted -= len(records)
+            continue
+        representatives.append(min(records, key=lambda item: item.id))
+    return representatives, accepted - len(representatives), untrusted
+
+
 def build_evidence_coverage(
     graph: ObservationGraph,
     *,
@@ -20,13 +114,16 @@ def build_evidence_coverage(
     summary = surface["summary"]
     discovery = float(summary["enrichment_score"])
 
-    scan_evidence = [
-        item
-        for item in graph.by_kind("evidence")
-        if item.metadata.get("phase") == "scan"
-        and item.metadata.get("status") == "completed"
-    ]
-    scanner_sources = sorted({item.source for item in scan_evidence})
+    scan_evidence, duplicate_scans, untrusted_scans = _completed_scans_with_provenance(
+        graph,
+        surface,
+        scope_checker=scope_checker,
+    )
+    scanner_sources = sorted({
+        str(item.source).strip()
+        for item in scan_evidence
+        if str(item.source).strip()
+    })
     scan_count = len(scan_evidence)
     scan_score = 1.0 if scan_evidence else 0.0
 
@@ -79,6 +176,8 @@ def build_evidence_coverage(
             "surface_source_diversity": int(summary["source_diversity"]),
             "scanner_sources": scanner_sources,
             "completed_scans": scan_count,
+            "duplicate_scan_observations": duplicate_scans,
+            "untrusted_scan_observations": untrusted_scans,
             "findings": finding_count,
             "independently_observed_findings": validated_count,
         },
