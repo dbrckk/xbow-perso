@@ -1495,3 +1495,86 @@ def test_invalid_or_mismatched_target_origin_is_rejected():
             target_host="other.test",
             target_url="https://example.test",
         )
+
+
+def test_shared_scan_job_across_origins_cannot_prove_target_negative_yield():
+    graph = _two_origin_graph()
+    for scheme in ("http", "https"):
+        _record_completed_scan(
+            graph,
+            observation_id=f"scan:{scheme}",
+            job_id="shared-scan-job",
+            source="nuclei",
+            asset_id=f"asset:{scheme}",
+        )
+
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        allowed=("map_forms", "detect_technology"),
+    )
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.scanner_source_count == 0
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.recommended_task_kinds == ()
+    assert result.negative_result_proves_safe is False
+
+
+def test_cross_origin_job_cannot_poison_independent_target_scan():
+    graph = _two_origin_graph()
+    for scheme in ("http", "https"):
+        _record_completed_scan(
+            graph,
+            observation_id=f"scan:shared:{scheme}",
+            job_id="shared-scan-job",
+            source="nuclei",
+            asset_id=f"asset:{scheme}",
+        )
+    _record_completed_scan(
+        graph,
+        observation_id="scan:trusted:https",
+        job_id="independent-https-job",
+        source="nuclei",
+        asset_id="asset:https",
+    )
+
+    result = _feedback(graph, target_url="https://example.test")
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 1
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.recommended_task_kinds
+
+
+def test_same_origin_reports_of_one_job_remain_one_trusted_scan():
+    graph = _two_origin_graph()
+    for index in range(2):
+        _record_completed_scan(
+            graph,
+            observation_id=f"scan:duplicate:{index}",
+            job_id="single-https-job",
+            source="nuclei",
+            asset_id="asset:https",
+        )
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 1
+    assert result.ambiguous_scan_source_jobs == 0
+
+
+def test_scans_exclusively_on_another_origin_are_not_target_ambiguities():
+    graph = _two_origin_graph()
+    _record_completed_scan(
+        graph,
+        observation_id="scan:http-only",
+        job_id="http-only-job",
+        source="nuclei",
+        asset_id="asset:http",
+    )
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.ambiguous_scan_source_jobs == 0
