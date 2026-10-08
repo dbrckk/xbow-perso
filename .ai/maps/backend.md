@@ -21357,6 +21357,14 @@ result = _feedback(graph, target_url="https://example.test/")
 def test_unrelated_origin_status_conflict_does_not_block_target_recovery()
 ⋮----
 def test_queued_then_completed_scan_allows_bounded_negative_recovery()
+⋮----
+def test_review_marked_completed_but_failed_outcome_keeps_endpoint_gap()
+⋮----
+def test_review_marked_reviewed_but_inconclusive_outcome_keeps_form_gap()
+⋮----
+def test_explicit_completed_and_successful_review_closes_only_eligible_gap()
+⋮----
+def test_invalid_review_outcome_type_cannot_close_endpoint_gap()
 ```
 
 ## File: tests/test_nuclei_preflight.py

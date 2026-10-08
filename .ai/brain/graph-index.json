@@ -2217,6 +2217,25 @@
     },
     {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/review_evidence.py",
+        "backend/app/scan_result_integrity.py"
+      ],
+      "dependents": [
+        "backend/app/adaptive_cycle.py",
+        "backend/app/learning_memory.py",
+        "backend/app/recon_swarm.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_no_finding_recovery.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 5,
+      "path": "backend/app/no_finding_recovery.py"
+    },
+    {
+      "dependencies": [
         "backend/app/main.py",
         "backend/app/pentagi_adapter.py",
         "backend/app/pentagi_admission.py",
@@ -2325,24 +2344,6 @@
     },
     {
       "dependencies": [
-        "backend/app/attack_surface.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/scan_result_integrity.py"
-      ],
-      "dependents": [
-        "backend/app/adaptive_cycle.py",
-        "backend/app/learning_memory.py",
-        "backend/app/recon_swarm.py",
-        "backend/tests/test_learning_memory.py",
-        "backend/tests/test_no_finding_recovery.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 4,
-      "path": "backend/app/no_finding_recovery.py"
-    },
-    {
-      "dependencies": [
         "backend/app/hackerone_client.py",
         "backend/app/hackerone_review_draft.py",
         "backend/app/storage.py",
@@ -2378,7 +2379,7 @@
       "path": "backend/app/observer_scheduler.py"
     }
   ],
-  "edge_count": 2212,
+  "edge_count": 2213,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 484,
   "schema_version": 1

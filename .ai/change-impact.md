@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 6e0e080b5e4dd1447ab0cb492e1d071c54eb185b
-Head: 5da444ac9a4f21b604917c054f98be82cbcf13b2
+Base: 22fa635e72665c1fead44bd825e22f4023a72f9e
+Head: 5ec95da6a05ffbd2fca3b4b082c45fbede2c6149
 
 ## Changed files
-- M backend/app/attack_surface.py
-- M backend/tests/test_attack_surface.py
+- M backend/app/no_finding_recovery.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend

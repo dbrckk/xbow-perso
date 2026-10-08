@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:23:47Z
+Generated: 2026-10-08T22:30:41Z
 
 ### Git
 - Branch: `main`
-- Head: `5da444ac9a4f`
-- Commit date: 2026-10-09T00:23:35+02:00
-- Commit: fix(coverage): exclude invalid URL sources from discovery confidence
+- Head: `5ec95da6a05f`
+- Commit date: 2026-10-09T00:30:30+02:00
+- Commit: fix(recovery): reconcile terminal review outcomes before closing gaps
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/attack_surface.py`
 - `backend/tests/test_attack_surface.py`
 - `backend/app/recon_priority.py`
@@ -56,12 +58,6 @@ Generated: 2026-10-08T22:23:47Z
 - `backend/app/learning_memory.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/coverage.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/app/scan_result_integrity.py`
-- `backend/tests/test_coverage.py`
-- `backend/tests/test_no_finding_recovery.py`
-- `backend/tests/test_scan_result_integrity.py`
 
 ### Project signals
 - `pyproject.toml`
