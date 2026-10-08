@@ -133,7 +133,6 @@ def build_no_finding_recovery(
     uncovered_endpoints = sum(
         item["id"] not in endpoint_reviewed for item in endpoints
     )
-    uncovered_forms = sum(item["id"] not in form_reviewed for item in forms)
     scope_issues = sum(
         item["valid"] and item["in_scope"] is True
         and (
@@ -171,6 +170,14 @@ def build_no_finding_recovery(
                 pending.extend(parent.parent_ids)
         return len(ancestor_hosts) == 1
 
+    # Orphan forms or forms from a different asset do not close a gap.
+    forms = [
+        item for item in forms
+        if has_in_scope_asset_ancestor(item["id"])
+    ]
+    uncovered_forms = sum(
+        item["id"] not in form_reviewed for item in forms
+    )
     missing_technology = not any(
         has_in_scope_asset_ancestor(item.id)
         for item in graph.by_kind("technology")
