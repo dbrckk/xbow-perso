@@ -22,10 +22,11 @@ def _finding():
     )
 
 
-def _catalog(source_name, entry):
+def _catalog(source_name, entry, *, source_authority=None):
     return build_cve_advisory_catalog(
         {"count": 1, "entries": [entry]},
         source_name=source_name,
+        source_authority=source_authority,
         source_verified=True,
     )
 
@@ -174,3 +175,114 @@ def test_unverified_catalog_is_ignored_by_consensus():
     assert result.source_count == 1
     assert result.matched_advisory_count == 1
     assert result.sources == ("verified",)
+
+
+def test_same_authority_aliases_do_not_create_cross_source_agreement():
+    first = _catalog(
+        "nvd-primary",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="nvd",
+    )
+    second = _catalog(
+        "nvd-mirror",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="nvd",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (first, second),
+        fingerprint_versions=("5.1.4",),
+    )
+
+    assert result.state == "single_source"
+    assert result.source_count == 1
+    assert result.source_instance_count == 2
+    assert result.authorities == ("nvd",)
+    assert result.cross_source_agreement is False
+    assert result.ambiguity_reasons == ()
+
+
+def test_same_authority_conflicting_snapshots_are_ambiguous():
+    old_snapshot = _catalog(
+        "nvd-2026-10-01",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.1.3"],
+        },
+        source_authority="nvd",
+    )
+    new_snapshot = _catalog(
+        "nvd-2026-10-08",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": [">=5.1,<5.2.0"],
+        },
+        source_authority="nvd",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (old_snapshot, new_snapshot),
+        fingerprint_versions=("5.1.4",),
+    )
+
+    assert result.state == "same_authority_snapshot_conflict"
+    assert result.source_count == 1
+    assert result.source_instance_count == 2
+    assert result.cross_source_agreement is False
+    assert result.ambiguity_reasons == (
+        "same_authority_advisory_snapshot_conflict",
+    )
+    assert {
+        item.applicability_state for item in result.evidence
+    } == {"affected", "not_affected"}
+
+
+def test_distinct_authorities_can_still_form_exact_identity_consensus():
+    nvd = _catalog(
+        "feed-a",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.2.0"],
+        },
+        source_authority="nvd",
+    )
+    vendor = _catalog(
+        "feed-b",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": [">=5.0,<5.2.0"],
+        },
+        source_authority="vendor",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (nvd, vendor),
+        fingerprint_versions=("5.1.4",),
+    )
+
+    assert result.state == "exact_identity_applicability_agreement"
+    assert result.source_count == 2
+    assert result.source_instance_count == 2
+    assert result.authorities == ("nvd", "vendor")
+    assert result.cross_source_agreement is True
