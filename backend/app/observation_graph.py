@@ -110,6 +110,12 @@ def load_observation_graph(
     """
     records = store.list_observations(campaign_id)
     if include_persisted_discovery_times:
+        # Do not mutate records returned by storage or graph objects built
+        # from the same records without timestamp enrichment.
+        records = [
+            {**record, "metadata": dict(record.get("metadata") or {})}
+            for record in records
+        ]
         for record in records:
             if record.get("kind") not in {
                 "endpoint", "form", "technology", "waf"
