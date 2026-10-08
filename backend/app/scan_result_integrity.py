@@ -17,7 +17,7 @@ def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]
         if item.metadata.get("phase") != "scan":
             continue
         status = item.metadata.get("status")
-        if status not in _TERMINAL_SCAN_STATES:
+        if not isinstance(status, str) or status not in _TERMINAL_SCAN_STATES:
             continue
         raw_id = item.metadata.get("job_id")
         if (
