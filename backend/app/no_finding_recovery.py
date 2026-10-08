@@ -55,7 +55,11 @@ def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[
     return reviewed
 
 
-def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]:
+def _completed_scan_evidence(
+    graph: ObservationGraph,
+    *,
+    evidence_filter: Callable[[Any], bool] | None = None,
+) -> tuple[int, int]:
     # Multiple observations for one worker job must not inflate negative yield.
     scan_keys: set[str] = set()
     sources: set[str] = set()
@@ -64,6 +68,8 @@ def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]:
             item.metadata.get("phase") != "scan"
             or item.metadata.get("status") != "completed"
         ):
+            continue
+        if evidence_filter is not None and not evidence_filter(item):
             continue
         job_id = str(item.metadata.get("job_id") or "").strip()
         key = f"job:{job_id}" if job_id else f"observation:{item.id}"
@@ -121,7 +127,6 @@ def build_no_finding_recovery(
         for kind in available_task_kinds
         if kind in _ALLOWED_RECON_KINDS
     }
-    completed_scans, scanner_sources = _completed_scan_evidence(graph)
     finding_count = max(campaign_finding_count, len(graph.by_kind("finding")))
     surface = build_attack_surface(graph, scope_checker=scope_checker)
 
@@ -202,6 +207,28 @@ def build_no_finding_recovery(
         return len(ancestor_hosts) == 1 and (
             normalized_target_host is None
             or normalized_target_host in ancestor_hosts
+        )
+
+    if normalized_target_host is None:
+        completed_scans, scanner_sources = _completed_scan_evidence(graph)
+    else:
+        asset_records = surface["assets"]
+        # Legacy scan observations sometimes omit ancestry. They can only
+        # be attributed to the target if every observed asset has its host.
+        legacy_single_host = bool(asset_records) and all(
+            item["host"] == normalized_target_host
+            and item["in_scope"] is True
+            for item in asset_records
+        )
+
+        def scan_matches_target(item: Any) -> bool:
+            if item.parent_ids:
+                return has_in_scope_asset_ancestor(item.id)
+            return legacy_single_host
+
+        completed_scans, scanner_sources = _completed_scan_evidence(
+            graph,
+            evidence_filter=scan_matches_target,
         )
 
     # Orphan forms or forms from a different asset do not close a gap.
