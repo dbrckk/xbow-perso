@@ -8264,6 +8264,23 @@ parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
 ⋮----
 parsed = parsed.astimezone(timezone.utc)
 ⋮----
+def _origin(value: str) -> tuple[str, str, int] | None
+⋮----
+"""Parse a web origin without accepting credentials or ambiguous ports."""
+raw = str(value or "").strip()
+⋮----
+parsed = urlsplit(raw)
+scheme = parsed.scheme.lower()
+host = (parsed.hostname or "").lower().rstrip(".")
+⋮----
+port = parsed.port
+⋮----
+port = 443 if scheme == "https" else 80
+⋮----
+"""Allow legacy hostname-only assets, never incompatible explicit origins."""
+⋮----
+parsed = urlsplit(f"//{raw}")
+⋮----
 """Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
 ⋮----
@@ -8303,6 +8320,8 @@ requeued = int(counts.get("requeued") or 0)
     permission, request or task kind can be minted by this function.
     """
 ⋮----
+target_origin = _origin(target_url) if target_url is not None else None
+⋮----
 normalized_target_host = (
 ⋮----
 allowed = {
@@ -8316,6 +8335,7 @@ uncovered_endpoints = sum(
 scope_issues = sum(
 # Technology observations without a trusted in-scope asset ancestor
 # must not count as technology coverage of the authorized target.
+asset_values_by_id = {
 asset_host_by_id = {
 observations_by_id = {item.id: item for item in graph.values()}
 ⋮----
@@ -8330,6 +8350,10 @@ parent_id = pending.pop()
 parent = observations_by_id.get(parent_id)
 ⋮----
 host = asset_host_by_id.get(parent.id)
+⋮----
+# Matching the endpoint URL is insufficient if its graph ancestor
+# identifies a different scheme or port on the same host.
+excluded_endpoints = [
 ⋮----
 legacy_single_host = False
 ⋮----
@@ -21809,6 +21833,25 @@ def test_missing_or_invalid_completion_timestamp_does_not_reopen_task()
 def test_cross_host_or_orphan_observation_does_not_reopen_target_task()
 ⋮----
 def test_later_recovery_completion_prevents_repeating_old_novelty()
+⋮----
+def _two_origin_graph() -> ObservationGraph
+⋮----
+def test_negative_scan_on_http_does_not_trigger_https_recovery()
+⋮----
+graph = _two_origin_graph()
+⋮----
+def test_origin_scoped_scan_recovers_only_its_endpoint_inventory()
+⋮----
+def test_endpoint_linked_to_different_port_does_not_fill_target_gap()
+⋮----
+def test_legacy_unlinked_scan_requires_explicit_matching_asset_origin()
+⋮----
+legacy = _graph(scans=1)
+result = _feedback(legacy, target_url="https://example.test")
+⋮----
+compatible = _feedback(
+⋮----
+def test_invalid_or_mismatched_target_origin_is_rejected()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py

@@ -39,24 +39,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T19:21:44Z
+Generated: 2026-10-08T19:29:39Z
 
 ### Git
 - Branch: `main`
-- Head: `9a7e39fb48bf`
-- Commit date: 2026-10-08T21:21:32+02:00
-- Commit: feat(recovery): reconsider exhausted recon when new trusted surface appears
+- Head: `efb9161923db`
+- Commit date: 2026-10-08T21:29:25+02:00
+- Commit: fix(recovery): isolate null-scan learning by exact HTTP origin
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
+- `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
+- `backend/tests/test_recon_swarm.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
-- `backend/app/scanner_adaptation.py`
-- `backend/tests/test_scanner_adaptation.py`
 
 ### Project signals
 - `pyproject.toml`
