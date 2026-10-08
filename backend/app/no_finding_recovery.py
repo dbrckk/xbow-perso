@@ -209,6 +209,7 @@ def build_no_finding_recovery(
             or normalized_target_host in ancestor_hosts
         )
 
+    legacy_single_host = False
     if normalized_target_host is None:
         completed_scans, scanner_sources = _completed_scan_evidence(graph)
     else:
@@ -254,13 +255,17 @@ def build_no_finding_recovery(
         and (
             normalized_target_host is None
             or has_in_scope_asset_ancestor(item.id)
+            or (legacy_single_host and not item.parent_ids)
         )
         for item in graph.by_kind("evidence")
     )
     browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
-    if normalized_target_host is None and isinstance(browser_job_outcomes, Mapping):
-        # Worker outcomes have no target lineage. Never let a completed
-        # browser job on another allowed host exhaust this target.
+    if (
+        (normalized_target_host is None or legacy_single_host)
+        and isinstance(browser_job_outcomes, Mapping)
+    ):
+        # Worker outcomes have no target lineage. Trust legacy counts only
+        # when one observed asset host can be associated with the campaign.
         browser_counts = browser_job_outcomes.get("browser_flow")
         if isinstance(browser_counts, Mapping):
             try:
