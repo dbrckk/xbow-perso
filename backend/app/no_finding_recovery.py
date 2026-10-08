@@ -299,15 +299,15 @@ def build_no_finding_recovery(
     elif scope_checker is None:
         state = "scope_unverified"
         reasons.append("scope verification is required before suggesting recon")
+    elif not asset_host_by_id:
+        state = "scope_unverified"
+        reasons.append("no observed asset matches the authorized target for recovery")
     elif _unstable_scanner_outcomes(worker_outcomes):
         state = "execution_unstable"
         reasons.append("repeated scanner worker errors require operator review")
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
-    elif not asset_host_by_id:
-        state = "scope_unverified"
-        reasons.append("no authorized observed asset is available for a safe recon plan")
     else:
         state = "recovery_advisory"
         if scope_issues:
