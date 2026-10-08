@@ -2841,6 +2841,10 @@ _PATH_ENV = "XBOW_CVE_ADVISORY_CATALOG_PATH"
 _SHA_ENV = "XBOW_CVE_ADVISORY_CATALOG_SHA256"
 _SOURCE_ENV = "XBOW_CVE_ADVISORY_CATALOG_SOURCE"
 _FORMAT_ENV = "XBOW_CVE_ADVISORY_CATALOG_FORMAT"
+_NVD_PATH_ENV = "XBOW_CVE_ADVISORY_NVD_PATH"
+_NVD_SHA_ENV = "XBOW_CVE_ADVISORY_NVD_SHA256"
+_OSV_PATH_ENV = "XBOW_CVE_ADVISORY_OSV_PATH"
+_OSV_SHA_ENV = "XBOW_CVE_ADVISORY_OSV_SHA256"
 _ALLOWED_FORMATS = frozenset(
 ⋮----
 class CveAdvisoryCatalogLoadError(RuntimeError)
@@ -2857,15 +2861,15 @@ payload = handle.read(_MAX_CATALOG_BYTES + 1)
 ⋮----
 def _adapter_diagnostics(source_format: str, adapted: Any) -> dict[str, Any] | None
 ⋮----
-path_raw = os.getenv(_PATH_ENV, "").strip()
-digest_raw = os.getenv(_SHA_ENV, "").strip().lower()
+path_raw = path_raw.strip()
+digest_raw = digest_raw.strip().lower()
+source_format = source_format.strip().lower()
+source_name = source_name.strip()
 ⋮----
 payload = _read_regular_file(Path(path_raw))
 actual_digest = hashlib.sha256(payload).hexdigest()
 ⋮----
 document: Any = json.loads(payload.decode("utf-8"))
-⋮----
-source_format = os.getenv(
 ⋮----
 adapter_diagnostics: dict[str, Any] | None = None
 ⋮----
@@ -2876,16 +2880,34 @@ document = adapted.document
 ⋮----
 adapted = adapt_osv_v1(document)
 ⋮----
+catalog = build_cve_advisory_catalog(
+⋮----
+source_format = os.getenv(
 default_source_name = {
 source_name = os.getenv(
-⋮----
-catalog = build_cve_advisory_catalog(
 ⋮----
 def load_verified_cve_advisory_catalog() -> CveAdvisoryCatalog | None
 ⋮----
 configured = bool(
 ⋮----
+path_raw = os.getenv(path_env, "").strip()
+digest_raw = os.getenv(sha_env, "").strip()
+configured = bool(path_raw or digest_raw)
+⋮----
+legacy_status = {
+⋮----
+statuses = (legacy_status, nvd_status, osv_status)
+catalogs: list[CveAdvisoryCatalog] = []
+seen: set[tuple[str, str]] = set()
+⋮----
+key = (catalog.source_name, catalog.source_digest_sha256)
+⋮----
+configured_count = sum(
+invalid_count = sum(
+⋮----
 def cve_advisory_catalog_runtime_status() -> dict[str, Any]
+⋮----
+def cve_advisory_source_set_runtime_status() -> dict[str, Any]
 ````
 
 ## File: backend/app/cve_evidence_verdict.py
@@ -3250,6 +3272,7 @@ value = (os.getenv(name) or "").strip()
 pentagi = safe_pentagi_runtime_capability()
 scanner = safe_scanner_runtime_capability()
 cve_advisory_catalog = cve_advisory_catalog_runtime_status()
+cve_advisory_sources = cve_advisory_source_set_runtime_status()
 issues: list[dict[str, Any]] = []
 production = _production_mode()
 ⋮----
@@ -4182,8 +4205,9 @@ fingerprint_versions = tuple(
 cpe_consistency = build_cpe_consistency(
 cve_ids = finding_cve_ids(finding)
 verified_advisory = None
+verified_advisory_catalog = None
+exact_advisory_matches: list[tuple[Any, Any]] = []
 ⋮----
-verified_advisory = find_verified_cve_advisory(
 package_version_raw = getattr(finding, "package_version", None)
 package_version = (
 advisory_consensus = build_cve_advisory_consensus(
@@ -7700,6 +7724,7 @@ browser = safe_browser_runtime_capability()
 recon = safe_recon_runtime_capability()
 validation = safe_validation_runtime_capability()
 cve_advisory_catalog = cve_advisory_catalog_runtime_status()
+cve_advisory_sources = cve_advisory_source_set_runtime_status()
 ⋮----
 @app.post("/api/testing/openapi/preview")
 def preview_openapi_tests(payload: OpenApiPreviewInput)
@@ -17133,6 +17158,16 @@ path = tmp_path / "osv.json"
 path = tmp_path / "osv-skipped.json"
 ⋮----
 rendered = str(status)
+⋮----
+def _write_json(tmp_path, name, document)
+⋮----
+path = tmp_path / name
+⋮----
+def _nvd_document()
+⋮----
+def _osv_document()
+⋮----
+by_kind = {
 ````
 
 ## File: backend/tests/test_cve_evidence_verdict.py
@@ -17410,6 +17445,10 @@ def test_production_preflight_requires_vault_key_file(monkeypatch)
 def test_preflight_allows_unconfigured_optional_cve_advisory_catalog(monkeypatch)
 ⋮----
 status = result["cve_advisory_catalog"]
+⋮----
+def test_preflight_rejects_invalid_named_advisory_source(monkeypatch)
+⋮----
+sources = result["cve_advisory_sources"]
 ````
 
 ## File: backend/tests/test_differential_evidence_integration.py
@@ -18125,6 +18164,8 @@ def test_parallel_nvd_osv_identities_are_not_treated_as_consensus()
 ⋮----
 nvd = build_cve_advisory_catalog(
 osv = build_cve_advisory_catalog(
+⋮----
+def test_single_named_catalog_can_supply_verified_range_without_legacy_slot()
 ````
 
 ## File: backend/tests/test_finding_lifecycle.py
@@ -23871,9 +23912,15 @@ detail = execution["http_validation_detail"]
 ⋮----
 def test_capabilities_expose_optional_cve_advisory_catalog_state(monkeypatch)
 ⋮----
+source_set = result["reasoning"]["cve_advisory_sources"]
+⋮----
 def test_capabilities_expose_invalid_cve_catalog_without_path_leak(monkeypatch)
 ⋮----
 status = result["reasoning"]["cve_advisory_catalog"]
+⋮----
+def test_capabilities_expose_invalid_named_source_without_path_leak(monkeypatch)
+⋮----
+status = result["reasoning"]["cve_advisory_sources"]
 ````
 
 ## File: backend/tests/test_runtime_gap_analysis.py
