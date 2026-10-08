@@ -130,3 +130,53 @@ def test_red_team_coverage_route_is_exposed_and_reads_durable_graph(tmp_path, mo
     assert result["campaign_id"] == campaign.id
     assert result["read_only"] is True
     assert result["safe_validation_only"] is True
+
+
+def test_red_team_coverage_ignores_failed_or_queued_review_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:e",
+            "endpoint",
+            "https://example.test/settings",
+            "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    for status in ("failed", "queued"):
+        graph.add(
+            Observation(
+                f"review:{status}",
+                "evidence",
+                "review-attempt",
+                "review-agent",
+                parent_ids=("endpoint:e",),
+                metadata={
+                    "review_type": "authorization_surface_review",
+                    "status": status,
+                },
+            )
+        )
+
+    before = build_red_team_coverage(graph)
+    assert before["summary"]["reviewed_endpoints"] == 0
+
+    graph.add(
+        Observation(
+            "review:complete",
+            "evidence",
+            "review-recorded",
+            "review-agent",
+            parent_ids=("endpoint:e",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+    after = build_red_team_coverage(graph)
+    assert after["summary"]["reviewed_endpoints"] == 1
+    assert after["score"] >= before["score"]
+    assert after["read_only"] is True
