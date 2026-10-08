@@ -92,11 +92,23 @@ def adapt_scanner_engines(
             for engine in configured_engines
         }
 
-    def rank_key(engine: str) -> tuple[float, float, int, str]:
+    configured_order = {
+        engine: index for index, engine in enumerate(configured_engines)
+    }
+
+    def rank_key(engine: str) -> tuple[float, float, int, int]:
         item = memory.get(engine)
-        if item is None:
-            return (0.0, 0.0, 0, engine)
-        return (-item.confidence, -item.success_rate, -item.successes, engine)
+        if item is None or item.successes <= 0:
+            # Confidence in negative results is not scanner quality.
+            # Preserve operator-specified order when positive outcomes
+            # cannot reliably distinguish configured engines.
+            return (0.0, 0.0, 0, configured_order[engine])
+        return (
+            -item.confidence,
+            -item.success_rate,
+            -item.successes,
+            configured_order[engine],
+        )
 
     selected = tuple(
         engine
