@@ -406,3 +406,58 @@ def test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits():
         and set(task.allowed_methods) <= {"GET", "HEAD"}
         for task in tasks
     )
+
+
+def test_multi_host_recon_route_offers_missing_target_crawl_after_negative_scan(
+    tmp_path, monkeypatch,
+):
+    db = str(tmp_path / "multi-host-recon.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    campaign = Campaign(
+        id="recon-multi-host-feedback",
+        target=TargetInput(
+            name="fixture",
+            primary_url="https://a.example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["a.example.test", "b.example.test"],
+                automated_scanning=True,
+            ),
+        ),
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    for observation in (
+        Observation("asset:a", "asset", "a.example.test", "inventory"),
+        Observation("asset:b", "asset", "b.example.test", "inventory"),
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://b.example.test/api?secret=redacted",
+            "crawler",
+            parent_ids=("asset:b",),
+        ),
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "target-a-scan",
+            },
+        ),
+    ):
+        store.put_observation(campaign.id, observation.to_dict())
+
+    result = campaign_recon_plan(campaign.id)
+    assert "crawl" in [task["kind"] for task in result["tasks"]]
+    assert result["no_finding_feedback"]["state"] == "recovery_advisory"
+    assert result["no_finding_feedback"]["recommended_task_kinds"] == ["crawl"]
+    assert result["diff_priority"]["scope_expansion"] is False
+    assert result["execution"] == "advisory_only"
+    assert "redacted" not in str(result)
