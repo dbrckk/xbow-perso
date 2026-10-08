@@ -2074,6 +2074,13 @@ scanner = float(dimensions.get("scanner_execution") or 0.0)
 validation = dimensions.get("independent_validation")
 diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
 marginal_yield = dimensions.get("marginal_scan_yield")
+endpoint_attribution = (coverage.get("evidence") or {}).get(
+⋮----
+endpoint_attribution = {}
+endpoint_state = str(endpoint_attribution.get("state") or "unknown")
+# This is documented evidence, not a completeness claim. Do not infer
+# endpoint-wide coverage from a completed asset-level scan.
+endpoint_fraction = dimensions.get("documented_endpoint_scan_fraction")
 unreconciled = max(
 ⋮----
 focus = "scan_result_reconciliation"
@@ -2087,6 +2094,8 @@ reason = "surface evidence exists but no completed scanner evidence is recorded"
 ⋮----
 focus = "independent_validation"
 reason = "not all observed findings have independent validation evidence"
+⋮----
+focus = "endpoint_scan_scope_review"
 ⋮----
 focus = "surface_rotation"
 reason = "repeated completed scans show low marginal finding yield; prefer an underexplored in-scope surface"
@@ -17148,6 +17157,14 @@ def test_endpoint_linked_scan_documents_only_its_observed_endpoint()
 def test_independent_endpoint_scan_records_document_all_observed_endpoints()
 ⋮----
 def test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage()
+⋮----
+def test_partial_endpoint_scan_documentation_prioritizes_provenance_review()
+⋮----
+def test_documented_scans_keep_existing_low_yield_surface_rotation()
+⋮----
+def test_incomplete_endpoint_provenance_never_changes_scan_authority()
+⋮----
+def test_scan_report_conflict_outranks_missing_endpoint_provenance()
 ```
 
 ## File: tests/test_cpe_consistency.py

@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:56:33Z
+Generated: 2026-10-08T23:07:43Z
 
 ### Git
 - Branch: `main`
-- Head: `9f221e2355f9`
-- Commit date: 2026-10-09T00:56:22+02:00
-- Commit: feat(coverage): report verified endpoint-level scan attribution
+- Head: `28209bf1437e`
+- Commit date: 2026-10-09T01:07:32+02:00
+- Commit: feat(coverage): expose undocumented endpoint scope after negative scans
 - Tracked files: 687
 
 ### Recently changed files
@@ -57,8 +57,6 @@ Generated: 2026-10-08T22:56:33Z
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_observation_graph.py`
-- `backend/app/attack_surface.py`
-- `backend/tests/test_attack_surface.py`
 
 ### Project signals
 - `pyproject.toml`
