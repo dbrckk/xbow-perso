@@ -33,7 +33,17 @@ def _ratio(numerator: int, denominator: int) -> float:
     return round(numerator / denominator, 4) if denominator else 0.0
 
 
-def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set[str]:
+def _reviewed_parent_ids(
+    graph: ObservationGraph,
+    review_types: set[str],
+    *,
+    eligible_ids: set[str],
+) -> set[str]:
+    """Credit a review only when all direct parents are eligible surfaces.
+
+    A record linking an in-scope endpoint and an unrelated asset/finding (or
+    out-of-scope endpoint) must not close the endpoint's review gap.
+    """
     reviewed: set[str] = set()
     for item in graph.by_kind("evidence"):
         if (
@@ -41,7 +51,9 @@ def _reviewed_parent_ids(graph: ObservationGraph, review_types: set[str]) -> set
             or not is_completed_review_evidence(item)
         ):
             continue
-        reviewed.update(item.parent_ids)
+        parents = set(item.parent_ids)
+        if parents and parents <= eligible_ids:
+            reviewed.update(parents)
     return reviewed
 
 
@@ -114,13 +126,23 @@ def build_red_team_coverage(
     endpoint_reviewed_ids = _reviewed_parent_ids(
         graph,
         {"input_surface_review", "authorization_surface_review"},
-    ) & valid_endpoint_ids
-    form_reviewed_ids = _reviewed_parent_ids(graph, {"form_surface_review"}) & valid_form_ids
+        eligible_ids=valid_endpoint_ids,
+    )
+    form_reviewed_ids = _reviewed_parent_ids(
+        graph,
+        {"form_surface_review"},
+        eligible_ids=valid_form_ids,
+    )
     technology_reviewed_ids = _reviewed_parent_ids(
         graph,
         {"technology_surface_review"},
-    ) & technology_ids
-    waf_reviewed_ids = _reviewed_parent_ids(graph, {"protection_surface_review"}) & waf_ids
+        eligible_ids=technology_ids,
+    )
+    waf_reviewed_ids = _reviewed_parent_ids(
+        graph,
+        {"protection_surface_review"},
+        eligible_ids=waf_ids,
+    )
     validated_finding_ids = set(validation.observed_independent_finding_ids) & finding_ids
     attempted_finding_ids = set(validation.attempted_finding_ids) & finding_ids
 
