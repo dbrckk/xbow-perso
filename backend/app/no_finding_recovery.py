@@ -32,6 +32,7 @@ class NoFindingRecovery:
     recommended_task_kinds: tuple[str, ...]
     reasons: tuple[str, ...]
     exhausted_task_kinds: tuple[str, ...] = ()
+    ambiguous_scan_source_jobs: int = 0
     advisory_only: bool = True
     may_expand_scope: bool = False
     may_increase_request_budget: bool = False
@@ -69,10 +70,11 @@ def _completed_scan_evidence(
     graph: ObservationGraph,
     *,
     evidence_filter: Callable[[Any], bool] | None = None,
-) -> tuple[int, int]:
-    # Multiple observations for one worker job must not inflate negative yield.
-    scan_keys: set[str] = set()
-    sources: set[str] = set()
+) -> tuple[int, int, int]:
+    # One worker job can emit multiple completion observations. Group by
+    # job before measuring scanner-source independence. Contradictory or
+    # missing provenance must not be treated as multiple independent sources.
+    sources_by_scan: dict[str, set[str]] = {}
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("phase") != "scan"
@@ -83,10 +85,20 @@ def _completed_scan_evidence(
             continue
         job_id = str(item.metadata.get("job_id") or "").strip()
         key = f"job:{job_id}" if job_id else f"observation:{item.id}"
-        scan_keys.add(key)
-        if str(item.source).strip():
-            sources.add(str(item.source).strip())
-    return len(scan_keys), len(sources)
+        sources = sources_by_scan.setdefault(key, set())
+        source = str(item.source).strip()
+        if source:
+            sources.add(source)
+
+    trusted_sources = {
+        next(iter(sources))
+        for sources in sources_by_scan.values()
+        if len(sources) == 1
+    }
+    ambiguous_jobs = sum(
+        len(sources) != 1 for sources in sources_by_scan.values()
+    )
+    return len(sources_by_scan), len(trusted_sources), ambiguous_jobs
 
 
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:
@@ -224,7 +236,7 @@ def build_no_finding_recovery(
 
     legacy_single_host = False
     if normalized_target_host is None:
-        completed_scans, scanner_sources = _completed_scan_evidence(graph)
+        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(graph)
     else:
         asset_records = surface["assets"]
         # Legacy scan observations sometimes omit ancestry. They can only
@@ -240,7 +252,7 @@ def build_no_finding_recovery(
                 return has_in_scope_asset_ancestor(item.id)
             return legacy_single_host
 
-        completed_scans, scanner_sources = _completed_scan_evidence(
+        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(
             graph,
             evidence_filter=scan_matches_target,
         )
@@ -310,6 +322,11 @@ def build_no_finding_recovery(
 
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
+    if ambiguous_sources:
+        reasons.append(
+            "completed scan jobs have missing or contradictory scanner "
+            "source provenance; independent source count is conservative"
+        )
 
     if finding_count:
         state = "findings_present"
@@ -326,6 +343,12 @@ def build_no_finding_recovery(
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
+    elif not scanner_sources:
+        state = "scan_source_unverified"
+        reasons.append(
+            "no completed scan has unambiguous source provenance; "
+            "manual review is needed before treating scan results as negative"
+        )
     else:
         state = "recovery_advisory"
         if scope_issues:
@@ -406,4 +429,5 @@ def build_no_finding_recovery(
         recommended_task_kinds=recommended,
         reasons=tuple(dict.fromkeys(reasons)),
         exhausted_task_kinds=exhausted,
+        ambiguous_scan_source_jobs=ambiguous_sources,
     )
