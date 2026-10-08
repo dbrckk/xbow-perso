@@ -364,3 +364,118 @@ def test_browser_already_attempted_does_not_create_infinite_recovery_loop():
     assert after.state == "no_supported_recovery_task"
     assert after.recommended_task_kinds == ()
     assert any("no automatic repeat" in reason for reason in after.reasons)
+
+
+def _completed_recon_evidence(
+    graph: ObservationGraph,
+    *,
+    task_kind: str,
+    asset_id: str = "asset:a",
+    evidence_id: str | None = None,
+    status: str = "completed",
+) -> None:
+    graph.add(
+        Observation(
+            evidence_id or f"recovery:{task_kind}",
+            "evidence",
+            "bounded-recon-complete",
+            "recon-worker",
+            parent_ids=(asset_id,),
+            metadata={"task_kind": task_kind, "status": status},
+        )
+    )
+
+
+def test_completed_in_scope_recovery_task_is_not_recommended_twice():
+    graph = _graph()
+    _completed_recon_evidence(graph, task_kind="map_forms")
+    result = _feedback(graph)
+
+    assert "map_forms" not in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ("map_forms",)
+    assert result.recommended_task_kinds == (
+        "detect_technology",
+        "map_endpoints",
+    )
+    assert result.to_dict()["exhausted_task_kinds"] == ["map_forms"]
+    assert any("do not repeat" in reason for reason in result.reasons)
+
+
+def test_completed_all_candidate_recovery_tasks_requires_review():
+    graph = _graph()
+    for kind in ("map_forms", "detect_technology", "map_endpoints"):
+        _completed_recon_evidence(graph, task_kind=kind)
+
+    result = _feedback(graph)
+    assert result.state == "no_supported_recovery_task"
+    assert result.recommended_task_kinds == ()
+    assert result.exhausted_task_kinds == (
+        "detect_technology",
+        "map_endpoints",
+        "map_forms",
+    )
+    assert result.may_change_execution_gate is False
+    assert result.may_increase_request_budget is False
+
+
+def test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task():
+    graph = _graph()
+    graph.add(
+        Observation("asset:other", "asset", "other.test", "inventory")
+    )
+    _completed_recon_evidence(
+        graph,
+        task_kind="map_forms",
+        asset_id="asset:other",
+    )
+    result = _feedback(graph)
+
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ()
+
+
+def test_orphan_recon_completion_does_not_exhaust_task():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "recovery:orphan",
+            "evidence",
+            "bounded-recon-complete",
+            "recon-worker",
+            metadata={"task_kind": "map_forms", "status": "completed"},
+        )
+    )
+    assert "map_forms" in _feedback(graph).recommended_task_kinds
+
+
+def test_failed_or_queued_recon_task_does_not_exhaust_option():
+    graph = _graph()
+    _completed_recon_evidence(
+        graph,
+        task_kind="map_forms",
+        evidence_id="recovery:failed",
+        status="failed",
+    )
+    _completed_recon_evidence(
+        graph,
+        task_kind="map_forms",
+        evidence_id="recovery:queued",
+        status="queued",
+    )
+    result = _feedback(graph)
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.exhausted_task_kinds == ()
+
+
+def test_completed_recovery_cannot_create_new_authority():
+    graph = _graph()
+    _completed_recon_evidence(graph, task_kind="map_forms")
+    result = _feedback(
+        graph,
+        allowed=("map_forms", "arbitrary_shell"),
+    )
+    assert result.state == "no_supported_recovery_task"
+    assert result.recommended_task_kinds == ()
+    assert result.advisory_only is True
+    assert result.may_expand_scope is False
+    assert result.may_enable_exploitation is False
