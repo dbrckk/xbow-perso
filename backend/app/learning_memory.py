@@ -35,6 +35,37 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
     if not 1 <= limit <= 100:
         raise ValueError("learning memory limit must be between 1 and 100")
 
+    # One scanner or validation job may emit multiple evidence observations.
+    # Counting each observation as an independent attempt inflates both
+    # failure/success rates and technique confidence. Deduplicate only when
+    # an explicit valid job ID is available; historical records without a
+    # job ID remain independently accountable by observation ID.
+    attempts: dict[tuple[str, str], dict[str, set[str]]] = {}
+    for item in graph.by_kind("evidence"):
+        technique = str(item.metadata.get("technique", "")).strip().lower()
+        outcome = str(item.metadata.get("outcome", "")).strip().lower()
+        if not technique or outcome not in {"success", "failure", "inconclusive"}:
+            continue
+        job_id = item.metadata.get("job_id")
+        if job_id is None:
+            identity = f"observation:{item.id}"
+        elif (
+            isinstance(job_id, str)
+            and 0 < len(job_id.strip()) <= 128
+            and not any(ord(char) < 32 for char in job_id)
+        ):
+            identity = f"job:{job_id.strip()}"
+        else:
+            # Invalid job identity cannot establish independent evidence.
+            continue
+        attempt = attempts.setdefault(
+            (technique, identity),
+            {"outcomes": set(), "sources": set()},
+        )
+        attempt["outcomes"].add(outcome)
+        if str(item.source).strip():
+            attempt["sources"].add(str(item.source).strip())
+
     buckets: dict[str, dict[str, Any]] = defaultdict(
         lambda: {
             "attempts": 0,
@@ -44,21 +75,23 @@ def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[T
             "sources": set(),
         }
     )
-
-    for item in graph.by_kind("evidence"):
-        technique = str(item.metadata.get("technique", "")).strip().lower()
-        outcome = str(item.metadata.get("outcome", "")).strip().lower()
-        if not technique or outcome not in {"success", "failure", "inconclusive"}:
-            continue
+    for (technique, _identity), attempt in sorted(attempts.items()):
         bucket = buckets[technique]
         bucket["attempts"] += 1
-        bucket["sources"].add(item.source)
+        outcomes = attempt["outcomes"]
+        # Contradictory observations from the same job do not confirm
+        # either success or failure, regardless of ingestion order.
+        outcome = next(iter(outcomes)) if len(outcomes) == 1 else "inconclusive"
         if outcome == "success":
             bucket["successes"] += 1
         elif outcome == "failure":
             bucket["failures"] += 1
         else:
             bucket["inconclusive"] += 1
+        if attempt["sources"]:
+            # A single job reported by several components is still one
+            # origin of execution evidence, not multiple confirmations.
+            bucket["sources"].add(min(attempt["sources"]))
 
     memories: list[TechniqueMemory] = []
     for technique, bucket in buckets.items():
