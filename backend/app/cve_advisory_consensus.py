@@ -51,6 +51,7 @@ class CveAdvisoryConsensus:
     ambiguity_reasons: tuple[str, ...]
     range_sets_equal: bool
     cross_source_agreement: bool
+    agreed_applicability_state: str | None
     exploitability_confirmed: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -98,6 +99,7 @@ def build_cve_advisory_consensus(
             ambiguity_reasons=(),
             range_sets_equal=False,
             cross_source_agreement=False,
+            agreed_applicability_state=None,
             exploitability_confirmed=False,
         )
 
@@ -209,6 +211,7 @@ def build_cve_advisory_consensus(
             ambiguity_reasons=(),
             range_sets_equal=False,
             cross_source_agreement=False,
+            agreed_applicability_state=None,
             exploitability_confirmed=False,
         )
 
@@ -228,6 +231,7 @@ def build_cve_advisory_consensus(
 
     ambiguity: set[str] = set()
     agreement = False
+    agreed_applicability_state: str | None = None
 
     applicability_states = {
         item.applicability_state for item in evidence
@@ -248,9 +252,15 @@ def build_cve_advisory_consensus(
         else:
             state = "single_source"
     else:
-        if applicability_states in ({"affected"}, {"not_affected"}):
+        if applicability_states == {"affected"}:
             state = "exact_identity_applicability_agreement"
             agreement = True
+            agreed_applicability_state = "affected"
+        elif applicability_states == {"not_affected"}:
+            state = "exact_identity_applicability_agreement"
+            agreement = True
+            agreed_applicability_state = "not_affected"
+            ambiguity.add("cross_source_advisory_not_affected")
         elif (
             "affected" in applicability_states
             and "not_affected" in applicability_states
@@ -278,5 +288,6 @@ def build_cve_advisory_consensus(
         ambiguity_reasons=tuple(sorted(ambiguity)),
         range_sets_equal=range_sets_equal,
         cross_source_agreement=agreement,
+        agreed_applicability_state=agreed_applicability_state,
         exploitability_confirmed=False,
     )

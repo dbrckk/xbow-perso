@@ -99,6 +99,7 @@ def test_exact_identity_sources_can_agree_on_applicability():
     assert result.source_count == 2
     assert result.identity_count == 1
     assert result.cross_source_agreement is True
+    assert result.agreed_applicability_state == "affected"
     assert result.range_sets_equal is False
     assert result.ambiguity_reasons == ()
 
@@ -286,3 +287,43 @@ def test_distinct_authorities_can_still_form_exact_identity_consensus():
     assert result.source_instance_count == 2
     assert result.authorities == ("nvd", "vendor")
     assert result.cross_source_agreement is True
+
+
+def test_exact_identity_sources_agreeing_not_affected_downgrade_candidate():
+    first = _catalog(
+        "source-a",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.1.3"],
+        },
+        source_authority="nvd",
+    )
+    second = _catalog(
+        "source-b",
+        {
+            "cve_id": "CVE-2026-12345",
+            "vendor": "djangoproject",
+            "product": "django",
+            "affected_version_ranges": ["<5.1.4"],
+        },
+        source_authority="vendor",
+    )
+
+    result = build_cve_advisory_consensus(
+        _finding(),
+        (first, second),
+        fingerprint_versions=("5.1.4",),
+    )
+
+    assert result.state == "exact_identity_applicability_agreement"
+    assert result.cross_source_agreement is True
+    assert result.agreed_applicability_state == "not_affected"
+    assert result.ambiguity_reasons == (
+        "cross_source_advisory_not_affected",
+    )
+    assert {
+        item.applicability_state for item in result.evidence
+    } == {"not_affected"}
+    assert result.exploitability_confirmed is False
