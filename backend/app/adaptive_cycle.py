@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter
 
@@ -194,6 +195,7 @@ def campaign_adaptive_cycle(campaign_id: str):
         available_task_kinds=(task.kind for task in existing_recon_tasks),
         campaign_finding_count=len(campaign.findings),
         worker_outcomes=worker_outcomes,
+        target_host=urlsplit(str(campaign.target.primary_url)).hostname,
     )
     return {
         "campaign_id": campaign.id,

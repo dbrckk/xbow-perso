@@ -55,7 +55,11 @@ def _reviewed_ids(graph: ObservationGraph, review_types: frozenset[str]) -> set[
     return reviewed
 
 
-def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]:
+def _completed_scan_evidence(
+    graph: ObservationGraph,
+    *,
+    evidence_filter: Callable[[Any], bool] | None = None,
+) -> tuple[int, int]:
     # Multiple observations for one worker job must not inflate negative yield.
     scan_keys: set[str] = set()
     sources: set[str] = set()
@@ -64,6 +68,8 @@ def _completed_scan_evidence(graph: ObservationGraph) -> tuple[int, int]:
             item.metadata.get("phase") != "scan"
             or item.metadata.get("status") != "completed"
         ):
+            continue
+        if evidence_filter is not None and not evidence_filter(item):
             continue
         job_id = str(item.metadata.get("job_id") or "").strip()
         key = f"job:{job_id}" if job_id else f"observation:{item.id}"
@@ -99,6 +105,7 @@ def build_no_finding_recovery(
     available_task_kinds: Iterable[str] = (),
     campaign_finding_count: int = 0,
     worker_outcomes: Mapping[str, Any] | None = None,
+    target_host: str | None = None,
 ) -> NoFindingRecovery:
     """Rank *existing* authorized recon task kinds after evidence-backed null scans.
 
@@ -108,12 +115,18 @@ def build_no_finding_recovery(
     """
     if campaign_finding_count < 0:
         raise ValueError("campaign_finding_count must not be negative")
+    normalized_target_host = (
+        str(target_host).strip().lower().rstrip(".")
+        if target_host is not None
+        else None
+    )
+    if target_host is not None and not normalized_target_host:
+        raise ValueError("target_host must not be blank")
     allowed = {
         kind
         for kind in available_task_kinds
         if kind in _ALLOWED_RECON_KINDS
     }
-    completed_scans, scanner_sources = _completed_scan_evidence(graph)
     finding_count = max(campaign_finding_count, len(graph.by_kind("finding")))
     surface = build_attack_surface(graph, scope_checker=scope_checker)
 
@@ -122,13 +135,24 @@ def build_no_finding_recovery(
         if (
             item["valid"]
             and item["in_scope"] is True
+            and (
+                normalized_target_host is None
+                or item["host"] == normalized_target_host
+            )
             and not item["host_asset_mismatch"]
             and item["asset_parent_ids"]
         )
     ]
     forms = [
         item for item in surface["forms"]
-        if item["valid"] and item["in_scope"] is True
+        if (
+            item["valid"]
+            and item["in_scope"] is True
+            and (
+                normalized_target_host is None
+                or item["host"] == normalized_target_host
+            )
+        )
     ]
     endpoint_reviewed = _reviewed_ids(graph, _ENDPOINT_REVIEW_TYPES)
     form_reviewed = _reviewed_ids(graph, frozenset({"form_surface_review"}))
@@ -137,6 +161,10 @@ def build_no_finding_recovery(
     )
     scope_issues = sum(
         item["valid"] and item["in_scope"] is True
+        and (
+            normalized_target_host is None
+            or item["host"] == normalized_target_host
+        )
         and (
             item["host_asset_mismatch"] or not item["asset_parent_ids"]
         )
@@ -147,7 +175,13 @@ def build_no_finding_recovery(
     asset_host_by_id = {
         item["id"]: item["host"]
         for item in surface["assets"]
-        if item["in_scope"] is True
+        if (
+            item["in_scope"] is True
+            and (
+                normalized_target_host is None
+                or item["host"] == normalized_target_host
+            )
+        )
     }
     observations_by_id = {item.id: item for item in graph.values()}
 
@@ -170,7 +204,33 @@ def build_no_finding_recovery(
                 ancestor_hosts.add(host)
             else:
                 pending.extend(parent.parent_ids)
-        return len(ancestor_hosts) == 1
+        return len(ancestor_hosts) == 1 and (
+            normalized_target_host is None
+            or normalized_target_host in ancestor_hosts
+        )
+
+    legacy_single_host = False
+    if normalized_target_host is None:
+        completed_scans, scanner_sources = _completed_scan_evidence(graph)
+    else:
+        asset_records = surface["assets"]
+        # Legacy scan observations sometimes omit ancestry. They can only
+        # be attributed to the target if every observed asset has its host.
+        legacy_single_host = bool(asset_records) and all(
+            item["host"] == normalized_target_host
+            and item["in_scope"] is True
+            for item in asset_records
+        )
+
+        def scan_matches_target(item: Any) -> bool:
+            if item.parent_ids:
+                return has_in_scope_asset_ancestor(item.id)
+            return legacy_single_host
+
+        completed_scans, scanner_sources = _completed_scan_evidence(
+            graph,
+            evidence_filter=scan_matches_target,
+        )
 
     # Orphan forms or forms from a different asset do not close a gap.
     forms = [
@@ -186,15 +246,26 @@ def build_no_finding_recovery(
     )
     observed_browser_work = any(
         item.source in {"browser", "browser-agent", "recon:browser_observe"}
+        and has_in_scope_asset_ancestor(item.id)
         for kind in ("endpoint", "form", "technology")
         for item in graph.by_kind(kind)
     ) or any(
         item.metadata.get("task_kind") == "browser_observe"
         and item.metadata.get("status") == "completed"
+        and (
+            normalized_target_host is None
+            or has_in_scope_asset_ancestor(item.id)
+            or (legacy_single_host and not item.parent_ids)
+        )
         for item in graph.by_kind("evidence")
     )
     browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
-    if isinstance(browser_job_outcomes, Mapping):
+    if (
+        (normalized_target_host is None or legacy_single_host)
+        and isinstance(browser_job_outcomes, Mapping)
+    ):
+        # Worker outcomes have no target lineage. Trust legacy counts only
+        # when one observed asset host can be associated with the campaign.
         browser_counts = browser_job_outcomes.get("browser_flow")
         if isinstance(browser_counts, Mapping):
             try:
@@ -228,15 +299,15 @@ def build_no_finding_recovery(
     elif scope_checker is None:
         state = "scope_unverified"
         reasons.append("scope verification is required before suggesting recon")
+    elif not asset_host_by_id:
+        state = "scope_unverified"
+        reasons.append("no observed asset matches the authorized target for recovery")
     elif _unstable_scanner_outcomes(worker_outcomes):
         state = "execution_unstable"
         reasons.append("repeated scanner worker errors require operator review")
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
-    elif not surface["summary"]["in_scope_asset_count"]:
-        state = "scope_unverified"
-        reasons.append("no authorized observed asset is available for a safe recon plan")
     else:
         state = "recovery_advisory"
         if scope_issues:
@@ -249,7 +320,14 @@ def build_no_finding_recovery(
             candidates.append((
                 95,
                 "map_endpoints"
-                if graph.by_kind("endpoint")
+                if (
+                    graph.by_kind("endpoint")
+                    if normalized_target_host is None
+                    else any(
+                        item["host"] == normalized_target_host
+                        for item in surface["endpoints"]
+                    )
+                )
                 else "crawl",
             ))
         else:
