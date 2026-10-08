@@ -837,3 +837,74 @@ def test_graph_only_finding_can_use_equivalent_duplicate_asset_origins():
     )
     assert len(matched) == 1
     assert matched[0].version == "1.24.0"
+
+
+def test_hostname_only_finding_cannot_bridge_http_and_https_ancestors():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:http", "asset", "http://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:http", "asset:https"),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:http",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:http",),
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "example.test"
+
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
+
+
+def test_malformed_finding_asset_does_not_reuse_legacy_evidence():
+    graph = _graph()
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://[invalid-ipv6"
+
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
+
+
+def test_credentialed_graph_asset_never_matches_clean_finding():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "asset:credentials",
+            "asset",
+            "https://secret@example.test",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:credentials",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:credentials",),
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test"
+
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
