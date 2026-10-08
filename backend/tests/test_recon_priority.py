@@ -577,3 +577,93 @@ def test_undercovered_high_value_score_drives_existing_task_boost():
 
     assert result.tasks[0].priority > 60
     assert result.adjustments[0].high_value_boost > 0
+
+
+def test_no_finding_recovery_reorders_existing_recon_without_expanding_authority():
+    original = [
+        task("map_endpoints", 80),
+        task("map_forms", 70),
+        task("detect_technology", 75),
+    ]
+    feedback = {
+        "state": "recovery_advisory",
+        "advisory_only": True,
+        "may_expand_scope": False,
+        "may_increase_request_budget": False,
+        "recommended_task_kinds": ["map_forms", "detect_technology"],
+    }
+    result = prioritize_recon_tasks(
+        original,
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=feedback,
+    )
+
+    assert result.tasks[0].kind == "map_forms"
+    assert result.adjustments[0].no_finding_boost == 24
+    assert all(0 <= item.boost <= 25 for item in result.adjustments)
+    assert [item.kind for item in result.tasks] == [
+        "map_forms", "detect_technology", "map_endpoints"
+    ]
+    before = {item.kind: item for item in original}
+    for item in result.tasks:
+        source = before[item.kind]
+        assert item.target == source.target
+        assert item.max_requests == source.max_requests
+        assert item.allowed_methods == source.allowed_methods
+        assert item.same_origin_only == source.same_origin_only
+        assert item.read_only == source.read_only
+    assert result.to_dict()["new_tasks_created"] is False
+    assert result.to_dict()["execution_influence"] == "ordering_only"
+
+
+def test_no_finding_feedback_cannot_override_authority_fields():
+    original = [task("map_forms", 70)]
+    invalid_feedback = {
+        "state": "recovery_advisory",
+        "advisory_only": True,
+        "may_expand_scope": True,
+        "may_increase_request_budget": False,
+        "recommended_task_kinds": ["map_forms"],
+    }
+    result = prioritize_recon_tasks(
+        original,
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=invalid_feedback,
+    )
+    assert result.tasks == tuple(original)
+    assert result.adjustments[0].no_finding_boost == 0
+
+
+def test_no_finding_feedback_ignored_when_findings_present():
+    original = [task("map_forms", 70)]
+    feedback = {
+        "state": "findings_present",
+        "advisory_only": True,
+        "may_expand_scope": False,
+        "may_increase_request_budget": False,
+        "recommended_task_kinds": ["map_forms"],
+    }
+    result = prioritize_recon_tasks(
+        original,
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback=feedback,
+    )
+    assert result.tasks == tuple(original)
+    assert result.adjustments[0].no_finding_boost == 0
+
+
+def test_feedback_never_creates_unconfigured_recon_tasks():
+    result = prioritize_recon_tasks(
+        [task("map_endpoints", 70)],
+        {"baseline_available": False, "summary": {}},
+        no_finding_feedback={
+            "state": "recovery_advisory",
+            "advisory_only": True,
+            "may_expand_scope": False,
+            "may_increase_request_budget": False,
+            "recommended_task_kinds": ["arbitrary_shell", "map_forms"],
+        },
+    )
+    assert len(result.tasks) == 1
+    assert result.tasks[0].kind == "map_endpoints"
+    assert result.adjustments[0].no_finding_boost == 0
