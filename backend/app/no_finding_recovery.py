@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Iterable, Mapping
+from urllib.parse import urlsplit
 
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph
@@ -45,6 +46,50 @@ class NoFindingRecovery:
         result["reasons"] = list(self.reasons)
         result["exhausted_task_kinds"] = list(self.exhausted_task_kinds)
         return result
+
+
+def _origin(value: str) -> tuple[str, str, int] | None:
+    """Parse a web origin without accepting credentials or ambiguous ports."""
+    raw = str(value or "").strip()
+    try:
+        parsed = urlsplit(raw)
+        scheme = parsed.scheme.lower()
+        host = (parsed.hostname or "").lower().rstrip(".")
+        if (
+            scheme not in {"http", "https"}
+            or not host
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
+            return None
+        port = parsed.port
+    except ValueError:
+        return None
+    if port is None:
+        port = 443 if scheme == "https" else 80
+    return scheme, host, port
+
+
+def _asset_matches_origin(
+    value: str,
+    target: tuple[str, str, int],
+) -> bool:
+    """Allow legacy hostname-only assets, never incompatible explicit origins."""
+    raw = str(value or "").strip()
+    if "://" in raw:
+        return _origin(raw) == target
+    try:
+        parsed = urlsplit(f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+        if parsed.username is not None or parsed.password is not None:
+            return False
+    except ValueError:
+        return False
+    return bool(
+        host == target[1]
+        and (port is None or port == target[2])
+    )
 
 
 def _reviewed_ids(
@@ -116,6 +161,7 @@ def build_no_finding_recovery(
     campaign_finding_count: int = 0,
     worker_outcomes: Mapping[str, Any] | None = None,
     target_host: str | None = None,
+    target_url: str | None = None,
 ) -> NoFindingRecovery:
     """Rank *existing* authorized recon task kinds after evidence-backed null scans.
 
@@ -125,13 +171,21 @@ def build_no_finding_recovery(
     """
     if campaign_finding_count < 0:
         raise ValueError("campaign_finding_count must not be negative")
+    target_origin = _origin(target_url) if target_url is not None else None
+    if target_url is not None and target_origin is None:
+        raise ValueError("target_url must have a valid HTTP(S) origin")
     normalized_target_host = (
         str(target_host).strip().lower().rstrip(".")
         if target_host is not None
-        else None
+        else (target_origin[1] if target_origin is not None else None)
     )
     if target_host is not None and not normalized_target_host:
         raise ValueError("target_host must not be blank")
+    if (
+        target_origin is not None
+        and normalized_target_host != target_origin[1]
+    ):
+        raise ValueError("target_host and target_url must refer to one host")
     allowed = {
         kind
         for kind in available_task_kinds
@@ -149,6 +203,10 @@ def build_no_finding_recovery(
                 normalized_target_host is None
                 or item["host"] == normalized_target_host
             )
+            and (
+                target_origin is None
+                or _origin(item["url"]) == target_origin
+            )
             and not item["host_asset_mismatch"]
             and item["asset_parent_ids"]
         )
@@ -161,6 +219,10 @@ def build_no_finding_recovery(
             and (
                 normalized_target_host is None
                 or item["host"] == normalized_target_host
+            )
+            and (
+                target_origin is None
+                or _origin(item["action"]) == target_origin
             )
         )
     ]
@@ -179,6 +241,10 @@ def build_no_finding_recovery(
             or item["host"] == normalized_target_host
         )
         and (
+            target_origin is None
+            or _origin(item["url"]) == target_origin
+        )
+        and (
             item["host_asset_mismatch"] or not item["asset_parent_ids"]
         )
         for item in surface["endpoints"]
@@ -193,6 +259,17 @@ def build_no_finding_recovery(
             and (
                 normalized_target_host is None
                 or item["host"] == normalized_target_host
+            )
+            and (
+                target_origin is None
+                or _asset_matches_origin(
+                    next(
+                        observation.value
+                        for observation in graph.by_kind("asset")
+                        if observation.id == item["id"]
+                    ),
+                    target_origin,
+                )
             )
         )
     }
@@ -232,6 +309,16 @@ def build_no_finding_recovery(
         legacy_single_host = bool(asset_records) and all(
             item["host"] == normalized_target_host
             and item["in_scope"] is True
+            and (
+                target_origin is None
+                or _origin(
+                    next(
+                        observation.value
+                        for observation in graph.by_kind("asset")
+                        if observation.id == item["id"]
+                    )
+                ) == target_origin
+            )
             for item in asset_records
         )
 
@@ -343,6 +430,10 @@ def build_no_finding_recovery(
                     if normalized_target_host is None
                     else any(
                         item["host"] == normalized_target_host
+                        and (
+                            target_origin is None
+                            or _origin(item["url"]) == target_origin
+                        )
                         for item in surface["endpoints"]
                     )
                 )
