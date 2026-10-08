@@ -137,7 +137,13 @@ def _reviewed_ids(
             or item.metadata.get("status") not in {"completed", "reviewed"}
         ):
             continue
-        reviewed.update(set(item.parent_ids) & allowed_parent_ids)
+        parents = set(item.parent_ids)
+        # A mixed-parent review could otherwise close a valid endpoint's
+        # gap even when the same record also claims an unrelated asset,
+        # endpoint, or finding. Require the *entire* lineage to be a
+        # nonempty set of eligible surface observations.
+        if parents and parents <= allowed_parent_ids:
+            reviewed.update(parents)
     return reviewed
 
 

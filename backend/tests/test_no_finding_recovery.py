@@ -1761,3 +1761,130 @@ def test_existing_findings_do_not_get_misclassified_as_missing_ingestion():
 
     assert result.state == "findings_present"
     assert result.unreconciled_scan_reports == 0
+
+def test_review_with_mixed_authorized_and_other_host_parents_is_not_coverage():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:target",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-target",
+                "findings": 0,
+            },
+        )
+    )
+    graph.add(Observation("asset:other", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:other",
+            "endpoint",
+            "https://other.test/account",
+            "crawler",
+            parent_ids=("asset:other",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:mixed",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a", "endpoint:other"),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+    assert result.uncovered_endpoint_count == 1
+    assert "map_endpoints" in result.recommended_task_kinds
+
+
+def test_form_review_cannot_use_mixed_endpoint_parent_to_close_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:mixed-form",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("form:a", "endpoint:a"),
+            metadata={
+                "review_type": "form_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = _feedback(graph)
+    assert result.uncovered_form_count == 1
+    assert "browser_observe" in result.recommended_task_kinds
+
+
+def test_review_of_two_valid_target_endpoints_closes_both_gaps():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:b",
+            "endpoint",
+            "https://example.test/profile",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:both",
+            "evidence",
+            "reviewed",
+            "analyst",
+            parent_ids=("endpoint:a", "endpoint:b"),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    result = _feedback(graph)
+    assert result.in_scope_endpoint_count == 2
+    assert result.uncovered_endpoint_count == 0
+
+
+def test_review_with_no_surface_parent_never_closes_coverage():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "review:orphan",
+            "evidence",
+            "reviewed",
+            "analyst",
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    assert _feedback(graph).uncovered_endpoint_count == 1
