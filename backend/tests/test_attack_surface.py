@@ -333,3 +333,85 @@ def test_url_control_characters_cannot_change_host_identity():
         assert item["valid"] is False
         assert item["error"] == "invalid_url"
         assert item["url"] == ""
+
+
+def test_invalid_endpoint_sources_do_not_inflate_discovery_confidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:valid",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    baseline = build_attack_surface(graph)
+    graph.add(
+        Observation(
+            "endpoint:invalid",
+            "endpoint",
+            "ftp://example.test/archive",
+            "untrusted-import",
+            parent_ids=("asset:a",),
+        )
+    )
+    result = build_attack_surface(graph)
+
+    assert baseline["summary"]["source_diversity"] == 1
+    assert result["summary"]["source_diversity"] == 1
+    assert result["summary"]["surface_sources"] == ["crawler"]
+    assert result["summary"]["enrichment_score"] == baseline["summary"]["enrichment_score"]
+    assert result["summary"]["invalid_endpoint_count"] == 1
+
+
+def test_invalid_form_sources_cannot_count_as_independent_surface_discovery():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:invalid",
+            "form",
+            "https://user:secret@example.test/login",
+            "untrusted-form-source",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    result = build_attack_surface(graph)
+
+    assert result["summary"]["valid_form_count"] == 0
+    assert result["summary"]["source_diversity"] == 0
+    assert result["summary"]["surface_sources"] == []
+    assert result["summary"]["enrichment_score"] == 0.0
+    assert "secret" not in str(result)
+
+
+def test_valid_multi_source_surface_still_rewards_independent_discovery():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:valid",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:valid",
+            "form",
+            "https://example.test/form",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+
+    result = build_attack_surface(graph)
+
+    assert result["summary"]["source_diversity"] == 2
+    assert result["summary"]["surface_sources"] == ["browser", "crawler"]
+    assert result["summary"]["enrichment_score"] > 0.5
