@@ -245,6 +245,7 @@ def load_cve_advisory_catalog_with_status(
             "available": False,
             "verified": False,
             "source_name": None,
+            "source_authority": None,
             "source_format": os.getenv(
                 _FORMAT_ENV,
                 "internal-v1",
@@ -273,6 +274,7 @@ def load_cve_advisory_catalog_with_status(
         "available": True,
         "verified": True,
         "source_name": catalog.source_name,
+        "source_authority": catalog.source_authority,
         "source_format": os.getenv(
             _FORMAT_ENV,
             "internal-v1",
@@ -324,6 +326,7 @@ def _named_source_status(
             "available": False,
             "verified": False,
             "source_name": source_name,
+            "source_authority": source_authority,
             "source_format": source_format,
             "entry_count": 0,
             "adapter": None,
@@ -335,6 +338,7 @@ def _named_source_status(
         "available": True,
         "verified": True,
         "source_name": catalog.source_name,
+        "source_authority": catalog.source_authority,
         "source_format": source_format,
         "entry_count": catalog.entry_count,
         "adapter": adapter,
