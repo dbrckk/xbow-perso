@@ -474,3 +474,175 @@ def test_terminal_worker_state_prevents_false_scanner_instability():
     assert adaptation.suppressed_engines == ()
     assert "nuclei" in adaptation.selected_engines
     assert adaptation.may_expand_configuration is False
+
+
+def test_scoped_learning_excludes_other_authorized_host_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "https://b.test", "recon"))
+    for label, outcome in (("a", "failure"), ("b", "success")):
+        graph.add(
+            Observation(
+                f"evidence:{label}",
+                "evidence",
+                "scan-outcome",
+                f"scanner-{label}",
+                parent_ids=(f"asset:{label}",),
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": outcome,
+                    "job_id": f"job-{label}",
+                },
+            )
+        )
+
+    scoped = build_learning_memory(graph, target_url="https://a.test/path")
+    aggregate = build_learning_memory(graph)
+
+    assert len(scoped) == 1
+    assert scoped[0].attempts == 1
+    assert scoped[0].successes == 0
+    assert scoped[0].failures == 1
+    assert aggregate[0].attempts == 2
+
+
+def test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "https://b.test", "recon"))
+    graph.add(
+        Observation(
+            "evidence:orphan",
+            "evidence",
+            "negative",
+            "scanner",
+            metadata={
+                "technique": "scanner:nuclei",
+                "outcome": "failure",
+            },
+        )
+    )
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_preserves_single_asset_legacy_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "a.test", "recon"))
+    graph.add(
+        Observation(
+            "evidence:legacy",
+            "evidence",
+            "success",
+            "scanner",
+            metadata={
+                "technique": "scanner:nuclei",
+                "outcome": "success",
+            },
+        )
+    )
+
+    memory = build_learning_memory(graph, target_url="https://a.test")
+    assert len(memory) == 1
+    assert memory[0].successes == 1
+
+
+def test_scoped_learning_rejects_different_protocol_and_port():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:http", "asset", "http://a.test:8080", "recon")
+    )
+    graph.add(
+        Observation("asset:https", "asset", "https://a.test:443", "recon")
+    )
+    for label in ("http", "https"):
+        graph.add(
+            Observation(
+                f"evidence:{label}",
+                "evidence",
+                "outcome",
+                "scanner",
+                parent_ids=(f"asset:{label}",),
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": f"job-{label}",
+                },
+            )
+        )
+    memory = build_learning_memory(graph, target_url="https://a.test")
+    assert len(memory) == 1
+    assert memory[0].attempts == 1
+    assert memory[0].successes == 1
+
+
+def test_scoped_learning_does_not_credit_job_id_reused_on_other_host():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "https://b.test", "recon"))
+    for label in ("a", "b"):
+        graph.add(
+            Observation(
+                f"evidence:{label}",
+                "evidence",
+                "result",
+                "scanner",
+                parent_ids=(f"asset:{label}",),
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": "shared-job",
+                },
+            )
+        )
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_accepts_indirect_in_scope_ancestry_only():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "https://b.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://a.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:good",
+            "evidence",
+            "outcome",
+            "scanner",
+            parent_ids=("endpoint:a",),
+            metadata={"technique": "scanner:nuclei", "outcome": "success"},
+        )
+    )
+    graph.add(
+        Observation(
+            "evidence:mixed",
+            "evidence",
+            "outcome",
+            "scanner",
+            parent_ids=("endpoint:a", "asset:b"),
+            metadata={"technique": "scanner:nuclei", "outcome": "failure"},
+        )
+    )
+    memory = build_learning_memory(graph, target_url="https://a.test")
+    assert len(memory) == 1
+    assert memory[0].attempts == 1
+    assert memory[0].successes == 1
+
+
+def test_scoped_learning_rejects_non_web_target_url():
+    graph = ObservationGraph()
+    for invalid in ("ftp://a.test", "https://user:pass@a.test", "not-a-url"):
+        try:
+            build_learning_memory(graph, target_url=invalid)
+        except ValueError as exc:
+            assert "HTTP(S)" in str(exc)
+        else:
+            raise AssertionError("invalid scoped-learning target must fail closed")
