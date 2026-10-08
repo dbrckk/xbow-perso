@@ -1076,42 +1076,42 @@
       "language": "python",
       "kind": "function",
       "name": "_completed_scans_with_provenance",
-      "line": 14
+      "line": 15
     },
     {
       "file": "backend/app/coverage.py",
       "language": "python",
       "kind": "function",
       "name": "trustworthy_lineage",
-      "line": 29
+      "line": 30
     },
     {
       "file": "backend/app/coverage.py",
       "language": "python",
       "kind": "function",
       "name": "build_evidence_coverage",
-      "line": 137
+      "line": 147
     },
     {
       "file": "backend/app/coverage.py",
       "language": "python",
       "kind": "function",
       "name": "campaign_coverage",
-      "line": 225
+      "line": 235
     },
     {
       "file": "backend/app/coverage.py",
       "language": "python",
       "kind": "function",
       "name": "build_coverage_guidance",
-      "line": 242
+      "line": 252
     },
     {
       "file": "backend/app/coverage.py",
       "language": "python",
       "kind": "function",
       "name": "prioritize_action_with_coverage",
-      "line": 297
+      "line": 307
     },
     {
       "file": "backend/app/cpe_consistency.py",
@@ -5493,77 +5493,77 @@
       "language": "python",
       "kind": "class",
       "name": "NoFindingRecovery",
-      "line": 29
+      "line": 30
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "to_dict",
-      "line": 58
+      "line": 60
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_trusted_utc_timestamp",
-      "line": 67
+      "line": 69
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_origin",
-      "line": 82
+      "line": 84
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_asset_matches_origin",
-      "line": 104
+      "line": 106
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_reviewed_ids",
-      "line": 126
+      "line": 128
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_completed_scan_evidence",
-      "line": 150
+      "line": 152
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "_unstable_scanner_outcomes",
-      "line": 210
+      "line": 218
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "build_no_finding_recovery",
-      "line": 229
+      "line": 237
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "has_in_scope_asset_ancestor",
-      "line": 351
+      "line": 359
     },
     {
       "file": "backend/app/no_finding_recovery.py",
       "language": "python",
       "kind": "function",
       "name": "scan_matches_target",
-      "line": 419
+      "line": 427
     },
     {
       "file": "backend/app/nuclei_parser.py",
@@ -8728,6 +8728,13 @@
       "kind": "function",
       "name": "rank_runtime_capability_gaps",
       "line": 42
+    },
+    {
+      "file": "backend/app/scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "conflicting_scan_terminal_job_ids",
+      "line": 9
     },
     {
       "file": "backend/app/scanner_adaptation.py",
@@ -14923,6 +14930,20 @@
       "kind": "function",
       "name": "test_unreconciled_scan_guidance_never_modifies_planned_scan_authority",
       "line": 734
+    },
+    {
+      "file": "backend/tests/test_coverage.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
+      "line": 752
+    },
+    {
+      "file": "backend/tests/test_coverage.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_queued_then_completed_scan_keeps_coverage_credit",
+      "line": 779
     },
     {
       "file": "backend/tests/test_cpe_consistency.py",
@@ -22674,6 +22695,27 @@
       "line": 1875
     },
     {
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_contradictory_scan_terminal_status_blocks_negative_recovery",
+      "line": 1893
+    },
+    {
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unrelated_origin_status_conflict_does_not_block_target_recovery",
+      "line": 1921
+    },
+    {
+      "file": "backend/tests/test_no_finding_recovery.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_queued_then_completed_scan_allows_bounded_negative_recovery",
+      "line": 1963
+    },
+    {
       "file": "backend/tests/test_nuclei_preflight.py",
       "language": "python",
       "kind": "function",
@@ -28559,6 +28601,48 @@
       "kind": "function",
       "name": "test_scan_payload_preserves_policy_decision_fields",
       "line": 31
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_event",
+      "line": 5
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_completed_failed_same_job_is_terminal_contradiction",
+      "line": 14
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_completed_and_queued_same_job_is_not_terminal_contradiction",
+      "line": 21
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_separate_job_ids_do_not_conflict",
+      "line": 28
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_invalid_ids_cannot_invent_job_identity",
+      "line": 35
+    },
+    {
+      "file": "backend/tests/test_scan_result_integrity.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_completed_and_cancelled_same_job_is_terminal_contradiction",
+      "line": 44
     },
     {
       "file": "backend/tests/test_scanner_adaptation.py",

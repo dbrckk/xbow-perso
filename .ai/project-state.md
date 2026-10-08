@@ -39,24 +39,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T21:51:29Z
+Generated: 2026-10-08T22:03:07Z
 
 ### Git
 - Branch: `main`
-- Head: `8362de8cb9a1`
-- Commit date: 2026-10-08T23:51:16+02:00
-- Commit: fix(coverage): reconcile scan reports before low-yield guidance
-- Tracked files: 685
+- Head: `366c55f8f755`
+- Commit date: 2026-10-09T00:02:57+02:00
+- Commit: fix(coverage): quarantine contradictory terminal scan job evidence
+- Tracked files: 687
 
 ### Recently changed files
 - `backend/app/coverage.py`
+- `backend/app/no_finding_recovery.py`
+- `backend/app/scan_result_integrity.py`
 - `backend/tests/test_coverage.py`
+- `backend/tests/test_no_finding_recovery.py`
+- `backend/tests/test_scan_result_integrity.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 
 ### Project signals
 - `pyproject.toml`

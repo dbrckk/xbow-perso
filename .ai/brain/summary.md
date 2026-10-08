@@ -1,21 +1,21 @@
 # Repo Brain
 
 - Index mode: incremental
-- Files indexed: 487
-- Files reparsed this run: 2
-- Symbols: 5020
-- Internal import edges: 1518
-- Impacted files: 4
-- Selected tests: 2
+- Files indexed: 489
+- Files reparsed this run: 6
+- Symbols: 5032
+- Internal import edges: 1524
+- Impacted files: 11
+- Selected tests: 5
 
 ## Languages
-- python: 483 files
+- python: 485 files
 - javascript: 4 files
 
 ## Highest-density symbol files
 - frontend/hackerone.js: 126 symbols
 - backend/app/main.py: 91 symbols
-- backend/tests/test_no_finding_recovery.py: 87 symbols
+- backend/tests/test_no_finding_recovery.py: 90 symbols
 - backend/tests/test_openapi_testgen.py: 71 symbols
 - backend/app/hackerone_api.py: 62 symbols
 - backend/tests/test_frontend_auth_proxy.py: 50 symbols
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 2
-- outline files retained: 485
-- top-level items retained: 6819
-- direct members retained: 1789
+- AST files reparsed this run: 6
+- outline files retained: 487
+- top-level items retained: 6837
+- direct members retained: 1790
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

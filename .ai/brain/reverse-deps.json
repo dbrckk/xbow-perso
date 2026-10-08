@@ -383,6 +383,7 @@
         "backend/app/attack_surface.py",
         "backend/app/main.py",
         "backend/app/observation_graph.py",
+        "backend/app/scan_result_integrity.py",
         "backend/app/validation_state.py"
       ],
       "dependents": [
@@ -391,7 +392,7 @@
         "backend/tests/test_coverage.py"
       ],
       "in_degree": 3,
-      "out_degree": 4
+      "out_degree": 5
     },
     "backend/app/cpe_consistency.py": {
       "dependencies": [
@@ -1736,7 +1737,8 @@
       "dependencies": [
         "backend/app/attack_surface.py",
         "backend/app/main.py",
-        "backend/app/observation_graph.py"
+        "backend/app/observation_graph.py",
+        "backend/app/scan_result_integrity.py"
       ],
       "dependents": [
         "backend/app/adaptive_cycle.py",
@@ -1745,7 +1747,7 @@
         "backend/tests/test_no_finding_recovery.py"
       ],
       "in_degree": 4,
-      "out_degree": 3
+      "out_degree": 4
     },
     "backend/app/nuclei_parser.py": {
       "dependencies": [
@@ -1830,6 +1832,7 @@
         "backend/app/review_evidence.py",
         "backend/app/review_queue.py",
         "backend/app/runtime_capabilities.py",
+        "backend/app/scan_result_integrity.py",
         "backend/app/scanner_worker.py",
         "backend/app/storage_backend.py",
         "backend/app/storage_core.py",
@@ -1897,6 +1900,7 @@
         "backend/tests/test_report_readiness.py",
         "backend/tests/test_review_evidence.py",
         "backend/tests/test_review_queue.py",
+        "backend/tests/test_scan_result_integrity.py",
         "backend/tests/test_scanner_ingestion.py",
         "backend/tests/test_submission_api.py",
         "backend/tests/test_swarm_coordinator.py",
@@ -1905,7 +1909,7 @@
         "backend/tests/test_vulnerability_intelligence.py",
         "backend/tests/test_worker_observations.py"
       ],
-      "in_degree": 129,
+      "in_degree": 131,
       "out_degree": 3
     },
     "backend/app/observation_writer.py": {
@@ -2850,6 +2854,18 @@
       ],
       "in_degree": 2,
       "out_degree": 0
+    },
+    "backend/app/scan_result_integrity.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/coverage.py",
+        "backend/app/no_finding_recovery.py",
+        "backend/tests/test_scan_result_integrity.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 1
     },
     "backend/app/scanner_adaptation.py": {
       "dependencies": [
@@ -6095,6 +6111,16 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "backend/tests/test_scan_result_integrity.py": {
+      "dependencies": [
+        "backend/app/observation_graph.py",
+        "backend/app/scan_result_integrity.py",
+        "frontend/app.js"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "backend/tests/test_scanner_adaptation.py": {
       "dependencies": [
         "backend/app/learning_memory.py",
@@ -6957,6 +6983,7 @@
         "backend/tests/test_runtime_capabilities.py",
         "backend/tests/test_runtime_gap_analysis.py",
         "backend/tests/test_scan_payload_idempotency.py",
+        "backend/tests/test_scan_result_integrity.py",
         "backend/tests/test_scanner_adaptation.py",
         "backend/tests/test_scanner_ingestion.py",
         "backend/tests/test_scanner_normalization.py",
@@ -7018,7 +7045,7 @@
         "backend/tests/test_worker_state.py",
         "backend/tests/test_worker_watchdog.py"
       ],
-      "in_degree": 263,
+      "in_degree": 264,
       "out_degree": 4
     },
     "frontend/hackerone.js": {

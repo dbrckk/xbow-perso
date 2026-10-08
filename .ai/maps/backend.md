@@ -192,6 +192,7 @@ app/
   rolling_telemetry.py
   runtime_capabilities.py
   runtime_gap_analysis.py
+  scan_result_integrity.py
   scanner_adaptation.py
   scanner_ingestion.py
   scanner_normalization.py
@@ -460,6 +461,7 @@ tests/
   test_runtime_capabilities.py
   test_runtime_gap_analysis.py
   test_scan_payload_idempotency.py
+  test_scan_result_integrity.py
   test_scanner_adaptation.py
   test_scanner_ingestion.py
   test_scanner_normalization.py
@@ -1941,6 +1943,7 @@ parent_id = pending.pop()
 parent = items.get(parent_id)
 ⋮----
 jobs: dict[str, list[Any]] = {}
+conflicting_terminal_jobs = conflicting_scan_terminal_job_ids(graph)
 untrusted_job_ids: set[str] = set()
 untrusted = 0
 accepted = 0
@@ -1950,6 +1953,9 @@ raw_job_id = observation.metadata.get("job_id")
 identity = f"observation:{observation.id}"
 ⋮----
 identity = f"job:{raw_job_id.strip()}"
+⋮----
+# A completed claim contradicted by a failed/cancelled claim
+# for this same worker job does not prove scan completion.
 ⋮----
 # A job documented on incompatible assets cannot be
 # credited through just its convenient in-scope record.
@@ -7655,6 +7661,7 @@ reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
 reopened_task_kinds: tuple[str, ...] = ()
 ambiguous_scan_source_jobs: int = 0
+contradictory_scan_terminal_jobs: int = 0
 unreconciled_scan_reports: int = 0
 trusted_completed_scan_count: int = 0
 worker_health_attribution: str = "campaign_aggregate"
@@ -7709,7 +7716,7 @@ parents = set(item.parent_ids)
     observations for that job name exactly one non-empty source.
     """
 sources_by_job: dict[str, set[str]] = {}
-invalid_jobs: set[str] = set()
+invalid_jobs: set[str] = {
 rejected_cross_origin_jobs: set[str] = set()
 ⋮----
 raw_job_id = item.metadata.get("job_id")
@@ -7733,6 +7740,7 @@ cross_origin_count = sum(
 trusted_sources: set[str] = set()
 trusted_job_count = 0
 ambiguous = cross_origin_count
+contradictions = sum(job in invalid_jobs and job.startswith("job:")
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
 ⋮----
@@ -7848,6 +7856,8 @@ state = "findings_present"
 state = "scope_unverified"
 ⋮----
 state = "execution_unstable"
+⋮----
+state = "scan_status_unreconciled"
 ⋮----
 state = "scan_findings_unreconciled"
 ⋮----
@@ -11788,6 +11798,24 @@ gap_factor = _STATUS_FACTOR.get(declared_status, 1.0)
 # weak. Runtime readiness is surfaced separately rather than interpreted
 # as permission to execute anything.
 priority = round((evidence + (2.0 * high_critical)) * gap_factor, 3)
+```
+
+## File: app/scan_result_integrity.py
+```python
+_TERMINAL_SCAN_STATES = frozenset({"completed", "failed", "cancelled"})
+⋮----
+def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]
+⋮----
+"""Identify one job reporting incompatible terminal scan outcomes.
+
+    Only explicit bounded job IDs establish a cross-observation identity.
+    A queued/retry event is not a terminal contradiction.
+    """
+states_by_job: dict[str, set[str]] = {}
+⋮----
+status = item.metadata.get("status")
+⋮----
+raw_id = item.metadata.get("job_id")
 ```
 
 ## File: app/scanner_adaptation.py
@@ -17019,6 +17047,10 @@ def test_explicit_findings_report_does_not_discard_scans_with_recorded_finding()
 def test_unreconciled_scan_report_takes_precedence_over_low_yield_rotation()
 ⋮----
 def test_unreconciled_scan_guidance_never_modifies_planned_scan_authority()
+⋮----
+def test_conflicting_terminal_scan_job_is_not_credited_as_completed()
+⋮----
+def test_queued_then_completed_scan_keeps_coverage_credit()
 ```
 
 ## File: tests/test_cpe_consistency.py
@@ -21364,6 +21396,14 @@ def test_form_review_cannot_use_mixed_endpoint_parent_to_close_gap()
 def test_review_of_two_valid_target_endpoints_closes_both_gaps()
 ⋮----
 def test_review_with_no_surface_parent_never_closes_coverage()
+⋮----
+def test_contradictory_scan_terminal_status_blocks_negative_recovery()
+⋮----
+result = _feedback(graph, target_url="https://example.test/")
+⋮----
+def test_unrelated_origin_status_conflict_does_not_block_target_recovery()
+⋮----
+def test_queued_then_completed_scan_allows_bounded_negative_recovery()
 ```
 
 ## File: tests/test_nuclei_preflight.py
@@ -24344,6 +24384,23 @@ def test_scan_payload_preserves_policy_decision_fields()
 receipt = policy_receipt(campaign, "example.test", "automated_scan")
 ⋮----
 payload = sanitized_scan_payload(campaign, receipt)
+```
+
+## File: tests/test_scan_result_integrity.py
+```python
+def _event(graph, oid, job_id, status)
+⋮----
+def test_completed_failed_same_job_is_terminal_contradiction()
+⋮----
+graph = ObservationGraph()
+⋮----
+def test_completed_and_queued_same_job_is_not_terminal_contradiction()
+⋮----
+def test_separate_job_ids_do_not_conflict()
+⋮----
+def test_invalid_ids_cannot_invent_job_identity()
+⋮----
+def test_completed_and_cancelled_same_job_is_terminal_contradiction()
 ```
 
 ## File: tests/test_scanner_adaptation.py
