@@ -79,6 +79,47 @@ def _asset_key(value: object) -> str:
     return host
 
 
+def _asset_identity(value: object) -> tuple[str, str | None, int | None] | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = urlsplit(raw if "://" in raw else f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        if not host or parsed.username is not None or parsed.password is not None:
+            return None
+        scheme = parsed.scheme.lower() or None
+        if scheme not in {None, "http", "https"}:
+            return None
+        port = parsed.port
+    except ValueError:
+        return None
+    if port is None:
+        if scheme == "https":
+            port = 443
+        elif scheme == "http":
+            port = 80
+    return host, scheme, port
+
+
+def _compatible_asset_identity(direct_value: object, graph_value: object) -> bool:
+    """Compare known origin components without guessing unspecified ones."""
+    direct = _asset_identity(direct_value)
+    linked = _asset_identity(graph_value)
+    if direct is None or linked is None:
+        return False
+    direct_host, direct_scheme, direct_port = direct
+    linked_host, linked_scheme, linked_port = linked
+    if direct_host != linked_host:
+        return False
+    if direct_scheme and linked_scheme and direct_scheme != linked_scheme:
+        return False
+    if direct_port is not None and linked_port is not None:
+        if direct_port != linked_port:
+            return False
+    return True
+
+
 def _asset_ancestor_ids(
     graph: ObservationGraph,
     observation_id: str,
@@ -138,7 +179,10 @@ def _finding_asset_keys(
     graph: ObservationGraph | None,
 ) -> tuple[str, ...]:
     keys: set[str] = set()
-    direct = _asset_key(getattr(finding, "asset", ""))
+    direct_value = str(getattr(finding, "asset", "") or "").strip()
+    direct = _asset_key(direct_value)
+    if direct_value and not direct:
+        return ()
     if direct:
         keys.add(direct)
     if graph is None:
@@ -155,6 +199,13 @@ def _finding_asset_keys(
                 graph,
                 observation.id,
             )
+            if direct_value and any(
+                not _compatible_asset_identity(direct_value, value)
+                for value in asset_values
+            ):
+                # Declared asset and graph lineage disagree: do not merge
+                # their keys into a false corroboration.
+                return ()
             keys.update(
                 key
                 for value in asset_values
