@@ -227,3 +227,109 @@ def test_attack_surface_enrichment_score_rewards_cross_source_context():
     assert result["summary"]["surface_sources"] == ["browser", "recon:crawl"]
     assert result["summary"]["source_diversity"] == 2
     assert result["summary"]["enrichment_score"] > 0.7
+
+
+def test_canonical_endpoint_rejects_unsupported_web_schemes_and_credentials():
+    invalid = (
+        ("ftp://example.test/archive?token=hidden", "unsupported_scheme"),
+        ("https://user:password@example.test/login?token=hidden", "embedded_credentials"),
+        ("https://example.test:0/path?token=hidden", "invalid_port"),
+    )
+    for value, reason in invalid:
+        endpoint = canonical_endpoint(value)
+        assert endpoint["valid"] is False
+        assert endpoint["error"] == reason
+        assert endpoint["url"] == ""
+        assert "hidden" not in str(endpoint)
+        assert "password" not in str(endpoint)
+
+
+def test_malformed_ipv6_does_not_crash_attack_surface_summary():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:bad", "asset", "https://[invalid-ipv6", "recon")
+    )
+    graph.add(
+        Observation(
+            "endpoint:bad",
+            "endpoint",
+            "https://[invalid-ipv6/secret",
+            "recon",
+            parent_ids=("asset:bad",),
+        )
+    )
+    result = build_attack_surface(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert canonical_host("https://[invalid-ipv6") == ""
+    assert result["summary"]["invalid_endpoint_count"] == 1
+    assert result["summary"]["in_scope_asset_count"] == 0
+    assert result["endpoints"][0]["error"] == "invalid_url"
+    assert result["endpoints"][0]["url"] == ""
+
+
+def test_canonical_ipv6_endpoint_keeps_valid_brackets_and_port():
+    endpoint = canonical_endpoint(
+        "https://[::1]:8443/api?token=hidden"
+    )
+    assert endpoint["valid"] is True
+    assert endpoint["url"] == "https://[::1]:8443/api"
+    assert endpoint["host"] == "::1"
+    assert "hidden" not in str(endpoint)
+
+
+def test_invalid_protocol_and_credentialed_form_do_not_raise_surface_coverage():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "endpoint:ftp",
+            "endpoint",
+            "ftp://example.test/archive",
+            "import",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:credentialed",
+            "form",
+            "https://user:secret@example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    result = build_attack_surface(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert result["summary"]["valid_endpoint_count"] == 0
+    assert result["summary"]["valid_form_count"] == 0
+    assert result["summary"]["in_scope_endpoint_count"] == 0
+    assert result["summary"]["in_scope_form_count"] == 0
+    assert all(item["in_scope"] is None for item in result["endpoints"])
+    assert all(item["in_scope"] is None for item in result["forms"])
+    assert "secret" not in str(result)
+
+
+def test_canonical_host_rejects_credential_bearing_or_unsupported_asset():
+    assert canonical_host("https://user:secret@example.test") == ""
+    assert canonical_host("ftp://example.test") == ""
+    assert canonical_host("https://example.test") == "example.test"
+
+
+def test_url_control_characters_cannot_change_host_identity():
+    # urllib.parse removes tabs/newlines unless rejected before parsing.
+    values = ("https://exa\\nmple.test/path", "https://example.test\\t/path")
+    for escaped in values:
+        raw = escaped.encode("utf-8").decode("unicode_escape")
+        assert canonical_host(raw) == ""
+        item = canonical_endpoint(raw)
+        assert item["valid"] is False
+        assert item["error"] == "invalid_url"
+        assert item["url"] == ""
