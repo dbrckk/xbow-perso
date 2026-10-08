@@ -973,3 +973,72 @@ def test_valid_and_malformed_technology_ancestors_fail_closed():
     assert match_finding_technology(
         finding, build_technology_fingerprints(graph), graph
     ) == ()
+
+
+def test_product_name_inside_larger_token_does_not_match_fingerprint():
+    finding = _finding("nginxproxy parsing issue")
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(_graph())
+    )
+
+    assert matched == ()
+
+
+def test_explicit_product_identity_overrides_unrelated_title_mentions():
+    finding = _finding("nginx request parsing issue")
+    finding.product = "apache"
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(_graph())
+    )
+
+    assert matched == ()
+
+
+def test_product_in_remediation_only_is_not_vulnerability_evidence():
+    finding = _finding("request parsing issue")
+    finding.remediation = "Replace the reverse proxy with nginx"
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(_graph())
+    )
+
+    assert matched == ()
+
+
+def test_product_mentioned_after_long_title_remains_matchable():
+    finding = _finding(
+        "Unexpected behavior observed across multiple responses at the "
+        "endpoint during repeated checks on the target nginx service"
+    )
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(_graph())
+    )
+
+    assert len(matched) == 1
+    assert matched[0].normalized_product == "nginx"
+
+
+def test_multiword_technology_requires_contiguous_whole_token_phrase():
+    fingerprints = build_technology_fingerprints(_graph())
+    found = match_finding_technology(
+        _finding("Potential Ruby on Rails request parsing discrepancy"),
+        fingerprints,
+    )
+    false = match_finding_technology(
+        _finding("Potential Ruby on Railslike request parsing discrepancy"),
+        fingerprints,
+    )
+
+    assert len(found) == 1
+    assert found[0].normalized_product == "ruby on rails"
+    assert false == ()
+
+
+def test_explicit_product_can_match_without_textual_product_mentions():
+    finding = _finding("Generic request parsing discrepancy")
+    finding.product = "nginx"
+    matched = match_finding_technology(
+        finding, build_technology_fingerprints(_graph())
+    )
+
+    assert len(matched) == 1
+    assert matched[0].normalized_product == "nginx"

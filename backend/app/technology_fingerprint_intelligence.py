@@ -369,21 +369,51 @@ def build_technology_fingerprints(
     return tuple(result)
 
 
+def _contains_token_phrase(
+    tokens: tuple[str, ...],
+    phrase: tuple[str, ...],
+) -> bool:
+    if not phrase or len(phrase) > len(tokens):
+        return False
+    return any(
+        tokens[index : index + len(phrase)] == phrase
+        for index in range(len(tokens) - len(phrase) + 1)
+    )
+
+
+def _finding_product_mention_tokens(
+    finding: Any,
+) -> tuple[tuple[str, ...], ...]:
+    """Use evidence about the finding, not impact or remediation advice."""
+    text_fields = [
+        str(getattr(finding, name, "") or "")
+        for name in ("title", "summary")
+    ]
+    evidence = getattr(finding, "evidence", None)
+    if isinstance(evidence, (list, tuple)):
+        text_fields.extend(
+            str(item)
+            for item in evidence[:64]
+            if item
+        )
+    return tuple(
+        tuple(_TOKEN_RE.findall(text[:4096].lower()))
+        for text in text_fields
+        if text
+    )
+
+
 def match_finding_technology(
     finding: Any,
     fingerprints: tuple[TechnologyFingerprint, ...],
     graph: ObservationGraph | None = None,
 ) -> tuple[TechnologyFingerprint, ...]:
-    parts = []
-    for name in ("title", "summary", "impact", "remediation", "product"):
-        value = getattr(finding, name, None)
-        if value:
-            parts.append(str(value))
-    evidence = getattr(finding, "evidence", None)
-    if isinstance(evidence, (list, tuple)):
-        parts.extend(str(item) for item in evidence if item)
-    haystack = _normalize_product(" ".join(parts))
-
+    declared = _normalize_product(str(getattr(finding, "product", "") or ""))
+    mentions = (
+        ()
+        if declared
+        else _finding_product_mention_tokens(finding)
+    )
     matches = []
     scoped_fingerprints = filter_fingerprints_for_finding_asset(
         finding,
@@ -392,7 +422,16 @@ def match_finding_technology(
     )
     for fingerprint in scoped_fingerprints:
         product = fingerprint.normalized_product
-        if product and product in haystack:
+        if not product:
+            continue
+        if declared:
+            # Explicit product identity takes precedence over free text:
+            # an unrelated product mentioned in the title is not evidence.
+            if product == declared:
+                matches.append(fingerprint)
+            continue
+        phrase = tuple(_TOKEN_RE.findall(product))
+        if any(_contains_token_phrase(tokens, phrase) for tokens in mentions):
             matches.append(fingerprint)
     return tuple(matches)
 
