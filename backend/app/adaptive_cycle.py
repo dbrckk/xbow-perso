@@ -206,6 +206,7 @@ def campaign_adaptive_cycle(campaign_id: str):
         campaign_finding_count=len(campaign.findings),
         worker_outcomes=worker_outcomes,
         target_host=urlsplit(str(campaign.target.primary_url)).hostname,
+        target_url=str(campaign.target.primary_url),
     )
     return {
         "campaign_id": campaign.id,
