@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph
+from .review_evidence import is_completed_review_evidence
 from .scan_result_integrity import conflicting_scan_terminal_job_ids
 
 
@@ -136,7 +137,7 @@ def _reviewed_ids(
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("review_type") not in review_types
-            or item.metadata.get("status") not in {"completed", "reviewed"}
+            or not is_completed_review_evidence(item)
         ):
             continue
         parents = set(item.parent_ids)
