@@ -1888,3 +1888,97 @@ def test_review_with_no_surface_parent_never_closes_coverage():
     )
 
     assert _feedback(graph).uncovered_endpoint_count == 1
+
+
+def test_contradictory_scan_terminal_status_blocks_negative_recovery():
+    graph = _graph(scans=0)
+    for index, status in enumerate(("completed", "failed")):
+        graph.add(
+            Observation(
+                f"scan:status-conflict:{index}",
+                "evidence",
+                "scan-state",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": status,
+                    "job_id": "job-conflict",
+                    "findings": 0,
+                },
+            )
+        )
+
+    result = _feedback(graph, target_url="https://example.test/")
+    assert result.state == "scan_status_unreconciled"
+    assert result.trusted_completed_scan_count == 0
+    assert result.contradictory_scan_terminal_jobs == 1
+    assert result.recommended_task_kinds == ()
+    assert result.negative_result_proves_safe is False
+    assert result.may_expand_scope is False
+
+
+def test_unrelated_origin_status_conflict_does_not_block_target_recovery():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation("asset:other", "asset", "https://other.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "scan:good",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "job-good", "findings": 0,
+            },
+        )
+    )
+    for index, status in enumerate(("completed", "cancelled")):
+        graph.add(
+            Observation(
+                f"scan:other:{index}",
+                "evidence",
+                "other-scan",
+                "nuclei",
+                parent_ids=("asset:other",),
+                metadata={
+                    "phase": "scan", "status": status,
+                    "job_id": "job-other", "findings": 0,
+                },
+            )
+        )
+    result = _feedback(
+        graph,
+        target_url="https://example.test/",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+    assert result.state == "recovery_advisory"
+    assert result.contradictory_scan_terminal_jobs == 0
+    assert result.trusted_completed_scan_count == 1
+
+
+def test_queued_then_completed_scan_allows_bounded_negative_recovery():
+    graph = _graph(scans=0)
+    for index, status in enumerate(("queued", "completed")):
+        graph.add(
+            Observation(
+                f"scan:retry:{index}",
+                "evidence",
+                "scan-state",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": status,
+                    "job_id": "job-retried",
+                    "findings": 0,
+                },
+            )
+        )
+    result = _feedback(graph, target_url="https://example.test/")
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
+    assert result.contradictory_scan_terminal_jobs == 0

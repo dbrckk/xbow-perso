@@ -747,3 +747,56 @@ def test_unreconciled_scan_guidance_never_modifies_planned_scan_authority():
     assert signal["applied"] is False
     assert signal["action_kind_unchanged"] is True
     assert signal["target_unchanged"] is True
+
+
+def test_conflicting_terminal_scan_job_is_not_credited_as_completed():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index, status in enumerate(("completed", "failed")):
+        graph.add(
+            Observation(
+                f"scan:terminal:{index}",
+                "evidence",
+                "scan-state",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": status,
+                    "job_id": "job-contradictory",
+                    "findings": 0,
+                },
+            )
+        )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+
+
+def test_queued_then_completed_scan_keeps_coverage_credit():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index, status in enumerate(("queued", "completed")):
+        graph.add(
+            Observation(
+                f"scan:queued-complete:{index}",
+                "evidence",
+                "scan-state",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": status,
+                    "job_id": "job-success",
+                    "findings": 0,
+                },
+            )
+        )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
