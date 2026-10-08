@@ -100,7 +100,8 @@ def _safe_absolute_url(value: str) -> str:
         port = parsed.port
     except ValueError:
         return ""
-    netloc = host + (f":{port}" if port is not None else "")
+    safe_host = f"[{host}]" if ":" in host else host
+    netloc = safe_host + (f":{port}" if port is not None else "")
     return urlunsplit(
         (
             parsed.scheme.lower(),
@@ -125,7 +126,8 @@ def _canonical_value(kind: str, value: str) -> str:
             port = parsed.port
         except ValueError:
             return ""
-        authority = host + (f":{port}" if port is not None else "")
+        safe_host = f"[{host}]" if ":" in host else host
+        authority = safe_host + (f":{port}" if port is not None else "")
         if parsed.scheme.lower() in {"http", "https"}:
             return f"{parsed.scheme.lower()}://{authority}"
         if parsed.scheme:
