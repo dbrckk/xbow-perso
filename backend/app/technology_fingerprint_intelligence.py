@@ -55,23 +55,10 @@ def _parse_technology(value: str) -> tuple[str, str | None]:
 
 
 def _asset_key(value: object) -> str:
-    raw = str(value or "").strip()
-    if not raw:
+    identity = _asset_identity(value)
+    if identity is None:
         return ""
-    parsed = urlsplit(raw if "://" in raw else f"//{raw}")
-    host = (parsed.hostname or "").lower().rstrip(".")
-    if not host:
-        return ""
-    try:
-        port = parsed.port
-    except ValueError:
-        return ""
-    scheme = parsed.scheme.lower()
-    if port is None:
-        if scheme == "https":
-            port = 443
-        elif scheme == "http":
-            port = 80
+    host, scheme, port = identity
     if scheme in {"http", "https"} and port is not None:
         return f"{scheme}://{host}:{port}"
     if port is not None:
@@ -213,13 +200,13 @@ def _finding_asset_keys(
                 for value in asset_values
                 if (key := _asset_key(value))
             )
-    if not direct_value and any(
+    if any(
         not _compatible_asset_identity(left, right)
         for left in linked_asset_values
         for right in linked_asset_values
     ):
-        # Graph-only finding ancestry must also identify one compatible
-        # origin; multiple unrelated parents cannot corroborate each other.
+        # A hostname-only declared asset must not hide contradictory
+        # origin-specific graph parents (such as HTTP and HTTPS).
         return ()
     return tuple(sorted(keys))
 
@@ -229,6 +216,10 @@ def filter_fingerprints_for_finding_asset(
     fingerprints: tuple[TechnologyFingerprint, ...],
     graph: ObservationGraph | None = None,
 ) -> tuple[TechnologyFingerprint, ...]:
+    raw_asset = str(getattr(finding, "asset", "") or "").strip()
+    if raw_asset and not _asset_key(raw_asset):
+        # Never fall back to legacy unscoped evidence for malformed assets.
+        return ()
     finding_keys = set(_finding_asset_keys(finding, graph))
     scoped_present = any(item.asset_values for item in fingerprints)
     graph_asset_keys: set[str] = set()
