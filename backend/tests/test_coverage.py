@@ -975,6 +975,24 @@ def test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage():
 def test_partial_endpoint_scan_documentation_prioritizes_provenance_review():
     graph = ObservationGraph()
     graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
     for index in (1, 2):
         graph.add(
             Observation(
@@ -1022,6 +1040,24 @@ def test_partial_endpoint_scan_documentation_prioritizes_provenance_review():
 def test_documented_scans_keep_existing_low_yield_surface_rotation():
     graph = ObservationGraph()
     graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
     graph.add(
         Observation(
             "endpoint:a",
