@@ -32,6 +32,7 @@ class NoFindingRecovery:
     recommended_task_kinds: tuple[str, ...]
     reasons: tuple[str, ...]
     exhausted_task_kinds: tuple[str, ...] = ()
+    ambiguous_scan_source_jobs: int = 0
     worker_health_attribution: str = "campaign_aggregate"
     worker_instability_observed: bool = False
     worker_instability_applied: bool = False
@@ -72,10 +73,10 @@ def _completed_scan_evidence(
     graph: ObservationGraph,
     *,
     evidence_filter: Callable[[Any], bool] | None = None,
-) -> tuple[int, int]:
-    # Multiple observations for one worker job must not inflate negative yield.
-    scan_keys: set[str] = set()
-    sources: set[str] = set()
+) -> tuple[int, int, int]:
+    # One worker job may emit several completion observations. Different
+    # reporter names on that job are not independent scanner confirmation.
+    sources_by_job: dict[str, set[str]] = {}
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("phase") != "scan"
@@ -86,10 +87,18 @@ def _completed_scan_evidence(
             continue
         job_id = str(item.metadata.get("job_id") or "").strip()
         key = f"job:{job_id}" if job_id else f"observation:{item.id}"
-        scan_keys.add(key)
-        if str(item.source).strip():
-            sources.add(str(item.source).strip())
-    return len(scan_keys), len(sources)
+        reporters = sources_by_job.setdefault(key, set())
+        source = str(item.source).strip()
+        if source:
+            reporters.add(source)
+
+    trusted_sources = {
+        next(iter(reporters))
+        for reporters in sources_by_job.values()
+        if len(reporters) == 1
+    }
+    ambiguous = sum(len(reporters) != 1 for reporters in sources_by_job.values())
+    return len(sources_by_job), len(trusted_sources), ambiguous
 
 
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:
@@ -227,7 +236,7 @@ def build_no_finding_recovery(
 
     legacy_single_host = False
     if normalized_target_host is None:
-        completed_scans, scanner_sources = _completed_scan_evidence(graph)
+        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(graph)
     else:
         asset_records = surface["assets"]
         # Legacy scan observations sometimes omit ancestry. They can only
@@ -243,7 +252,7 @@ def build_no_finding_recovery(
                 return has_in_scope_asset_ancestor(item.id)
             return legacy_single_host
 
-        completed_scans, scanner_sources = _completed_scan_evidence(
+        completed_scans, scanner_sources, ambiguous_sources = _completed_scan_evidence(
             graph,
             evidence_filter=scan_matches_target,
         )
@@ -330,6 +339,11 @@ def build_no_finding_recovery(
 
     reasons: list[str] = []
     candidates: list[tuple[int, str]] = []
+    if ambiguous_sources:
+        reasons.append(
+            "completed scan jobs have missing or contradictory scanner "
+            "source provenance; independent source count is conservative"
+        )
     if worker_instability_observed and not worker_health_attributable:
         reasons.append(
             "campaign-wide scanner worker errors cannot be attributed "
@@ -351,6 +365,12 @@ def build_no_finding_recovery(
     elif not completed_scans:
         state = "no_completed_scans"
         reasons.append("no successful scan evidence exists; no negative yield can be inferred")
+    elif not scanner_sources:
+        state = "scan_source_unverified"
+        reasons.append(
+            "no completed scan has unambiguous source provenance; "
+            "manual review is needed before treating scan results as negative"
+        )
     else:
         state = "recovery_advisory"
         if scope_issues:
@@ -431,6 +451,7 @@ def build_no_finding_recovery(
         recommended_task_kinds=recommended,
         reasons=tuple(dict.fromkeys(reasons)),
         exhausted_task_kinds=exhausted,
+        ambiguous_scan_source_jobs=ambiguous_sources,
         worker_health_attribution=worker_health_attribution,
         worker_instability_observed=worker_instability_observed,
         worker_instability_applied=worker_instability_applied,
