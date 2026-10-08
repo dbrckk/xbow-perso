@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T21:48:42Z
+Generated: 2026-10-08T21:51:29Z
 
 ### Git
 - Branch: `main`
-- Head: `ce99506f5b39`
-- Commit date: 2026-10-08T23:48:10+02:00
-- Commit: fix(coverage): reject mixed-parent review evidence
+- Head: `8362de8cb9a1`
+- Commit date: 2026-10-08T23:51:16+02:00
+- Commit: fix(coverage): reconcile scan reports before low-yield guidance
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
 - `backend/app/learning_memory.py`

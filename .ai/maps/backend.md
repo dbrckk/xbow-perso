@@ -1922,7 +1922,7 @@ alerts = {
 ```python
 router = APIRouter()
 ⋮----
-"""Deduplicate completed scan jobs and reject untrusted scope lineage."""
+"""Deduplicate completed scan jobs and reject untrusted scope or reports."""
 items = {item.id: item for item in graph.values()}
 assets = graph.by_kind("asset")
 approved_asset_ids = {
@@ -1957,11 +1957,21 @@ identity = f"job:{raw_job_id.strip()}"
 count = len(jobs.pop(identity))
 ⋮----
 representatives: list[Any] = []
+unreconciled = 0
+recorded_findings = len(graph.by_kind("finding"))
 ⋮----
 # Multiple reporters attached to one execution do not prove
 # independence. Conflicting or missing source labels make the entire
 # job unsuitable for source and coverage metrics.
 sources = {
+⋮----
+reported_findings = [
+# A completed scan claiming findings while the graph has none is
+# an ingestion discrepancy, not trustworthy negative-yield evidence.
+# Contradictory or malformed duplicate reports also taint that job.
+malformed = any(
+inconsistent = (
+missing_recorded_findings = (
 ⋮----
 surface = build_attack_surface(graph, scope_checker=scope_checker)
 summary = surface["summary"]
@@ -2004,6 +2014,10 @@ scanner = float(dimensions.get("scanner_execution") or 0.0)
 validation = dimensions.get("independent_validation")
 diminishing_returns = float(dimensions.get("diminishing_returns") or 0.0)
 marginal_yield = dimensions.get("marginal_scan_yield")
+unreconciled = max(
+⋮----
+focus = "scan_result_reconciliation"
+reason = (
 ⋮----
 focus = "surface_discovery"
 reason = "surface evidence is still sparse"
@@ -16991,6 +17005,20 @@ def test_same_job_reported_on_out_of_scope_asset_taints_entire_scan()
 def test_conflicting_reporters_for_same_scan_job_are_not_credited()
 ⋮----
 def test_missing_source_on_duplicate_scan_taints_job()
+⋮----
+def test_positive_scan_report_without_recorded_findings_does_not_count_as_negative()
+⋮----
+def test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job()
+⋮----
+def test_invalid_scan_report_count_is_not_credited_as_completed_coverage()
+⋮----
+def test_explicit_zero_finding_scan_report_counts_as_completed_coverage()
+⋮----
+def test_explicit_findings_report_does_not_discard_scans_with_recorded_finding()
+⋮----
+def test_unreconciled_scan_report_takes_precedence_over_low_yield_rotation()
+⋮----
+def test_unreconciled_scan_guidance_never_modifies_planned_scan_authority()
 ```
 
 ## File: tests/test_cpe_consistency.py
