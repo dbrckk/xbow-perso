@@ -39,16 +39,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:03:07Z
+Generated: 2026-10-08T22:07:31Z
 
 ### Git
 - Branch: `main`
-- Head: `366c55f8f755`
-- Commit date: 2026-10-09T00:02:57+02:00
-- Commit: fix(coverage): quarantine contradictory terminal scan job evidence
+- Head: `fac555522ea6`
+- Commit date: 2026-10-09T00:07:20+02:00
+- Commit: fix(learning): isolate scanner technique memory by authorized target origin
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/learning_memory.py`
+- `backend/app/orchestrator.py`
+- `backend/tests/test_learning_memory.py`
 - `backend/app/coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
@@ -57,8 +60,6 @@ Generated: 2026-10-08T22:03:07Z
 - `backend/tests/test_scan_result_integrity.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
-- `backend/app/learning_memory.py`
-- `backend/tests/test_learning_memory.py`
 
 ### Project signals
 - `pyproject.toml`

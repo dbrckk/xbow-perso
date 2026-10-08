@@ -1724,6 +1724,28 @@
     },
     {
       "dependencies": [
+        "backend/app/main.py",
+        "backend/app/no_finding_recovery.py",
+        "backend/app/observation_graph.py"
+      ],
+      "dependents": [
+        "backend/app/adaptive_cycle.py",
+        "backend/app/campaign_overview.py",
+        "backend/app/htb_lab.py",
+        "backend/app/orchestrator.py",
+        "backend/app/recon_swarm.py",
+        "backend/app/scanner_adaptation.py",
+        "backend/app/worker_service.py",
+        "backend/tests/test_adaptive_cycle.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_scanner_adaptation.py"
+      ],
+      "in_degree": 10,
+      "out_degree": 3,
+      "path": "backend/app/learning_memory.py"
+    },
+    {
+      "dependencies": [
         "backend/app/jobqueue.py",
         "backend/app/main.py",
         "backend/app/redis_jobqueue.py",
@@ -1787,27 +1809,6 @@
       "in_degree": 3,
       "out_degree": 10,
       "path": "backend/app/incident_observer.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/main.py",
-        "backend/app/observation_graph.py"
-      ],
-      "dependents": [
-        "backend/app/adaptive_cycle.py",
-        "backend/app/campaign_overview.py",
-        "backend/app/htb_lab.py",
-        "backend/app/orchestrator.py",
-        "backend/app/recon_swarm.py",
-        "backend/app/scanner_adaptation.py",
-        "backend/app/worker_service.py",
-        "backend/tests/test_adaptive_cycle.py",
-        "backend/tests/test_learning_memory.py",
-        "backend/tests/test_scanner_adaptation.py"
-      ],
-      "in_degree": 10,
-      "out_degree": 2,
-      "path": "backend/app/learning_memory.py"
     },
     {
       "dependencies": [
@@ -2324,6 +2325,24 @@
     },
     {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/scan_result_integrity.py"
+      ],
+      "dependents": [
+        "backend/app/adaptive_cycle.py",
+        "backend/app/learning_memory.py",
+        "backend/app/recon_swarm.py",
+        "backend/tests/test_learning_memory.py",
+        "backend/tests/test_no_finding_recovery.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 4,
+      "path": "backend/app/no_finding_recovery.py"
+    },
+    {
+      "dependencies": [
         "backend/app/hackerone_client.py",
         "backend/app/hackerone_review_draft.py",
         "backend/app/storage.py",
@@ -2357,27 +2376,9 @@
       "in_degree": 3,
       "out_degree": 6,
       "path": "backend/app/observer_scheduler.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/evidence_chain.py",
-        "backend/app/hypothesis_engine.py",
-        "backend/app/hypothesis_memory.py",
-        "backend/app/knowledge_memory.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_overview.py",
-        "backend/tests/test_form_waf_reasoning.py",
-        "backend/tests/test_review_queue.py"
-      ],
-      "in_degree": 3,
-      "out_degree": 6,
-      "path": "backend/app/review_queue.py"
     }
   ],
-  "edge_count": 2211,
+  "edge_count": 2212,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 484,
   "schema_version": 1

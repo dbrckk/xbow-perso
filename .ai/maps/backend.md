@@ -6907,13 +6907,41 @@ source_count: int
 ⋮----
 def to_dict(self) -> dict[str, Any]
 ⋮----
-def build_learning_memory(graph: ObservationGraph, *, limit: int = 50) -> list[TechniqueMemory]
+"""Find evidence tied exclusively to the requested authorized origin."""
+target = _origin(target_url)
+⋮----
+items = {item.id: item for item in graph.values()}
+assets = graph.by_kind("asset")
+approved = {
+# Unlinked legacy evidence is safe to assign only when the graph
+# identifies exactly one unambiguous asset for this origin.
+legacy_single_asset = len(assets) == 1 and assets[0].id in approved
+accepted: set[str] = set()
+⋮----
+pending = list(item.parent_ids)
+seen: set[str] = set()
+ancestors: set[str] = set()
+valid = True
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = items.get(parent_id)
+⋮----
+valid = False
 ⋮----
 """Aggregate safe technique outcomes from existing evidence only.
 
     Evidence contributes only when it carries an explicit technique and outcome.
     No target interaction, payload generation, or autonomous execution happens here.
     """
+⋮----
+scoped_ids = (
+# A reused worker job ID observed on a different origin must not be
+# partially credited through only its convenient in-scope reporter.
+out_of_scope_jobs: set[tuple[str, str]] = set()
+⋮----
+technique = str(item.metadata.get("technique") or "").strip().lower()
+job_id = item.metadata.get("job_id")
 ⋮----
 # One scanner or validation job may emit multiple evidence observations.
 # Counting each observation as an independent attempt inflates both
@@ -6924,8 +6952,6 @@ attempts: dict[tuple[str, str], dict[str, set[str]]] = {}
 ⋮----
 technique = str(item.metadata.get("technique", "")).strip().lower()
 outcome = str(item.metadata.get("outcome", "")).strip().lower()
-⋮----
-job_id = item.metadata.get("job_id")
 ⋮----
 identity = f"observation:{item.id}"
 ⋮----
@@ -8760,7 +8786,9 @@ planner_intelligence = None
 ⋮----
 identity_access = summarize_identity_access_differentials(graph)
 htb_cross_lab_learning = None
-scanner_memories = memories
+# Scanner selection must not learn from technique evidence belonging
+# to a different origin in a multi-asset campaign.
+scanner_memories = build_learning_memory(
 scanner_worker_outcomes = worker_outcomes
 ⋮----
 htb_cross_lab_learning = {
@@ -20906,88 +20934,6 @@ def test_classic_and_explainable_rankings_share_severity_order()
 ⋮----
 classic = rank_findings(findings, graph)
 explainable = rank_findings_explainable(
-```
-
-## File: tests/test_learning_memory.py
-```python
-def test_learning_memory_aggregates_only_explicit_outcomes()
-⋮----
-graph = ObservationGraph()
-⋮----
-memories = build_learning_memory(graph)
-⋮----
-memory = memories[0]
-⋮----
-def test_learning_memory_is_bounded_and_deterministic()
-⋮----
-first = build_learning_memory(graph, limit=2)
-second = build_learning_memory(graph, limit=2)
-⋮----
-def test_learning_memory_route_is_exposed(tmp_path, monkeypatch)
-⋮----
-db = str(tmp_path / "db.sqlite3")
-artifacts = str(tmp_path / "artifacts")
-⋮----
-campaign = Campaign(
-store = Storage(db, artifacts)
-⋮----
-result = campaign_learning_memory(campaign.id)
-⋮----
-def test_learning_memory_rejects_unbounded_limits()
-⋮----
-def test_worker_outcome_memory_excludes_payloads_and_errors()
-⋮----
-event = worker_outcome_event(
-⋮----
-summary = summarize_worker_outcomes([{**event, "at": "t1"}])
-⋮----
-def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits()
-⋮----
-def test_worker_summary_counts_one_final_state_per_job()
-⋮----
-def event(status, *, job_id="job-1", kind="nuclei_scan")
-⋮----
-summary = summarize_worker_outcomes(
-⋮----
-def test_worker_summary_does_not_merge_different_job_kinds()
-⋮----
-summary = summarize_worker_outcomes([
-⋮----
-def test_invalid_worker_events_cannot_inflate_recovery_failure_counts()
-⋮----
-events = [
-summary = summarize_worker_outcomes(events)
-⋮----
-def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count()
-⋮----
-outcomes = summarize_worker_outcomes(events)
-feedback = build_no_finding_recovery(
-⋮----
-metadata = {"technique": "scanner:nuclei", "outcome": outcome}
-⋮----
-def test_technique_memory_deduplicates_multiple_observations_from_same_job()
-⋮----
-memory = build_learning_memory(graph)[0]
-⋮----
-def test_contradictory_job_results_are_inconclusive_regardless_of_order()
-⋮----
-records = [
-⋮----
-def test_distinct_job_ids_remain_independent_technique_attempts()
-⋮----
-def test_legacy_observations_without_job_id_keep_independent_evidence()
-⋮----
-def test_malformed_job_id_cannot_create_extra_technique_confidence()
-⋮----
-def test_worker_completed_state_survives_late_failed_and_queued_events()
-⋮----
-result = summarize_worker_outcomes(events)
-⋮----
-def test_failed_job_without_completion_can_still_be_requeued()
-⋮----
-def test_terminal_worker_state_prevents_false_scanner_instability()
-⋮----
-adaptation = adapt_scanner_engines(("nuclei", "strix"), [], outcomes)
 ```
 
 ## File: tests/test_live_activation_profile.py
