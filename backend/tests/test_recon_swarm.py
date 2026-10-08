@@ -196,7 +196,14 @@ def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypat
     assert feedback["recommended_task_kinds"][:2] == [
         "map_forms", "detect_technology"
     ]
-    assert result["tasks"][0]["kind"] == "map_forms"
+    adjustments = {
+        item["kind"]: item
+        for item in result["diff_priority"]["adjustments"]
+    }
+    assert adjustments["map_forms"]["no_finding_boost"] == 24
+    assert adjustments["detect_technology"]["no_finding_boost"] == 16
+    assert adjustments["map_endpoints"]["no_finding_boost"] == 8
+    assert adjustments["map_forms"]["effective_priority"] > 70
     assert result["diff_priority"]["new_tasks_created"] is False
     assert all(item["same_origin_only"] is True for item in result["tasks"])
     assert all(set(item["allowed_methods"]) <= {"GET", "HEAD"} for item in result["tasks"])
