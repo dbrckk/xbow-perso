@@ -225,3 +225,206 @@ def test_coverage_priority_never_changes_non_scan_action():
 
     assert adjusted == action
     assert signal["applied"] is False
+
+
+def test_completed_scan_duplicates_do_not_inflate_rotation_guidance():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index in range(4):
+        graph.add(
+            Observation(
+                f"scan:duplicate:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "same-job",
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["duplicate_scan_observations"] == 3
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
+    assert coverage["dimensions"]["diminishing_returns"] == 0.0
+    assert build_coverage_guidance(coverage)["focus"] != "surface_rotation"
+
+
+def test_only_in_scope_linked_scan_evidence_contributes_to_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:other",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:b",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-other",
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:unlinked",
+            "evidence",
+            "completed",
+            "nuclei",
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-unknown",
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 2
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+
+    graph.add(
+        Observation(
+            "scan:in-scope",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-a",
+            },
+        )
+    )
+    updated = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert updated["evidence"]["completed_scans"] == 1
+    assert updated["evidence"]["untrusted_scan_observations"] == 2
+    assert updated["evidence"]["scanner_sources"] == ["nuclei"]
+
+
+def test_single_asset_legacy_completed_scan_remains_compatible():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:legacy",
+            "evidence",
+            "completed",
+            "nuclei",
+            metadata={"phase": "scan", "status": "completed"},
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
+
+
+def test_scan_with_conflicting_asset_ancestors_is_not_trusted():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:both",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a", "asset:b"),
+            metadata={"phase": "scan", "status": "completed", "job_id": "both"},
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_completed_scan_through_endpoint_ancestry_is_counted():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:linked",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:a",),
+            metadata={"phase": "scan", "status": "completed", "job_id": "linked"},
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert coverage["evidence"]["completed_scans"] == 1
+
+
+def test_invalid_scan_job_identifiers_do_not_inflate_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for index, job_id in enumerate(("", "bad\njob", 123, "x" * 129)):
+        graph.add(
+            Observation(
+                f"scan:invalid:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 4
