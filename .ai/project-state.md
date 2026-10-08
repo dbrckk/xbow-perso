@@ -39,19 +39,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T13:44:38Z
+Generated: 2026-10-08T13:51:18Z
 
 ### Git
 - Branch: `main`
-- Head: `aa207080b6f7`
-- Commit date: 2026-10-08T15:44:26+02:00
-- Commit: fix(vuln): reject unscoped fingerprints in asset graphs
+- Head: `00144b5cfc6a`
+- Commit date: 2026-10-08T15:51:06+02:00
+- Commit: fix(vuln): reject conflicting asset ancestry in fingerprints
 - Tracked files: 681
 
 ### Recently changed files
 - `backend/app/technology_fingerprint_intelligence.py`
-- `backend/tests/test_finding_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
+- `backend/tests/test_finding_intelligence.py`
 - `backend/app/finding_intelligence.py`
 - `backend/app/cve_advisory_consensus.py`
 - `backend/tests/test_cve_advisory_consensus.py`
@@ -59,10 +59,6 @@ Generated: 2026-10-08T13:44:38Z
 - `backend/app/cve_advisory_loader.py`
 - `backend/tests/test_cve_advisory_catalog.py`
 - `backend/tests/test_cve_advisory_loader.py`
-- `backend/app/deployment_preflight.py`
-- `backend/app/main.py`
-- `backend/tests/test_deployment_preflight.py`
-- `backend/tests/test_runtime_capabilities.py`
 
 ### Project signals
 - `pyproject.toml`

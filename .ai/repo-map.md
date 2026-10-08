@@ -14885,6 +14885,16 @@ port = 443
 ⋮----
 port = 80
 ⋮----
+def _asset_identity(value: object) -> tuple[str, str | None, int | None] | None
+⋮----
+scheme = parsed.scheme.lower() or None
+⋮----
+def _compatible_asset_identity(direct_value: object, graph_value: object) -> bool
+⋮----
+"""Compare known origin components without guessing unspecified ones."""
+direct = _asset_identity(direct_value)
+linked = _asset_identity(graph_value)
+⋮----
 items = {item.id: item for item in graph.values()}
 pending = (
 seen: set[str] = set()
@@ -14899,9 +14909,13 @@ asset_values = tuple(
 asset_keys = tuple(
 ⋮----
 keys: set[str] = set()
-direct = _asset_key(getattr(finding, "asset", ""))
+direct_value = str(getattr(finding, "asset", "") or "").strip()
+direct = _asset_key(direct_value)
 ⋮----
 finding_id = str(getattr(finding, "id", "") or "")
+⋮----
+# Declared asset and graph lineage disagree: do not merge
+# their keys into a false corroboration.
 ⋮----
 finding_keys = set(_finding_asset_keys(finding, graph))
 scoped_present = any(item.asset_values for item in fingerprints)
@@ -26021,6 +26035,16 @@ def test_unscoped_fingerprint_is_rejected_even_for_single_graph_asset()
 def test_unscoped_legacy_fingerprint_remains_supported_without_graph_assets()
 ⋮----
 graph = _graph()
+⋮----
+def test_mismatched_declared_and_linked_asset_never_matches_fingerprint()
+⋮----
+def test_mismatched_http_https_origin_does_not_reuse_technology()
+⋮----
+def test_linked_hostname_only_can_match_explicit_https_origin()
+⋮----
+def test_multiple_inconsistent_graph_ancestors_fail_closed()
+⋮----
+def test_different_explicit_ports_cannot_share_fingerprint_evidence()
 ````
 
 ## File: backend/tests/test_validation_priority.py

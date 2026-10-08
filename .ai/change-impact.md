@@ -1,11 +1,10 @@
 # Change impact
 
-Base: e4bbc956d46c06ba36bcff9e40c9ca87c3a9f40f
-Head: aa207080b6f712dc0126d9768e0077158e21015f
+Base: ee109bc8702ccc04fffbdff304f570c225183357
+Head: 00144b5cfc6a74f7a4101183e665046eb3879c78
 
 ## Changed files
 - M backend/app/technology_fingerprint_intelligence.py
-- M backend/tests/test_finding_intelligence.py
 - M backend/tests/test_technology_fingerprint_intelligence.py
 
 ## Affected areas
