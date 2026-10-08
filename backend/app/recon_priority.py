@@ -65,6 +65,7 @@ class ReconPriorityAdjustment:
     confidence_factor: float
     high_value_boost: int
     no_finding_boost: int
+    no_finding_penalty: int
     high_value_families: tuple[str, ...]
     signals: tuple[str, ...]
     historical_signals: tuple[str, ...]
@@ -226,22 +227,47 @@ def prioritize_recon_tasks(
     )
 
     recommended_kinds = ()
-    if (
+    exhausted_kinds: frozenset[str] = frozenset()
+    valid_feedback = (
         isinstance(no_finding_feedback, dict)
-        and no_finding_feedback.get("state") == "recovery_advisory"
+        and no_finding_feedback.get("state") in {
+            "recovery_advisory", "no_supported_recovery_task"
+        }
         and no_finding_feedback.get("advisory_only") is True
         and no_finding_feedback.get("may_expand_scope") is False
         and no_finding_feedback.get("may_increase_request_budget") is False
-    ):
-        raw_kinds = no_finding_feedback.get("recommended_task_kinds")
-        if isinstance(raw_kinds, (list, tuple)):
-            recommended_kinds = tuple(
-                dict.fromkeys(
-                    kind
-                    for kind in raw_kinds[:3]
-                    if isinstance(kind, str) and kind in _TASK_SIGNALS
-                )
+        and no_finding_feedback.get("may_enable_exploitation") is False
+        and no_finding_feedback.get("may_change_execution_gate") is False
+    )
+    if valid_feedback:
+        raw_exhausted = no_finding_feedback.get("exhausted_task_kinds")
+        raw_reopened = no_finding_feedback.get("reopened_task_kinds")
+        reopened = (
+            set(raw_reopened)
+            if isinstance(raw_reopened, (list, tuple))
+            and all(isinstance(kind, str) for kind in raw_reopened[:25])
+            else set()
+        )
+        if isinstance(raw_exhausted, (list, tuple)):
+            exhausted_kinds = frozenset(
+                kind
+                for kind in raw_exhausted[:25]
+                if isinstance(kind, str)
+                and kind in _TASK_SIGNALS
+                and kind not in reopened
             )
+        if no_finding_feedback.get("state") == "recovery_advisory":
+            raw_kinds = no_finding_feedback.get("recommended_task_kinds")
+            if isinstance(raw_kinds, (list, tuple)):
+                recommended_kinds = tuple(
+                    dict.fromkeys(
+                        kind
+                        for kind in raw_kinds[:3]
+                        if isinstance(kind, str)
+                        and kind in _TASK_SIGNALS
+                        and kind not in exhausted_kinds
+                    )
+                )
 
     adjusted: list[ReconTask] = []
     audit: list[ReconPriorityAdjustment] = []
@@ -272,17 +298,25 @@ def prioritize_recon_tasks(
             20,
             diff_boost + history_boost + temporal_boost,
         )
+        is_exhausted = task.kind in exhausted_kinds
         no_finding_boost = (
             max(0, 24 - 8 * recommended_kinds.index(task.kind))
-            if task.kind in recommended_kinds
+            if task.kind in recommended_kinds and not is_exhausted
             else 0
         )
         raw_boost = min(
             25,
             baseline_boost + high_value_boost + no_finding_boost,
         )
-        boost = min(25, int(round(raw_boost * confidence_factor)))
-        effective = min(100, int(task.priority) + boost)
+        boost = (
+            0
+            if is_exhausted
+            else min(25, int(round(raw_boost * confidence_factor)))
+        )
+        # Priority/order only: an exhausted task is still visible for manual
+        # review but cannot win new priority from stale discovery signals.
+        no_finding_penalty = min(20, max(0, int(task.priority))) if is_exhausted else 0
+        effective = max(0, min(100, int(task.priority) + boost - no_finding_penalty))
         reason = task.reason
         active = tuple(kind for kind in signals if counts.get(kind, 0) > 0)
         historical_active = tuple(
@@ -314,6 +348,9 @@ def prioritize_recon_tasks(
                 + ")"
             )
 
+        if no_finding_penalty:
+            reason += "; already completed after a negative scan; manual review before repetition"
+
         updated = replace(task, priority=effective, reason=reason)
         # Fail closed if any field beyond the intended ordering metadata changed.
         if (
@@ -340,6 +377,7 @@ def prioritize_recon_tasks(
                 confidence_factor=round(confidence_factor, 4),
                 high_value_boost=high_value_boost,
                 no_finding_boost=no_finding_boost,
+                no_finding_penalty=no_finding_penalty,
                 high_value_families=high_value_families,
                 signals=active,
                 historical_signals=historical_active,
