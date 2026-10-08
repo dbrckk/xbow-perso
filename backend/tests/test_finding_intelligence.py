@@ -1270,6 +1270,7 @@ def test_parallel_nvd_osv_identities_are_not_treated_as_consensus():
         "parallel_unbound_identities"
     )
     assert row["cve_advisory_consensus"]["cross_source_agreement"] is False
+    assert row["cve_advisory"]["matched"] is False
     assert "parallel_unbound_advisory_identities" in row["technology"][
         "ambiguity_reasons"
     ]
@@ -1277,3 +1278,67 @@ def test_parallel_nvd_osv_identities_are_not_treated_as_consensus():
         "ambiguous_version_candidate"
     )
     assert result["summary"]["parallel_unbound_advisory_identities"] == 1
+
+
+def test_single_named_catalog_can_supply_verified_range_without_legacy_slot():
+    finding = _finding(
+        "f1",
+        "https://example.test/a",
+        severity="critical",
+    )
+    finding.title = "django request parsing issue"
+    finding.vendor = "djangoproject"
+    finding.product = "django"
+    finding.package_ecosystem = None
+    finding.package_name = None
+    finding.package_version = None
+    finding.cve_ids = ["CVE-2026-54321"]
+    finding.evidence = ["cve-id:CVE-2026-54321"]
+    finding.affected_version_ranges = []
+    finding.discovered_by = "nuclei"
+
+    graph = _graph()
+    graph.add(
+        Observation(
+            "tech:django-named-source",
+            "technology",
+            "django/5.1.4",
+            "httpx",
+            metadata={
+                "confidence": 0.95,
+                "observed_at": "2026-10-07T00:00:00+00:00",
+            },
+        )
+    )
+    nvd = build_cve_advisory_catalog(
+        {
+            "count": 1,
+            "entries": [
+                {
+                    "cve_id": "CVE-2026-54321",
+                    "vendor": "djangoproject",
+                    "product": "django",
+                    "affected_version_ranges": [">=5.0,<5.2.0"],
+                }
+            ],
+        },
+        source_name="nvd-cve-api-v2",
+        source_verified=True,
+    )
+
+    result = build_finding_intelligence(
+        [finding],
+        graph,
+        cve_advisory_catalogs=(nvd,),
+    )
+    row = result["findings"][0]
+
+    assert row["cve_advisory"]["matched"] is True
+    assert row["cve_advisory"]["source_name"] == "nvd-cve-api-v2"
+    assert row["affected_version_range"]["state"] == "affected"
+    assert row["affected_version_range"][
+        "trusted_affected_version_supported"
+    ] is True
+    assert row["affected_version_range"]["range_source"] == (
+        "nvd-cve-api-v2:CVE-2026-54321"
+    )
