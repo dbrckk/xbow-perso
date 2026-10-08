@@ -51,6 +51,7 @@ def _completed_scans_with_provenance(
         return bool(linked_assets) and linked_assets <= approved_asset_ids
 
     jobs: dict[str, list[Any]] = {}
+    untrusted_job_ids: set[str] = set()
     untrusted = 0
     accepted = 0
     for observation in graph.by_kind("evidence"):
@@ -58,9 +59,6 @@ def _completed_scans_with_provenance(
             observation.metadata.get("phase") != "scan"
             or observation.metadata.get("status") != "completed"
         ):
-            continue
-        if not trustworthy_lineage(observation):
-            untrusted += 1
             continue
         raw_job_id = observation.metadata.get("job_id")
         if raw_job_id is None:
@@ -74,8 +72,21 @@ def _completed_scans_with_provenance(
         else:
             untrusted += 1
             continue
+        if not trustworthy_lineage(observation):
+            untrusted += 1
+            if identity.startswith("job:"):
+                # A job documented on incompatible assets cannot be
+                # credited through just its convenient in-scope record.
+                untrusted_job_ids.add(identity)
+            continue
         accepted += 1
         jobs.setdefault(identity, []).append(observation)
+
+    for identity in untrusted_job_ids:
+        if identity in jobs:
+            count = len(jobs.pop(identity))
+            accepted -= count
+            untrusted += count
 
     representatives = [
         sorted(
