@@ -1012,3 +1012,145 @@ def test_healthy_multi_host_worker_summary_does_not_claim_attribution():
     assert result.worker_instability_applied is False
     assert result.worker_health_attribution == "unattributed_multi_host"
     assert not any("cannot be attributed" in reason for reason in result.reasons)
+
+
+def _record_completed_scan(
+    graph: ObservationGraph,
+    *,
+    observation_id: str,
+    job_id: str,
+    source: str,
+    asset_id: str = "asset:a",
+) -> None:
+    graph.add(
+        Observation(
+            observation_id,
+            "evidence",
+            "scan-complete",
+            source,
+            parent_ids=(asset_id,),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": job_id,
+            },
+        )
+    )
+
+
+def test_conflicting_sources_for_same_scan_job_do_not_count_as_independent():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:one", job_id="shared", source="nuclei"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:two", job_id="shared", source="strix"
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 0
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "scan_source_unverified"
+    assert result.recommended_task_kinds == ()
+    assert result.to_dict()["ambiguous_scan_source_jobs"] == 1
+    assert result.negative_result_proves_safe is False
+
+
+def test_identical_repeated_scanner_source_for_one_job_counts_once():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:one", job_id="shared", source="nuclei"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:two", job_id="shared", source="nuclei"
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 1
+    assert result.ambiguous_scan_source_jobs == 0
+    assert result.state == "recovery_advisory"
+
+
+def test_distinct_jobs_with_same_source_do_not_inflate_source_diversity():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:one", job_id="job-1", source="nuclei"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:two", job_id="job-2", source="nuclei"
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 2
+    assert result.scanner_source_count == 1
+    assert result.ambiguous_scan_source_jobs == 0
+    assert result.recommended_task_kinds
+
+
+def test_ambiguous_scan_does_not_hide_separate_trusted_scan():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:one", job_id="shared", source="nuclei"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:two", job_id="shared", source="strix"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:three", job_id="separate", source="nuclei"
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 2
+    assert result.scanner_source_count == 1
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "recovery_advisory"
+    assert any("contradictory" in reason for reason in result.reasons)
+
+
+def test_missing_scanner_source_requires_review_not_recovery_escalation():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:unknown", job_id="job-a", source=""
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 0
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "scan_source_unverified"
+    assert result.recommended_task_kinds == ()
+    assert result.may_enable_exploitation is False
+    assert result.may_increase_request_budget is False
+
+
+def test_blank_duplicate_source_cannot_be_hidden_by_named_reporter():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:good", job_id="job-1", source="nuclei"
+    )
+    _record_completed_scan(
+        graph, observation_id="scan:blank", job_id="job-1", source=" "
+    )
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 0
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "scan_source_unverified"
+    assert result.recommended_task_kinds == ()
+
+
+def test_oversized_scan_job_id_is_not_trusted_as_independent_source():
+    graph = _graph(scans=0)
+    _record_completed_scan(
+        graph, observation_id="scan:long", job_id="a" * 129, source="nuclei"
+    )
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.completed_scan_count == 1
+    assert result.scanner_source_count == 0
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "scan_source_unverified"
+    assert result.may_increase_request_budget is False
