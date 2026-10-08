@@ -7636,6 +7636,7 @@ reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
 reopened_task_kinds: tuple[str, ...] = ()
 ambiguous_scan_source_jobs: int = 0
+trusted_completed_scan_count: int = 0
 worker_health_attribution: str = "campaign_aggregate"
 worker_instability_observed: bool = False
 worker_instability_applied: bool = False
@@ -7704,6 +7705,7 @@ source = item.source.strip() if isinstance(item.source, str) else ""
 cross_origin_count = sum(
 ⋮----
 trusted_sources: set[str] = set()
+trusted_job_count = 0
 ambiguous = cross_origin_count
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
@@ -21265,6 +21267,16 @@ result = _feedback(graph, target_url="https://example.test")
 def test_same_origin_reports_of_one_job_remain_one_trusted_scan()
 ⋮----
 def test_scans_exclusively_on_another_origin_are_not_target_ambiguities()
+⋮----
+def test_ambiguous_scan_jobs_do_not_trigger_premature_surface_rotation()
+⋮----
+def test_three_trusted_scans_can_trigger_coverage_rotation()
+⋮----
+result = _feedback(_graph(scans=3), target_host="example.test")
+⋮----
+def test_only_ambiguous_scan_jobs_require_manual_source_review()
+⋮----
+def test_cross_origin_ambiguity_does_not_reduce_separate_trusted_job_count()
 ```
 
 ## File: tests/test_nuclei_preflight.py

@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T20:24:01Z
+Generated: 2026-10-08T20:28:54Z
 
 ### Git
 - Branch: `main`
-- Head: `2b08a3462464`
-- Commit date: 2026-10-08T22:23:48+02:00
-- Commit: fix(recovery): reject scan jobs spanning conflicting target origins
+- Head: `647ee83bd872`
+- Commit date: 2026-10-08T22:28:44+02:00
+- Commit: fix(recovery): rotate coverage only after verified negative scans
 - Tracked files: 685
 
 ### Recently changed files
