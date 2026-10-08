@@ -136,3 +136,30 @@ def test_negative_memory_cannot_expand_scanner_configuration():
     assert result.configured_engines == ("nuclei",)
     assert result.may_expand_configuration is False
     assert result.advisory_only is True
+
+
+def test_negative_only_memory_does_not_out_rank_configured_engine_order():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [_memory("nuclei", failures=10, confidence=1.0)],
+        {},
+    )
+
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.ranked_engines == ("strix", "nuclei")
+    assert result.suppressed_engines == ()
+
+
+def test_positive_scanner_evidence_can_improve_ranking_without_new_engines():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [
+            _memory("strix", failures=9, confidence=1.0),
+            _memory("nuclei", successes=2, confidence=0.4, success_rate=1.0),
+        ],
+        {},
+    )
+
+    assert result.ranked_engines == ("nuclei", "strix")
+    assert result.configured_engines == ("strix", "nuclei")
+    assert result.may_expand_configuration is False
