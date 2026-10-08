@@ -14913,15 +14913,46 @@ def target_identity(campaign: dict[str, Any]) -> str
 ⋮----
 material = f"{host}\x1f{authorization}".encode("utf-8")
 ⋮----
+def _query_parameter_names_only(query: str) -> str
+⋮----
+"""Preserve coverage-relevant parameter names without retaining values."""
+⋮----
+entries = parse_qsl(
+⋮----
+# Oversized/unparseable parameter lists must never fall back to raw input.
+⋮----
+keys = sorted({
+⋮----
+def _safe_absolute_url(value: str) -> str
+⋮----
+parsed = urlsplit(value)
+⋮----
+port = parsed.port
+⋮----
+safe_host = f"[{host}]" if ":" in host else host
+netloc = safe_host + (f":{port}" if port is not None else "")
+⋮----
 def _canonical_value(kind: str, value: str) -> str
 ⋮----
 value = str(value).strip()
 ⋮----
-parsed = urlsplit(value)
+# Assets may arrive as bare hosts or full URLs. Never retain their
+# query, fragment, userinfo, or path in cross-campaign memory.
 ⋮----
-port = f":{parsed.port}" if parsed.port else ""
-netloc = host + port
+parsed = urlsplit(value if "://" in value else f"//{value}")
+⋮----
+authority = safe_host + (f":{port}" if port is not None else "")
+⋮----
+fields = value.split(None, 1)
+⋮----
+parsed = urlsplit(action)
+⋮----
 path = parsed.path or "/"
+query = _query_parameter_names_only(parsed.query)
+⋮----
+safe_action = _safe_absolute_url(action)
+⋮----
+# Legacy non-URL form labels must not preserve embedded query values.
 ⋮----
 def _campaign_surface(records: list[dict[str, Any]], *, max_nodes: int) -> dict[tuple[str, str], dict[str, Any]]
 ⋮----
@@ -23326,6 +23357,9 @@ def test_recon_plan_reorders_existing_tasks_after_null_scans(tmp_path, monkeypat
 feedback = result["no_finding_feedback"]
 ⋮----
 adjustments = {
+⋮----
+# Surface diff, temporal, confidence and target memory must also redact
+# parameter values before the full API response is returned.
 ````
 
 ## File: backend/tests/test_recon_worker.py
@@ -26235,6 +26269,20 @@ doc = campaign(
 ⋮----
 form = store.put_observation(
 waf = store.put_observation(
+⋮----
+def test_historical_query_values_are_redacted_but_parameter_names_are_kept()
+⋮----
+values = {item["value"] for item in memory["nodes"]}
+⋮----
+def test_query_value_changes_do_not_inflate_historical_novelty()
+⋮----
+def test_malformed_and_credentialed_endpoint_observations_are_ignored()
+⋮----
+def test_large_query_values_are_not_reflected_on_parse_limit()
+⋮----
+query = "&".join(
+⋮----
+def test_ipv6_origin_keeps_valid_brackets_without_query_values()
 ````
 
 ## File: backend/tests/test_technology_fingerprint_intelligence.py

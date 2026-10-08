@@ -1,16 +1,12 @@
 # Change impact
 
-Base: 45cf7da5c3f2afd64dfdf368392687b8ed43591a
-Head: 15e07482f7bba60684b2ef0da8700b8094bffaaa
+Base: 0fdf88721dcf415d828b2652be9794ad73d06168
+Head: 6c870b7d5d84287e00426034af343dac8840df1e
 
 ## Changed files
-- M backend/app/adaptive_cycle.py
-- A backend/app/no_finding_recovery.py
-- M backend/app/recon_priority.py
-- M backend/app/recon_swarm.py
-- A backend/tests/test_no_finding_recovery.py
-- M backend/tests/test_recon_priority.py
+- M backend/app/target_memory.py
 - M backend/tests/test_recon_swarm.py
+- M backend/tests/test_target_memory.py
 
 ## Affected areas
 - backend

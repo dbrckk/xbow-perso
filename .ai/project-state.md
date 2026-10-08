@@ -39,26 +39,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T16:45:20Z
+Generated: 2026-10-08T16:51:49Z
 
 ### Git
 - Branch: `main`
-- Head: `15e07482f7bb`
-- Commit date: 2026-10-08T18:45:09+02:00
-- Commit: feat(planner): recover intelligently after negative authorized scans
+- Head: `6c870b7d5d84`
+- Commit date: 2026-10-08T18:51:37+02:00
+- Commit: security(memory): redact historical URL query values
 - Tracked files: 683
 
 ### Recently changed files
+- `backend/app/target_memory.py`
+- `backend/tests/test_recon_swarm.py`
+- `backend/tests/test_target_memory.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/recon_priority.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_recon_priority.py`
-- `backend/tests/test_recon_swarm.py`
 - `backend/app/technology_fingerprint_intelligence.py`
 - `backend/tests/test_technology_fingerprint_intelligence.py`
-- `backend/tests/test_finding_intelligence.py`
 
 ### Project signals
 - `pyproject.toml`
