@@ -8244,6 +8244,7 @@ reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
 reopened_task_kinds: tuple[str, ...] = ()
 ambiguous_scan_source_jobs: int = 0
+unreconciled_scan_reports: int = 0
 trusted_completed_scan_count: int = 0
 worker_health_attribution: str = "campaign_aggregate"
 worker_instability_observed: bool = False
@@ -8369,6 +8370,7 @@ host = asset_host_by_id.get(parent.id)
 excluded_endpoints = [
 ⋮----
 legacy_single_host = False
+scan_filter: Callable[[Any], bool] | None = None
 ⋮----
 asset_records = surface["assets"]
 # Legacy scan observations sometimes omit ancestry. They can only
@@ -8376,6 +8378,17 @@ asset_records = surface["assets"]
 legacy_single_host = bool(asset_records) and all(
 ⋮----
 def scan_matches_target(item: Any) -> bool
+⋮----
+scan_filter = scan_matches_target
+⋮----
+# A completed worker may report findings before their records reach the
+# campaign. Treat an explicitly positive or malformed finding count as
+# an ingestion/reconciliation issue, never as evidence of a null scan.
+# Older evidence without this field remains supported but is not upgraded
+# into proof of safety.
+unreconciled_scan_reports = 0
+⋮----
+reported = item.metadata["findings"]
 ⋮----
 # Orphan forms or forms from a different asset do not close a gap.
 ⋮----
@@ -8418,6 +8431,8 @@ state = "findings_present"
 state = "scope_unverified"
 ⋮----
 state = "execution_unstable"
+⋮----
+state = "scan_findings_unreconciled"
 ⋮----
 state = "no_completed_scans"
 ⋮----
@@ -21885,6 +21900,16 @@ result = _feedback(_graph(scans=3), target_host="example.test")
 def test_only_ambiguous_scan_jobs_require_manual_source_review()
 ⋮----
 def test_cross_origin_ambiguity_does_not_reduce_separate_trusted_job_count()
+⋮----
+def test_positive_scan_count_with_no_recorded_finding_blocks_negative_recovery()
+⋮----
+def test_explicit_zero_finding_count_retains_safe_recovery_guidance()
+⋮----
+def test_malformed_finding_counter_requires_ingestion_reconciliation()
+⋮----
+def test_other_origin_scan_finding_count_does_not_block_target_recovery()
+⋮----
+def test_existing_findings_do_not_get_misclassified_as_missing_ingestion()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py

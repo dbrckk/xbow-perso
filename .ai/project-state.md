@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T20:28:54Z
+Generated: 2026-10-08T21:24:51Z
 
 ### Git
 - Branch: `main`
-- Head: `647ee83bd872`
-- Commit date: 2026-10-08T22:28:44+02:00
-- Commit: fix(recovery): rotate coverage only after verified negative scans
+- Head: `b98f73b7a56c`
+- Commit date: 2026-10-08T23:24:40+02:00
+- Commit: fix(recovery): reconcile scanner findings before negative-result learning
 - Tracked files: 685
 
 ### Recently changed files
@@ -54,8 +54,6 @@ Generated: 2026-10-08T20:28:54Z
 - `backend/app/adaptive_cycle.py`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`
