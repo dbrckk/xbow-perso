@@ -39,26 +39,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T19:00:27Z
+Generated: 2026-10-08T19:12:26Z
 
 ### Git
 - Branch: `main`
-- Head: `047c9b964a04`
-- Commit date: 2026-10-08T21:00:16+02:00
-- Commit: fix(coverage): do not report full coverage when no surface is observed
+- Head: `3584bc334532`
+- Commit date: 2026-10-08T21:12:13+02:00
+- Commit: fix(recovery): verify scan-source provenance before negative feedback
 - Tracked files: 685
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/tests/test_adaptive_cycle.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
-- `backend/app/learning_memory.py`
-- `backend/tests/test_learning_memory.py`
 
 ### Project signals
 - `pyproject.toml`

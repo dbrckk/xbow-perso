@@ -8201,6 +8201,7 @@ scope_integrity_issues: int
 recommended_task_kinds: tuple[str, ...]
 reasons: tuple[str, ...]
 exhausted_task_kinds: tuple[str, ...] = ()
+ambiguous_scan_source_jobs: int = 0
 worker_health_attribution: str = "campaign_aggregate"
 worker_instability_observed: bool = False
 worker_instability_applied: bool = False
@@ -8218,12 +8219,24 @@ result = asdict(self)
 """Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
 ⋮----
-# Multiple observations for one worker job must not inflate negative yield.
-scan_keys: set[str] = set()
-sources: set[str] = set()
+"""Count completed jobs without treating duplicate reporters as independent.
+
+    A scanner job contributes an independent source only if *all* completed
+    observations for that job name exactly one non-empty source.
+    """
+sources_by_job: dict[str, set[str]] = {}
+invalid_jobs: set[str] = set()
 ⋮----
-job_id = str(item.metadata.get("job_id") or "").strip()
+raw_job_id = item.metadata.get("job_id")
+job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
+⋮----
+key = f"invalid:{item.id}"
+⋮----
 key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+source = item.source.strip() if isinstance(item.source, str) else ""
+⋮----
+trusted_sources: set[str] = set()
+ambiguous = 0
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
 ⋮----
@@ -8318,6 +8331,8 @@ state = "scope_unverified"
 state = "execution_unstable"
 ⋮----
 state = "no_completed_scans"
+⋮----
+state = "scan_source_unverified"
 ⋮----
 state = "recovery_advisory"
 ⋮----
@@ -21678,6 +21693,22 @@ def test_single_observed_host_still_blocks_recovery_on_real_worker_failure()
 def test_legacy_campaign_wide_health_retains_conservative_gate()
 ⋮----
 def test_healthy_multi_host_worker_summary_does_not_claim_attribution()
+⋮----
+def test_conflicting_sources_for_same_scan_job_do_not_count_as_independent()
+⋮----
+result = _feedback(graph, target_host="example.test")
+⋮----
+def test_identical_repeated_scanner_source_for_one_job_counts_once()
+⋮----
+def test_distinct_jobs_with_same_source_do_not_inflate_source_diversity()
+⋮----
+def test_ambiguous_scan_does_not_hide_separate_trusted_scan()
+⋮----
+def test_missing_scanner_source_requires_review_not_recovery_escalation()
+⋮----
+def test_blank_duplicate_source_cannot_be_hidden_by_named_reporter()
+⋮----
+def test_oversized_scan_job_id_is_not_trusted_as_independent_source()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
