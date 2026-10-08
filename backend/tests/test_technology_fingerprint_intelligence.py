@@ -934,3 +934,42 @@ def test_malformed_graph_asset_does_not_enable_unscoped_legacy_fingerprint():
     assert match_finding_technology(
         finding, build_technology_fingerprints(graph), graph
     ) == ()
+
+
+def test_valid_and_malformed_technology_ancestors_fail_closed():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:valid", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "asset:invalid",
+            "asset",
+            "https://[invalid-ipv6",
+            "recon",
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:f1",
+            "finding",
+            "f1",
+            "nuclei",
+            parent_ids=("asset:valid",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:both",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:valid", "asset:invalid"),
+        )
+    )
+    finding = _finding("nginx request parsing discrepancy")
+    finding.asset = "https://example.test"
+
+    assert match_finding_technology(
+        finding, build_technology_fingerprints(graph), graph
+    ) == ()
