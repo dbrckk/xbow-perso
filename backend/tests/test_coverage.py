@@ -1138,3 +1138,107 @@ def test_scan_report_conflict_outranks_missing_endpoint_provenance():
     assert guidance["recommended_strategy"] == (
         "reconcile_scan_reports_before_replanning"
     )
+
+
+def _two_endpoint_scan_scope_graph():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for index in (1, 2):
+        graph.add(
+            Observation(
+                f"endpoint:{index}",
+                "endpoint",
+                f"https://example.test/api/{index}",
+                "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+    return graph
+
+
+def _record_scan_scope(graph, observation_id, parent_id, job_id):
+    graph.add(
+        Observation(
+            observation_id,
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=(parent_id,),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": job_id,
+                "findings": 0,
+            },
+        )
+    )
+
+
+def test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either():
+    graph = _two_endpoint_scan_scope_graph()
+    _record_scan_scope(graph, "scan:1", "endpoint:1", "shared-job")
+    _record_scan_scope(graph, "scan:2", "endpoint:2", "shared-job")
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert result["evidence"]["completed_scans"] == 1
+    assert result["evidence"]["duplicate_scan_observations"] == 1
+    assert result["evidence"]["scanner_sources"] == ["nuclei"]
+    assert attribution["ambiguous_endpoint_scope_jobs"] == 1
+    assert attribution["documented_scanned_endpoints"] == 0
+    assert attribution["documented_fraction"] is None
+    assert attribution["state"] == "endpoint_scope_unrecorded"
+
+
+def test_consistent_duplicate_reports_preserve_documented_endpoint_scope():
+    graph = _two_endpoint_scan_scope_graph()
+    _record_scan_scope(graph, "scan:1", "endpoint:1", "shared-job")
+    _record_scan_scope(graph, "scan:2", "endpoint:1", "shared-job")
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert result["evidence"]["completed_scans"] == 1
+    assert attribution["ambiguous_endpoint_scope_jobs"] == 0
+    assert attribution["documented_scanned_endpoints"] == 1
+    assert attribution["documented_fraction"] == 0.5
+    assert attribution["state"] == "partial_endpoint_documentation"
+
+
+def test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope():
+    graph = _two_endpoint_scan_scope_graph()
+    _record_scan_scope(graph, "scan:asset", "asset:a", "shared-job")
+    _record_scan_scope(graph, "scan:endpoint", "endpoint:1", "shared-job")
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert result["evidence"]["completed_scans"] == 1
+    assert attribution["ambiguous_endpoint_scope_jobs"] == 1
+    assert attribution["documented_scanned_endpoints"] == 0
+    assert attribution["not_proof_of_complete_scanning"] is True
+
+
+def test_ambiguous_job_does_not_discard_separately_documented_endpoint_job():
+    graph = _two_endpoint_scan_scope_graph()
+    _record_scan_scope(graph, "scan:conflict-1", "endpoint:1", "shared-job")
+    _record_scan_scope(graph, "scan:conflict-2", "endpoint:2", "shared-job")
+    _record_scan_scope(graph, "scan:independent", "endpoint:1", "other-job")
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = result["evidence"]["endpoint_scan_attribution"]
+
+    assert result["evidence"]["completed_scans"] == 2
+    assert attribution["ambiguous_endpoint_scope_jobs"] == 1
+    assert attribution["documented_scanned_endpoints"] == 1
+    assert attribution["documented_fraction"] == 0.5
+    assert attribution["state"] == "partial_endpoint_documentation"

@@ -170,10 +170,11 @@ def _endpoint_scan_attribution(
         )
     }
     items = {item.id: item for item in graph.values()}
-    documented_ids: set[str] = set()
-    for scan in scan_evidence:
+
+    def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]:
         pending = list(scan.parent_ids)
         visited: set[str] = set()
+        endpoints: set[str] = set()
         while pending:
             parent_id = pending.pop()
             if parent_id in visited:
@@ -183,13 +184,48 @@ def _endpoint_scan_attribution(
             if parent is None:
                 continue
             if parent.kind == "endpoint":
-                if parent.id in eligible_ids:
-                    documented_ids.add(parent.id)
-                # A direct endpoint reference is the unit of attribution;
-                # it does not imply scanning neighboring endpoints.
+                endpoints.add(parent.id)
+                # Do not infer another endpoint from the same asset.
                 continue
             if parent.kind != "asset":
                 pending.extend(parent.parent_ids)
+        return frozenset(endpoints)
+
+    reports_by_job: dict[str, list[Any]] = {}
+    for observation in graph.by_kind("evidence"):
+        if (
+            observation.metadata.get("phase") != "scan"
+            or observation.metadata.get("status") != "completed"
+        ):
+            continue
+        job_id = observation.metadata.get("job_id")
+        if (
+            isinstance(job_id, str)
+            and 0 < len(job_id.strip()) <= 128
+            and not any(ord(char) < 32 for char in job_id)
+        ):
+            reports_by_job.setdefault(job_id.strip(), []).append(observation)
+
+    documented_ids: set[str] = set()
+    ambiguous_scope_jobs = 0
+    for scan in scan_evidence:
+        job_id = scan.metadata.get("job_id")
+        reports = (
+            reports_by_job.get(job_id.strip(), [scan])
+            if isinstance(job_id, str)
+            else [scan]
+        )
+        # Job-level completion has already been reconciled. Endpoint scope
+        # is a separate claim: conflicting duplicate reports cannot prove
+        # either endpoint set, nor can an asset-only report corroborate
+        # a report asserting an individual endpoint.
+        endpoint_claims = {
+            explicit_endpoint_ancestry(item) for item in reports
+        }
+        if len(endpoint_claims) != 1:
+            ambiguous_scope_jobs += 1
+            continue
+        documented_ids.update(next(iter(endpoint_claims)) & eligible_ids)
 
     if not scan_evidence:
         state = "no_completed_scan_evidence"
@@ -212,6 +248,7 @@ def _endpoint_scan_attribution(
         "eligible_observed_endpoints": len(eligible_ids),
         "documented_scanned_endpoints": len(documented_ids),
         "documented_fraction": fraction,
+        "ambiguous_endpoint_scope_jobs": ambiguous_scope_jobs,
         "not_proof_of_complete_scanning": True,
     }
 
