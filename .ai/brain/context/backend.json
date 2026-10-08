@@ -2,7 +2,27 @@
   "area": "backend",
   "files": [
     {
-      "path": "backend/tests/test_recon_priority.py",
+      "path": "backend/app/main.py",
+      "reasons": [
+        "dependency-neighbor",
+        "entrypoint",
+        "reverse-dependency-neighbor"
+      ],
+      "score": 575
+    },
+    {
+      "path": "backend/app/attack_surface.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 550
+    },
+    {
+      "path": "backend/tests/test_attack_surface.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -11,29 +31,14 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 595
+      "score": 485
     },
     {
-      "path": "backend/app/recon_priority.py",
+      "path": "backend/app/observation_graph.py",
       "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
       "score": 475
-    },
-    {
-      "path": "backend/app/recon_swarm.py",
-      "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
-      ],
-      "score": 300
     },
     {
       "path": "backend/app/orchestrator.py",
@@ -42,31 +47,83 @@
         "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 225
+      "score": 285
     },
     {
-      "path": "backend/app/main.py",
+      "path": "backend/app/campaign_risk.py",
       "reasons": [
         "dependency-neighbor",
-        "entrypoint",
-        "reverse-dependency-neighbor"
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
       ],
-      "score": 195
+      "score": 245
     },
     {
-      "path": "backend/app/observation_graph.py",
+      "path": "backend/app/red_team_decision.py",
       "reasons": [
-        "dependency-neighbor"
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
       ],
-      "score": 100
+      "score": 240
     },
     {
-      "path": "backend/app/swarm_coordinator.py",
+      "path": "backend/app/campaign_overview.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 210
+    },
+    {
+      "path": "backend/app/red_team_coverage.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 210
+    },
+    {
+      "path": "backend/tests/test_attack_surface_scope.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 190
+    },
+    {
+      "path": "backend/app/coverage.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 165
+    },
+    {
+      "path": "backend/app/no_finding_recovery.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 160
+    },
+    {
+      "path": "backend/app/decision_consensus.py",
       "reasons": [
         "dependency-neighbor",
         "reverse-dependency-neighbor"
       ],
-      "score": 85
+      "score": 135
     },
     {
       "path": "backend/app/adaptive_cycle.py",
@@ -74,63 +131,22 @@
         "dependency-neighbor",
         "reverse-dependency-neighbor"
       ],
-      "score": 80
-    },
-    {
-      "path": "backend/tests/test_swarm_coordinator.py",
-      "reasons": [
-        "reverse-dependency-neighbor"
-      ],
-      "score": 60
+      "score": 115
     },
     {
       "path": "backend/app/autonomy_gate.py",
       "reasons": [
-        "dependency-neighbor"
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
       ],
-      "score": 50
+      "score": 115
     },
     {
       "path": "backend/app/campaign_runtime.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/learning_memory.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/planner_budget.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/repeat_validation.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/surface_confidence.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "backend/app/surface_diff.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
+      "score": 100
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

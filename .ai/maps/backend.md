@@ -1140,6 +1140,8 @@ parameter_names = sorted({name for item in valid_endpoints for name in item["par
 form_input_names = sorted({name for item in valid_forms for name in item["input_names"]})
 unique_urls = {item["url"] for item in valid_endpoints}
 endpoint_sources = Counter(item["source"] for item in valid_endpoints)
+# Invalid imported endpoint/form records are diagnostic data, not
+# independent confirmation of a discovered web surface.
 surface_sources = {
 source_diversity = len(surface_sources)
 enrichment_score = round(

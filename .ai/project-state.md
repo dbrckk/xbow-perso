@@ -39,20 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T22:21:41Z
+Generated: 2026-10-08T22:23:47Z
 
 ### Git
 - Branch: `main`
-- Head: `46e6a5c386e9`
-- Commit date: 2026-10-09T00:21:24+02:00
-- Commit: feat(recon): deprioritize exhausted recovery tasks after null scans
+- Head: `5da444ac9a4f`
+- Commit date: 2026-10-09T00:23:35+02:00
+- Commit: fix(coverage): exclude invalid URL sources from discovery confidence
 - Tracked files: 687
 
 ### Recently changed files
-- `backend/app/recon_priority.py`
-- `backend/tests/test_recon_priority.py`
 - `backend/app/attack_surface.py`
 - `backend/tests/test_attack_surface.py`
+- `backend/app/recon_priority.py`
+- `backend/tests/test_recon_priority.py`
 - `backend/app/learning_memory.py`
 - `backend/app/orchestrator.py`
 - `backend/tests/test_learning_memory.py`
