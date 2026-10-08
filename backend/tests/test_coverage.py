@@ -428,3 +428,33 @@ def test_invalid_scan_job_identifiers_do_not_inflate_coverage():
     )
     assert coverage["evidence"]["completed_scans"] == 0
     assert coverage["evidence"]["untrusted_scan_observations"] == 4
+
+
+def test_same_job_reported_on_out_of_scope_asset_taints_entire_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    for suffix, asset_id in (("a", "asset:a"), ("b", "asset:b")):
+        graph.add(
+            Observation(
+                f"scan:shared:{suffix}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=(asset_id,),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "shared-job",
+                },
+            )
+        )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 2
+    assert coverage["evidence"]["duplicate_scan_observations"] == 0
