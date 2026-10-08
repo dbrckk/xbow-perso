@@ -189,6 +189,7 @@ def _finding_asset_keys(
         return tuple(sorted(keys))
 
     finding_id = str(getattr(finding, "id", "") or "")
+    linked_asset_values: set[str] = set()
     for observation in graph.by_kind("finding"):
         if (
             observation.id == f"finding:{finding_id}"
@@ -199,6 +200,7 @@ def _finding_asset_keys(
                 graph,
                 observation.id,
             )
+            linked_asset_values.update(asset_values)
             if direct_value and any(
                 not _compatible_asset_identity(direct_value, value)
                 for value in asset_values
@@ -211,6 +213,14 @@ def _finding_asset_keys(
                 for value in asset_values
                 if (key := _asset_key(value))
             )
+    if not direct_value and any(
+        not _compatible_asset_identity(left, right)
+        for left in linked_asset_values
+        for right in linked_asset_values
+    ):
+        # Graph-only finding ancestry must also identify one compatible
+        # origin; multiple unrelated parents cannot corroborate each other.
+        return ()
     return tuple(sorted(keys))
 
 
@@ -246,7 +256,9 @@ def filter_fingerprints_for_finding_asset(
                 for value in fingerprint.asset_values
                 if (key := _asset_key(value))
             }
-            if fingerprint_keys & finding_keys:
+            if fingerprint_keys and fingerprint_keys <= finding_keys:
+                # One observation linked to multiple distinct origins
+                # cannot count as evidence for just one of those origins.
                 matches.append(fingerprint)
         return tuple(matches)
 
