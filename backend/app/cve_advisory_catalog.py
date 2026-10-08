@@ -38,6 +38,7 @@ class CveAdvisoryEntry:
 class CveAdvisoryCatalog:
     schema: str
     source_name: str
+    source_authority: str
     source_verified: bool
     source_digest_sha256: str
     entries: tuple[CveAdvisoryEntry, ...]
@@ -154,6 +155,7 @@ def build_cve_advisory_catalog(
     document: Mapping[str, Any],
     *,
     source_name: str,
+    source_authority: str | None = None,
     source_verified: bool = False,
 ) -> CveAdvisoryCatalog:
     if not isinstance(document, Mapping):
@@ -165,6 +167,11 @@ def build_cve_advisory_catalog(
         name="source_name",
         max_len=120,
     )
+    normalized_authority = _text(
+        source_authority or normalized_source,
+        name="source_authority",
+        max_len=120,
+    ).lower()
     raw_entries = document.get("entries")
     if not isinstance(raw_entries, list):
         raise CveAdvisoryCatalogError("advisory entries must be a list")
@@ -252,6 +259,7 @@ def build_cve_advisory_catalog(
     return CveAdvisoryCatalog(
         schema=CVE_ADVISORY_CATALOG_SCHEMA,
         source_name=normalized_source,
+        source_authority=normalized_authority,
         source_verified=bool(source_verified),
         source_digest_sha256=_canonical_digest(document),
         entries=entries,

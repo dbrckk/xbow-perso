@@ -532,3 +532,69 @@ def test_invalid_osv_does_not_disable_valid_nvd_but_marks_set_degraded(
     rendered = str(status)
     assert str(osv_path) not in rendered
     assert "SHA-256 mismatch" in rendered
+
+
+def test_named_sources_expose_stable_authorities(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    nvd_path, nvd_digest = _write_json(
+        tmp_path,
+        "nvd-authority.json",
+        _nvd_document(),
+    )
+    osv_path, osv_digest = _write_json(
+        tmp_path,
+        "osv-authority.json",
+        _osv_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(nvd_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", nvd_digest)
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_PATH", str(osv_path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_OSV_SHA256", osv_digest)
+
+    catalogs, status = load_cve_advisory_catalogs_with_status()
+
+    assert tuple(item.source_authority for item in catalogs) == (
+        "nvd",
+        "osv",
+    )
+    by_kind = {
+        item["source_kind"]: item
+        for item in status["sources"]
+    }
+    assert by_kind["nvd"]["source_authority"] == "nvd"
+    assert by_kind["osv"]["source_authority"] == "osv"
+
+
+def test_legacy_nvd_alias_and_named_nvd_same_snapshot_are_deduplicated(
+    tmp_path,
+    monkeypatch,
+):
+    _clear(monkeypatch)
+    path, digest = _write_json(
+        tmp_path,
+        "nvd-shared.json",
+        _nvd_document(),
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_CATALOG_SHA256", digest)
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_FORMAT",
+        "nvd-cve-api-v2",
+    )
+    monkeypatch.setenv(
+        "XBOW_CVE_ADVISORY_CATALOG_SOURCE",
+        "nvd-local-alias",
+    )
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_PATH", str(path))
+    monkeypatch.setenv("XBOW_CVE_ADVISORY_NVD_SHA256", digest)
+
+    catalogs, status = load_cve_advisory_catalogs_with_status()
+
+    assert len(catalogs) == 1
+    assert catalogs[0].source_authority == "nvd"
+    assert status["configured_source_count"] == 2
+    assert status["available_source_count"] == 1
+    assert status["invalid_source_count"] == 0
