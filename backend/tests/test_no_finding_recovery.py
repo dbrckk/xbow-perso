@@ -519,6 +519,20 @@ def test_recovery_targets_only_requested_host_in_multi_host_campaign():
         asset_id="asset:b",
         evidence_id="recovery:b",
     )
+    graph.add(
+        Observation(
+            "scan:scoped-a",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-scoped-a",
+            },
+        )
+    )
 
     result = _feedback(
         graph,
@@ -554,6 +568,20 @@ def test_recovery_target_host_exhaustion_is_not_cross_host():
         graph,
         task_kind="map_forms",
         asset_id="asset:a",
+    )
+    graph.add(
+        Observation(
+            "scan:scoped-b",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:b",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-scoped-b",
+            },
+        )
     )
 
     result = _feedback(
@@ -595,3 +623,53 @@ def test_recovery_scopes_untrusted_endpoint_count_to_target():
 
     assert result.scope_integrity_issues == 0
     assert "map_forms" in result.recommended_task_kinds
+
+
+def test_unscoped_scan_is_not_misattributed_to_target_in_multi_host_campaign():
+    graph = _graph(scans=1)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.recommended_task_kinds == ()
+
+
+def test_scoped_scan_on_other_host_cannot_trigger_negative_target_feedback():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:other",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:b",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "other-job",
+            },
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+    )
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.scanner_source_count == 0
+
+
+def test_legacy_unscoped_scan_remains_valid_for_single_observed_host():
+    result = _feedback(_graph(scans=1), target_host="example.test")
+
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert result.recommended_task_kinds
