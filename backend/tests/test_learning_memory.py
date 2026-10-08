@@ -385,7 +385,7 @@ def test_legacy_observations_without_job_id_keep_independent_evidence():
 
 def test_malformed_job_id_cannot_create_extra_technique_confidence():
     graph = ObservationGraph()
-    for index, bad in enumerate(("", "  ", "a" * 129, "job\\nother")):
+    for index, bad in enumerate(("", "  ", "a" * 129, "job\nother")):
         graph.add(Observation(
             f"evidence:bad-{index}",
             "evidence",
