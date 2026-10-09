@@ -2898,3 +2898,57 @@ def test_invisible_scan_id_does_not_hide_independent_valid_negative_scan():
     assert result.trusted_completed_scan_count == 1
     assert result.recommended_task_kinds == ("crawl",)
     assert result.may_expand_scope is False
+
+
+def test_campaign_multi_host_orphan_scan_cannot_trigger_negative_recovery():
+    graph = _graph(scans=1)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    result = _feedback(
+        graph, scope=lambda host: host in {"example.test", "other.test"}
+    )
+
+    assert result.completed_scan_count == 0
+    assert result.trusted_completed_scan_count == 0
+    assert result.state == "no_completed_scans"
+    assert result.recommended_task_kinds == ()
+
+
+def test_campaign_multi_host_linked_scan_is_accepted_for_authorized_asset():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:linked",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan", "status": "completed", "job_id": "linked-job",
+            },
+        )
+    )
+    result = _feedback(
+        graph, scope=lambda host: host in {"example.test", "other.test"}
+    )
+
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.state == "recovery_advisory"
+
+
+def test_campaign_orphan_scan_with_out_of_scope_asset_is_not_trusted():
+    graph = _graph(scans=1)
+    graph.add(Observation("asset:b", "asset", "other.test", "inventory"))
+    result = _feedback(graph)
+
+    assert result.completed_scan_count == 0
+    assert result.state == "no_completed_scans"
+
+
+def test_campaign_legacy_single_host_scan_remains_supported():
+    result = _feedback(_graph(scans=1))
+
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.state == "recovery_advisory"
