@@ -2310,3 +2310,138 @@ def test_confirmed_new_form_can_reopen_completed_form_mapping():
     assert "browser_observe" in result.recommended_task_kinds
     assert result.may_enable_exploitation is False
     assert result.may_increase_request_budget is False
+
+
+def test_negative_scan_with_mismatched_endpoint_ancestor_is_not_trusted():
+    graph = _graph(scans=0, with_endpoint=False)
+    graph.add(
+        Observation(
+            "endpoint:mismatch",
+            "endpoint",
+            "https://other.test/private",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:invalid-endpoint",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("endpoint:mismatch",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-mismatch",
+                "findings": 0,
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+
+    assert result.state == "no_completed_scans"
+    assert result.trusted_completed_scan_count == 0
+    assert result.recommended_task_kinds == ()
+    assert result.negative_result_proves_safe is False
+
+
+def test_negative_scan_with_malformed_endpoint_ancestor_is_not_trusted():
+    graph = _graph(scans=0, with_endpoint=False)
+    graph.add(
+        Observation(
+            "endpoint:bad",
+            "endpoint",
+            "https://[invalid-ipv6",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:invalid",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("endpoint:bad",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-bad",
+                "findings": 0,
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+    assert result.state == "no_completed_scans"
+    assert result.trusted_completed_scan_count == 0
+
+
+def test_mixed_valid_and_invalid_scan_endpoints_do_not_trigger_recovery():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "endpoint:other",
+            "endpoint",
+            "https://other.test/private",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mixed",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("endpoint:a", "endpoint:other"),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-mixed",
+                "findings": 0,
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+
+
+def test_endpoint_linked_completed_scan_still_supports_bounded_recovery():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:linked",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-good",
+                "findings": 0,
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
+    assert result.may_increase_request_budget is False
