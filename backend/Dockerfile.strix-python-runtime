@@ -69,6 +69,7 @@ RUN set -eu; \
     uv pip install --python /opt/strix-src/.venv/bin/python --no-deps "/tmp/${WHEEL}"; \
     rm -f "/tmp/${WHEEL}"
 
+COPY app/strix_manifest_admission.py /app/app/strix_manifest_admission.py
 COPY app/strix_remote_session.py /app/app/strix_remote_session.py
 COPY app/strix_backend_hook.py /app/app/strix_backend_hook.py
 COPY app/strix_python_compat_probe.py /app/app/strix_python_compat_probe.py
@@ -97,6 +98,7 @@ RUN groupadd --system --gid 65532 strix-python \
     && chown -R root:root /opt/strix-python /app
 
 COPY --from=builder /opt/strix-src/.venv /opt/strix-python/.venv
+COPY app/strix_manifest_admission.py /app/app/strix_manifest_admission.py
 COPY app/strix_remote_session.py /app/app/strix_remote_session.py
 COPY app/strix_backend_hook.py /app/app/strix_backend_hook.py
 COPY app/strix_python_compat_probe.py /app/app/strix_python_compat_probe.py
