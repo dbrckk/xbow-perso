@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph, load_observation_graph
 from .scan_result_integrity import (
+    canonical_scan_job_id,
     conflicting_scan_terminal_job_ids,
     plausible_scan_timeline,
 )
@@ -95,14 +96,11 @@ def _completed_scans_with_provenance(
         ):
             continue
         raw_job_id = observation.metadata.get("job_id")
+        job_id = canonical_scan_job_id(raw_job_id)
         if raw_job_id is None:
             identity = f"observation:{observation.id}"
-        elif (
-            isinstance(raw_job_id, str)
-            and 0 < len(raw_job_id.strip()) <= 128
-            and not any(ord(char) < 32 for char in raw_job_id)
-        ):
-            identity = f"job:{raw_job_id.strip()}"
+        elif job_id is not None:
+            identity = f"job:{job_id}"
         else:
             untrusted += 1
             continue
@@ -237,22 +235,20 @@ def _endpoint_scan_attribution(
             or observation.metadata.get("status") != "completed"
         ):
             continue
-        job_id = observation.metadata.get("job_id")
-        if (
-            isinstance(job_id, str)
-            and 0 < len(job_id.strip()) <= 128
-            and not any(ord(char) < 32 for char in job_id)
-        ):
-            reports_by_job.setdefault(job_id.strip(), []).append(observation)
+        job_id = canonical_scan_job_id(
+            observation.metadata.get("job_id")
+        )
+        if job_id is not None:
+            reports_by_job.setdefault(job_id, []).append(observation)
 
     documented_ids: set[str] = set()
     ambiguous_scope_jobs = 0
     ineligible_scope_jobs = 0
     for scan in scan_evidence:
-        job_id = scan.metadata.get("job_id")
+        job_id = canonical_scan_job_id(scan.metadata.get("job_id"))
         reports = (
-            reports_by_job.get(job_id.strip(), [scan])
-            if isinstance(job_id, str)
+            reports_by_job.get(job_id, [scan])
+            if job_id is not None
             else [scan]
         )
         # Job-level completion has already been reconciled. Endpoint scope
