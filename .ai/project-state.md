@@ -39,23 +39,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T21:52:31Z
+Generated: 2026-10-09T21:56:57Z
 
 ### Git
 - Branch: `main`
-- Head: `fdef73b1c9da`
-- Commit date: 2026-10-09T23:51:32+02:00
-- Commit: fix(strix): make remote interface self-test fingerprint reproducible (#665)
-- Tracked files: 688
+- Head: `6f9c3cd93262`
+- Commit date: 2026-10-09T23:56:36+02:00
+- Commit: feat(strix): reproducible inert Python bootstrap runtime (#664)
+- Tracked files: 690
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `.github/workflows/supply-chain.yml`
+- `backend/Dockerfile.strix-python-runtime`
+- `docs/strix-python-runtime.md`
 - `backend/app/strix_backend_hook.py`
 - `backend/app/strix_remote_session.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_scan_result_integrity.py`
-- `.github/workflows/ci.yml`
 - `backend/Dockerfile`
 - `backend/Dockerfile.scanner`
 - `backend/Dockerfile.strix-runner`

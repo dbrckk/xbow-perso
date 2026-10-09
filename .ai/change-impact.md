@@ -1,14 +1,18 @@
 # Change impact
 
-Base: 8a009e11cc8733bb18cbb8a2905f16b38dc57ef0
-Head: fdef73b1c9dac0fbe3265aa4f25ea67cdd02ac87
+Base: 6035c99c0f845d172425315061b847f6a97b0f23
+Head: 6f9c3cd9326283282b86cc0a252b8073dc718c62
 
 ## Changed files
-- M backend/app/strix_backend_hook.py
-- M backend/app/strix_remote_session.py
+- M .github/workflows/ci.yml
+- M .github/workflows/supply-chain.yml
+- A backend/Dockerfile.strix-python-runtime
+- A docs/strix-python-runtime.md
 
 ## Affected areas
+- .github
 - backend
+- docs
 
 ## Related test candidates
 - No direct filename-based test match detected.
