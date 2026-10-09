@@ -46,3 +46,19 @@ def test_completed_and_cancelled_same_job_is_terminal_contradiction():
     _event(graph, "scan:done", "job-1", "completed")
     _event(graph, "scan:cancelled", "job-1", "cancelled")
     assert conflicting_scan_terminal_job_ids(graph) == frozenset({"job-1"})
+
+
+def test_scan_job_identity_rejects_invisible_and_control_characters():
+    from app.scan_result_integrity import canonical_scan_job_id
+
+    for invalid in ("", "   ", "job\\x7f", "job\\u200b", "job\\n", "job\\x00", 123, "x" * 129):
+        assert canonical_scan_job_id(invalid) is None
+    assert canonical_scan_job_id("  job-42  ") == "job-42"
+
+
+def test_invisible_job_ids_cannot_invent_terminal_status_conflicts():
+    graph = ObservationGraph()
+    for index, job_id in enumerate(("job\\x7f", "job\\u200b")):
+        _event(graph, f"scan:done:{index}", job_id, "completed")
+        _event(graph, f"scan:failed:{index}", job_id, "failed")
+    assert conflicting_scan_terminal_job_ids(graph) == frozenset()
