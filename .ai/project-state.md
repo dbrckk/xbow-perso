@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T09:31:21Z
+Generated: 2026-10-09T10:13:36Z
 
 ### Git
 - Branch: `main`
-- Head: `b97028efccc1`
-- Commit date: 2026-10-09T11:31:00+02:00
-- Commit: fix(cycle): fail closed on invalid or unstable worker feedback
+- Head: `67c47ee10e56`
+- Commit date: 2026-10-09T12:13:25+02:00
+- Commit: fix(scanner): reject malformed outcome counters before recovery ranking
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/scanner_adaptation.py`
+- `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/tests/test_adaptive_cycle.py`
 - `backend/app/learning_memory.py`

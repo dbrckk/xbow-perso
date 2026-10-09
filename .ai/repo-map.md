@@ -12739,26 +12739,41 @@ prefix = "scanner:"
 ⋮----
 engine = item.technique[len(prefix):].strip().lower()
 ⋮----
+_MAX_WORKER_COUNTER = 1_000_000
+⋮----
+"""Treat only bounded integer worker counts as trusted diagnostics."""
+⋮----
+result = []
+⋮----
+value = raw.get(key, 0)
+⋮----
 unknown = [engine for engine in configured_engines if engine not in _ALLOWED_ENGINES]
 ⋮----
 memory = _engine_memory(memories)
-by_kind = (worker_outcomes or {}).get("by_job_kind") or {}
+⋮----
+by_kind: dict[str, Any] = {}
+invalid_structure = False
+⋮----
+by_kind = {}
+invalid_structure = True
+⋮----
+raw_by_kind = worker_outcomes.get("by_job_kind")
+invalid_structure = (
+by_kind = raw_by_kind if isinstance(raw_by_kind, dict) else {}
 reasons: dict[str, str] = {}
 suppressed: set[str] = set()
 completed_by_engine: dict[str, int] = {}
 ⋮----
 technique = memory.get(engine)
 job_kind = f"{engine}_scan"
-outcome = by_kind.get(job_kind) if isinstance(by_kind, dict) else None
-⋮----
-completed = int(outcome.get("completed") or 0)
-requeued = int(outcome.get("requeued") or 0)
-failed = int(outcome.get("failed") or 0)
-⋮----
-# Untrusted or corrupt counters cannot justify suppressing
-# an engine or boosting a coverage recommendation.
+outcome = by_kind.get(job_kind)
 ⋮----
 completed = requeued = failed = 0
+⋮----
+validated = _validated_worker_counters(outcome)
+⋮----
+# Corrupt feedback cannot suppress a scanner or fabricate
+# a positive run for coverage rotation.
 ⋮----
 # Technique-level "failure" may mean a valid negative security
 # result, not a scanner crash. Never suppress a configured engine
@@ -12779,6 +12794,8 @@ no_completed = tuple(
 explanation = (
 ⋮----
 def rank_key(engine: str) -> tuple[int, float, float, int, int]
+⋮----
+# Do not reorder on partial or malformed operational feedback.
 ⋮----
 rotation_rank = (
 item = memory.get(engine)
@@ -25491,6 +25508,12 @@ def test_no_completed_history_does_not_invent_scanner_rotation()
 def test_scanner_rotation_never_overrides_safety_suppression()
 ⋮----
 def test_corrupt_worker_counts_do_not_crash_or_change_execution_authority()
+⋮----
+def test_invalid_worker_completed_counts_never_trigger_rotation(invalid_count)
+⋮----
+def test_invalid_counter_on_one_engine_disables_cross_engine_rotation()
+⋮----
+def test_valid_bounded_worker_counters_preserve_suppression_behavior()
 ````
 
 ## File: backend/tests/test_scanner_ingestion.py
