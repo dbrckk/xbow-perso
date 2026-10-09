@@ -353,3 +353,41 @@ def test_valid_bounded_worker_counters_preserve_suppression_behavior():
     assert result.selected_engines == ("strix",)
     assert result.suppressed_engines == ("nuclei",)
     assert result.coverage_rotation_applied is False
+
+
+def test_pending_retries_do_not_suppress_authorized_scanner():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [],
+        {"by_job_kind": {
+            "nuclei_scan": {"completed": 0, "failed": 0, "requeued": 4},
+        }},
+    )
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.suppressed_engines == ()
+    assert "pending retry" in result.reasons["nuclei"]
+    assert result.may_expand_configuration is False
+
+
+def test_one_failure_and_multiple_pending_retries_is_not_terminal_instability():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [],
+        {"by_job_kind": {
+            "nuclei_scan": {"completed": 0, "failed": 1, "requeued": 9},
+        }},
+    )
+    assert result.suppressed_engines == ()
+    assert "nuclei" in result.selected_engines
+
+
+def test_two_terminal_failures_still_suppress_scanner_with_alternative():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [],
+        {"by_job_kind": {
+            "nuclei_scan": {"completed": 0, "failed": 2, "requeued": 0},
+        }},
+    )
+    assert result.suppressed_engines == ("nuclei",)
+    assert result.selected_engines == ("strix",)
