@@ -118,6 +118,45 @@ def _scope_allows(
     return bool(hosts) and all(scope_checker(host) for host in hosts)
 
 
+_REVIEW_PARENT_KINDS = {
+    "input_surface_review": "endpoint",
+    "authorization_surface_review": "endpoint",
+    "form_surface_review": "form",
+    "technology_surface_review": "technology",
+    "protection_surface_review": "waf",
+}
+
+
+def _completed_reviews(
+    graph: ObservationGraph,
+    scope_checker: Callable[[str], bool] | None,
+) -> dict[str, set[str]]:
+    """Credit only completed reviews with unambiguous same-kind parents."""
+    indexed = {item.id: item for item in graph.values()}
+    reviewed: dict[str, set[str]] = {
+        kind: set() for kind in _REVIEW_PARENT_KINDS
+    }
+    for evidence in graph.by_kind("evidence"):
+        kind = evidence.metadata.get("review_type")
+        if (
+            kind not in _REVIEW_PARENT_KINDS
+            or evidence.metadata.get("status") not in {"completed", "reviewed"}
+            or not evidence.parent_ids
+            or not _scope_allows(graph, evidence.id, scope_checker)
+        ):
+            continue
+        parent_kind = _REVIEW_PARENT_KINDS[kind]
+        if any(
+            parent_id not in indexed or indexed[parent_id].kind != parent_kind
+            for parent_id in evidence.parent_ids
+        ):
+            # A mixed-type or inconsistent review cannot close a gap by
+            # borrowing the convenient subset of linked observations.
+            continue
+        reviewed[kind].update(evidence.parent_ids)
+    return reviewed
+
+
 def build_hypotheses(
     graph: ObservationGraph,
     *,
@@ -135,6 +174,7 @@ def build_hypotheses(
 
     hypotheses: list[Hypothesis] = []
     validation_state = analyze_validation_state(graph)
+    reviewed = _completed_reviews(graph, scope_checker)
 
     for endpoint in graph.by_kind("endpoint"):
         if not _scope_allows(graph, endpoint.id, scope_checker):
@@ -144,7 +184,7 @@ def build_hypotheses(
             continue
         safe_target, parameter_names = safe
         path = urlsplit(safe_target).path.lower()
-        if parameter_names:
+        if parameter_names and endpoint.id not in reviewed["input_surface_review"]:
             hypotheses.append(
                 Hypothesis(
                     kind="input_surface_review",
@@ -157,7 +197,10 @@ def build_hypotheses(
                     dependency_depth=len(endpoint.parent_ids),
                 )
             )
-        if any(token in path for token in ("/account", "/profile", "/user", "/admin")):
+        if (
+            endpoint.id not in reviewed["authorization_surface_review"]
+            and any(token in path for token in ("/account", "/profile", "/user", "/admin"))
+        ):
             hypotheses.append(
                 Hypothesis(
                     kind="authorization_surface_review",
@@ -178,6 +221,8 @@ def build_hypotheses(
         if safe is None:
             continue
         safe_target, _query_names = safe
+        if form.id in reviewed["form_surface_review"]:
+            continue
         input_names = tuple(
             sorted({str(name).strip() for name in form.metadata.get("input_names", ()) if str(name).strip()})
         )
@@ -195,7 +240,10 @@ def build_hypotheses(
         )
 
     for technology in graph.by_kind("technology"):
-        if not _scope_allows(graph, technology.id, scope_checker):
+        if (
+            not _scope_allows(graph, technology.id, scope_checker)
+            or technology.id in reviewed["technology_surface_review"]
+        ):
             continue
         hypotheses.append(
             Hypothesis(
@@ -210,7 +258,10 @@ def build_hypotheses(
         )
 
     for waf in graph.by_kind("waf"):
-        if not _scope_allows(graph, waf.id, scope_checker):
+        if (
+            not _scope_allows(graph, waf.id, scope_checker)
+            or waf.id in reviewed["protection_surface_review"]
+        ):
             continue
         confidence = float(waf.metadata.get("confidence", 0.5))
         confidence = max(0.0, min(1.0, confidence))
