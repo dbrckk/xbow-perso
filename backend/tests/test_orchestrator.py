@@ -992,3 +992,64 @@ def test_single_planner_reversal_does_not_trip_breaker(tmp_path):
     )
     graph = ObservationGraph.from_records(store.list_observations(campaign.id))
     assert circuit_breaker_state(graph)["open"] is False
+
+
+def test_orchestrator_adaptive_memory_ignores_other_origin_negative_reviews(tmp_path):
+    db = str(tmp_path / "adaptive-origin.sqlite3")
+    store = Storage(db, str(tmp_path / "artifacts"))
+    queue = JobQueue(db)
+    campaign = make_campaign()
+    campaign.target.rules.allowed_targets = ["example.test", "other.test"]
+    store.save_campaign(campaign.model_dump(mode="json"))
+
+    for asset_id, url in (
+        ("target", "https://example.test"),
+        ("other", "https://other.test"),
+    ):
+        store.put_observation(
+            campaign.id,
+            Observation(f"asset:{asset_id}", "asset", url, "recon").to_dict(),
+        )
+
+    for index in range(3):
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"review:other:{index}",
+                "evidence",
+                "negative-review",
+                f"validator-{index}",
+                parent_ids=("asset:other",),
+                metadata={
+                    "technique": "bounded-review",
+                    "outcome": "failure",
+                    "job_id": f"job-other-{index}",
+                },
+            ).to_dict(),
+        )
+    store.put_observation(
+        campaign.id,
+        Observation(
+            "review:target",
+            "evidence",
+            "positive-review",
+            "validator",
+            parent_ids=("asset:target",),
+            metadata={
+                "technique": "bounded-review",
+                "outcome": "success",
+                "job_id": "job-target",
+            },
+        ).to_dict(),
+    )
+
+    result = advance_campaign(campaign, queue, store)
+    memories = {
+        item["technique"]: item
+        for item in result["intelligence"]["learning_memory"]
+    }
+
+    assert memories["bounded-review"]["attempts"] == 1
+    assert memories["bounded-review"]["successes"] == 1
+    assert memories["bounded-review"]["failures"] == 0
+    assert result["intelligence"]["cycle"]["retry_suppressed_techniques"] == []
