@@ -252,8 +252,8 @@ def worker_outcome_event(job: dict[str, Any], *, success: bool, status: str) -> 
         raise ValueError("unsupported job kind")
     if status not in _ALLOWED_JOB_STATUSES:
         raise ValueError("unsupported job status")
-    attempts = int(job.get("attempts") or 0)
-    if not 0 <= attempts <= 5:
+    attempts = job.get("attempts", 0)
+    if type(attempts) is not int or not 0 <= attempts <= 5:
         raise ValueError("invalid job attempts")
     job_id = canonical_scan_job_id(job.get("id"))
     if job_id is None:
@@ -297,11 +297,10 @@ def summarize_worker_outcomes(
             or job_id is None
         ):
             continue
-        try:
-            attempts = int(event.get("attempts") or 0)
-        except (ValueError, TypeError):
-            continue
-        if not 0 <= attempts <= 5:
+        attempts = event.get("attempts", 0)
+        if type(attempts) is not int or not 0 <= attempts <= 5:
+            # Malformed attempts cannot become an independent failure or
+            # a fictitious completed scan through Python coercion.
             continue
         valid_events += 1
         key = (kind, job_id)
