@@ -244,17 +244,91 @@ def self_test() -> dict[str, Any]:
     return result
 
 
+def verify_upstream_import() -> dict[str, Any]:
+    """Import the pinned upstream interface without invoking its scan entrypoint.
+
+    This check must run in a fresh, unprivileged, network-disabled container.
+    Upstream source hashes are verified before the real module import. Docker
+    preflight remains temporarily patched only inside the context manager.
+    """
+    if _MAIN_MODULE in sys.modules:
+        raise StrixPythonBootstrapRuntimeError(
+            "upstream import verification requires a fresh Python process"
+        )
+
+    from .strix_python_compat_probe import probe_python_runtime
+
+    source = probe_python_runtime()
+    if (
+        source.get("hook_loaded_in_python_runtime") is not True
+        or source.get("preflight_call_order_verified") is not True
+        or source.get("entrypoint_enabled") is not False
+        or source.get("active_execution_enabled") is not False
+    ):
+        raise StrixPythonBootstrapRuntimeError(
+            "pinned upstream source attestation was not safely inert"
+        )
+
+    with prepared_strix_python_runtime(
+        bootstrap_plan=_self_test_plan(),
+    ) as (descriptor, main):
+        if (
+            getattr(main, "__name__", None) != _MAIN_MODULE
+            or not callable(getattr(main, "main", None))
+            or descriptor.get("compatibility_applied") is not True
+            or descriptor.get("environment_validation_preserved") is not True
+        ):
+            raise StrixPythonBootstrapRuntimeError(
+                "pinned Strix Python interface did not load safely"
+            )
+        environment = sys.modules.get(_ENVIRONMENT_MODULE)
+        if environment is None:
+            raise StrixPythonBootstrapRuntimeError(
+                "pinned Strix environment module is missing"
+            )
+        for symbol in ("check_docker_installed", "pull_docker_image"):
+            if getattr(main, symbol)() is not None:
+                raise StrixPythonBootstrapRuntimeError(
+                    f"temporary Docker preflight bypass failed: {symbol}"
+                )
+        if (
+            getattr(main, "validate_environment", None)
+            is not getattr(environment, "validate_environment", None)
+        ):
+            raise StrixPythonBootstrapRuntimeError(
+                "pinned upstream environment validation was replaced"
+            )
+
+    for symbol in (
+        "check_docker_installed",
+        "pull_docker_image",
+        "validate_environment",
+    ):
+        if getattr(main, symbol, None) is not getattr(environment, symbol, None):
+            raise StrixPythonBootstrapRuntimeError(
+                f"upstream preflight symbol was not restored: {symbol}"
+            )
+
+    return {
+        **descriptor,
+        "pinned_upstream_python_source_attested": True,
+        "real_upstream_interface_imported": True,
+        "docker_preflight_aliases_restored": True,
+        "entrypoint_called": False,
+        "active_execution_enabled": False,
+    }
+
+
 def _main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--self-test", action="store_true")
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--self-test", action="store_true")
+    mode.add_argument("--verify-upstream-import", action="store_true")
     args = parser.parse_args()
-    if not args.self_test:
-        raise StrixPythonBootstrapRuntimeError(
-            "only --self-test is supported until entrypoint execution is admitted"
-        )
+    result = verify_upstream_import() if args.verify_upstream_import else self_test()
     print(
         json.dumps(
-            self_test(),
+            result,
             sort_keys=True,
             separators=(",", ":"),
         )

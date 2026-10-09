@@ -261,3 +261,17 @@ jobs:
               xbow-strix-python-runtime:ci \
               /opt/strix-python/.venv/bin/python -m "$probe" --self-test
           done
+      - name: Import real pinned Strix Python interface without execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --network none \
+            --read-only \
+            --tmpfs /tmp:size=16m,noexec,nosuid,nodev \
+            --cap-drop ALL \
+            --pids-limit 128 \
+            --security-opt no-new-privileges:true \
+            xbow-strix-python-runtime:ci \
+            /opt/strix-python/.venv/bin/python \
+            -m app.strix_python_bootstrap_runtime --verify-upstream-import
