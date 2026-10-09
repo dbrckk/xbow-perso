@@ -10854,6 +10854,10 @@ parent_id = pending.pop()
 ⋮----
 parent = observations.get(parent_id)
 ⋮----
+# A compatible asset ancestor cannot legitimize a technology
+# or form discovered through an endpoint/form on another
+# scheme, hostname or port.
+⋮----
 # Legacy unlinked observations cannot be assigned to one of many assets.
 ⋮----
 """Build a bounded passive/low-impact recon plan without executing requests."""
@@ -23832,6 +23836,18 @@ def test_recon_rejects_non_http_or_credential_bearing_target()
 def test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits()
 ⋮----
 db = str(tmp_path / "multi-host-recon.sqlite3")
+⋮----
+def test_indirect_http_endpoint_cannot_satisfy_https_technology_coverage()
+⋮----
+def test_indirect_wrong_port_form_cannot_close_target_recon_gaps()
+⋮----
+def test_mixed_valid_and_unrelated_endpoint_ancestors_fail_closed()
+⋮----
+def test_valid_indirect_origin_observations_still_close_technology_gap()
+⋮----
+kinds = [item.kind for item in tasks]
+⋮----
+def test_malformed_intermediate_endpoint_cannot_launder_technology_evidence()
 ```
 
 ## File: tests/test_recon_worker.py

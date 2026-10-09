@@ -5,29 +5,316 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "TechniqueMemory": {
+    "ReconCapability": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 18,
-        "end": 29
+        "file": "backend/app/recon_swarm.py",
+        "start": 27,
+        "end": 42
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 28,
-        "end": 29
+        "file": "backend/app/recon_swarm.py",
+        "start": 38,
+        "end": 158
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconCapability",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ReconTask",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_compatible_asset",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_origin_identity",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recon_observation_is_for_target",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_target",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_same_origin",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recon_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "ReconTask": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 46,
+        "end": 60
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "recon_capabilities": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 72,
+        "end": 73
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReconCapability",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_origin_identity": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 76,
+        "end": 106
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_target_scoped_evidence_ids": {
+    "_safe_target": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 32,
-        "end": 89
+        "file": "backend/app/recon_swarm.py",
+        "start": 109,
+        "end": 124
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_origin_identity",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_same_origin": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 127,
+        "end": 129
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_origin_identity",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_compatible_asset": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 132,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_origin_identity",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_recon_observation_is_for_target": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 148,
+        "end": 190
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_compatible_asset",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_same_origin",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "build_recon_plan": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 193,
+        "end": 268
       },
       "symbol_dependencies": [
         {
@@ -43,28 +330,64 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_asset_matches_origin",
+          "symbol": "ReconTask",
           "definitions": [
             {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 158,
-              "kind": "function",
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "_origin",
+          "symbol": "_compatible_asset",
           "definitions": [
             {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 106,
+              "file": "backend/app/recon_swarm.py",
+              "line": 132,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_origin_identity",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recon_observation_is_for_target",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_target",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "add",
@@ -91,16 +414,40 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_endpoint",
+          "symbol": "matching",
           "definitions": [
             {
-              "file": "backend/app/attack_surface.py",
-              "line": 35,
+              "file": "backend/app/recon_swarm.py",
+              "line": 220,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "values",
@@ -115,33 +462,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 12
     },
-    "build_learning_memory": {
+    "matching": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 92,
-        "end": 208
+        "file": "backend/app/recon_swarm.py",
+        "start": 220,
+        "end": 340
       },
       "symbol_dependencies": [
         {
-          "symbol": "ObservationGraph",
+          "symbol": "ReconTask",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 18,
+              "file": "backend/app/recon_swarm.py",
+              "line": 46,
               "kind": "class",
               "language": "python"
             }
@@ -149,11 +484,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_target_scoped_evidence_ids",
+          "symbol": "_recon_observation_is_for_target",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 32,
+              "file": "backend/app/recon_swarm.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -173,6 +508,90 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 333,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "by_kind",
           "definitions": [
             {
@@ -185,11 +604,125 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_scan_job_id",
+          "symbol": "campaign_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
+              "file": "backend/app/recon_swarm.py",
+              "line": 281,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "recon_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recon_swarm_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 272,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 271,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -197,13 +730,53 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 21
     },
-    "campaign_learning_memory": {
+    "recon_swarm_capabilities": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 212,
-        "end": 234
+        "file": "backend/app/recon_swarm.py",
+        "start": 272,
+        "end": 277
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "recon_capabilities",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "campaign_recon_plan": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 281,
+        "end": 349
       },
       "symbol_dependencies": [
         {
@@ -219,11 +792,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "build_no_finding_recovery",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 333,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
               "kind": "function",
               "language": "python"
             }
@@ -231,11 +816,219 @@
           "relation": "same_file"
         },
         {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "load_observation_graph",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
               "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "summarize_worker_outcomes",
+          "definitions": [
+            {
+              "file": "backend/app/learning_memory.py",
+              "line": 271,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "scope_checker": {
+      "source": {
+        "file": "backend/app/recon_swarm.py",
+        "start": 290,
+        "end": 410
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_no_finding_recovery",
+          "definitions": [
+            {
+              "file": "backend/app/no_finding_recovery.py",
+              "line": 333,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_surface_confidence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_confidence.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_surface_diff_intelligence",
+          "definitions": [
+            {
+              "file": "backend/app/surface_diff.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_target_memory",
+          "definitions": [
+            {
+              "file": "backend/app/target_memory.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_temporal_surface_profile",
+          "definitions": [
+            {
+              "file": "backend/app/surface_temporal.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_recon_tasks",
+          "definitions": [
+            {
+              "file": "backend/app/recon_priority.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -264,24 +1057,42 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "to_dict",
+          "definitions": [
+            {
+              "file": "backend/app/adaptive_cycle.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "backend/app/autonomy_gate.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 10
     },
-    "worker_outcome_event": {
+    "test_capabilities_are_bounded_read_only_and_get_head_only": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 248,
-        "end": 268
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 7,
+        "end": 21
       },
       "symbol_dependencies": [
         {
-          "symbol": "canonical_scan_job_id",
+          "symbol": "recon_capabilities",
           "definitions": [
             {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
+              "file": "backend/app/recon_swarm.py",
+              "line": 72,
               "kind": "function",
               "language": "python"
             }
@@ -291,45 +1102,11 @@
       ],
       "dependency_count": 1
     },
-    "summarize_worker_outcomes": {
+    "test_recon_plan_bootstraps_crawl_and_technology_context": {
       "source": {
-        "file": "backend/app/learning_memory.py",
-        "start": 271,
-        "end": 335
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "by_kind",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_scan_job_id",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_learning_memory_aggregates_only_explicit_outcomes": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 9,
-        "end": 52
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 24,
+        "end": 37
       },
       "symbol_dependencies": [
         {
@@ -369,11 +1146,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -381,13 +1170,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 5
     },
-    "test_learning_memory_is_bounded_and_deterministic": {
+    "test_recon_plan_adds_form_and_browser_mapping_after_endpoints_exist": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 55,
-        "end": 74
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 40,
+        "end": 65
       },
       "symbol_dependencies": [
         {
@@ -427,11 +1216,81 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_recon_plan_fails_closed_out_of_scope_and_invalid_limits": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 68,
+        "end": 88
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -441,11 +1300,257 @@
       ],
       "dependency_count": 4
     },
-    "test_learning_memory_route_is_exposed": {
+    "test_recon_plan_route_is_exposed_and_scope_aware": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 77,
-        "end": 102
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 91,
+        "end": 118
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 281,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 121,
+        "end": 131
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_recon_plan_accepts_matching_bare_asset_host": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 134,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_recon_plan_reorders_existing_tasks_after_null_scans": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 148,
+        "end": 216
       },
       "symbol_dependencies": [
         {
@@ -509,23 +1614,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "api",
+          "symbol": "campaign_recon_plan",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "campaign_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 212,
+              "file": "backend/app/recon_swarm.py",
+              "line": 281,
               "kind": "function",
               "language": "python"
             }
@@ -543,34 +1636,12 @@
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "test_learning_memory_rejects_unbounded_limits": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 105,
-        "end": 113
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "values",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
               "line": 92,
               "kind": "function",
               "language": "python"
@@ -579,277 +1650,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
-    },
-    "test_worker_outcome_memory_excludes_payloads_and_errors": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 116,
-        "end": 138
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "event",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 166,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "worker_outcome_event",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 248,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 141,
-        "end": 160
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "worker_outcome_event",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 248,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_worker_summary_counts_one_final_state_per_job": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 163,
-        "end": 196
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "event",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 166,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "event": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 166,
-        "end": 286
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_no_finding_recovery",
-          "definitions": [
-            {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 333,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_invalid_worker_events_cannot_inflate_recovery_failure_counts",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 217,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 258,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_worker_summary_does_not_merge_different_job_kinds",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 199,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
       "dependency_count": 8
     },
-    "test_worker_summary_does_not_merge_different_job_kinds": {
+    "test_multi_host_recon_ignores_inventory_from_other_authorized_host": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 199,
-        "end": 214
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invalid_worker_events_cannot_inflate_recovery_failure_counts": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 217,
-        "end": 255
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 258,
-        "end": 297
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 219,
+        "end": 254
       },
       "symbol_dependencies": [
         {
@@ -889,11 +1696,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_no_finding_recovery",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/no_finding_recovery.py",
-              "line": 333,
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
               "kind": "function",
               "language": "python"
             }
@@ -901,11 +1720,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "summarize_worker_outcomes",
+          "symbol": "scope_checker",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -913,13 +1732,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 6
     },
-    "_technique_job_observation": {
+    "test_recon_does_not_reuse_http_inventory_on_https_origin": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 300,
-        "end": 310
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 257,
+        "end": 277
       },
       "symbol_dependencies": [
         {
@@ -933,17 +1752,7 @@
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_technique_memory_deduplicates_multiple_observations_from_same_job": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 313,
-        "end": 330
-      },
-      "symbol_dependencies": [
+        },
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -955,18 +1764,6 @@
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "add",
@@ -981,11 +1778,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -993,16 +1814,110 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 6
     },
-    "test_contradictory_job_results_are_inconclusive_regardless_of_order": {
+    "test_recon_does_not_reuse_another_port_form_or_technology": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 333,
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 280,
+        "end": 331
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_unlinked_observation_from_multi_asset_graph_is_not_coverage": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 334,
         "end": 353
       },
       "symbol_dependencies": [
         {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "ObservationGraph",
           "definitions": [
             {
@@ -1013,18 +1928,6 @@
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "add",
@@ -1039,11 +1942,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -1051,567 +1978,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 6
     },
-    "test_distinct_job_ids_remain_independent_technique_attempts": {
+    "test_single_host_legacy_unlinked_endpoint_still_counts_when_origin_matches": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
+        "file": "backend/tests/test_recon_swarm.py",
         "start": 356,
-        "end": 370
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_legacy_observations_without_job_id_keep_independent_evidence": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 373,
-        "end": 385
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_malformed_job_id_cannot_create_extra_technique_confidence": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 388,
-        "end": 410
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_worker_completed_state_survives_late_failed_and_queued_events": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 414,
-        "end": 436
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_failed_job_without_completion_can_still_be_requeued": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 439,
-        "end": 455
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_terminal_worker_state_prevents_false_scanner_instability": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 458,
-        "end": 478
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_scoped_learning_excludes_other_authorized_host_evidence": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 481,
-        "end": 508
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 511,
-        "end": 528
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_preserves_single_asset_legacy_evidence": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 531,
-        "end": 549
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_rejects_different_protocol_and_port": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 552,
-        "end": 578
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_does_not_credit_job_id_reused_on_other_host": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 581,
-        "end": 600
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_accepts_indirect_in_scope_ancestry_only": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 603,
-        "end": 639
+        "end": 375
       },
       "symbol_dependencies": [
         {
@@ -1663,11 +2036,139 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_learning_memory",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_recon_rejects_non_http_or_credential_bearing_target": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 378,
+        "end": 390
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 393,
+        "end": 409
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -1677,625 +2178,11 @@
       ],
       "dependency_count": 5
     },
-    "test_scoped_learning_rejects_non_web_target_url": {
+    "test_multi_host_recon_route_offers_missing_target_crawl_after_negative_scan": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 642,
-        "end": 650
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_invisible_job_ids_cannot_inflate_scanner_technique_memory": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 653,
-        "end": 676
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_technique_job_observation",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 300,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_invisible_worker_event_ids_do_not_inflate_operational_failures": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 679,
-        "end": 704
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_worker_outcome_event_rejects_invalid_job_identifiers": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 707,
-        "end": 718
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "worker_outcome_event",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 248,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 721,
-        "end": 742
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 745,
-        "end": 761
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_scoped_learning_rejects_malformed_intermediate_endpoint": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 764,
-        "end": 780
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_scoped_learning_rejects_cross_origin_form_with_approved_asset": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 783,
-        "end": 796
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 799,
-        "end": 816
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_scoped_learning_accepts_valid_endpoint_and_form_chain": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 819,
-        "end": 839
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 842,
-        "end": 856
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_learning_memory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_learning_memory_route_excludes_evidence_from_other_authorized_asset": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 859,
-        "end": 909
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 412,
+        "end": 464
       },
       "symbol_dependencies": [
         {
@@ -2359,11 +2246,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "campaign_learning_memory",
+          "symbol": "api",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 212,
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 281,
               "kind": "function",
               "language": "python"
             }
@@ -2383,99 +2282,45 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 8
     },
-    "test_worker_outcome_event_rejects_noninteger_attempts": {
+    "test_indirect_http_endpoint_cannot_satisfy_https_technology_coverage": {
       "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 916,
-        "end": 928
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 467,
+        "end": 499
       },
       "symbol_dependencies": [
         {
-          "symbol": "worker_outcome_event",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 248,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_worker_summary_does_not_count_invalid_attempts": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 935,
-        "end": 958
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invalid_completion_attempts_cannot_overwrite_valid_queued_state": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 961,
-        "end": 984
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "summarize_worker_outcomes",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries": {
-      "source": {
-        "file": "backend/tests/test_learning_memory.py",
-        "start": 987,
-        "end": 1004
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "event",
-          "definitions": [
-            {
-              "file": "backend/tests/test_learning_memory.py",
-              "line": 166,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "summarize_worker_outcomes",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 271,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
@@ -2483,11 +2328,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "worker_outcome_event",
+          "symbol": "build_recon_plan",
           "definitions": [
             {
-              "file": "backend/app/learning_memory.py",
-              "line": 248,
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
               "kind": "function",
               "language": "python"
             }
@@ -2495,7 +2352,311 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 5
+    },
+    "test_indirect_wrong_port_form_cannot_close_target_recon_gaps": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 502,
+        "end": 546
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_mixed_valid_and_unrelated_endpoint_ancestors_fail_closed": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 549,
+        "end": 597
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_valid_indirect_origin_observations_still_close_technology_gap": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 600,
+        "end": 642
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_malformed_intermediate_endpoint_cannot_launder_technology_evidence": {
+      "source": {
+        "file": "backend/tests/test_recon_swarm.py",
+        "start": 645,
+        "end": 675
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_recon_plan",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "scope_checker",
+          "definitions": [
+            {
+              "file": "backend/app/recon_swarm.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     }
   }
 }

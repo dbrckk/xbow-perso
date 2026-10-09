@@ -1,35 +1,33 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "2c1c85f66a9637347ff5cde404b755434ffbf12a",
-  "head": "9d0fc3b28ffda4cc88f30cbba7603401ac4c69c3",
+  "base": "9d0fc3b28ffda4cc88f30cbba7603401ac4c69c3",
+  "head": "d2051c8f01041f76415f31b78bb6abc5bc8a218f",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/learning_memory.py",
+      "path": "backend/app/recon_swarm.py",
       "status": "M"
     },
     {
-      "path": "backend/tests/test_learning_memory.py",
+      "path": "backend/tests/test_recon_swarm.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/learning_memory.py",
-    "backend/tests/test_learning_memory.py"
+    "backend/app/recon_swarm.py",
+    "backend/tests/test_recon_swarm.py"
   ],
   "impacted_files": [
     "backend/app/adaptive_cycle.py",
     "backend/app/campaign_overview.py",
-    "backend/app/htb_lab.py",
-    "backend/app/learning_memory.py",
     "backend/app/orchestrator.py",
+    "backend/app/recon_priority.py",
     "backend/app/recon_swarm.py",
-    "backend/app/scanner_adaptation.py",
-    "backend/app/worker_service.py",
-    "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_scanner_adaptation.py"
+    "backend/app/swarm_coordinator.py",
+    "backend/tests/test_recon_priority.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_swarm_coordinator.py"
   ],
   "impacted_symbols": [
     {
@@ -85,198 +83,6 @@
       "kind": "function",
       "file": "backend/app/campaign_overview.py",
       "line": 54
-    },
-    {
-      "name": "_normalize_technique",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 15
-    },
-    {
-      "name": "build_htb_live_readiness",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 24
-    },
-    {
-      "name": "htb_live_readiness",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 143
-    },
-    {
-      "name": "HtbLabCampaignInput",
-      "kind": "class",
-      "file": "backend/app/htb_lab.py",
-      "line": 147
-    },
-    {
-      "name": "validate_authorized_lab_target",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 153
-    },
-    {
-      "name": "_active_same_target_htb_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 185
-    },
-    {
-      "name": "create_htb_lab_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 200
-    },
-    {
-      "name": "HtbLabOutcomeInput",
-      "kind": "class",
-      "file": "backend/app/htb_lab.py",
-      "line": 264
-    },
-    {
-      "name": "validate_techniques",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 272
-    },
-    {
-      "name": "validate_overlap",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 277
-    },
-    {
-      "name": "_latest_htb_outcome_event",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 287
-    },
-    {
-      "name": "_assert_htb_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 299
-    },
-    {
-      "name": "record_htb_lab_outcome",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 311
-    },
-    {
-      "name": "is_htb_training_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 410
-    },
-    {
-      "name": "_current_htb_feedback_observations",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 424
-    },
-    {
-      "name": "collect_htb_cross_lab_learning",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 455
-    },
-    {
-      "name": "build_htb_cross_lab_learning_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 505
-    },
-    {
-      "name": "build_htb_benchmark_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 519
-    },
-    {
-      "name": "finish_htb_lab_campaign",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 611
-    },
-    {
-      "name": "build_htb_focus_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 635
-    },
-    {
-      "name": "htb_focus_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 702
-    },
-    {
-      "name": "htb_benchmark_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 713
-    },
-    {
-      "name": "htb_global_learning_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 723
-    },
-    {
-      "name": "htb_lab_session_status",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 733
-    },
-    {
-      "name": "htb_lab_learning_summary",
-      "kind": "function",
-      "file": "backend/app/htb_lab.py",
-      "line": 766
-    },
-    {
-      "name": "TechniqueMemory",
-      "kind": "class",
-      "file": "backend/app/learning_memory.py",
-      "line": 18
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 28
-    },
-    {
-      "name": "_target_scoped_evidence_ids",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 32
-    },
-    {
-      "name": "build_learning_memory",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 92
-    },
-    {
-      "name": "campaign_learning_memory",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 212
-    },
-    {
-      "name": "worker_outcome_event",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 248
-    },
-    {
-      "name": "summarize_worker_outcomes",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 271
     },
     {
       "name": "_stable_id",
@@ -381,6 +187,66 @@
       "line": 703
     },
     {
+      "name": "_high_value_task_boost",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 28
+    },
+    {
+      "name": "ReconPriorityAdjustment",
+      "kind": "class",
+      "file": "backend/app/recon_priority.py",
+      "line": 57
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 74
+    },
+    {
+      "name": "ReconPriorityResult",
+      "kind": "class",
+      "file": "backend/app/recon_priority.py",
+      "line": 84
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 90
+    },
+    {
+      "name": "_signal_counts",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 104
+    },
+    {
+      "name": "_historical_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 120
+    },
+    {
+      "name": "_temporal_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 157
+    },
+    {
+      "name": "_confidence_kind_scores",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 183
+    },
+    {
+      "name": "prioritize_recon_tasks",
+      "kind": "function",
+      "file": "backend/app/recon_priority.py",
+      "line": 205
+    },
+    {
       "name": "ReconCapability",
       "kind": "class",
       "file": "backend/app/recon_swarm.py",
@@ -444,690 +310,420 @@
       "name": "build_recon_plan",
       "kind": "function",
       "file": "backend/app/recon_swarm.py",
-      "line": 186
+      "line": 193
     },
     {
       "name": "matching",
       "kind": "function",
       "file": "backend/app/recon_swarm.py",
-      "line": 213
+      "line": 220
     },
     {
       "name": "recon_swarm_capabilities",
       "kind": "function",
       "file": "backend/app/recon_swarm.py",
-      "line": 265
+      "line": 272
     },
     {
       "name": "campaign_recon_plan",
       "kind": "function",
       "file": "backend/app/recon_swarm.py",
-      "line": 274
+      "line": 281
     },
     {
       "name": "scope_checker",
       "kind": "function",
       "file": "backend/app/recon_swarm.py",
-      "line": 283
+      "line": 290
     },
     {
-      "name": "ScannerAdaptation",
+      "name": "SwarmBudget",
       "kind": "class",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 12
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 11
+    },
+    {
+      "name": "__post_init__",
+      "kind": "function",
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 16
     },
     {
       "name": "to_dict",
       "kind": "function",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 23
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 24
     },
     {
-      "name": "_engine_memory",
-      "kind": "function",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 33
-    },
-    {
-      "name": "_validated_worker_counters",
-      "kind": "function",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 48
-    },
-    {
-      "name": "adapt_scanner_engines",
-      "kind": "function",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 63
-    },
-    {
-      "name": "rank_key",
-      "kind": "function",
-      "file": "backend/app/scanner_adaptation.py",
-      "line": 174
-    },
-    {
-      "name": "CampaignCancelledError",
+      "name": "SwarmCoordination",
       "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 48
-    },
-    {
-      "name": "StaleValidationJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 52
-    },
-    {
-      "name": "StaleBrowserJobError",
-      "kind": "class",
-      "file": "backend/app/worker_service.py",
-      "line": 56
-    },
-    {
-      "name": "_save",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 64
-    },
-    {
-      "name": "_campaign",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 69
-    },
-    {
-      "name": "_append_event_once",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 80
-    },
-    {
-      "name": "_lease_heartbeat",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 97
-    },
-    {
-      "name": "renew",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 104
-    },
-    {
-      "name": "_process_scanner_job",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 125
-    },
-    {
-      "name": "process_strix_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 132
-    },
-    {
-      "name": "process_nuclei_scan",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 136
-    },
-    {
-      "name": "process_validation",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 140
-    },
-    {
-      "name": "process_browser_flow",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 213
-    },
-    {
-      "name": "process_recon_task",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 317
-    },
-    {
-      "name": "process_report",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 442
-    },
-    {
-      "name": "_record_worker_outcome",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 484
-    },
-    {
-      "name": "_worker_bool",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 514
-    },
-    {
-      "name": "_legacy_unprovenanced_jobs_allowed",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 526
-    },
-    {
-      "name": "_verify_policy_bound_job",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 530
-    },
-    {
-      "name": "_active_scanner_execution_requested",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 550
-    },
-    {
-      "name": "_claim_for_role",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 557
-    },
-    {
-      "name": "process_one",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 571
-    },
-    {
-      "name": "_worker_poll_seconds",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 628
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "backend/app/worker_service.py",
-      "line": 639
-    },
-    {
-      "name": "_gate",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 8
-    },
-    {
-      "name": "test_cycle_halts_when_gate_is_blocked",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 18
-    },
-    {
-      "name": "test_cycle_maps_safe_planner_actions_to_bounded_states",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
+      "file": "backend/app/swarm_coordinator.py",
       "line": 29
     },
     {
-      "name": "test_cycle_requires_human_for_report_focus",
+      "name": "to_dict",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 40
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 36
     },
     {
-      "name": "test_cycle_suppresses_repeated_failed_techniques",
+      "name": "_capability_by_task",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 51
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 48
     },
     {
-      "name": "test_adaptive_cycle_route_is_exposed",
+      "name": "coordinate_recon_swarm",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 71
+      "file": "backend/app/swarm_coordinator.py",
+      "line": 56
     },
     {
-      "name": "test_cycle_halts_for_human_review_after_repeated_requeues_without_success",
+      "name": "task",
       "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 75
-    },
-    {
-      "name": "test_cycle_does_not_suppress_recovered_worker_kind",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 101
-    },
-    {
-      "name": "test_negative_scanner_memory_does_not_suppress_authorized_scanner",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 125
-    },
-    {
-      "name": "test_operational_scanner_worker_instability_still_requires_human_review",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 148
-    },
-    {
-      "name": "test_adaptive_cycle_route_does_not_suppress_target_from_other_host_failures",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 180
-    },
-    {
-      "name": "test_malformed_worker_requeue_count_requires_review_not_exception",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 240
-    },
-    {
-      "name": "test_negative_and_boolean_worker_counts_do_not_signal_healthy_execution",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 254
-    },
-    {
-      "name": "test_malformed_worker_outcome_structure_requires_human_review",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 267
-    },
-    {
-      "name": "test_valid_worker_feedback_retains_existing_completion_semantics",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 278
-    },
-    {
-      "name": "test_repeated_failed_workers_require_review_without_requeue_events",
-      "kind": "function",
-      "file": "backend/tests/test_adaptive_cycle.py",
-      "line": 290
-    },
-    {
-      "name": "test_learning_memory_aggregates_only_explicit_outcomes",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 9
-    },
-    {
-      "name": "test_learning_memory_is_bounded_and_deterministic",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 55
-    },
-    {
-      "name": "test_learning_memory_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 77
-    },
-    {
-      "name": "test_learning_memory_rejects_unbounded_limits",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 105
-    },
-    {
-      "name": "test_worker_outcome_memory_excludes_payloads_and_errors",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 116
-    },
-    {
-      "name": "test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 141
-    },
-    {
-      "name": "test_worker_summary_counts_one_final_state_per_job",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 163
-    },
-    {
-      "name": "event",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 166
-    },
-    {
-      "name": "test_worker_summary_does_not_merge_different_job_kinds",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 199
-    },
-    {
-      "name": "test_invalid_worker_events_cannot_inflate_recovery_failure_counts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 217
-    },
-    {
-      "name": "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 258
-    },
-    {
-      "name": "_technique_job_observation",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 300
-    },
-    {
-      "name": "test_technique_memory_deduplicates_multiple_observations_from_same_job",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 313
-    },
-    {
-      "name": "test_contradictory_job_results_are_inconclusive_regardless_of_order",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 333
-    },
-    {
-      "name": "test_distinct_job_ids_remain_independent_technique_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 356
-    },
-    {
-      "name": "test_legacy_observations_without_job_id_keep_independent_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 373
-    },
-    {
-      "name": "test_malformed_job_id_cannot_create_extra_technique_confidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 388
-    },
-    {
-      "name": "test_worker_completed_state_survives_late_failed_and_queued_events",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 414
-    },
-    {
-      "name": "test_failed_job_without_completion_can_still_be_requeued",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 439
-    },
-    {
-      "name": "test_terminal_worker_state_prevents_false_scanner_instability",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 458
-    },
-    {
-      "name": "test_scoped_learning_excludes_other_authorized_host_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 481
-    },
-    {
-      "name": "test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 511
-    },
-    {
-      "name": "test_scoped_learning_preserves_single_asset_legacy_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 531
-    },
-    {
-      "name": "test_scoped_learning_rejects_different_protocol_and_port",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 552
-    },
-    {
-      "name": "test_scoped_learning_does_not_credit_job_id_reused_on_other_host",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 581
-    },
-    {
-      "name": "test_scoped_learning_accepts_indirect_in_scope_ancestry_only",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 603
-    },
-    {
-      "name": "test_scoped_learning_rejects_non_web_target_url",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 642
-    },
-    {
-      "name": "test_invisible_job_ids_cannot_inflate_scanner_technique_memory",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 653
-    },
-    {
-      "name": "test_invisible_worker_event_ids_do_not_inflate_operational_failures",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 679
-    },
-    {
-      "name": "test_worker_outcome_event_rejects_invalid_job_identifiers",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 707
-    },
-    {
-      "name": "test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 721
-    },
-    {
-      "name": "test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 745
-    },
-    {
-      "name": "test_scoped_learning_rejects_malformed_intermediate_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 764
-    },
-    {
-      "name": "test_scoped_learning_rejects_cross_origin_form_with_approved_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 783
-    },
-    {
-      "name": "test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 799
-    },
-    {
-      "name": "test_scoped_learning_accepts_valid_endpoint_and_form_chain",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 819
-    },
-    {
-      "name": "test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 842
-    },
-    {
-      "name": "test_learning_memory_route_excludes_evidence_from_other_authorized_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 859
-    },
-    {
-      "name": "test_worker_outcome_event_rejects_noninteger_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 916
-    },
-    {
-      "name": "test_worker_summary_does_not_count_invalid_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 935
-    },
-    {
-      "name": "test_invalid_completion_attempts_cannot_overwrite_valid_queued_state",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 961
-    },
-    {
-      "name": "test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 987
-    },
-    {
-      "name": "_memory",
-      "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
+      "file": "backend/tests/test_recon_priority.py",
       "line": 7
     },
     {
-      "name": "test_adaptation_never_expands_configured_engines",
+      "name": "test_diff_priority_only_reorders_existing_authorized_tasks",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 20
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 25
     },
     {
-      "name": "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+      "name": "test_diff_priority_does_nothing_without_baseline",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 33
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 69
     },
     {
-      "name": "test_adaptation_never_suppresses_last_configured_engine",
+      "name": "test_diff_priority_is_bounded_to_fifteen_points",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 45
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 91
     },
     {
-      "name": "test_adaptation_ranks_successful_memory_first",
+      "name": "test_historical_novelty_adds_small_bounded_boost",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 66
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 110
     },
     {
-      "name": "test_adaptation_rejects_unknown_or_duplicate_configuration",
+      "name": "test_reappearing_surface_has_less_history_weight_than_novel_surface",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 80
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 145
     },
     {
-      "name": "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+      "name": "test_total_priority_boost_is_bounded_to_twenty_points",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 88
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 188
     },
     {
-      "name": "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+      "name": "test_temporal_novelty_favors_never_seen_surface_over_returning_churn",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 108
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 233
     },
     {
-      "name": "test_negative_memory_cannot_expand_scanner_configuration",
+      "name": "test_intermittent_surface_has_low_temporal_weight",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 128
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 285
     },
     {
-      "name": "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+      "name": "test_temporal_scoring_never_breaks_total_boost_cap",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 141
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 314
     },
     {
-      "name": "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
+      "name": "test_low_confidence_dampens_recon_boost_without_changing_authority",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 153
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 361
     },
     {
-      "name": "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
+      "name": "test_high_confidence_preserves_full_bounded_boost",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 168
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 398
     },
     {
-      "name": "test_positive_security_signal_prevents_negative_yield_rotation",
+      "name": "test_missing_confidence_is_neutral_and_never_increases_cap",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 189
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 432
     },
     {
-      "name": "test_no_completed_history_does_not_invent_scanner_rotation",
+      "name": "test_high_value_focus_boosts_matching_existing_task_only",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 201
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 453
     },
     {
-      "name": "test_scanner_rotation_never_overrides_safety_suppression",
+      "name": "test_high_value_boost_preserves_recon_authority_fields",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 212
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 490
     },
     {
-      "name": "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
+      "name": "test_fully_covered_high_value_family_does_not_receive_extra_boost",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 229
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 524
     },
     {
-      "name": "test_invalid_worker_completed_counts_never_trigger_rotation",
+      "name": "test_undercovered_high_value_score_drives_existing_task_boost",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 252
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 553
     },
     {
-      "name": "test_invalid_worker_failure_counts_cannot_suppress_configured_engine",
+      "name": "test_no_finding_recovery_reorders_existing_recon_without_expanding_authority",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 276
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 582
     },
     {
-      "name": "test_malformed_worker_outcome_structure_preserves_configured_order",
+      "name": "test_no_finding_feedback_cannot_override_authority_fields",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 308
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 619
     },
     {
-      "name": "test_invalid_counter_on_one_engine_disables_cross_engine_rotation",
+      "name": "test_no_finding_feedback_ignored_when_findings_present",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 323
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 637
     },
     {
-      "name": "test_valid_bounded_worker_counters_preserve_suppression_behavior",
+      "name": "test_feedback_never_creates_unconfigured_recon_tasks",
       "kind": "function",
-      "file": "backend/tests/test_scanner_adaptation.py",
-      "line": 341
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 655
+    },
+    {
+      "name": "_safe_feedback",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 672
+    },
+    {
+      "name": "test_negative_scan_exhaustion_deprioritizes_repeated_task_but_keeps_visibility",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 686
+    },
+    {
+      "name": "test_exhaustion_prevents_historical_priority_inflation",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 719
+    },
+    {
+      "name": "test_reopened_recovery_kind_is_not_penalized",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 739
+    },
+    {
+      "name": "test_no_supported_recovery_tasks_are_penalized_not_dispatched",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 757
+    },
+    {
+      "name": "test_malformed_or_escalating_feedback_does_not_deprioritize",
+      "kind": "function",
+      "file": "backend/tests/test_recon_priority.py",
+      "line": 774
+    },
+    {
+      "name": "test_capabilities_are_bounded_read_only_and_get_head_only",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 7
+    },
+    {
+      "name": "test_recon_plan_bootstraps_crawl_and_technology_context",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 24
+    },
+    {
+      "name": "test_recon_plan_adds_form_and_browser_mapping_after_endpoints_exist",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 40
+    },
+    {
+      "name": "test_recon_plan_fails_closed_out_of_scope_and_invalid_limits",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 68
+    },
+    {
+      "name": "test_recon_plan_route_is_exposed_and_scope_aware",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 91
+    },
+    {
+      "name": "test_recon_plan_refuses_unobserved_host_when_asset_inventory_exists",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 121
+    },
+    {
+      "name": "test_recon_plan_accepts_matching_bare_asset_host",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 134
+    },
+    {
+      "name": "test_recon_plan_reorders_existing_tasks_after_null_scans",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 148
+    },
+    {
+      "name": "test_multi_host_recon_ignores_inventory_from_other_authorized_host",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 219
+    },
+    {
+      "name": "test_recon_does_not_reuse_http_inventory_on_https_origin",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 257
+    },
+    {
+      "name": "test_recon_does_not_reuse_another_port_form_or_technology",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 280
+    },
+    {
+      "name": "test_unlinked_observation_from_multi_asset_graph_is_not_coverage",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 334
+    },
+    {
+      "name": "test_single_host_legacy_unlinked_endpoint_still_counts_when_origin_matches",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 356
+    },
+    {
+      "name": "test_recon_rejects_non_http_or_credential_bearing_target",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 378
+    },
+    {
+      "name": "test_recon_ipv6_target_keeps_bracketed_origin_and_read_only_limits",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 393
+    },
+    {
+      "name": "test_multi_host_recon_route_offers_missing_target_crawl_after_negative_scan",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 412
+    },
+    {
+      "name": "test_indirect_http_endpoint_cannot_satisfy_https_technology_coverage",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 467
+    },
+    {
+      "name": "test_indirect_wrong_port_form_cannot_close_target_recon_gaps",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 502
+    },
+    {
+      "name": "test_mixed_valid_and_unrelated_endpoint_ancestors_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 549
+    },
+    {
+      "name": "test_valid_indirect_origin_observations_still_close_technology_gap",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 600
+    },
+    {
+      "name": "test_malformed_intermediate_endpoint_cannot_launder_technology_evidence",
+      "kind": "function",
+      "file": "backend/tests/test_recon_swarm.py",
+      "line": 645
+    },
+    {
+      "name": "_tasks",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 8
+    },
+    {
+      "name": "test_swarm_coordinator_preserves_capability_boundaries",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 27
+    },
+    {
+      "name": "test_swarm_coordinator_shares_request_budget_across_agents",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 44
+    },
+    {
+      "name": "test_swarm_coordinator_limits_agent_fanout",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 57
+    },
+    {
+      "name": "test_swarm_coordinator_fails_closed_on_agent_mismatch",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 67
+    },
+    {
+      "name": "test_swarm_coordinator_rejects_capability_escalation",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 81
+    },
+    {
+      "name": "test_swarm_budget_validation_is_fail_closed",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 96
+    },
+    {
+      "name": "test_swarm_coordinator_uses_central_agent_registry",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 101
+    },
+    {
+      "name": "fake_agent_by_name",
+      "kind": "function",
+      "file": "backend/tests/test_swarm_coordinator.py",
+      "line": 106
     }
   ],
   "selected_tests": [
-    "backend/tests/test_adaptive_cycle.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_scanner_adaptation.py"
+    "backend/tests/test_recon_priority.py",
+    "backend/tests/test_recon_swarm.py",
+    "backend/tests/test_swarm_coordinator.py"
   ]
 }
