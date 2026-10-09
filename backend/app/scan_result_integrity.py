@@ -8,6 +8,23 @@ from .observation_graph import ObservationGraph
 
 _TERMINAL_SCAN_STATES = frozenset({"completed", "failed", "cancelled"})
 
+def canonical_scan_job_id(raw: object) -> str | None:
+    """Validate one explicit scan-job identity shared across evidence consumers.
+
+    Missing IDs are a separate legacy case. Reject invisible or control
+    characters, including DEL and Unicode format controls, before grouping
+    observations that claim to represent the same worker execution.
+    """
+    if not isinstance(raw, str):
+        return None
+    normalized = raw.strip()
+    if not 0 < len(normalized) <= 128 or not all(
+        char.isprintable() for char in raw
+    ):
+        return None
+    return normalized
+
+
 
 def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]:
     """Identify one job reporting incompatible terminal scan outcomes.
@@ -22,14 +39,10 @@ def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]
         status = item.metadata.get("status")
         if not isinstance(status, str) or status not in _TERMINAL_SCAN_STATES:
             continue
-        raw_id = item.metadata.get("job_id")
-        if (
-            not isinstance(raw_id, str)
-            or not 0 < len(raw_id.strip()) <= 128
-            or any(ord(char) < 32 for char in raw_id)
-        ):
+        job_id = canonical_scan_job_id(item.metadata.get("job_id"))
+        if job_id is None:
             continue
-        states_by_job.setdefault(raw_id.strip(), set()).add(status)
+        states_by_job.setdefault(job_id, set()).add(status)
     return frozenset(
         job_id for job_id, statuses in states_by_job.items()
         if len(statuses) > 1
