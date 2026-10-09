@@ -246,8 +246,31 @@ def build_hypotheses(
     for item in hypotheses:
         key = (item.kind, item.target)
         previous = deduped.get(key)
-        if previous is None or item.confidence > previous.confidence:
+        if previous is None:
             deduped[key] = item
+            continue
+        # Multiple observations of the same safe URL can expose different
+        # input names. Keep their union and provenance instead of silently
+        # discarding all but one while redacting their query values.
+        preferred = (
+            item if item.confidence > previous.confidence else previous
+        )
+        deduped[key] = Hypothesis(
+            kind=preferred.kind,
+            target=preferred.target,
+            reason=preferred.reason,
+            confidence=max(previous.confidence, item.confidence),
+            evidence_ids=tuple(sorted(
+                set(previous.evidence_ids) | set(item.evidence_ids)
+            )[:32]),
+            next_action=preferred.next_action,
+            parameter_names=tuple(sorted(
+                set(previous.parameter_names) | set(item.parameter_names)
+            )[:64]),
+            dependency_depth=max(
+                previous.dependency_depth, item.dependency_depth
+            ),
+        )
 
     return sorted(
         deduped.values(),
