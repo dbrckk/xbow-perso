@@ -1575,3 +1575,116 @@ def test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage():
     )
     assert coverage["evidence"]["completed_scans"] == 0
     assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+
+def test_untrusted_completed_scan_guides_to_provenance_review_not_more_scans():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a", "endpoint", "https://example.test/home",
+            "crawler", parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:foreign", "form", "https://other.test/login",
+            "browser", parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:foreign", "evidence", "completed", "nuclei",
+            parent_ids=("form:foreign",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "invalid-origin", "findings": 0,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    guidance = build_coverage_guidance(coverage)
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert guidance["focus"] == "scan_provenance_reconciliation"
+    assert guidance["recommended_strategy"] == (
+        "review_untrusted_scan_provenance_before_more_scans"
+    )
+    assert guidance["advisory_only"] is True
+    assert guidance["may_unlock_actions"] is False
+    assert "other.test" not in str(guidance)
+
+
+def test_unreconciled_findings_take_precedence_over_provenance_guidance():
+    guidance = build_coverage_guidance({
+        "score": 0.8,
+        "dimensions": {
+            "surface_discovery": 0.9,
+            "scanner_execution": 0.0,
+            "independent_validation": None,
+            "diminishing_returns": 1.0,
+        },
+        "evidence": {
+            "unreconciled_scan_observations": 2,
+            "untrusted_scan_observations": 3,
+        },
+    })
+
+    assert guidance["focus"] == "scan_result_reconciliation"
+    assert guidance["recommended_strategy"] == (
+        "reconcile_scan_reports_before_replanning"
+    )
+
+
+def test_untrusted_provenance_precedes_low_discovery_and_scanner_retry():
+    guidance = build_coverage_guidance({
+        "score": 0.1,
+        "dimensions": {
+            "surface_discovery": 0.1,
+            "scanner_execution": 0.0,
+            "independent_validation": None,
+        },
+        "evidence": {"untrusted_scan_observations": 1},
+    })
+
+    assert guidance["focus"] == "scan_provenance_reconciliation"
+    assert guidance["may_unlock_actions"] is False
+
+
+def test_no_untrusted_scan_keeps_existing_discovery_guidance():
+    guidance = build_coverage_guidance({
+        "score": 0.2,
+        "dimensions": {
+            "surface_discovery": 0.2,
+            "scanner_execution": 0.0,
+            "independent_validation": None,
+        },
+        "evidence": {"untrusted_scan_observations": 0},
+    })
+
+    assert guidance["focus"] == "surface_discovery"
+
+
+def test_untrusted_provenance_does_not_change_planned_scan_or_authority():
+    action = PlannedAction(
+        kind="scan",
+        target="https://example.test/",
+        reason="preauthorized",
+        priority=80,
+    )
+    adjusted, signal = prioritize_action_with_coverage(
+        action,
+        {
+            "focus": "scan_provenance_reconciliation",
+            "diminishing_returns": 1.0,
+        },
+    )
+
+    assert adjusted == action
+    assert signal["applied"] is False
+    assert signal["action_kind_unchanged"] is True
+    assert signal["target_unchanged"] is True
