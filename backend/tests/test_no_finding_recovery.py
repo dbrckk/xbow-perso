@@ -248,8 +248,29 @@ def test_feedback_rejects_negative_campaign_finding_count():
         _feedback(_graph(), campaign_finding_count=-1)
 
 
+def _graph_with_explicitly_linked_scan():
+    """The negative scan belongs to asset:a even if a second host is observed."""
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:scoped",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "scoped-job",
+                "findings": 0,
+            },
+        )
+    )
+    return graph
+
+
 def test_out_of_scope_technology_does_not_satisfy_authorized_inventory():
-    graph = _graph()
+    graph = _graph_with_explicitly_linked_scan()
     graph.add(
         Observation("asset:other", "asset", "other.test", "inventory")
     )
@@ -288,7 +309,7 @@ def test_orphan_form_does_not_close_authorized_form_inventory_gap():
 
 
 def test_out_of_scope_form_does_not_close_authorized_form_inventory_gap():
-    graph = _graph()
+    graph = _graph_with_explicitly_linked_scan()
     graph.add(
         Observation("asset:other", "asset", "other.test", "inventory")
     )
@@ -419,7 +440,7 @@ def test_completed_all_candidate_recovery_tasks_requires_review():
 
 
 def test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task():
-    graph = _graph()
+    graph = _graph_with_explicitly_linked_scan()
     graph.add(
         Observation("asset:other", "asset", "other.test", "inventory")
     )
