@@ -184,6 +184,7 @@ def _completed_scan_evidence(
         for job_id in conflicting_scan_terminal_job_ids(graph)
     }
     rejected_cross_origin_jobs: set[str] = set()
+    current_time = datetime.now(timezone.utc)
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("phase") != "scan"
@@ -204,6 +205,30 @@ def _completed_scan_evidence(
             invalid_jobs.add(key)
         else:
             key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+
+        # An explicitly dated completion that is malformed, from the future,
+        # or earlier than its recorded start cannot establish a trusted
+        # negative result. Missing timestamps remain legacy-compatible.
+        finished = None
+        if "completed_at" in item.metadata:
+            finished = _trusted_utc_timestamp(
+                item.metadata["completed_at"], now=current_time
+            )
+        started = None
+        if "started_at" in item.metadata:
+            started = _trusted_utc_timestamp(
+                item.metadata["started_at"], now=current_time
+            )
+        if (
+            ("completed_at" in item.metadata and finished is None)
+            or ("started_at" in item.metadata and started is None)
+            or (
+                started is not None
+                and finished is not None
+                and started > finished
+            )
+        ):
+            invalid_jobs.add(key)
 
         if evidence_filter is not None and not evidence_filter(item):
             # A job observed on another origin cannot be credited through
