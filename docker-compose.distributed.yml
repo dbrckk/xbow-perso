@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: public.ecr.aws/docker/library/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${XBOW_POSTGRES_DB:-xbow}
@@ -19,7 +19,7 @@ services:
     networks: [control]
 
   redis:
-    image: redis:7-alpine
+    image: public.ecr.aws/docker/library/redis:7-alpine
     restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${XBOW_REDIS_PASSWORD:?set XBOW_REDIS_PASSWORD}
