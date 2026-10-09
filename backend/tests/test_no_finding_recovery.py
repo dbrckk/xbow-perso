@@ -2445,3 +2445,193 @@ def test_endpoint_linked_completed_scan_still_supports_bounded_recovery():
     assert result.state == "recovery_advisory"
     assert result.trusted_completed_scan_count == 1
     assert result.may_increase_request_budget is False
+
+
+
+def test_form_via_invalid_endpoint_does_not_close_target_inventory_gap():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:foreign-parent", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:laundered", "form",
+            "https://example.test/login", "browser",
+            parent_ids=("endpoint:foreign-parent",),
+            metadata={"method": "POST", "input_names": ["login"]},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.state == "recovery_advisory"
+    assert result.in_scope_form_count == 0
+    assert "map_forms" in result.recommended_task_kinds
+    assert result.negative_result_proves_safe is False
+
+
+def test_technology_via_invalid_endpoint_cannot_complete_target_context():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:foreign", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:laundered", "technology",
+            "nginx/1.24.0", "httpx",
+            parent_ids=("endpoint:foreign",),
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.missing_technology_context is True
+    assert "detect_technology" in result.recommended_task_kinds
+
+
+def test_recon_completion_via_invalid_endpoint_does_not_exhaust_target_task():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:foreign", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "recovery:laundered", "evidence", "completed",
+            "recon-worker",
+            parent_ids=("endpoint:foreign",),
+            metadata={"task_kind": "map_forms", "status": "completed"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert "map_forms" in result.recommended_task_kinds
+    assert "map_forms" not in result.exhausted_task_kinds
+
+
+def test_mixed_valid_and_invalid_endpoint_ancestors_do_not_credit_form():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "endpoint:foreign", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:mixed", "form",
+            "https://example.test/login", "browser",
+            parent_ids=("endpoint:a", "endpoint:foreign"),
+            metadata={"method": "POST"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.in_scope_form_count == 0
+    assert "map_forms" in result.recommended_task_kinds
+
+
+def test_cross_protocol_endpoint_cannot_provide_https_form_lineage():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:scoped", "evidence", "scan-complete",
+            "nuclei", parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "job-scoped", "findings": 0,
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:http", "endpoint",
+            "http://example.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:https", "form",
+            "https://example.test/login", "browser",
+            parent_ids=("endpoint:http",),
+        )
+    )
+
+    result = _feedback(
+        graph, target_url="https://example.test/",
+    )
+    assert result.state == "recovery_advisory"
+    assert result.in_scope_form_count == 0
+    assert "map_forms" in result.recommended_task_kinds
+
+
+def test_trusted_endpoint_ancestry_still_counts_forms_and_technology():
+    graph = _graph()
+    graph.add(
+        Observation(
+            "form:valid", "form",
+            "https://example.test/login", "form-discovery",
+            parent_ids=("endpoint:a",),
+            metadata={"method": "POST"},
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:valid", "technology",
+            "nginx/1.24.0", "httpx",
+            parent_ids=("endpoint:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "recovery:legitimate", "evidence", "completed",
+            "recon-worker",
+            parent_ids=("endpoint:a",),
+            metadata={"task_kind": "map_endpoints", "status": "completed"},
+        )
+    )
+
+    result = _feedback(graph, target_host="example.test")
+    assert result.in_scope_form_count == 1
+    assert result.missing_technology_context is False
+    assert "map_endpoints" in result.exhausted_task_kinds
+
+
+def test_untrusted_browser_lineage_does_not_exhaust_browser_recovery():
+    graph = _fully_reviewed_target_graph(additional_host=False)
+    graph.add(
+        Observation(
+            "endpoint:foreign", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "browser:laundered", "evidence", "completed",
+            "browser-agent",
+            parent_ids=("endpoint:foreign",),
+            metadata={
+                "task_kind": "browser_observe", "status": "completed",
+            },
+        )
+    )
+
+    result = _feedback(
+        graph,
+        allowed=("browser_observe",),
+        target_host="example.test",
+    )
+    assert result.recommended_task_kinds == ("browser_observe",)
+    assert result.exhausted_task_kinds == ()

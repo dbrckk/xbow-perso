@@ -374,6 +374,8 @@ def build_no_finding_recovery(
         )
     }
     observations_by_id = {item.id: item for item in graph.values()}
+    eligible_endpoint_ids = {item["id"] for item in endpoints}
+    eligible_form_ids = {item["id"] for item in forms}
 
     def has_in_scope_asset_ancestor(observation_id: str) -> bool:
         pending = list(observations_by_id[observation_id].parent_ids)
@@ -386,7 +388,17 @@ def build_no_finding_recovery(
             seen.add(parent_id)
             parent = observations_by_id.get(parent_id)
             if parent is None:
-                continue
+                return False
+            # A valid asset ancestor cannot sanitize an invalid intermediate
+            # endpoint or form. Check every branch of the full ancestry graph.
+            if (
+                parent.kind == "endpoint"
+                and parent.id not in eligible_endpoint_ids
+            ) or (
+                parent.kind == "form"
+                and parent.id not in eligible_form_ids
+            ):
+                return False
             if parent.kind == "asset":
                 host = asset_host_by_id.get(parent.id)
                 if not host:
