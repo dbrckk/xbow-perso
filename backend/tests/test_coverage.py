@@ -2135,3 +2135,157 @@ def test_mixed_form_asset_origins_do_not_credit_one_valid_parent():
     )
     assert report["evidence"]["completed_scans"] == 0
     assert report["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_positive_scan_on_asset_a_cannot_reconcile_finding_on_asset_b():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "a.example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "b.example.test", "inventory"))
+    graph.add(
+        Observation(
+            "finding:b",
+            "finding",
+            "issue on b",
+            "nuclei",
+            parent_ids=("asset:b",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "positive-a",
+                "findings": 1,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host in {"a.example.test", "b.example.test"},
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 1
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+    assert build_coverage_guidance(coverage)["focus"] == "scan_result_reconciliation"
+
+
+def test_positive_scan_on_matching_endpoint_reconciles_recorded_finding():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "finding:a",
+            "finding",
+            "issue on a",
+            "nuclei",
+            parent_ids=("endpoint:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "positive-a",
+                "findings": 1,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 0
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 1
+
+
+def test_orphan_finding_cannot_reconcile_positive_scan_claim():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation("finding:orphan", "finding", "unlinked", "nuclei")
+    )
+    graph.add(
+        Observation(
+            "scan:a",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "positive-a",
+                "findings": 1,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 1
+
+
+def test_positive_scan_count_cannot_exceed_same_asset_recorded_findings():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "finding:one",
+            "finding",
+            "recorded finding",
+            "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:two-reported",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "positive-a",
+                "findings": 2,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["unreconciled_scan_observations"] == 1
+    assert build_coverage_guidance(coverage)["focus"] == "scan_result_reconciliation"
