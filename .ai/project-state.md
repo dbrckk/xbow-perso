@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:47:15Z
+Generated: 2026-10-09T11:52:19Z
 
 ### Git
 - Branch: `main`
-- Head: `31986d83faf9`
-- Commit date: 2026-10-09T13:47:04+02:00
-- Commit: fix(coverage): validate full form-origin lineage for scan credit
+- Head: `488d16998edf`
+- Commit date: 2026-10-09T13:52:10+02:00
+- Commit: fix(coverage): exclude untrusted-origin reviews from completed coverage
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/red_team_coverage.py`
+- `backend/tests/test_red_team_coverage.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `AGENTS.md`
@@ -56,8 +58,6 @@ Generated: 2026-10-09T11:47:15Z
 - `backend/tests/test_recon_swarm.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 
 ### Project signals
 - `pyproject.toml`

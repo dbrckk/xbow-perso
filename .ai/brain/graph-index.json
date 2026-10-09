@@ -1815,6 +1815,28 @@
     },
     {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/coverage.py",
+        "backend/app/evidence_chain.py",
+        "backend/app/hypothesis_engine.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/review_evidence.py",
+        "backend/app/validation_state.py"
+      ],
+      "dependents": [
+        "backend/app/campaign_overview.py",
+        "backend/app/campaign_risk.py",
+        "backend/app/red_team_decision.py",
+        "backend/tests/test_form_waf_reasoning.py",
+        "backend/tests/test_red_team_coverage.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 8,
+      "path": "backend/app/red_team_coverage.py"
+    },
+    {
+      "dependencies": [
         "backend/app/domain_incident_lifecycle.py",
         "backend/app/error_budget.py",
         "backend/app/incident_domains.py",
@@ -1918,27 +1940,6 @@
       "in_degree": 5,
       "out_degree": 7,
       "path": "backend/app/finding_triage.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/attack_surface.py",
-        "backend/app/evidence_chain.py",
-        "backend/app/hypothesis_engine.py",
-        "backend/app/main.py",
-        "backend/app/observation_graph.py",
-        "backend/app/review_evidence.py",
-        "backend/app/validation_state.py"
-      ],
-      "dependents": [
-        "backend/app/campaign_overview.py",
-        "backend/app/campaign_risk.py",
-        "backend/app/red_team_decision.py",
-        "backend/tests/test_form_waf_reasoning.py",
-        "backend/tests/test_red_team_coverage.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 7,
-      "path": "backend/app/red_team_coverage.py"
     },
     {
       "dependencies": [
@@ -2348,6 +2349,24 @@
     },
     {
       "dependencies": [
+        "backend/app/attack_surface.py",
+        "backend/app/main.py",
+        "backend/app/observation_graph.py",
+        "backend/app/scan_result_integrity.py",
+        "backend/app/validation_state.py"
+      ],
+      "dependents": [
+        "backend/app/main.py",
+        "backend/app/orchestrator.py",
+        "backend/app/red_team_coverage.py",
+        "backend/tests/test_coverage.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 5,
+      "path": "backend/app/coverage.py"
+    },
+    {
+      "dependencies": [
         "backend/app/hackerone_client.py",
         "backend/app/hackerone_review_draft.py",
         "backend/app/storage.py",
@@ -2363,27 +2382,9 @@
       "in_degree": 3,
       "out_degree": 6,
       "path": "backend/app/hackerone_feasibility.py"
-    },
-    {
-      "dependencies": [
-        "backend/app/observation_graph.py",
-        "backend/app/observer_heartbeat.py",
-        "backend/app/observer_lease.py",
-        "backend/app/observer_resilience.py",
-        "backend/app/observer_runtime.py",
-        "backend/tests/test_hackerone_prelaunch.py"
-      ],
-      "dependents": [
-        "backend/tests/test_observer_deadline_heartbeat.py",
-        "backend/tests/test_observer_fencing_integration.py",
-        "backend/tests/test_observer_scheduler.py"
-      ],
-      "in_degree": 3,
-      "out_degree": 6,
-      "path": "backend/app/observer_scheduler.py"
     }
   ],
-  "edge_count": 2216,
+  "edge_count": 2217,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 484,
   "schema_version": 1

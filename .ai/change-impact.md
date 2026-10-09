@@ -1,11 +1,11 @@
 # Change impact
 
-Base: d92875629af3f3fd9120ba16c329947c92671b21
-Head: 31986d83faf92ff60c7f710673fe76373b6cea5e
+Base: a7314dc08611dede5d833546127b63ee4c8f5a02
+Head: 488d16998edf7f956a178af3aad967ec923056b8
 
 ## Changed files
-- M backend/app/coverage.py
-- M backend/tests/test_coverage.py
+- M backend/app/red_team_coverage.py
+- M backend/tests/test_red_team_coverage.py
 
 ## Affected areas
 - backend

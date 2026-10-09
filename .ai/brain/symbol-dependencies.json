@@ -5,122 +5,20 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_web_origin": {
+    "CoverageDomain": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 20,
-        "end": 39
+        "file": "backend/app/red_team_coverage.py",
+        "start": 23,
+        "end": 32
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_asset_supports_web_origin": {
+    "to_dict": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 42,
-        "end": 67
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_web_origin",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_endpoint_has_consistent_asset_origins": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 70,
-        "end": 84
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_supports_web_origin",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_web_origin",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_form_has_consistent_asset_origins": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 88,
-        "end": 135
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_supports_web_origin",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_web_origin",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_completed_scans_with_provenance": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 138,
-        "end": 313
+        "file": "backend/app/red_team_coverage.py",
+        "start": 31,
+        "end": 151
       },
       "symbol_dependencies": [
         {
@@ -145,7 +43,7 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "_form_has_consistent_asset_origins",
@@ -157,19 +55,91 @@
               "language": "python"
             }
           ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_ratio",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_reviewed_parent_ids",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "analyze_validation_state",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 40,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "build_attack_surface",
+          "definitions": [
+            {
+              "file": "backend/app/attack_surface.py",
+              "line": 116,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_chains",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_chain.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_red_team_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "by_kind",
@@ -184,52 +154,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_scan_job_id",
+          "symbol": "is_completed_review_evidence",
           "definitions": [
             {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
+              "file": "backend/app/review_evidence.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "conflicting_scan_terminal_job_ids",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plausible_scan_timeline",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "trustworthy_lineage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 181,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "values",
@@ -244,22 +178,31 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 10
+      "dependency_count": 13
     },
-    "trustworthy_lineage": {
+    "_ratio": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 181,
-        "end": 301
+        "file": "backend/app/red_team_coverage.py",
+        "start": 35,
+        "end": 37
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_reviewed_parent_ids": {
+      "source": {
+        "file": "backend/app/red_team_coverage.py",
+        "start": 40,
+        "end": 61
       },
       "symbol_dependencies": [
         {
-          "symbol": "add",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
               "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -278,35 +221,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_scan_job_id",
+          "symbol": "is_completed_review_evidence",
           "definitions": [
             {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "conflicting_scan_terminal_job_ids",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 29,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plausible_scan_timeline",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 52,
+              "file": "backend/app/review_evidence.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
@@ -314,15 +233,27 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 3
     },
-    "_endpoint_scan_attribution": {
+    "build_red_team_coverage": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 317,
-        "end": 433
+        "file": "backend/app/red_team_coverage.py",
+        "start": 64,
+        "end": 317
       },
       "symbol_dependencies": [
+        {
+          "symbol": "CoverageDomain",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -345,14 +276,98 @@
               "language": "python"
             }
           ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_form_has_consistent_asset_origins",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_ratio",
+          "definitions": [
+            {
+              "file": "backend/app/red_team_coverage.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
           "relation": "same_file"
         },
         {
-          "symbol": "add",
+          "symbol": "_reviewed_parent_ids",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "analyze_validation_state",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "attempted_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_attack_surface",
+          "definitions": [
+            {
+              "file": "backend/app/attack_surface.py",
+              "line": 116,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_chains",
+          "definitions": [
+            {
+              "file": "backend/app/evidence_chain.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 104,
               "kind": "function",
               "language": "python"
             }
@@ -372,28 +387,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical_scan_job_id",
+          "symbol": "observed_independent_finding_ids",
           "definitions": [
             {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
+              "file": "backend/app/validation_state.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "explicit_endpoint_ancestry",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 348,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "values",
@@ -408,225 +411,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 14
     },
-    "explicit_endpoint_ancestry": {
+    "campaign_red_team_coverage": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 348,
-        "end": 468
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_completed_scans_with_provenance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 138,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_endpoint_scan_attribution",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 317,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "analyze_validation_state",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 40,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "by_kind",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 95,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical_scan_job_id",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "observed_independent_finding_ids",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 10
-    },
-    "build_evidence_coverage": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 436,
-        "end": 527
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_completed_scans_with_provenance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 138,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_endpoint_scan_attribution",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 317,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "analyze_validation_state",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 40,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_attack_surface",
-          "definitions": [
-            {
-              "file": "backend/app/attack_surface.py",
-              "line": 116,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "observed_independent_finding_ids",
-          "definitions": [
-            {
-              "file": "backend/app/validation_state.py",
-              "line": 77,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "campaign_coverage": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 531,
-        "end": 545
+        "file": "backend/app/red_team_coverage.py",
+        "start": 321,
+        "end": 333
       },
       "symbol_dependencies": [
         {
@@ -642,11 +433,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -680,42 +471,11 @@
       ],
       "dependency_count": 4
     },
-    "build_coverage_guidance": {
+    "test_red_team_coverage_reports_gaps_without_executing_actions": {
       "source": {
-        "file": "backend/app/coverage.py",
-        "start": 548,
-        "end": 643
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "prioritize_action_with_coverage": {
-      "source": {
-        "file": "backend/app/coverage.py",
-        "start": 647,
-        "end": 681
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_coverage_is_read_only_and_does_not_claim_unknown_completeness": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 6,
-        "end": 25
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 7,
+        "end": 40
       },
       "symbol_dependencies": [
         {
@@ -755,11 +515,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -769,11 +529,11 @@
       ],
       "dependency_count": 4
     },
-    "test_coverage_counts_scan_and_independent_validation": {
+    "test_endpoint_review_credit_requires_recorded_review_evidence": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 28,
-        "end": 73
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 43,
+        "end": 74
       },
       "symbol_dependencies": [
         {
@@ -813,11 +573,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -827,77 +587,11 @@
       ],
       "dependency_count": 4
     },
-    "test_coverage_route_is_exposed": {
+    "test_red_team_coverage_improves_after_independent_evidence": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 76,
-        "end": 77
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_coverage_guidance_is_advisory_only": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 80,
-        "end": 95
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_coverage_guidance_prioritizes_validation_after_scan": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 98,
-        "end": 110
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_coverage_detects_diminishing_scan_returns_without_findings": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 114,
-        "end": 171
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 77,
+        "end": 107
       },
       "symbol_dependencies": [
         {
@@ -937,241 +631,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_coverage_guidance",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_diminishing_returns_does_not_override_needed_validation": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 174,
-        "end": 188
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_low_yield_scan_deprioritization_preserves_kind_and_target": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 192,
-        "end": 213
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prioritize_action_with_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 647,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_coverage_priority_never_changes_non_scan_action": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 216,
-        "end": 233
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prioritize_action_with_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 647,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_completed_scan_duplicates_do_not_inflate_rotation_guidance": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 236,
-        "end": 273
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_only_in_scope_linked_scan_evidence_contributes_to_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 276,
-        "end": 335
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -1181,13 +645,25 @@
       ],
       "dependency_count": 4
     },
-    "test_single_asset_legacy_completed_scan_remains_compatible": {
+    "test_red_team_coverage_route_is_exposed_and_reads_durable_graph": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 338,
-        "end": 356
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 110,
+        "end": 135
       },
       "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "Observation",
           "definitions": [
@@ -1201,11 +677,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "ProgramRules",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/main.py",
+              "line": 83,
               "kind": "class",
               "language": "python"
             }
@@ -1213,45 +689,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "add",
+          "symbol": "Storage",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_scan_with_conflicting_asset_ancestors_is_not_trusted": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 359,
-        "end": 379
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
+              "file": "backend/app/storage.py",
+              "line": 19,
               "kind": "class",
               "language": "python"
             }
@@ -1259,906 +701,12 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ObservationGraph",
+          "symbol": "TargetInput",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
+              "file": "backend/app/main.py",
+              "line": 96,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_completed_scan_through_endpoint_ancestry_is_counted": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 382,
-        "end": 409
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_scan_job_identifiers_do_not_inflate_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 412,
-        "end": 436
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_same_job_reported_on_out_of_scope_asset_taints_entire_scan": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 439,
-        "end": 466
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_conflicting_reporters_for_same_scan_job_are_not_credited": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 469,
-        "end": 494
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_missing_source_on_duplicate_scan_taints_job": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 497,
-        "end": 521
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_positive_scan_report_without_recorded_findings_does_not_count_as_negative": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 524,
-        "end": 550
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 553,
-        "end": 584
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_scan_report_count_is_not_credited_as_completed_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 587,
-        "end": 612
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_explicit_zero_finding_scan_report_counts_as_completed_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 615,
-        "end": 642
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_explicit_findings_report_does_not_discard_scans_with_recorded_finding": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 645,
-        "end": 674
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_unreconciled_scan_report_takes_precedence_over_low_yield_rotation": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 677,
-        "end": 737
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_unreconciled_scan_guidance_never_modifies_planned_scan_authority": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 740,
-        "end": 755
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prioritize_action_with_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 647,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_conflicting_terminal_scan_job_is_not_credited_as_completed": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 758,
-        "end": 782
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_queued_then_completed_scan_keeps_coverage_credit": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 785,
-        "end": 808
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 811,
-        "end": 848
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
               "language": "python"
             }
           ],
@@ -2177,11 +725,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "campaign_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 321,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 208,
               "kind": "function",
               "language": "python"
             }
@@ -2189,13 +749,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 8
     },
-    "test_endpoint_linked_scan_documents_only_its_observed_endpoint": {
+    "test_red_team_coverage_ignores_failed_or_queued_review_evidence": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 851,
-        "end": 887
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 138,
+        "end": 185
       },
       "symbol_dependencies": [
         {
@@ -2235,23 +795,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "api",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -2259,27 +807,15 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 4
     },
-    "test_independent_endpoint_scan_records_document_all_observed_endpoints": {
+    "test_empty_graph_has_zero_observed_coverage_not_full_score": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 890,
-        "end": 925
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 188,
+        "end": 198
       },
       "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
         {
           "symbol": "ObservationGraph",
           "definitions": [
@@ -2293,303 +829,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "add",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 928,
-        "end": 972
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_partial_endpoint_scan_documentation_prioritizes_provenance_review": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 975,
-        "end": 1037
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_documented_scans_keep_existing_low_yield_surface_rotation": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1040,
-        "end": 1094
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "api",
-          "definitions": [
-            {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_incomplete_endpoint_provenance_never_changes_scan_authority": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1097,
-        "end": 1115
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prioritize_action_with_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 647,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -2599,33 +843,11 @@
       ],
       "dependency_count": 2
     },
-    "test_scan_report_conflict_outranks_missing_endpoint_provenance": {
+    "test_asset_only_graph_does_not_claim_full_review_coverage": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1118,
-        "end": 1140
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_two_endpoint_scan_scope_graph": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1143,
-        "end": 1156
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 201,
+        "end": 209
       },
       "symbol_dependencies": [
         {
@@ -2665,287 +887,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "api",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "frontend/app.js",
-              "line": 60,
-              "kind": "function",
-              "language": "javascript"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_record_scan_scope": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1159,
-        "end": 1174
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1177,
-        "end": 1193
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_record_scan_scope",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_two_endpoint_scan_scope_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_consistent_duplicate_reports_preserve_documented_endpoint_scope": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1196,
-        "end": 1210
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_record_scan_scope",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_two_endpoint_scan_scope_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1213,
-        "end": 1226
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_record_scan_scope",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_two_endpoint_scan_scope_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1229,
-        "end": 1244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_record_scan_scope",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_two_endpoint_scan_scope_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_scan_linked_to_mismatched_endpoint_does_not_gain_completion_credit": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1247,
-        "end": 1282
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -2955,11 +901,11 @@
       ],
       "dependency_count": 4
     },
-    "test_scan_linked_to_malformed_endpoint_cannot_claim_valid_scan": {
+    "test_completed_review_raises_observed_surface_score_without_security_claim": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1285,
-        "end": 1312
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 212,
+        "end": 247
       },
       "symbol_dependencies": [
         {
@@ -2999,11 +945,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3013,11 +959,11 @@
       ],
       "dependency_count": 4
     },
-    "test_mixed_valid_and_invalid_endpoint_ancestors_taint_scan_job": {
+    "test_unvalidated_finding_reduces_score_across_observed_dimensions": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1315,
-        "end": 1343
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 250,
+        "end": 268
       },
       "symbol_dependencies": [
         {
@@ -3033,16 +979,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_two_endpoint_scan_scope_graph",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "add",
@@ -3057,11 +1003,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3071,11 +1017,11 @@
       ],
       "dependency_count": 4
     },
-    "test_endpoint_claim_subsetting_is_rejected_without_scope_checker": {
+    "test_mixed_parent_endpoint_review_cannot_close_in_scope_gap": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1346,
-        "end": 1373
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 271,
+        "end": 305
       },
       "symbol_dependencies": [
         {
@@ -3091,16 +1037,16 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_two_endpoint_scan_scope_graph",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
           "symbol": "add",
@@ -3115,11 +1061,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3129,93 +1075,11 @@
       ],
       "dependency_count": 4
     },
-    "test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all": {
+    "test_review_spanning_in_scope_and_out_of_scope_endpoints_is_not_credited": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1376,
-        "end": 1415
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_record_scan_scope",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_two_endpoint_scan_scope_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1143,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "test_out_of_scope_form_ancestry_cannot_credit_completed_scan": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1419,
-        "end": 1446
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 308,
+        "end": 349
       },
       "symbol_dependencies": [
         {
@@ -3255,11 +1119,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3269,11 +1133,11 @@
       ],
       "dependency_count": 4
     },
-    "test_malformed_form_ancestry_cannot_credit_completed_scan": {
+    "test_form_review_with_mixed_endpoint_parent_does_not_close_form_gap": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1449,
-        "end": 1474
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 352,
+        "end": 390
       },
       "symbol_dependencies": [
         {
@@ -3313,11 +1177,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3327,11 +1191,11 @@
       ],
       "dependency_count": 4
     },
-    "test_mixed_valid_and_invalid_form_parents_quarantine_whole_scan": {
+    "test_completed_review_of_multiple_eligible_endpoints_is_creditable": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1477,
-        "end": 1505
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 393,
+        "end": 426
       },
       "symbol_dependencies": [
         {
@@ -3371,11 +1235,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3385,11 +1249,11 @@
       ],
       "dependency_count": 4
     },
-    "test_valid_form_and_endpoint_lineage_keeps_completed_scan_credit": {
+    "test_cross_origin_form_review_remains_untrusted_coverage_gap": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1508,
-        "end": 1542
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 429,
+        "end": 452
       },
       "symbol_dependencies": [
         {
@@ -3429,11 +1293,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3443,11 +1307,11 @@
       ],
       "dependency_count": 4
     },
-    "test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage": {
+    "test_wrong_port_endpoint_review_does_not_close_coverage_gap": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1545,
-        "end": 1577
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 455,
+        "end": 480
       },
       "symbol_dependencies": [
         {
@@ -3487,11 +1351,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3501,11 +1365,11 @@
       ],
       "dependency_count": 4
     },
-    "test_untrusted_completed_scan_guides_to_provenance_review_not_more_scans": {
+    "test_same_origin_review_through_valid_endpoint_is_creditable": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1581,
-        "end": 1619
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 483,
+        "end": 520
       },
       "symbol_dependencies": [
         {
@@ -3545,251 +1409,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_coverage_guidance",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_unreconciled_findings_take_precedence_over_provenance_guidance": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1622,
-        "end": 1640
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_untrusted_provenance_precedes_low_discovery_and_scanner_retry": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1643,
-        "end": 1655
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_no_untrusted_scan_keeps_existing_discovery_guidance": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1658,
-        "end": 1669
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_untrusted_provenance_does_not_change_planned_scan_or_authority": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1672,
-        "end": 1690
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "PlannedAction",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 39,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "prioritize_action_with_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 647,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_coverage_does_not_count_impossible_scan_completion_times": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1693,
-        "end": 1729
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_coverage_guidance",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 548,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_scan_completion_before_start_cannot_claim_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1732,
-        "end": 1756
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3799,11 +1423,11 @@
       ],
       "dependency_count": 4
     },
-    "test_malformed_temporal_duplicate_taints_entire_scan_job": {
+    "test_orphan_form_review_does_not_inflate_scoped_coverage": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1759,
-        "end": 1786
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 523,
+        "end": 543
       },
       "symbol_dependencies": [
         {
@@ -3843,11 +1467,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3857,11 +1481,11 @@
       ],
       "dependency_count": 4
     },
-    "test_valid_temporal_scan_remains_counted_alongside_invalid_scan": {
+    "test_mixed_origin_form_review_cannot_credit_valid_parent_subset": {
       "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1789,
-        "end": 1818
+        "file": "backend/tests/test_red_team_coverage.py",
+        "start": 546,
+        "end": 570
       },
       "symbol_dependencies": [
         {
@@ -3901,11 +1525,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "build_evidence_coverage",
+          "symbol": "build_red_team_coverage",
           "definitions": [
             {
-              "file": "backend/app/coverage.py",
-              "line": 436,
+              "file": "backend/app/red_team_coverage.py",
+              "line": 64,
               "kind": "function",
               "language": "python"
             }
@@ -3914,326 +1538,6 @@
         }
       ],
       "dependency_count": 4
-    },
-    "test_plausible_scan_timeline_accepts_legacy_absent_timestamps": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1821,
-        "end": 1841
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "plausible_scan_timeline",
-          "definitions": [
-            {
-              "file": "backend/app/scan_result_integrity.py",
-              "line": 52,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invisible_scan_job_ids_never_count_as_completed_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1844,
-        "end": 1868
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_invalid_scan_id_does_not_poison_independent_valid_scan": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1871,
-        "end": 1895
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "_origin_scan_graph": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1898,
-        "end": 1919
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Observation",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 24,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ObservationGraph",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "add",
-          "definitions": [
-            {
-              "file": "backend/app/observation_graph.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_http_endpoint_does_not_inherit_https_asset_scan_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1922,
-        "end": 1937
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_origin_scan_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1898,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_https_endpoint_with_different_port_does_not_claim_scan_coverage": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1940,
-        "end": 1950
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_origin_scan_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1898,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_matching_https_asset_endpoint_remains_documented": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1953,
-        "end": 1966
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_origin_scan_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1898,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_legacy_hostname_only_asset_remains_compatible_with_https_endpoint": {
-      "source": {
-        "file": "backend/tests/test_coverage.py",
-        "start": 1969,
-        "end": 1980
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_origin_scan_graph",
-          "definitions": [
-            {
-              "file": "backend/tests/test_coverage.py",
-              "line": 1898,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_evidence_coverage",
-          "definitions": [
-            {
-              "file": "backend/app/coverage.py",
-              "line": 436,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
     }
   }
 }

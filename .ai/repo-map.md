@@ -11853,6 +11853,17 @@ validation = analyze_validation_state(graph)
 ⋮----
 valid_endpoint_ids = {
 valid_form_ids = {
+# Keep observed-but-untrusted surfaces in the denominator as gaps.
+# Only review attribution is gated on verified in-scope ancestry.
+⋮----
+reviewable_endpoint_ids = set(valid_endpoint_ids)
+reviewable_form_ids = set(valid_form_ids)
+⋮----
+observations = {item.id: item for item in graph.values()}
+asset_values = {
+reviewable_endpoint_ids = {
+reviewable_form_ids = {
+⋮----
 technology_ids = {
 waf_ids = {
 endpoints = len(valid_endpoint_ids)
@@ -24678,6 +24689,18 @@ def test_review_spanning_in_scope_and_out_of_scope_endpoints_is_not_credited()
 def test_form_review_with_mixed_endpoint_parent_does_not_close_form_gap()
 ⋮----
 def test_completed_review_of_multiple_eligible_endpoints_is_creditable()
+⋮----
+def test_cross_origin_form_review_remains_untrusted_coverage_gap()
+⋮----
+coverage = build_red_team_coverage(
+⋮----
+def test_wrong_port_endpoint_review_does_not_close_coverage_gap()
+⋮----
+def test_same_origin_review_through_valid_endpoint_is_creditable()
+⋮----
+def test_orphan_form_review_does_not_inflate_scoped_coverage()
+⋮----
+def test_mixed_origin_form_review_cannot_credit_valid_parent_subset()
 ````
 
 ## File: backend/tests/test_red_team_decision.py
