@@ -665,7 +665,11 @@ def build_no_finding_recovery(
         )
         for item in graph.by_kind("evidence")
     )
-    browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
+    browser_job_outcomes = (
+        worker_outcomes.get("by_job_kind")
+        if isinstance(worker_outcomes, Mapping)
+        else None
+    )
     if (
         (normalized_target_host is None or legacy_single_host)
         and isinstance(browser_job_outcomes, Mapping)
