@@ -1951,9 +1951,26 @@ alerts = {
 ```python
 router = APIRouter()
 ⋮----
+def _web_origin(value: object) -> tuple[str, str, int] | None
+⋮----
+"""Reject malformed or credential-bearing web origins."""
+⋮----
+parsed = urlsplit(str(value or "").strip())
+scheme = parsed.scheme.lower()
+host = (parsed.hostname or "").lower().rstrip(".")
+port = parsed.port
+⋮----
+raw = str(asset_value or "").strip()
+⋮----
+parsed = urlsplit(f"//{raw}")
+⋮----
+origin = _web_origin(row.get("url"))
+asset_ids = row.get("asset_parent_ids") or ()
+⋮----
 """Deduplicate completed scan jobs and reject untrusted scope or reports."""
 items = {item.id: item for item in graph.values()}
 assets = graph.by_kind("asset")
+asset_values = {item.id: item.value for item in assets}
 approved_asset_ids = {
 approved_endpoint_ids = {
 approved_form_ids = {
@@ -2024,6 +2041,7 @@ missing_recorded_findings = (
     asset's individual endpoints the scanner checked. Only explicit
     endpoint ancestry of a trusted completed scan contributes here.
     """
+asset_values = {
 eligible_ids = {
 ⋮----
 def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]
@@ -17359,6 +17377,20 @@ def test_invisible_scan_job_ids_never_count_as_completed_coverage()
 report = build_evidence_coverage(
 ⋮----
 def test_invalid_scan_id_does_not_poison_independent_valid_scan()
+⋮----
+def _origin_scan_graph(asset: str, endpoint: str) -> ObservationGraph
+⋮----
+def test_http_endpoint_does_not_inherit_https_asset_scan_coverage()
+⋮----
+graph = _origin_scan_graph(
+⋮----
+def test_https_endpoint_with_different_port_does_not_claim_scan_coverage()
+⋮----
+def test_matching_https_asset_endpoint_remains_documented()
+⋮----
+def test_legacy_hostname_only_asset_remains_compatible_with_https_endpoint()
+⋮----
+def test_endpoint_with_mixed_http_and_https_asset_parents_is_untrusted()
 ```
 
 ## File: tests/test_cpe_consistency.py

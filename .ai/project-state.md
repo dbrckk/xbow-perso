@@ -39,24 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T09:10:39Z
+Generated: 2026-10-09T09:12:43Z
 
 ### Git
 - Branch: `main`
-- Head: `0a3e3e6f4a18`
-- Commit date: 2026-10-09T11:10:19+02:00
-- Commit: fix(recovery): isolate negative scan evidence by campaign origin
+- Head: `9f35d881c1b9`
+- Commit date: 2026-10-09T11:12:32+02:00
+- Commit: fix(coverage): verify endpoint origin against linked assets
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
-- `backend/app/coverage.py`
-- `backend/app/scan_result_integrity.py`
-- `backend/tests/test_coverage.py`
-- `backend/tests/test_scan_result_integrity.py`
 
 ### Project signals
 - `pyproject.toml`
