@@ -220,3 +220,30 @@ jobs:
             echo "direct public egress unexpectedly succeeded" >&2
             exit 1
           fi
+
+  strix-python-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build pinned Strix Python runtime
+        run: |
+          docker build --pull \
+            --file backend/Dockerfile.strix-python-runtime \
+            --tag xbow-strix-python-runtime:ci \
+            backend
+      - name: Verify inert runtime in locked-down container
+        shell: bash
+        run: |
+          set -euo pipefail
+          for probe in app.strix_backend_hook app.strix_python_compat_probe app.strix_python_bootstrap_runtime; do
+            docker run --rm \
+              --network none \
+              --read-only \
+              --tmpfs /tmp:size=16m,noexec,nosuid,nodev \
+              --cap-drop ALL \
+              --pids-limit 128 \
+              --security-opt no-new-privileges:true \
+              xbow-strix-python-runtime:ci \
+              /opt/strix-python/.venv/bin/python -m "$probe" --self-test
+          done
