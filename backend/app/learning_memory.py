@@ -214,7 +214,11 @@ def campaign_learning_memory(campaign_id: str, limit: int = 50):
 
     campaign = assert_campaign_exists(campaign_id)
     graph = load_observation_graph(storage(), campaign.id)
-    memories = build_learning_memory(graph, limit=limit)
+    memories = build_learning_memory(
+        graph,
+        limit=limit,
+        target_url=str(campaign.target.primary_url),
+    )
     return {
         "campaign_id": campaign.id,
         "techniques": [item.to_dict() for item in memories],

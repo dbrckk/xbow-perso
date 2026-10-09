@@ -203,7 +203,10 @@ def campaign_adaptive_cycle(campaign_id: str):
         consensus=consensus,
     )
     planned = AdaptivePlanner().plan(campaign, graph)
-    memories = build_learning_memory(graph)
+    memories = build_learning_memory(
+        graph,
+        target_url=str(campaign.target.primary_url),
+    )
     worker_outcomes = summarize_worker_outcomes(campaign.events)
     cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
 

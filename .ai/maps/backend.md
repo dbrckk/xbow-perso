@@ -709,7 +709,7 @@ runtime = runtime_status(campaign.created_at, CampaignRuntimeLimit())
 job_statuses = queue().campaign_job_status_counts(campaign.id)
 gate = build_autonomy_gate(
 planned = AdaptivePlanner().plan(campaign, graph)
-memories = build_learning_memory(graph)
+memories = build_learning_memory(
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned, memories, worker_outcomes)
 ⋮----
@@ -7113,7 +7113,7 @@ def campaign_learning_memory(campaign_id: str, limit: int = 50)
 ⋮----
 campaign = assert_campaign_exists(campaign_id)
 graph = load_observation_graph(storage(), campaign.id)
-memories = build_learning_memory(graph, limit=limit)
+memories = build_learning_memory(
 ⋮----
 _ALLOWED_JOB_KINDS = {
 _ALLOWED_JOB_STATUSES = {"queued", "completed", "failed", "cancelled"}
@@ -8965,7 +8965,7 @@ risk = build_campaign_risk(
 usage = budget_usage(graph, queue, campaign.id, budget)
 job_statuses = queue.campaign_job_status_counts(campaign.id)
 gate = build_autonomy_gate(
-memories = build_learning_memory(graph)
+memories = build_learning_memory(
 worker_outcomes = summarize_worker_outcomes(campaign.events)
 cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
 recon_plan = build_recon_plan(
@@ -16284,6 +16284,14 @@ def test_cycle_does_not_suppress_recovered_worker_kind()
 def test_negative_scanner_memory_does_not_suppress_authorized_scanner()
 ⋮----
 def test_operational_scanner_worker_instability_still_requires_human_review()
+⋮----
+db = str(tmp_path / "adaptive-route.sqlite3")
+artifacts = str(tmp_path / "artifacts")
+⋮----
+campaign = Campaign(
+store = Storage(db, artifacts)
+⋮----
+result = campaign_adaptive_cycle(campaign.id)
 ```
 
 ## File: tests/test_affected_version_range.py
@@ -22422,6 +22430,12 @@ breaker = circuit_breaker_state(graph)
 def test_action_after_stop_opens_circuit_breaker_before_new_work(tmp_path)
 ⋮----
 def test_single_planner_reversal_does_not_trip_breaker(tmp_path)
+⋮----
+def test_orchestrator_adaptive_memory_ignores_other_origin_negative_reviews(tmp_path)
+⋮----
+db = str(tmp_path / "adaptive-origin.sqlite3")
+⋮----
+memories = {
 ```
 
 ## File: tests/test_osv_advisory_adapter.py

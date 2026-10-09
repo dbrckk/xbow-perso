@@ -173,7 +173,10 @@ def _intelligence_context(
         risk=risk,
         consensus=consensus,
     )
-    memories = build_learning_memory(graph)
+    memories = build_learning_memory(
+        graph,
+        target_url=str(campaign.target.primary_url),
+    )
     worker_outcomes = summarize_worker_outcomes(campaign.events)
     cycle = build_adaptive_cycle(gate, planned_actions, memories, worker_outcomes)
     recon_plan = build_recon_plan(
