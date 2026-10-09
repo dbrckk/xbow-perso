@@ -1844,7 +1844,7 @@ def test_plausible_scan_timeline_accepts_legacy_absent_timestamps():
 def test_invisible_scan_job_ids_never_count_as_completed_coverage():
     graph = ObservationGraph()
     graph.add(Observation("asset:one", "asset", "example.test", "recon"))
-    for index, job_id in enumerate(("job\\x7f", "job\\u200b", "job\\u2060")):
+    for index, job_id in enumerate(("job\x7f", "job\u200b", "job\u2060")):
         graph.add(
             Observation(
                 f"scan:invalid-id:{index}",
@@ -1871,7 +1871,7 @@ def test_invisible_scan_job_ids_never_count_as_completed_coverage():
 def test_invalid_scan_id_does_not_poison_independent_valid_scan():
     graph = ObservationGraph()
     graph.add(Observation("asset:one", "asset", "example.test", "recon"))
-    for index, job_id in enumerate(("bad\\x7f", "valid-job")):
+    for index, job_id in enumerate(("bad\x7f", "valid-job")):
         graph.add(
             Observation(
                 f"scan:report:{index}",
