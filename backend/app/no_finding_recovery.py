@@ -194,8 +194,12 @@ def _completed_scan_evidence(
         job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
         if raw_job_id is not None and (
             not isinstance(raw_job_id, str)
-            or len(job_id) > 128
+            or not 0 < len(job_id) <= 128
+            or any(ord(char) < 32 or ord(char) == 127 for char in raw_job_id)
         ):
+            # A present but blank, control-bearing or malformed job ID is
+            # not the same as an absent legacy job ID. It cannot establish
+            # reliable completion or independent negative scan evidence.
             key = f"invalid:{item.id}"
             invalid_jobs.add(key)
         else:

@@ -2635,3 +2635,75 @@ def test_untrusted_browser_lineage_does_not_exhaust_browser_recovery():
     )
     assert result.recommended_task_kinds == ("browser_observe",)
     assert result.exhausted_task_kinds == ()
+
+
+
+def test_explicit_invalid_scan_job_ids_cannot_trigger_negative_learning():
+    for invalid_id in ("", "   ", "job\nnewline", "job\x7fdel", "x" * 129, 42):
+        graph = _graph(scans=0)
+        graph.add(
+            Observation(
+                "scan:invalid-job", "evidence", "completed", "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan", "status": "completed",
+                    "job_id": invalid_id, "findings": 0,
+                },
+            )
+        )
+        result = _feedback(graph, target_url="https://example.test/")
+        assert result.state == "scan_source_unverified"
+        assert result.completed_scan_count == 1
+        assert result.trusted_completed_scan_count == 0
+        assert result.ambiguous_scan_source_jobs == 1
+        assert result.scanner_source_count == 0
+        assert result.recommended_task_kinds == ()
+        assert result.negative_result_proves_safe is False
+
+
+def test_invalid_scan_job_id_does_not_poison_independent_trusted_scan():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:invalid", "evidence", "completed", "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "malformed\njob", "findings": 0,
+            },
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:valid", "evidence", "completed", "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "valid-job", "findings": 0,
+            },
+        )
+    )
+    result = _feedback(graph, target_url="https://example.test/")
+
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.scanner_source_count == 1
+    assert result.recommended_task_kinds
+
+
+def test_legacy_scan_without_job_id_remains_supported():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:legacy-id", "evidence", "completed", "nuclei",
+            parent_ids=("asset:a",),
+            metadata={"phase": "scan", "status": "completed", "findings": 0},
+        )
+    )
+    result = _feedback(graph, target_url="https://example.test/")
+
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.ambiguous_scan_source_jobs == 0
