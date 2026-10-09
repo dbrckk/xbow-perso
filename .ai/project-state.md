@@ -39,23 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T07:52:07Z
+Generated: 2026-10-09T09:05:15Z
 
 ### Git
 - Branch: `main`
-- Head: `aab91a5f1c88`
-- Commit date: 2026-10-09T09:51:53+02:00
-- Commit: fix(learning): validate intermediate asset lineage for technique memory
+- Head: `88d535894cd9`
+- Commit date: 2026-10-09T11:04:28+02:00
+- Commit: fix(recovery): require provenance for multi-host negative scans
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/learning_memory.py`
 - `backend/tests/test_learning_memory.py`
 - `backend/app/coverage.py`
-- `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
 - `backend/tests/test_coverage.py`
-- `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_scan_result_integrity.py`
 
 ### Project signals

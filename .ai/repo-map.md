@@ -8569,7 +8569,16 @@ excluded_endpoints = [
 legacy_single_host = False
 scan_filter: Callable[[Any], bool] | None = None
 ⋮----
+# Campaign-wide negative results still need trustworthy ancestry.
+# Orphan scans are legacy-compatible only for a single in-scope host.
 asset_records = surface["assets"]
+trusted_hosts = {
+legacy_single_host = (
+⋮----
+def scan_matches_campaign(item: Any) -> bool
+⋮----
+scan_filter = scan_matches_campaign
+⋮----
 # Legacy scan observations sometimes omit ancestry. They can only
 # be attributed to the target if every observed asset has its host.
 legacy_single_host = bool(asset_records) and all(
@@ -22053,7 +22062,13 @@ graph = _graph(scans=3)
 ⋮----
 def test_feedback_rejects_negative_campaign_finding_count()
 ⋮----
+def _graph_with_explicitly_linked_scan()
+⋮----
+"""The negative scan belongs to asset:a even if a second host is observed."""
+⋮----
 def test_out_of_scope_technology_does_not_satisfy_authorized_inventory()
+⋮----
+graph = _graph_with_explicitly_linked_scan()
 ⋮----
 def test_orphan_form_does_not_close_authorized_form_inventory_gap()
 ⋮----
@@ -22294,6 +22309,16 @@ def test_temporal_quarantine_preserves_independent_good_scan()
 def test_invisible_scan_job_identity_cannot_enable_no_finding_recovery()
 ⋮----
 def test_invisible_scan_id_does_not_hide_independent_valid_negative_scan()
+⋮----
+def test_campaign_multi_host_orphan_scan_cannot_trigger_negative_recovery()
+⋮----
+def test_campaign_multi_host_linked_scan_is_accepted_for_authorized_asset()
+⋮----
+def test_campaign_orphan_scan_with_out_of_scope_asset_is_not_trusted()
+⋮----
+def test_campaign_legacy_single_host_scan_remains_supported()
+⋮----
+result = _feedback(_graph(scans=1))
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
