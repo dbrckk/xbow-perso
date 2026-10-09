@@ -83,7 +83,8 @@ def adapt_scanner_engines(
     else:
         raw_by_kind = worker_outcomes.get("by_job_kind")
         invalid_structure = (
-            raw_by_kind is not None and not isinstance(raw_by_kind, dict)
+            "by_job_kind" in worker_outcomes
+            and not isinstance(raw_by_kind, dict)
         )
         by_kind = raw_by_kind if isinstance(raw_by_kind, dict) else {}
     reasons: dict[str, str] = {}
