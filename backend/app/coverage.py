@@ -267,9 +267,33 @@ def _completed_scans_with_provenance(
             accepted -= count
             untrusted += count
 
+    # A scan reporting positive findings must be reconciled against
+    # observations on its own asset lineage. A finding on another authorized
+    # host cannot legitimize an unrelated scanner report.
+    def linked_asset_ids(observation: Any) -> frozenset[str]:
+        pending = list(observation.parent_ids)
+        seen: set[str] = set()
+        result: set[str] = set()
+        while pending:
+            parent_id = pending.pop()
+            if parent_id in seen:
+                continue
+            seen.add(parent_id)
+            parent = items.get(parent_id)
+            if parent is None:
+                return frozenset()
+            if parent.kind == "asset":
+                result.add(parent.id)
+            else:
+                pending.extend(parent.parent_ids)
+        return frozenset(result)
+
+    finding_asset_sets = [
+        linked_asset_ids(item)
+        for item in graph.by_kind("finding")
+    ]
     representatives: list[Any] = []
     unreconciled = 0
-    recorded_findings = len(graph.by_kind("finding"))
     for _identity, records in sorted(jobs.items()):
         # Multiple reporters attached to one execution do not prove
         # independence. Conflicting or missing source labels make the entire
@@ -299,10 +323,20 @@ def _completed_scans_with_provenance(
         inconsistent = (
             not malformed and len(set(reported_findings)) > 1
         )
+        scan_asset_ids = set().union(
+            *(linked_asset_ids(item) for item in records)
+        )
+        matched_recorded_finding = bool(
+            scan_asset_ids
+            and any(
+                scan_asset_ids.intersection(finding_assets)
+                for finding_assets in finding_asset_sets
+            )
+        )
         missing_recorded_findings = (
             not malformed
-            and recorded_findings == 0
             and any(value > 0 for value in reported_findings)
+            and not matched_recorded_finding
         )
         if malformed or inconsistent or missing_recorded_findings:
             unreconciled += len(records)
