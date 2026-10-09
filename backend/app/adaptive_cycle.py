@@ -75,7 +75,7 @@ def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ..
         # Reject booleans, negative values and malformed counters rather
         # than treating them as healthy status or crashing the planner.
         counts: dict[str, int] = {}
-        for name in ("requeued", "completed"):
+        for name in ("requeued", "failed", "completed"):
             value = values.get(name, 0)
             if isinstance(value, bool):
                 unstable.add(kind)
@@ -90,7 +90,7 @@ def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ..
                 break
             counts[name] = number
         else:
-            if counts["requeued"] >= 2 and counts["completed"] == 0:
+            if counts["requeued"] + counts["failed"] >= 2 and counts["completed"] == 0:
                 unstable.add(kind)
     return tuple(sorted(unstable))
 
