@@ -326,17 +326,18 @@ def _completed_scans_with_provenance(
         scan_asset_ids = set().union(
             *(linked_asset_ids(item) for item in records)
         )
-        matched_recorded_finding = bool(
-            scan_asset_ids
-            and any(
-                scan_asset_ids.intersection(finding_assets)
-                for finding_assets in finding_asset_sets
-            )
+        matched_finding_count = sum(
+            bool(scan_asset_ids.intersection(finding_assets))
+            for finding_assets in finding_asset_sets
         )
+        # An explicit count of two findings cannot be reconciled by just
+        # one stored finding, even if it belongs to the right asset.
         missing_recorded_findings = (
             not malformed
-            and any(value > 0 for value in reported_findings)
-            and not matched_recorded_finding
+            and any(
+                value > matched_finding_count
+                for value in reported_findings
+            )
         )
         if malformed or inconsistent or missing_recorded_findings:
             unreconciled += len(records)
