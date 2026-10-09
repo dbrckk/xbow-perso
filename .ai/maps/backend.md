@@ -13932,11 +13932,26 @@ def synthetic_import(name: str) -> Any
 ⋮----
 result = {
 ⋮----
+def verify_upstream_import() -> dict[str, Any]
+⋮----
+"""Import the pinned upstream interface without invoking its scan entrypoint.
+
+    This check must run in a fresh, unprivileged, network-disabled container.
+    Upstream source hashes are verified before the real module import. Docker
+    preflight remains temporarily patched only inside the context manager.
+    """
+⋮----
+source = probe_python_runtime()
+⋮----
+environment = sys.modules.get(_ENVIRONMENT_MODULE)
+⋮----
 def _main() -> int
 ⋮----
 parser = argparse.ArgumentParser()
+mode = parser.add_mutually_exclusive_group(required=True)
 ⋮----
 args = parser.parse_args()
+result = verify_upstream_import() if args.verify_upstream_import else self_test()
 ```
 
 ## File: app/strix_python_compat_probe.py

@@ -1,13 +1,12 @@
 # Change impact
 
-Base: 6035c99c0f845d172425315061b847f6a97b0f23
-Head: 6f9c3cd9326283282b86cc0a252b8073dc718c62
+Base: 37e2a7fdd80e9462584bd4db166bdf29d3c3e899
+Head: 7844a07791716d9e6f112e01c4f62f5809e3875b
 
 ## Changed files
 - M .github/workflows/ci.yml
-- M .github/workflows/supply-chain.yml
-- A backend/Dockerfile.strix-python-runtime
-- A docs/strix-python-runtime.md
+- M backend/app/strix_python_bootstrap_runtime.py
+- M docs/strix-python-runtime.md
 
 ## Affected areas
 - .github

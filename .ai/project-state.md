@@ -39,20 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T21:56:57Z
+Generated: 2026-10-09T22:01:23Z
 
 ### Git
 - Branch: `main`
-- Head: `6f9c3cd93262`
-- Commit date: 2026-10-09T23:56:36+02:00
-- Commit: feat(strix): reproducible inert Python bootstrap runtime (#664)
-- Tracked files: 690
+- Head: `7844a0779171`
+- Commit date: 2026-10-10T00:00:52+02:00
+- Commit: feat(strix): verify real pinned Python interface import offline (#666)
+- Tracked files: 691
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `backend/app/strix_python_bootstrap_runtime.py`
+- `docs/strix-python-runtime.md`
 - `.github/workflows/supply-chain.yml`
 - `backend/Dockerfile.strix-python-runtime`
-- `docs/strix-python-runtime.md`
 - `backend/app/strix_backend_hook.py`
 - `backend/app/strix_remote_session.py`
 - `backend/app/no_finding_recovery.py`
@@ -65,8 +66,6 @@ Generated: 2026-10-09T21:56:57Z
 - `docker-compose.distributed.yml`
 - `docker-compose.tls.yml`
 - `frontend/Dockerfile`
-- `backend/app/hypothesis_engine.py`
-- `backend/tests/test_hypothesis_engine.py`
 
 ### Project signals
 - `pyproject.toml`
