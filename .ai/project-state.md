@@ -43,13 +43,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T22:01:23Z
+Generated: 2026-10-09T22:05:56Z
 
 ### Git
 - Branch: `main`
-- Head: `7844a0779171`
-- Commit date: 2026-10-10T00:00:52+02:00
-- Commit: feat(strix): verify real pinned Python interface import offline (#666)
+- Head: `839d0e800c7d`
+- Commit date: 2026-10-10T00:05:37+02:00
+- Commit: ci(strix): verify live runner RPC fails closed over broker network (#667)
 - Tracked files: 691
 
 ### Recently changed files
@@ -64,12 +64,6 @@ Generated: 2026-10-09T22:01:23Z
 - `backend/app/scan_result_integrity.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/tests/test_scan_result_integrity.py`
-- `backend/Dockerfile`
-- `backend/Dockerfile.scanner`
-- `backend/Dockerfile.strix-runner`
-- `docker-compose.distributed.yml`
-- `docker-compose.tls.yml`
-- `frontend/Dockerfile`
 
 ### Project signals
 - `pyproject.toml`
