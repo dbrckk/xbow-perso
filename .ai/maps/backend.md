@@ -1955,6 +1955,7 @@ router = APIRouter()
 items = {item.id: item for item in graph.values()}
 assets = graph.by_kind("asset")
 approved_asset_ids = {
+approved_endpoint_ids = {
 ⋮----
 def trustworthy_lineage(observation: Any) -> bool
 ⋮----
@@ -1968,6 +1969,10 @@ linked_assets: set[str] = set()
 parent_id = pending.pop()
 ⋮----
 parent = items.get(parent_id)
+⋮----
+# A scan of an invalid, orphaned, out-of-scope or
+# mismatched endpoint cannot gain completion credit via
+# an otherwise authorized asset ancestor.
 ⋮----
 jobs: dict[str, list[Any]] = {}
 conflicting_terminal_jobs = conflicting_scan_terminal_job_ids(graph)
@@ -2028,6 +2033,7 @@ job_id = observation.metadata.get("job_id")
 ⋮----
 documented_ids: set[str] = set()
 ambiguous_scope_jobs = 0
+ineligible_scope_jobs = 0
 ⋮----
 job_id = scan.metadata.get("job_id")
 reports = (
@@ -2036,6 +2042,11 @@ reports = (
 # either endpoint set, nor can an asset-only report corroborate
 # a report asserting an individual endpoint.
 endpoint_claims = {
+⋮----
+claimed_ids = next(iter(endpoint_claims))
+⋮----
+# Do not credit the convenient in-scope subset of a scan job
+# that simultaneously asserts other, ineligible endpoints.
 ⋮----
 state = "no_completed_scan_evidence"
 fraction = None
@@ -2093,6 +2104,7 @@ endpoint_attribution = (coverage.get("evidence") or {}).get(
 ⋮----
 endpoint_attribution = {}
 endpoint_state = str(endpoint_attribution.get("state") or "unknown")
+suspect_endpoint_claims = (
 # This is documented evidence, not a completeness claim. Do not infer
 # endpoint-wide coverage from a completed asset-level scan.
 endpoint_fraction = dimensions.get("documented_endpoint_scan_fraction")
@@ -17194,6 +17206,19 @@ def test_consistent_duplicate_reports_preserve_documented_endpoint_scope()
 def test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope()
 ⋮----
 def test_ambiguous_job_does_not_discard_separately_documented_endpoint_job()
+⋮----
+def test_scan_linked_to_mismatched_endpoint_does_not_gain_completion_credit()
+⋮----
+def test_scan_linked_to_malformed_endpoint_cannot_claim_valid_scan()
+⋮----
+def test_mixed_valid_and_invalid_endpoint_ancestors_taint_scan_job()
+⋮----
+def test_endpoint_claim_subsetting_is_rejected_without_scope_checker()
+⋮----
+coverage = build_evidence_coverage(graph)
+attribution = coverage["evidence"]["endpoint_scan_attribution"]
+⋮----
+def test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all()
 ```
 
 ## File: tests/test_cpe_consistency.py

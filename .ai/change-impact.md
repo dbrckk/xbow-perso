@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 084a0cd5ada438be4b715a28f078059ce3233e6c
-Head: 1616eff77eb678b9e22b1e79b5e4d8c79fa35d45
+Base: 2cc500751e798a39d72a016ae0fd753fc2da2bfe
+Head: d7ebb51652472287e1ba32af919d18cc7ca6a123
 
 ## Changed files
 - M backend/app/coverage.py

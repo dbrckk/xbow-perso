@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-08T23:11:28Z
+Generated: 2026-10-09T00:09:30Z
 
 ### Git
 - Branch: `main`
-- Head: `1616eff77eb6`
-- Commit date: 2026-10-09T01:11:15+02:00
-- Commit: fix(coverage): quarantine conflicting endpoint claims from one scan job
+- Head: `d7ebb5165247`
+- Commit date: 2026-10-09T02:09:19+02:00
+- Commit: fix(coverage): validate endpoint lineage before trusting completed scans
 - Tracked files: 687
 
 ### Recently changed files
