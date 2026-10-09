@@ -30867,7 +30867,7 @@ Repository-specific rules:
 ````yaml
 services:
   postgres:
-    image: postgres:16-alpine
+    image: public.ecr.aws/docker/library/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${XBOW_POSTGRES_DB:-xbow}
@@ -30886,7 +30886,7 @@ services:
     networks: [control]
 
   redis:
-    image: redis:7-alpine
+    image: public.ecr.aws/docker/library/redis:7-alpine
     restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${XBOW_REDIS_PASSWORD:?set XBOW_REDIS_PASSWORD}
@@ -30999,7 +30999,7 @@ volumes:
 ````yaml
 services:
   tls-proxy:
-    image: caddy:2.11.4-alpine
+    image: public.ecr.aws/docker/library/caddy:2.11.4-alpine
     restart: unless-stopped
     environment:
       XBOW_PUBLIC_HOST: ${XBOW_PUBLIC_HOST:?set XBOW_PUBLIC_HOST}

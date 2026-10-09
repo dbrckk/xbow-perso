@@ -1,14 +1,22 @@
 # Change impact
 
-Base: 6f1b3748275624c6a5b54da70c3bacb6a70d609b
-Head: 707dd5dc9ad3ceefa370956a3571eb417459d9c8
+Base: 1b47f739124f1742daa8ce56c1b02c55b9e320ce
+Head: 7b20261053d1fa209a5fbd104a0b7930153ce5ad
 
 ## Changed files
-- M backend/app/hypothesis_engine.py
-- M backend/tests/test_hypothesis_engine.py
+- M .github/workflows/ci.yml
+- M backend/Dockerfile
+- M backend/Dockerfile.scanner
+- M backend/Dockerfile.strix-runner
+- M docker-compose.distributed.yml
+- M docker-compose.tls.yml
+- M frontend/Dockerfile
 
 ## Affected areas
+- .github
 - backend
+- (root)
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.

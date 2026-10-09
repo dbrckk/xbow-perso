@@ -39,22 +39,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T20:39:13Z
+Generated: 2026-10-09T21:22:02Z
 
 ### Git
 - Branch: `main`
-- Head: `707dd5dc9ad3`
-- Commit date: 2026-10-09T22:39:04+02:00
-- Commit: feat(hypotheses): avoid re-recommending completed security reviews
+- Head: `7b20261053d1`
+- Commit date: 2026-10-09T23:21:51+02:00
+- Commit: ci: replace rate-limited Docker Hub image sources (#663)
 - Tracked files: 687
 
 ### Recently changed files
+- `.github/workflows/ci.yml`
+- `backend/Dockerfile`
+- `backend/Dockerfile.scanner`
+- `backend/Dockerfile.strix-runner`
+- `docker-compose.distributed.yml`
+- `docker-compose.tls.yml`
+- `frontend/Dockerfile`
 - `backend/app/hypothesis_engine.py`
 - `backend/tests/test_hypothesis_engine.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/scanner_adaptation.py`
-- `backend/tests/test_scanner_adaptation.py`
 
 ### Project signals
 - `pyproject.toml`
