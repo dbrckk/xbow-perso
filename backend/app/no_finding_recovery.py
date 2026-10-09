@@ -10,6 +10,7 @@ from .observation_graph import ObservationGraph
 from .review_evidence import is_completed_review_evidence
 from .scan_result_integrity import (
     canonical_scan_job_id,
+    canonical_scan_source,
     conflicting_scan_terminal_job_ids,
 )
 
@@ -274,8 +275,8 @@ def _completed_scan_evidence(
             if key.startswith("job:"):
                 rejected_cross_origin_jobs.add(key)
             continue
-        source = item.source.strip() if isinstance(item.source, str) else ""
-        sources_by_job.setdefault(key, set()).add(source)
+        source = canonical_scan_source(item.source)
+        sources_by_job.setdefault(key, set()).add(source or "")
 
     # Fail closed on jobs with conflicting target ancestry even if scanner
     # names agree. Other-target-only jobs are not counted as ambiguous for
