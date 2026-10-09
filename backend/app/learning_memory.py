@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from .attack_surface import canonical_endpoint
 from .no_finding_recovery import _asset_matches_origin, _origin
 from .observation_graph import ObservationGraph, load_observation_graph
 from .scan_result_integrity import canonical_scan_job_id
@@ -71,6 +72,17 @@ def _target_scoped_evidence_ids(
                     break
                 ancestors.add(parent.id)
             else:
+                if parent.kind in {"endpoint", "form"}:
+                    # A matching asset ancestor cannot sanitize an
+                    # intermediate endpoint/form on another origin or a
+                    # malformed URL. Require exact web-origin provenance.
+                    normalized = canonical_endpoint(parent.value)
+                    if (
+                        not normalized["valid"]
+                        or _origin(normalized["url"]) != target
+                    ):
+                        valid = False
+                        break
                 pending.extend(parent.parent_ids)
         if valid and ancestors:
             accepted.add(item.id)
