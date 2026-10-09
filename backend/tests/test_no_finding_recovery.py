@@ -2828,3 +2828,73 @@ def test_temporal_quarantine_preserves_independent_good_scan():
     assert result.ambiguous_scan_source_jobs == 1
     assert result.state == "recovery_advisory"
     assert result.recommended_task_kinds
+
+
+def test_invisible_scan_job_identity_cannot_enable_no_finding_recovery():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    for index, job_id in enumerate(("job\\x7f", "job\\u200b")):
+        graph.add(
+            Observation(
+                f"scan:invalid-id:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                    "findings": 0,
+                },
+            )
+        )
+    result = build_no_finding_recovery(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+        target_url="https://example.test",
+        available_task_kinds=("map_forms", "map_endpoints"),
+    )
+    assert result.trusted_completed_scan_count == 0
+    assert result.state == "scan_source_unverified"
+    assert result.recommended_task_kinds == ()
+    assert result.may_enable_exploitation is False
+
+
+def test_invisible_scan_id_does_not_hide_independent_valid_negative_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index, job_id in enumerate(("bad\\x7f", "valid-job")):
+        graph.add(
+            Observation(
+                f"scan:report:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                    "findings": 0,
+                },
+            )
+        )
+    result = build_no_finding_recovery(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+        target_url="https://example.test",
+        available_task_kinds=("crawl",),
+    )
+    assert result.trusted_completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)
+    assert result.may_expand_scope is False
