@@ -2707,3 +2707,120 @@ def test_legacy_scan_without_job_id_remains_supported():
     assert result.completed_scan_count == 1
     assert result.trusted_completed_scan_count == 1
     assert result.ambiguous_scan_source_jobs == 0
+
+
+def test_explicit_impossible_scan_completion_cannot_drive_negative_learning():
+    for completed_at in (
+        "",
+        "not-a-timestamp",
+        "2026-09-03T00:00:00",  # missing timezone
+        "2099-09-03T00:00:00Z",  # future
+        None,
+        42,
+    ):
+        graph = _graph(scans=0)
+        graph.add(
+            Observation(
+                "scan:impossible-time",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "job-time-invalid",
+                    "findings": 0,
+                    "completed_at": completed_at,
+                },
+            )
+        )
+        result = _feedback(graph, target_url="https://example.test/")
+        assert result.state == "scan_source_unverified"
+        assert result.completed_scan_count == 1
+        assert result.trusted_completed_scan_count == 0
+        assert result.ambiguous_scan_source_jobs == 1
+        assert result.recommended_task_kinds == ()
+
+
+def test_scan_started_after_completion_is_untrusted():
+    graph = _graph(scans=0)
+    graph.add(
+        Observation(
+            "scan:reversed",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-reversed",
+                "findings": 0,
+                "started_at": "2026-09-04T00:00:00Z",
+                "completed_at": "2026-09-03T00:00:00Z",
+            },
+        )
+    )
+    result = _feedback(graph, target_url="https://example.test/")
+    assert result.state == "scan_source_unverified"
+    assert result.trusted_completed_scan_count == 0
+    assert result.negative_result_proves_safe is False
+
+
+def test_bad_timestamp_duplicate_quarantines_entire_scan_job():
+    graph = _graph(scans=0)
+    for index, finished in enumerate((
+        "2026-09-03T00:00:00Z",
+        "2099-09-03T00:00:00Z",
+    )):
+        graph.add(
+            Observation(
+                f"scan:duplicate:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "same-job",
+                    "findings": 0,
+                    "completed_at": finished,
+                },
+            )
+        )
+    result = _feedback(graph, target_url="https://example.test/")
+    assert result.completed_scan_count == 1
+    assert result.trusted_completed_scan_count == 0
+    assert result.state == "scan_source_unverified"
+
+
+def test_temporal_quarantine_preserves_independent_good_scan():
+    graph = _graph(scans=0)
+    for job, finished in (
+        ("bad-job", "2099-09-03T00:00:00Z"),
+        ("good-job", "2026-09-03T00:00:00Z"),
+    ):
+        graph.add(
+            Observation(
+                f"scan:{job}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job,
+                    "findings": 0,
+                    "started_at": "2026-09-02T00:00:00Z",
+                    "completed_at": finished,
+                },
+            )
+        )
+    result = _feedback(graph, target_url="https://example.test/")
+    assert result.trusted_completed_scan_count == 1
+    assert result.ambiguous_scan_source_jobs == 1
+    assert result.state == "recovery_advisory"
+    assert result.recommended_task_kinds
