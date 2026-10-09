@@ -738,3 +738,117 @@ def test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present():
     assert len(memory) == 1
     assert memory[0].attempts == 1
     assert memory[0].successes == 1
+
+
+def test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation(
+        "endpoint:foreign", "endpoint", "https://b.test/api", "crawler",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "evidence:foreign", "evidence", "scan-outcome", "scanner",
+        parent_ids=("endpoint:foreign",),
+        metadata={
+            "technique": "scanner:nuclei", "outcome": "success",
+            "job_id": "job-foreign",
+        },
+    ))
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_rejects_malformed_intermediate_endpoint():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation(
+        "endpoint:bad", "endpoint", "https://a.test:invalid/api", "crawler",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "evidence:bad", "evidence", "scan-outcome", "scanner",
+        parent_ids=("endpoint:bad",),
+        metadata={
+            "technique": "scanner:nuclei", "outcome": "success",
+            "job_id": "job-bad",
+        },
+    ))
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_rejects_cross_origin_form_with_approved_asset():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation(
+        "form:foreign", "form", "https://b.test/submit", "browser",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "evidence:foreign", "evidence", "review", "validator",
+        parent_ids=("form:foreign",),
+        metadata={"technique": "form-review", "outcome": "success"},
+    ))
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation(
+        "endpoint:good", "endpoint", "https://a.test/api", "crawler",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "form:foreign", "form", "https://b.test/submit", "browser",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "evidence:mixed", "evidence", "review", "validator",
+        parent_ids=("endpoint:good", "form:foreign"),
+        metadata={"technique": "scanner:nuclei", "outcome": "success"},
+    ))
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_scoped_learning_accepts_valid_endpoint_and_form_chain():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    graph.add(Observation(
+        "endpoint:good", "endpoint", "https://a.test/api", "crawler",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "form:good", "form", "https://a.test/submit", "browser",
+        parent_ids=("endpoint:good",),
+    ))
+    graph.add(Observation(
+        "evidence:good", "evidence", "review", "validator",
+        parent_ids=("form:good",),
+        metadata={"technique": "form-review", "outcome": "success"},
+    ))
+
+    memory = build_learning_memory(graph, target_url="https://a.test")
+    assert len(memory) == 1
+    assert memory[0].attempts == 1
+    assert memory[0].successes == 1
+
+
+def test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    for index, url in enumerate(("http://a.test/api", "https://a.test:8443/api")):
+        graph.add(Observation(
+            f"endpoint:{index}", "endpoint", url, "crawler",
+            parent_ids=("asset:a",),
+        ))
+        graph.add(Observation(
+            f"evidence:{index}", "evidence", "review", "validator",
+            parent_ids=(f"endpoint:{index}",),
+            metadata={"technique": "scanner:nuclei", "outcome": "success"},
+        ))
+
+    assert build_learning_memory(graph, target_url="https://a.test") == []
