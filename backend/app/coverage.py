@@ -6,7 +6,10 @@ from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph, load_observation_graph
-from .scan_result_integrity import conflicting_scan_terminal_job_ids
+from .scan_result_integrity import (
+    conflicting_scan_terminal_job_ids,
+    plausible_scan_timeline,
+)
 from .validation_state import analyze_validation_state
 
 router = APIRouter()
@@ -110,6 +113,13 @@ def _completed_scans_with_provenance(
             # A completed claim contradicted by a failed/cancelled claim
             # for this same worker job does not prove scan completion.
             untrusted += 1
+            continue
+        if not plausible_scan_timeline(observation.metadata):
+            untrusted += 1
+            if identity.startswith("job:"):
+                # One impossible report invalidates all completion claims
+                # for the same explicit job ID.
+                untrusted_job_ids.add(identity)
             continue
         if not trustworthy_lineage(observation):
             untrusted += 1
