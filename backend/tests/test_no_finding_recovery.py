@@ -3198,3 +3198,121 @@ def test_invalid_campaign_wide_worker_health_does_not_block_unrelated_origin():
     assert result.worker_instability_applied is False
     assert result.worker_health_attribution == "unattributed_multi_host"
     assert result.state == "recovery_advisory"
+
+
+def test_hostname_only_recovery_rejects_http_https_origin_mix():
+    graph = _two_origin_graph()
+    _record_completed_scan(
+        graph,
+        observation_id="scan:http",
+        job_id="job-http",
+        source="nuclei",
+        asset_id="asset:http",
+    )
+
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.state == "target_origin_ambiguous"
+    assert result.target_origin_ambiguous is True
+    assert result.recommended_task_kinds == ()
+    assert "HTTP(S)" in " ".join(result.reasons)
+    assert result.may_expand_scope is False
+    assert result.may_enable_exploitation is False
+
+
+def test_hostname_only_recovery_rejects_distinct_origin_ports():
+    graph = ObservationGraph()
+    for port in (443, 8443):
+        graph.add(
+            Observation(
+                f"asset:{port}",
+                "asset",
+                f"https://example.test:{port}",
+                "inventory",
+            )
+        )
+    _record_completed_scan(
+        graph,
+        observation_id="scan:port",
+        job_id="job-8443",
+        source="nuclei",
+        asset_id="asset:8443",
+    )
+
+    result = _feedback(graph, target_host="example.test")
+
+    assert result.state == "target_origin_ambiguous"
+    assert result.target_origin_ambiguous is True
+    assert result.recommended_task_kinds == ()
+
+
+def test_explicit_origin_selects_its_own_negative_scan_evidence():
+    graph = _two_origin_graph()
+    _record_completed_scan(
+        graph,
+        observation_id="scan:http",
+        job_id="job-http",
+        source="nuclei",
+        asset_id="asset:http",
+    )
+
+    missing = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+    assert missing.state == "no_completed_scans"
+    assert missing.target_origin_ambiguous is False
+    assert missing.completed_scan_count == 0
+
+    _record_completed_scan(
+        graph,
+        observation_id="scan:https",
+        job_id="job-https",
+        source="nuclei",
+        asset_id="asset:https",
+    )
+    selected = _feedback(
+        graph,
+        target_host="example.test",
+        target_url="https://example.test",
+    )
+
+    assert selected.state == "recovery_advisory"
+    assert selected.completed_scan_count == 1
+    assert selected.target_origin_ambiguous is False
+    assert selected.advisory_only is True
+
+
+def test_equivalent_duplicate_explicit_origins_keep_legacy_scan_compatibility():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation("asset:b", "asset", "https://example.test:443/", "inventory")
+    )
+    graph.add(
+        Observation(
+            "scan:legacy",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-legacy",
+            },
+        )
+    )
+
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        allowed=("crawl",),
+    )
+
+    assert result.state == "recovery_advisory"
+    assert result.target_origin_ambiguous is False
+    assert result.completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)
