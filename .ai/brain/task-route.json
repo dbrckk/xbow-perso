@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 0,
     "tier": "bounded",
-    "top_score": 23
+    "top_score": 27
   },
   "cache": {
-    "fingerprint": "df2c82ee8a0b92f8675b165231b7181e2c9a47afbf2d2a860fe1893e6e275325",
+    "fingerprint": "d94ecf1b5720b08f32a8954a3055463a76e0150a7a608d350968a93e8e716494",
     "hit": false
   },
-  "candidate_count": 43,
+  "candidate_count": 44,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -20,31 +20,12 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "backend/app/learning_memory.py",
+      "path": "backend/app/orchestrator.py",
       "reasons": [
         "impact",
         "search-index"
       ],
-      "score": 23,
-      "symbols": [
-        "TechniqueMemory",
-        "_target_scoped_evidence_ids",
-        "build_learning_memory",
-        "campaign_learning_memory",
-        "summarize_worker_outcomes",
-        "worker_outcome_event"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/app/orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "_decision_explanation",
         "_enqueue_action",
@@ -72,15 +53,105 @@
       ],
       "path": "backend/app/scanner_adaptation.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 21,
+      "score": 27,
       "symbols": [
         "ScannerAdaptation",
         "_engine_memory",
         "_validated_worker_counters",
         "adapt_scanner_engines",
         "rank_key"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/tests/test_scanner_adaptation.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_memory",
+        "test_adaptation_never_expands_configured_engines",
+        "test_adaptation_never_suppresses_last_configured_engine",
+        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+        "test_adaptation_ranks_successful_memory_first",
+        "test_adaptation_rejects_unknown_or_duplicate_configuration",
+        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+        "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
+        "test_invalid_counter_on_one_engine_disables_cross_engine_rotation",
+        "test_invalid_worker_completed_counts_never_trigger_rotation",
+        "test_invalid_worker_failure_counts_cannot_suppress_configured_engine",
+        "test_malformed_worker_outcome_structure_preserves_configured_order",
+        "test_negative_memory_cannot_expand_scanner_configuration",
+        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+        "test_no_completed_history_does_not_invent_scanner_rotation",
+        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
+        "test_positive_security_signal_prevents_negative_yield_rotation",
+        "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
+        "test_scanner_rotation_never_overrides_safety_suppression"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/learning_memory.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 26,
+      "symbols": [
+        "TechniqueMemory",
+        "_target_scoped_evidence_ids",
+        "build_learning_memory",
+        "campaign_learning_memory",
+        "summarize_worker_outcomes",
+        "worker_outcome_event"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "backend/app/worker_service.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 23,
+      "symbols": [
+        "CampaignCancelledError",
+        "StaleBrowserJobError",
+        "StaleValidationJobError",
+        "_active_scanner_execution_requested",
+        "_append_event_once",
+        "_campaign",
+        "_claim_for_role",
+        "_lease_heartbeat",
+        "_legacy_unprovenanced_jobs_allowed",
+        "_process_scanner_job",
+        "_record_worker_outcome",
+        "_save",
+        "_verify_policy_bound_job",
+        "_worker_bool",
+        "_worker_poll_seconds",
+        "main",
+        "process_browser_flow",
+        "process_nuclei_scan",
+        "process_one",
+        "process_recon_task"
       ]
     },
     {
@@ -103,59 +174,6 @@
         "safe_scanner_sandbox_admission",
         "scanner_sandbox_admission",
         "strix_runtime_contract_enforceable"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_nuclei_queue_lifecycle.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_campaign",
-        "fake_execute",
-        "test_nuclei_worker_dry_run_preserves_safe_default",
-        "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-        "test_scan_engines_default_preserves_strix",
-        "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-        "test_sqlite_queue_accepts_nuclei_scan"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "backend/tests/test_scanner_adaptation.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 21,
-      "symbols": [
-        "_memory",
-        "test_adaptation_never_expands_configured_engines",
-        "test_adaptation_never_suppresses_last_configured_engine",
-        "test_adaptation_preserves_engine_after_negative_technique_outcomes",
-        "test_adaptation_ranks_successful_memory_first",
-        "test_adaptation_rejects_unknown_or_duplicate_configuration",
-        "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
-        "test_completed_scanner_run_overrides_negative_memory_for_suppression",
-        "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
-        "test_invalid_counter_on_one_engine_disables_cross_engine_rotation",
-        "test_invalid_worker_completed_counts_never_trigger_rotation",
-        "test_invalid_worker_failure_counts_cannot_suppress_configured_engine",
-        "test_malformed_worker_outcome_structure_preserves_configured_order",
-        "test_negative_memory_cannot_expand_scanner_configuration",
-        "test_negative_only_memory_does_not_out_rank_configured_engine_order",
-        "test_no_completed_history_does_not_invent_scanner_rotation",
-        "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
-        "test_positive_security_signal_prevents_negative_yield_rotation",
-        "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
-        "test_scanner_rotation_never_overrides_safety_suppression"
       ]
     }
   ],

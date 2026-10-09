@@ -7130,7 +7130,7 @@ def worker_outcome_event(job: dict[str, Any], *, success: bool, status: str) -> 
 """Build a bounded learning event without persisting job payloads or errors."""
 kind = str(job.get("kind") or "")
 ⋮----
-attempts = int(job.get("attempts") or 0)
+attempts = job.get("attempts", 0)
 ⋮----
 job_id = canonical_scan_job_id(job.get("id"))
 ⋮----
@@ -7147,7 +7147,10 @@ kind = str(event.get("job_kind") or "")
 status = str(event.get("status") or "")
 job_id = canonical_scan_job_id(event.get("job_id"))
 ⋮----
-attempts = int(event.get("attempts") or 0)
+attempts = event.get("attempts", 0)
+⋮----
+# Malformed attempts cannot become an independent failure or
+# a fictitious completed scan through Python coercion.
 ⋮----
 key = (kind, job_id)
 # A completed worker job is terminal. A delayed queued or failed

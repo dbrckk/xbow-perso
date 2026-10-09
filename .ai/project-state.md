@@ -39,28 +39,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T10:17:11Z
+Generated: 2026-10-09T10:20:03Z
 
 ### Git
 - Branch: `main`
-- Head: `2c1c85f66a96`
-- Commit date: 2026-10-09T12:17:00+02:00
-- Commit: fix(recovery): quarantine untrusted scanner worker health feedback
+- Head: `9d0fc3b28ffd`
+- Commit date: 2026-10-09T12:19:50+02:00
+- Commit: fix(learning): exclude malformed worker retry attempts from feedback
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/learning_memory.py`
+- `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
 - `backend/tests/test_adaptive_cycle.py`
-- `backend/app/learning_memory.py`
 - `backend/app/orchestrator.py`
-- `backend/tests/test_learning_memory.py`
 - `backend/tests/test_orchestrator.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`

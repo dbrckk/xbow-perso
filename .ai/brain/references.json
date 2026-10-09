@@ -5,68 +5,123 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_is_completed_recon_step": {
+    "TechniqueMemory": {
       "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 36,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 36,
-          "preview": "def _is_completed_recon_step(observation: Any) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 660,
-          "preview": "and _is_completed_recon_step(item)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 698,
-          "preview": "and _is_completed_recon_step(item)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "NoFindingRecovery": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 52,
+        "file": "backend/app/learning_memory.py",
+        "line": 18,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 52,
-          "preview": "class NoFindingRecovery:",
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 13,
+          "preview": "from .learning_memory import TechniqueMemory, build_learning_memory, summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 40,
+          "preview": "def _suppressed_techniques(memories: list[TechniqueMemory]) -> tuple[str, ...]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 101,
+          "preview": "memories: list[TechniqueMemory],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 18,
+          "preview": "class TechniqueMemory:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 342,
-          "preview": ") -> NoFindingRecovery:",
+          "file": "backend/app/learning_memory.py",
+          "line": 97,
+          "preview": ") -> list[TechniqueMemory]:",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 899,
-          "preview": "return NoFindingRecovery(",
+          "file": "backend/app/learning_memory.py",
+          "line": 184,
+          "preview": "memories: list[TechniqueMemory] = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 193,
+          "preview": "TechniqueMemory(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_adaptation.py",
+          "line": 6,
+          "preview": "from .learning_memory import TechniqueMemory",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_adaptation.py",
+          "line": 33,
+          "preview": "def _engine_memory(memories: Iterable[TechniqueMemory]) -> dict[str, TechniqueMemory]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_adaptation.py",
+          "line": 34,
+          "preview": "result: dict[str, TechniqueMemory] = {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/scanner_adaptation.py",
+          "line": 65,
+          "preview": "memories: Iterable[TechniqueMemory],",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_adaptive_cycle.py",
+          "line": 3,
+          "preview": "from app.learning_memory import TechniqueMemory",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_adaptive_cycle.py",
+          "line": 52,
+          "preview": "memory = TechniqueMemory(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_adaptive_cycle.py",
+          "line": 126,
+          "preview": "memory = TechniqueMemory(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_adaptive_cycle.py",
+          "line": 149,
+          "preview": "memory = TechniqueMemory(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_adaptation.py",
+          "line": 3,
+          "preview": "from app.learning_memory import TechniqueMemory",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_scanner_adaptation.py",
+          "line": 8,
+          "preview": "return TechniqueMemory(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 17
     },
     "to_dict": {
       "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 82,
+        "file": "backend/app/learning_memory.py",
+        "line": 28,
         "kind": "function",
         "language": "python"
       },
@@ -717,7 +772,7 @@
           "file": "backend/app/learning_memory.py",
           "line": 28,
           "preview": "def to_dict(self) -> dict[str, Any]:",
-          "definition_candidate": false
+          "definition_candidate": true
         },
         {
           "file": "backend/app/learning_memory.py",
@@ -794,3398 +849,2126 @@
       ],
       "occurrence_count": 120
     },
-    "_trusted_utc_timestamp": {
+    "_target_scoped_evidence_ids": {
       "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 91,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 91,
-          "preview": "def _trusted_utc_timestamp(value: object, *, now: datetime) -> datetime | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 244,
-          "preview": "finished = _trusted_utc_timestamp(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 249,
-          "preview": "started = _trusted_utc_timestamp(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 839,
-          "preview": "first_seen = _trusted_utc_timestamp(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 843,
-          "preview": "observed_at = _trusted_utc_timestamp(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 856,
-          "preview": "_trusted_utc_timestamp(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "_origin": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 106,
+        "file": "backend/app/learning_memory.py",
+        "line": 32,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/learning_memory.py",
-          "line": 10,
-          "preview": "from .no_finding_recovery import _asset_matches_origin, _origin",
-          "definition_candidate": false
+          "line": 32,
+          "preview": "def _target_scoped_evidence_ids(",
+          "definition_candidate": true
         },
         {
           "file": "backend/app/learning_memory.py",
-          "line": 37,
-          "preview": "target = _origin(target_url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/learning_memory.py",
-          "line": 82,
-          "preview": "or _origin(normalized[\"url\"]) != target",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 106,
-          "preview": "def _origin(value: str) -> tuple[str, str, int] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 134,
-          "preview": "origin = _origin(raw)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 165,
-          "preview": "return _origin(raw) == target",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 351,
-          "preview": "target_origin = _origin(target_url) if target_url is not None else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 385,
-          "preview": "or _origin(item[\"url\"]) == target_origin",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 402,
-          "preview": "or _origin(item[\"action\"]) == target_origin",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 422,
-          "preview": "or _origin(item[\"url\"]) == target_origin",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 566,
-          "preview": "or _origin(asset_values_by_id[item[\"id\"]]) == target_origin",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 790,
-          "preview": "or _origin(item[\"url\"]) == target_origin",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "_campaign_asset_identity": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 128,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 128,
-          "preview": "def _campaign_asset_identity(value: object) -> tuple[str, ...] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 485,
-          "preview": "identity = _campaign_asset_identity(parent.value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 534,
-          "preview": "_campaign_asset_identity(asset_values_by_id[item[\"id\"]])",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_asset_matches_origin": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 158,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/learning_memory.py",
-          "line": 10,
-          "preview": "from .no_finding_recovery import _asset_matches_origin, _origin",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/learning_memory.py",
-          "line": 45,
-          "preview": "if _asset_matches_origin(item.value, target)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 158,
-          "preview": "def _asset_matches_origin(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 446,
-          "preview": "or _asset_matches_origin(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "_reviewed_ids": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 180,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 180,
-          "preview": "def _reviewed_ids(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 406,
-          "preview": "endpoint_reviewed = _reviewed_ids(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 517,
-          "preview": "endpoint_reviewed = _reviewed_ids(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 641,
-          "preview": "form_reviewed = _reviewed_ids(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 4
-    },
-    "_completed_scan_evidence": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 204,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 204,
-          "preview": "def _completed_scan_evidence(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 556,
-          "preview": ") = _completed_scan_evidence(graph, evidence_filter=scan_filter)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 607,
-          "preview": ") = _completed_scan_evidence(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_unstable_scanner_outcomes": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 298,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 298,
-          "preview": "def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 705,
-          "preview": "worker_instability_observed = _unstable_scanner_outcomes(worker_outcomes)",
+          "line": 107,
+          "preview": "_target_scoped_evidence_ids(graph, target_url)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 2
     },
-    "build_no_finding_recovery": {
+    "build_learning_memory": {
       "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 333,
+        "file": "backend/app/learning_memory.py",
+        "line": 92,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/adaptive_cycle.py",
-          "line": 215,
-          "preview": "from .no_finding_recovery import build_no_finding_recovery",
+          "line": 13,
+          "preview": "from .learning_memory import TechniqueMemory, build_learning_memory, summarize_worker_outcomes",
           "definition_candidate": false
         },
         {
           "file": "backend/app/adaptive_cycle.py",
-          "line": 228,
-          "preview": "recovery = build_no_finding_recovery(",
+          "line": 206,
+          "preview": "memories = build_learning_memory(",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 333,
-          "preview": "def build_no_finding_recovery(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/recon_swarm.py",
-          "line": 294,
-          "preview": "from .no_finding_recovery import build_no_finding_recovery",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/recon_swarm.py",
-          "line": 307,
-          "preview": "feedback = build_no_finding_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_learning_memory.py",
-          "line": 258,
-          "preview": "from app.no_finding_recovery import build_no_finding_recovery",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_learning_memory.py",
-          "line": 285,
-          "preview": "feedback = build_no_finding_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 3,
-          "preview": "from app.no_finding_recovery import build_no_finding_recovery",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 38,
-          "preview": "return build_no_finding_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 147,
-          "preview": "result = build_no_finding_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2882,
-          "preview": "result = build_no_finding_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2913,
-          "preview": "result = build_no_finding_recovery(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "has_in_scope_asset_ancestor": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 457,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 457,
-          "preview": "def has_in_scope_asset_ancestor(observation_id: str) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 509,
-          "preview": "if not has_in_scope_asset_ancestor(item[\"id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 514,
-          "preview": "if has_in_scope_asset_ancestor(item[\"id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 550,
-          "preview": "return has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 578,
-          "preview": "if has_in_scope_asset_ancestor(item[\"id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 601,
-          "preview": "return has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 639,
-          "preview": "if has_in_scope_asset_ancestor(item[\"id\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 650,
-          "preview": "has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 655,
-          "preview": "and has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 663,
-          "preview": "or has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 699,
-          "preview": "and has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 833,
-          "preview": "has_in_scope_asset_ancestor(item.id)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "scan_matches_campaign": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 547,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 547,
-          "preview": "def scan_matches_campaign(item: Any) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 552,
-          "preview": "scan_filter = scan_matches_campaign",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "scan_matches_target": {
-      "definition": {
-        "file": "backend/app/no_finding_recovery.py",
-        "line": 581,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 581,
-          "preview": "def scan_matches_target(item: Any) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/no_finding_recovery.py",
-          "line": 603,
-          "preview": "scan_filter = scan_matches_target",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_graph": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 7,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 26,
-          "preview": "def _graph():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 52,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 55,
-          "preview": "lambda _graph: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 80,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 85,
-          "preview": "lambda _graph: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 106,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 129,
-          "preview": "lambda _graph: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 149,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 190,
-          "preview": "lambda _graph: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 214,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 262,
-          "preview": "lambda _graph: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 313,
-          "preview": "lambda _graph: {\"valid\": True, \"checked\": 4, \"sealed_decisions\": 4, \"legacy_unsealed\": [], \"reason\": None},",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 335,
-          "preview": "lambda _graph: {\"valid\": True, \"checked\": 5, \"sealed_decisions\": 5, \"legacy_unsealed\": [], \"reason\": None},",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_decision_timeline.py",
-          "line": 354,
-          "preview": "lambda _graph: {\"valid\": True, \"checked\": 3, \"sealed_decisions\": 3, \"legacy_unsealed\": [], \"reason\": None},",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 8,
-          "preview": "def _graph() -> ObservationGraph:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 54,
-          "preview": "result = build_differential_quality(_graph())[\"f1\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 66,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 80,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 96,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 109,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_differential_quality.py",
-          "line": 130,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 6,
-          "preview": "def _graph() -> ObservationGraph:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 14,
-          "preview": "result = build_finding_consensus(_graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 28,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 61,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 81,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_consensus.py",
-          "line": 111,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 22,
-          "preview": "def _graph():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 79,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 102,
-          "preview": "result = build_finding_intelligence(findings, _graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 117,
-          "preview": "result = build_finding_intelligence(findings, _graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 146,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 168,
-          "preview": "result = build_finding_intelligence([finding], _graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 199,
-          "preview": "result = build_finding_intelligence([finding], _graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 242,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 260,
-          "preview": "result = build_finding_intelligence([finding], _graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 456,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 505,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 552,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 595,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 640,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 684,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 726,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 771,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 818,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 870,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 921,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1001,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1138,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1235,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1318,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1379,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_finding_intelligence.py",
-          "line": 1476,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_form_waf_reasoning.py",
-          "line": 7,
-          "preview": "def _graph() -> ObservationGraph:",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_form_waf_reasoning.py",
-          "line": 43,
-          "preview": "hypotheses = build_hypotheses(_graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_form_waf_reasoning.py",
-          "line": 54,
-          "preview": "tasks = build_review_queue(_graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_form_waf_reasoning.py",
-          "line": 64,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 10,
-          "preview": "def _graph():",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_hypothesis_memory.py",
+          "file": "backend/app/campaign_overview.py",
           "line": 18,
-          "preview": "hypotheses = build_hypotheses(_graph())",
+          "preview": "from .learning_memory import build_learning_memory, router as learning_memory_router",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 29,
-          "preview": "graph = _graph()",
+          "file": "backend/app/campaign_overview.py",
+          "line": 59,
+          "preview": "learning = build_learning_memory(graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 47,
-          "preview": "graph = _graph()",
+          "file": "backend/app/htb_lab.py",
+          "line": 457,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 80,
-          "preview": "graph = _graph()",
+          "file": "backend/app/htb_lab.py",
+          "line": 495,
+          "preview": "memories = build_learning_memory(graph, limit=100)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 108,
-          "preview": "graph = _graph()",
+          "file": "backend/app/htb_lab.py",
+          "line": 767,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 127,
-          "preview": "graph = _graph()",
+          "file": "backend/app/htb_lab.py",
+          "line": 785,
+          "preview": "memories = build_learning_memory(filtered, limit=50)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_hypothesis_memory.py",
-          "line": 148,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 7,
-          "preview": "def _graph(*, scans: int = 1, with_endpoint: bool = True):",
+          "file": "backend/app/learning_memory.py",
+          "line": 92,
+          "preview": "def build_learning_memory(",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 49,
-          "preview": "result = _feedback(_graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 67,
-          "preview": "result = _feedback(_graph(scans=4))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 76,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 98,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 116,
-          "preview": "result = _feedback(_graph(), campaign_finding_count=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 124,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 138,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 148,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 159,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 177,
-          "preview": "_graph(scans=4),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 186,
-          "preview": "result = _feedback(_graph(), allowed=(\"browser_observe\",))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 193,
-          "preview": "result = _feedback(_graph(with_endpoint=False), allowed=(\"crawl\", \"detect_technology\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 200,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/app/learning_memory.py",
           "line": 217,
-          "preview": "graph = _graph(scans=3)",
+          "preview": "memories = build_learning_memory(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 248,
-          "preview": "_feedback(_graph(), campaign_finding_count=-1)",
+          "file": "backend/app/orchestrator.py",
+          "line": 30,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 253,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 294,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 333,
-          "preview": "graph = _graph(scans=4)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 411,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 426,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 459,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 473,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 492,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 506,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 573,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 586,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 624,
-          "preview": "_feedback(_graph(), target_host=\"   \")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 628,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 664,
-          "preview": "graph = _graph(scans=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 678,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 706,
-          "preview": "result = _feedback(_graph(scans=1), target_host=\"example.test\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 714,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 825,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 846,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 876,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 906,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 934,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 970,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 986,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1000,
-          "preview": "_graph(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1009,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1063,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1082,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1098,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1114,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1134,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1150,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1167,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1204,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1232,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1254,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1273,
-          "preview": "graph = _graph(scans=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1322,
-          "preview": "graph = _graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1483,
-          "preview": "legacy = _graph(scans=1)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "_feedback": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 37,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 37,
-          "preview": "def _feedback(graph, *, allowed=None, scope=None, **kwargs):",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 49,
-          "preview": "result = _feedback(_graph())",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 67,
-          "preview": "result = _feedback(_graph(scans=4))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 90,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 108,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 116,
-          "preview": "result = _feedback(_graph(), campaign_finding_count=1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 134,
-          "preview": "assert _feedback(graph).state == \"findings_present\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 139,
-          "preview": "result = _feedback(graph, scope=lambda _host: False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 158,
-          "preview": "result = _feedback(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/app/orchestrator.py",
           "line": 176,
-          "preview": "result = _feedback(",
+          "preview": "memories = build_learning_memory(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 186,
-          "preview": "result = _feedback(_graph(), allowed=(\"browser_observe\",))",
+          "file": "backend/app/orchestrator.py",
+          "line": 224,
+          "preview": "scanner_memories = build_learning_memory(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 193,
-          "preview": "result = _feedback(_graph(with_endpoint=False), allowed=(\"crawl\", \"detect_technology\"))",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 3,
+          "preview": "from app.learning_memory import build_learning_memory, campaign_learning_memory",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 209,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 43,
+          "preview": "memories = build_learning_memory(graph)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 238,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 70,
+          "preview": "first = build_learning_memory(graph, limit=2)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 71,
+          "preview": "second = build_learning_memory(graph, limit=2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 109,
+          "preview": "build_learning_memory(graph, limit=invalid)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 325,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 347,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 365,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 382,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 406,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 501,
+          "preview": "scoped = build_learning_memory(graph, target_url=\"https://a.test/path\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 502,
+          "preview": "aggregate = build_learning_memory(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 528,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 547,
+          "preview": "memory = build_learning_memory(graph, target_url=\"https://a.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 575,
+          "preview": "memory = build_learning_memory(graph, target_url=\"https://a.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 600,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 636,
+          "preview": "memory = build_learning_memory(graph, target_url=\"https://a.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 646,
+          "preview": "build_learning_memory(graph, target_url=invalid)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 673,
+          "preview": "memory = build_learning_memory(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 739,
+          "preview": "memory = build_learning_memory(graph, target_url=\"https://a.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 761,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 780,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 796,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 816,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 836,
+          "preview": "memory = build_learning_memory(graph, target_url=\"https://a.test\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 856,
+          "preview": "assert build_learning_memory(graph, target_url=\"https://a.test\") == []",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 39
+    },
+    "campaign_learning_memory": {
+      "definition": {
+        "file": "backend/app/learning_memory.py",
+        "line": 212,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 212,
+          "preview": "def campaign_learning_memory(campaign_id: str, limit: int = 50):",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 3,
+          "preview": "from app.learning_memory import build_learning_memory, campaign_learning_memory",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 97,
+          "preview": "result = campaign_learning_memory(campaign.id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 903,
+          "preview": "result = campaign_learning_memory(campaign.id)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "worker_outcome_event": {
+      "definition": {
+        "file": "backend/app/learning_memory.py",
+        "line": 248,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/learning_memory.py",
           "line": 248,
-          "preview": "_feedback(_graph(), campaign_finding_count=-1)",
+          "preview": "def worker_outcome_event(job: dict[str, Any], *, success: bool, status: str) -> dict[str, Any]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/worker_service.py",
+          "line": 23,
+          "preview": "from .learning_memory import worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 287,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 305,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 326,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 372,
-          "preview": "before = _feedback(graph, allowed=(\"browser_observe\",))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 384,
-          "preview": "after = _feedback(graph, allowed=(\"browser_observe\",))",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 413,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 430,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 452,
-          "preview": "result = _feedback(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 469,
-          "preview": "assert \"map_forms\" in _feedback(graph).recommended_task_kinds",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/app/worker_service.py",
           "line": 486,
-          "preview": "result = _feedback(graph)",
+          "preview": "event = worker_outcome_event(job, success=success, status=status)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 494,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 117,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 558,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 119,
+          "preview": "event = worker_outcome_event(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 574,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 142,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 608,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 145,
+          "preview": "worker_outcome_event(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 624,
-          "preview": "_feedback(_graph(), target_host=\"   \")",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 710,
+          "preview": "from app.learning_memory import worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 653,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 714,
+          "preview": "worker_outcome_event(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 666,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 917,
+          "preview": "from app.learning_memory import worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 695,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 920,
+          "preview": "worker_outcome_event(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 706,
-          "preview": "result = _feedback(_graph(scans=1), target_host=\"example.test\")",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 988,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 782,
-          "preview": "result = _feedback(",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 990,
+          "preview": "event = worker_outcome_event(",
           "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 13
+    },
+    "summarize_worker_outcomes": {
+      "definition": {
+        "file": "backend/app/learning_memory.py",
+        "line": 271,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 13,
+          "preview": "from .learning_memory import TechniqueMemory, build_learning_memory, summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/adaptive_cycle.py",
+          "line": 210,
+          "preview": "worker_outcomes = summarize_worker_outcomes(campaign.events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 457,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 496,
+          "preview": "worker_outcomes = summarize_worker_outcomes(worker_events, recent_limit=50)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 767,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/htb_lab.py",
+          "line": 797,
+          "preview": "\"worker_outcomes\": summarize_worker_outcomes(campaign.events),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 231,
+          "preview": "\"worker_outcomes\": summarize_worker_outcomes(campaign.events),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/learning_memory.py",
+          "line": 271,
+          "preview": "def summarize_worker_outcomes(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 30,
+          "preview": "from .learning_memory import build_learning_memory, summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 180,
+          "preview": "worker_outcomes = summarize_worker_outcomes(campaign.events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 293,
+          "preview": "from .learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/recon_swarm.py",
+          "line": 316,
+          "preview": "worker_outcomes=summarize_worker_outcomes(campaign.events),",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 117,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 133,
+          "preview": "summary = summarize_worker_outcomes([{**event, \"at\": \"t1\"}])",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 142,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 156,
+          "preview": "summarize_worker_outcomes([], recent_limit=201)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 164,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 176,
+          "preview": "summary = summarize_worker_outcomes(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 200,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 202,
+          "preview": "summary = summarize_worker_outcomes([",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 218,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 250,
+          "preview": "summary = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 259,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 286,
+          "preview": "outcomes = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 415,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 427,
+          "preview": "result = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 440,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 452,
+          "preview": "result = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 459,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 472,
+          "preview": "outcomes = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 680,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 700,
+          "preview": "result = summarize_worker_outcomes(events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 936,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 938,
+          "preview": "summary = summarize_worker_outcomes([",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 962,
+          "preview": "from app.learning_memory import summarize_worker_outcomes",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 964,
+          "preview": "summary = summarize_worker_outcomes([",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 988,
+          "preview": "from app.learning_memory import summarize_worker_outcomes, worker_outcome_event",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 997,
+          "preview": "summary = summarize_worker_outcomes([{",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 38
+    },
+    "test_learning_memory_aggregates_only_explicit_outcomes": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 9,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 9,
+          "preview": "def test_learning_memory_aggregates_only_explicit_outcomes():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_learning_memory_is_bounded_and_deterministic": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 55,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 55,
+          "preview": "def test_learning_memory_is_bounded_and_deterministic():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_learning_memory_route_is_exposed": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 77,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 77,
+          "preview": "def test_learning_memory_route_is_exposed(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_learning_memory_rejects_unbounded_limits": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 105,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 105,
+          "preview": "def test_learning_memory_rejects_unbounded_limits():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_outcome_memory_excludes_payloads_and_errors": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 116,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 116,
+          "preview": "def test_worker_outcome_memory_excludes_payloads_and_errors():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 141,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 141,
+          "preview": "def test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_summary_counts_one_final_state_per_job": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 163,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 163,
+          "preview": "def test_worker_summary_counts_one_final_state_per_job():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "event": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 166,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 9,
+          "preview": "def _matches_identity(event: Mapping[str, Any], identity: Mapping[str, Any]) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 10,
+          "preview": "return all(event.get(key) == value for key, value in identity.items())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 20,
+          "preview": "event.get(\"type\") == event_type and _matches_identity(event, identity)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 21,
+          "preview": "for event in events",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 35,
+          "preview": "str(event.get(\"request_id\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 36,
+          "preview": "for event in materialized",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 37,
+          "preview": "if event.get(\"type\") == completed_type",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 38,
+          "preview": "and event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 39,
+          "preview": "and _matches_identity(event, identity)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 41,
+          "preview": "for event in reversed(materialized):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 42,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 44,
+          "preview": "event.get(\"type\") == requested_type",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 48,
+          "preview": "and _matches_identity(event, identity)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 58,
+          "preview": "def _request_key(event: Mapping[str, Any]) -> tuple[str, str] | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 59,
+          "preview": "event_type = event.get(\"type\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 61,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 65,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 66,
+          "preview": "finding_id = event.get(\"finding_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 70,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 71,
+          "preview": "purpose = event.get(\"purpose\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 79,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 80,
+          "preview": "flow_fingerprint = event.get(\"flow_fingerprint\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 89,
+          "preview": "fingerprint = event.get(\"dispatch_fingerprint\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 95,
+          "preview": "def _completion_key(event: Mapping[str, Any]) -> tuple[str, str] | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 96,
+          "preview": "event_type = event.get(\"type\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 98,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 102,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 105,
+          "preview": "if event_type == \"report_queued\" and event.get(\"purpose\") == \"manual\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 106,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 109,
+          "preview": "if event_type == \"campaign_completed\" and event.get(\"purpose\") == \"campaign_completion\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 110,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 114,
+          "preview": "request_id = event.get(\"request_id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 118,
+          "preview": "fingerprint = event.get(\"dispatch_fingerprint\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 135,
+          "preview": "for event in materialized",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/api_outbox.py",
+          "line": 136,
+          "preview": "if (key := _completion_key(event)) is not None",
+          "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 807,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 141,
+          "preview": "for event in materialized:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 839,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/api_outbox.py",
+          "line": 142,
+          "preview": "identity_key = _request_key(event)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 869,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/api_outbox.py",
+          "line": 149,
+          "preview": "requested_at = event.get(\"at\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 899,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/api_outbox.py",
+          "line": 185,
+          "preview": "for event in materialized",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 918,
-          "preview": "assert _feedback(graph).uncovered_endpoint_count == 1",
+          "file": "backend/app/api_outbox.py",
+          "line": 186,
+          "preview": "if (key := _completion_key(event)) is not None",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 950,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 191,
+          "preview": "for event in materialized:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 972,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 192,
+          "preview": "identity_key = _request_key(event)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 985,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 200,
+          "preview": "\"requested_at\": event.get(\"at\") if isinstance(event.get(\"at\"), str) else None,",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 999,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 201,
+          "preview": "\"request_event\": dict(event),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1025,
-          "preview": "result = _feedback(",
+          "file": "backend/app/api_outbox.py",
+          "line": 219,
+          "preview": "platform = event.get(\"platform\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1071,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 13,
+          "preview": "def _canonical_event(event: dict[str, Any]) -> bytes:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1090,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 14,
+          "preview": "payload = {key: value for key, value in event.items() if key not in _VOLATILE_FIELDS}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1106,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 18,
+          "preview": "def seal_campaign_event(event: dict[str, Any], events: list[dict[str, Any]]) -> dict[str, Any]:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1125,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 19,
+          "preview": "sealed = dict(event)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1139,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 38,
+          "preview": "def append_campaign_event(events: list[dict[str, Any]], event: dict[str, Any]) -> None:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1157,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 39,
+          "preview": "events.append(seal_campaign_event(event, events))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1171,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 51,
+          "preview": "return {\"valid\": False, \"checked\": checked, \"legacy_unsealed\": legacy, \"reason\": \"campaign event sequence gap\"}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1220,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 53,
+          "preview": "return {\"valid\": False, \"checked\": checked, \"legacy_unsealed\": legacy, \"reason\": \"previous campaign event hash mismatch\"}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1245,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 57,
+          "preview": "return {\"valid\": False, \"checked\": checked, \"legacy_unsealed\": legacy, \"reason\": \"campaign event hash mismatch\"}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1267,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_audit.py",
+          "line": 61,
+          "preview": "return {\"valid\": False, \"checked\": checked, \"legacy_unsealed\": legacy, \"reason\": \"unsupported campaign event signature algorithm\"}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1310,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_audit.py",
+          "line": 70,
+          "preview": "return {\"valid\": False, \"checked\": checked, \"legacy_unsealed\": legacy, \"reason\": \"campaign event signature mismatch\"}",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1340,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 22,
+          "preview": "completed = [event for event in events if event.get(\"type\") == \"recon_task_completed\"]",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1384,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 25,
+          "preview": "\"requests_made\": sum(int(event.get(\"requests_made\") or 0) for event in completed),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1429,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 26,
+          "preview": "\"bytes_read\": sum(int(event.get(\"bytes_read\") or 0) for event in completed),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1471,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 28,
+          "preview": "(int(event.get(\"max_depth_reached\") or 0) for event in completed),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1484,
-          "preview": "result = _feedback(legacy, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 32,
+          "preview": "int(event.get(\"skipped_out_of_scope\") or 0) for event in completed",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1501,
-          "preview": "compatible = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 35,
+          "preview": "int(event.get(\"skipped_cross_origin\") or 0) for event in completed",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1515,
-          "preview": "_feedback(_graph(), target_url=invalid)",
+          "file": "backend/app/campaign_control.py",
+          "line": 38,
+          "preview": "sum(float(event.get(\"wall_time_seconds\") or 0.0) for event in completed),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1517,
-          "preview": "_feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 42,
+          "preview": "1 for event in completed if bool(event.get(\"stopped_by_time_budget\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1535,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 45,
+          "preview": "1 for event in completed if bool(event.get(\"stopped_by_request_budget\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1566,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 48,
+          "preview": "1 for event in completed if not bool(event.get(\"coverage_complete\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1584,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 51,
+          "preview": "int(event.get(\"frontier_remaining\") or 0) for event in completed",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1600,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 54,
+          "preview": "int(event.get(\"deferred_by_request_budget\") or 0) for event in completed",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1624,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 70,
+          "preview": "event.get(\"type\") == event_type",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1637,
-          "preview": "result = _feedback(_graph(scans=3), target_host=\"example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 71,
+          "preview": "and event.get(\"request_id\") == request_id",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1656,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 72,
+          "preview": "for event in events",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1684,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 78,
+          "preview": "str(event.get(\"request_id\"))",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1719,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 79,
+          "preview": "for event in events",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1732,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 80,
+          "preview": "if event.get(\"type\") == \"circuit_breaker_reset_completed\"",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1743,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 81,
+          "preview": "and event.get(\"request_id\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1761,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 83,
+          "preview": "for event in reversed(events):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1784,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test\")",
+          "file": "backend/app/campaign_control.py",
+          "line": 85,
+          "preview": "event.get(\"type\") == \"circuit_breaker_reset_requested\"",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1830,
-          "preview": "result = _feedback(",
+          "file": "backend/app/campaign_control.py",
+          "line": 86,
+          "preview": "and event.get(\"request_id\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1864,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/campaign_control.py",
+          "line": 87,
+          "preview": "and str(event[\"request_id\"]) not in completed",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1894,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/campaign_control.py",
+          "line": 89,
+          "preview": "return str(event[\"request_id\"])",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1914,
-          "preview": "assert _feedback(graph).uncovered_endpoint_count == 1",
+          "file": "backend/app/decision_timeline.py",
+          "line": 271,
+          "preview": "for index, event in enumerate(campaign.events):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1936,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/decision_timeline.py",
+          "line": 275,
+          "preview": "\"id\": f\"campaign-event:{index}\",",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1977,
-          "preview": "result = _feedback(",
+          "file": "backend/app/decision_timeline.py",
+          "line": 276,
+          "preview": "\"at\": event.get(\"at\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2005,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/decision_timeline.py",
+          "line": 278,
+          "preview": "\"event_type\": event.get(\"type\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2027,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/decision_timeline.py",
+          "line": 279,
+          "preview": "\"finding_id\": event.get(\"finding_id\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2059,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/decision_timeline.py",
+          "line": 280,
+          "preview": "\"job_id\": event.get(\"job_id\") or event.get(\"report_job_id\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2081,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/decision_timeline.py",
+          "line": 281,
+          "preview": "\"confirmed\": event.get(\"confirmed\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2104,
-          "preview": "assert _feedback(graph).uncovered_endpoint_count == 1",
+          "file": "backend/app/decision_timeline.py",
+          "line": 282,
+          "preview": "\"validator\": event.get(\"validator\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2123,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/decision_timeline.py",
+          "line": 283,
+          "preview": "\"request_id\": event.get(\"request_id\"),",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2145,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 642,
+          "preview": "for event in reversed(campaign.events):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2168,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 643,
+          "preview": "if event.get(\"type\") != \"hackerone_policy_bound\":",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2190,
-          "preview": "assert \"map_forms\" in _feedback(graph).exhausted_task_kinds",
+          "file": "backend/app/finding_intelligence.py",
+          "line": 645,
+          "preview": "binding = event.get(\"remote_binding\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2210,
-          "preview": "assert \"map_forms\" not in _feedback(graph).exhausted_task_kinds",
+          "file": "backend/app/github_learning_sync.py",
+          "line": 274,
+          "preview": "\"Execution event distribution:\",",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2229,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_api.py",
+          "line": 960,
+          "preview": "for event in events:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2257,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 961,
+          "preview": "kind = str(event.get(\"type\") or \"unknown\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2278,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1878,
+          "preview": "for event in reversed(campaign.events):",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2306,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1879,
+          "preview": "if event.get(\"type\") != \"hackerone_policy_bound\":",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2329,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1881,
+          "preview": "binding = event.get(\"remote_binding\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2362,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1898,
+          "preview": "(index, event)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2400,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1899,
+          "preview": "for index, event in enumerate(campaign.events)",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2435,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1900,
+          "preview": "if event.get(\"type\") == \"hackerone_submission_attempted\"",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2461,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1901,
+          "preview": "and event.get(\"artifact_id\") == artifact_id",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2490,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1908,
+          "preview": "event.get(\"request_id\") == request_id",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2514,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1909,
+          "preview": "and event.get(\"type\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2537,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_api.py",
+          "line": 1911,
+          "preview": "for event in campaign.events[index + 1 :]",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2560,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 21,
+          "preview": "return [event for event in events if isinstance(event, dict)] if isinstance(events, list) else []",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2592,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 31,
+          "preview": "event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2626,
-          "preview": "result = _feedback(graph, target_host=\"example.test\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 32,
+          "preview": "for event in events",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2652,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 33,
+          "preview": "if event.get(\"type\") == event_type",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2675,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 34,
+          "preview": "and event.get(\"artifact_id\") == artifact_id",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2707,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 43,
+          "preview": "for event in events:",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2725,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 44,
+          "preview": "if event.get(\"type\") != \"hackerone_report_submitted\":",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2759,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 46,
+          "preview": "artifact_id = event.get(\"artifact_id\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2787,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 47,
+          "preview": "remote_report_id = event.get(\"remote_report_id\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2816,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 48,
+          "preview": "team_handle = event.get(\"team_handle\")",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2846,
-          "preview": "result = _feedback(graph, target_url=\"https://example.test/\")",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 57,
+          "preview": "submissions[artifact_id] = event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2927,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 89,
+          "preview": "event",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2952,
-          "preview": "result = _feedback(",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 90,
+          "preview": "for event in events",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2964,
-          "preview": "result = _feedback(graph)",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 91,
+          "preview": "if event.get(\"type\") == \"hackerone_public_activity_observed\"",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2971,
-          "preview": "result = _feedback(_graph(scans=1))",
+          "file": "backend/app/hackerone_attention.py",
+          "line": 92,
+          "preview": "and event.get(\"artifact_id\") == artifact_id",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 120
     },
-    "test_negative_scan_shifts_focus_to_unobserved_in_scope_surfaces": {
+    "test_worker_summary_does_not_merge_different_job_kinds": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 48,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 48,
-          "preview": "def test_negative_scan_shifts_focus_to_unobserved_in_scope_surfaces():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_repeated_completed_scans_rotate_instead_of_repeating_scan": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 66,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 66,
-          "preview": "def test_repeated_completed_scans_rotate_instead_of_repeating_scan():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_duplicate_observations_for_one_scan_job_do_not_inflate_yield": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 75,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 75,
-          "preview": "def test_duplicate_observations_for_one_scan_job_do_not_inflate_yield():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_failed_scans_do_not_count_as_null_findings": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 97,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 97,
-          "preview": "def test_failed_scans_do_not_count_as_null_findings():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_campaign_findings_disable_no_finding_recovery_even_without_graph_record": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 115,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 115,
-          "preview": "def test_campaign_findings_disable_no_finding_recovery_even_without_graph_record():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_existing_graph_finding_disables_null_scan_recovery": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 123,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 123,
-          "preview": "def test_existing_graph_finding_disables_null_scan_recovery():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_out_of_scope_asset_cannot_trigger_recovery": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 137,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 137,
-          "preview": "def test_out_of_scope_asset_cannot_trigger_recovery():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_missing_scope_checker_disables_recommendations": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 146,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 146,
-          "preview": "def test_missing_scope_checker_disables_recommendations():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_repeated_failed_worker_requires_review_not_retry": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 157,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 157,
-          "preview": "def test_repeated_failed_worker_requires_review_not_retry():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_feedback_never_invents_task_kinds_or_expands_configured_set": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 175,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 175,
-          "preview": "def test_feedback_never_invents_task_kinds_or_expands_configured_set():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_unavailable_recovery_tasks_fail_closed": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 185,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 185,
-          "preview": "def test_unavailable_recovery_tasks_fail_closed():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_no_endpoints_prefers_existing_bounded_crawl": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 192,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 192,
-          "preview": "def test_no_endpoints_prefers_existing_bounded_crawl():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_scope_integrity_gap_prioritized_before_more_scanning": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
+        "file": "backend/tests/test_learning_memory.py",
         "line": 199,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/tests/test_learning_memory.py",
           "line": 199,
-          "preview": "def test_scope_integrity_gap_prioritized_before_more_scanning():",
+          "preview": "def test_worker_summary_does_not_merge_different_job_kinds():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_reviewed_forms_no_longer_count_as_review_gap": {
+    "test_invalid_worker_events_cannot_inflate_recovery_failure_counts": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 216,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 217,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 216,
-          "preview": "def test_reviewed_forms_no_longer_count_as_review_gap():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 217,
+          "preview": "def test_invalid_worker_events_cannot_inflate_recovery_failure_counts():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_feedback_rejects_negative_campaign_finding_count": {
+    "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 244,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 258,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 244,
-          "preview": "def test_feedback_rejects_negative_campaign_finding_count():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 258,
+          "preview": "def test_no_finding_feedback_uses_final_worker_state_not_retry_event_count():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_graph_with_explicitly_linked_scan": {
+    "_technique_job_observation": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 251,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 300,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 251,
-          "preview": "def _graph_with_explicitly_linked_scan():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 300,
+          "preview": "def _technique_job_observation(",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 273,
-          "preview": "graph = _graph_with_explicitly_linked_scan()",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 315,
+          "preview": "graph.add(_technique_job_observation(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 312,
-          "preview": "graph = _graph_with_explicitly_linked_scan()",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 318,
+          "preview": "graph.add(_technique_job_observation(",
           "definition_candidate": false
         },
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 443,
-          "preview": "graph = _graph_with_explicitly_linked_scan()",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 321,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 335,
+          "preview": "_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 338,
+          "preview": "_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 358,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 361,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 375,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 378,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 402,
+          "preview": "graph.add(_technique_job_observation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 669,
+          "preview": "graph.add(_technique_job_observation(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 12
     },
-    "test_out_of_scope_technology_does_not_satisfy_authorized_inventory": {
+    "test_technique_memory_deduplicates_multiple_observations_from_same_job": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 272,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 313,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 272,
-          "preview": "def test_out_of_scope_technology_does_not_satisfy_authorized_inventory():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_orphan_form_does_not_close_authorized_form_inventory_gap": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 293,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 293,
-          "preview": "def test_orphan_form_does_not_close_authorized_form_inventory_gap():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_out_of_scope_form_does_not_close_authorized_form_inventory_gap": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 311,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 311,
-          "preview": "def test_out_of_scope_form_does_not_close_authorized_form_inventory_gap():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_browser_already_attempted_does_not_create_infinite_recovery_loop": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 332,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 332,
-          "preview": "def test_browser_already_attempted_does_not_create_infinite_recovery_loop():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 313,
+          "preview": "def test_technique_memory_deduplicates_multiple_observations_from_same_job():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_completed_recon_evidence": {
+    "test_contradictory_job_results_are_inconclusive_regardless_of_order": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 390,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 333,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 390,
-          "preview": "def _completed_recon_evidence(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 412,
-          "preview": "_completed_recon_evidence(graph, task_kind=\"map_forms\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 428,
-          "preview": "_completed_recon_evidence(graph, task_kind=kind)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 447,
-          "preview": "_completed_recon_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 474,
-          "preview": "_completed_recon_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 480,
-          "preview": "_completed_recon_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 493,
-          "preview": "_completed_recon_evidence(graph, task_kind=\"map_forms\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 537,
-          "preview": "_completed_recon_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 588,
-          "preview": "_completed_recon_evidence(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "test_completed_in_scope_recovery_task_is_not_recommended_twice": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 410,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 410,
-          "preview": "def test_completed_in_scope_recovery_task_is_not_recommended_twice():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 333,
+          "preview": "def test_contradictory_job_results_are_inconclusive_regardless_of_order():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_completed_all_candidate_recovery_tasks_requires_review": {
+    "test_distinct_job_ids_remain_independent_technique_attempts": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 425,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 356,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 425,
-          "preview": "def test_completed_all_candidate_recovery_tasks_requires_review():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 356,
+          "preview": "def test_distinct_job_ids_remain_independent_technique_attempts():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task": {
+    "test_legacy_observations_without_job_id_keep_independent_evidence": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 442,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 373,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 442,
-          "preview": "def test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 373,
+          "preview": "def test_legacy_observations_without_job_id_keep_independent_evidence():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_orphan_recon_completion_does_not_exhaust_task": {
+    "test_malformed_job_id_cannot_create_extra_technique_confidence": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 388,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 388,
+          "preview": "def test_malformed_job_id_cannot_create_extra_technique_confidence():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_completed_state_survives_late_failed_and_queued_events": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 414,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 414,
+          "preview": "def test_worker_completed_state_survives_late_failed_and_queued_events():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_failed_job_without_completion_can_still_be_requeued": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 439,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 439,
+          "preview": "def test_failed_job_without_completion_can_still_be_requeued():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_terminal_worker_state_prevents_false_scanner_instability": {
+      "definition": {
+        "file": "backend/tests/test_learning_memory.py",
         "line": 458,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
+          "file": "backend/tests/test_learning_memory.py",
           "line": 458,
-          "preview": "def test_orphan_recon_completion_does_not_exhaust_task():",
+          "preview": "def test_terminal_worker_state_prevents_false_scanner_instability():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_failed_or_queued_recon_task_does_not_exhaust_option": {
+    "test_scoped_learning_excludes_other_authorized_host_evidence": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 472,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 481,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 472,
-          "preview": "def test_failed_or_queued_recon_task_does_not_exhaust_option():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 481,
+          "preview": "def test_scoped_learning_excludes_other_authorized_host_evidence():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_completed_recovery_cannot_create_new_authority": {
+    "test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 491,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 511,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 491,
-          "preview": "def test_completed_recovery_cannot_create_new_authority():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 511,
+          "preview": "def test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_recovery_targets_only_requested_host_in_multi_host_campaign": {
+    "test_scoped_learning_preserves_single_asset_legacy_evidence": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 505,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 531,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 505,
-          "preview": "def test_recovery_targets_only_requested_host_in_multi_host_campaign():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 531,
+          "preview": "def test_scoped_learning_preserves_single_asset_legacy_evidence():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_recovery_rejects_other_authorized_host_as_target_inventory": {
+    "test_scoped_learning_rejects_different_protocol_and_port": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 572,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 552,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 572,
-          "preview": "def test_recovery_rejects_other_authorized_host_as_target_inventory():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 552,
+          "preview": "def test_scoped_learning_rejects_different_protocol_and_port():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_recovery_target_host_exhaustion_is_not_cross_host": {
+    "test_scoped_learning_does_not_credit_job_id_reused_on_other_host": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 585,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 581,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 585,
-          "preview": "def test_recovery_target_host_exhaustion_is_not_cross_host():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 581,
+          "preview": "def test_scoped_learning_does_not_credit_job_id_reused_on_other_host():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_recovery_target_host_cannot_be_empty": {
+    "test_scoped_learning_accepts_indirect_in_scope_ancestry_only": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 620,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 603,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 620,
-          "preview": "def test_recovery_target_host_cannot_be_empty():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 603,
+          "preview": "def test_scoped_learning_accepts_indirect_in_scope_ancestry_only():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_recovery_scopes_untrusted_endpoint_count_to_target": {
+    "test_scoped_learning_rejects_non_web_target_url": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 627,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 642,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 627,
-          "preview": "def test_recovery_scopes_untrusted_endpoint_count_to_target():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 642,
+          "preview": "def test_scoped_learning_rejects_non_web_target_url():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_unscoped_scan_is_not_misattributed_to_target_in_multi_host_campaign": {
+    "test_invisible_job_ids_cannot_inflate_scanner_technique_memory": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 663,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 653,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 663,
-          "preview": "def test_unscoped_scan_is_not_misattributed_to_target_in_multi_host_campaign():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 653,
+          "preview": "def test_invisible_job_ids_cannot_inflate_scanner_technique_memory():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_scoped_scan_on_other_host_cannot_trigger_negative_target_feedback": {
+    "test_invisible_worker_event_ids_do_not_inflate_operational_failures": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 677,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 679,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 677,
-          "preview": "def test_scoped_scan_on_other_host_cannot_trigger_negative_target_feedback():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 679,
+          "preview": "def test_invisible_worker_event_ids_do_not_inflate_operational_failures():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_legacy_unscoped_scan_remains_valid_for_single_observed_host": {
+    "test_worker_outcome_event_rejects_invalid_job_identifiers": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 705,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 707,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 705,
-          "preview": "def test_legacy_unscoped_scan_remains_valid_for_single_observed_host():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 707,
+          "preview": "def test_worker_outcome_event_rejects_invalid_job_identifiers():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_fully_reviewed_target_graph": {
+    "test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 713,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 721,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 713,
-          "preview": "def _fully_reviewed_target_graph(*, additional_host: bool) -> ObservationGraph:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 768,
-          "preview": "graph = _fully_reviewed_target_graph(additional_host=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 793,
-          "preview": "graph = _fully_reviewed_target_graph(additional_host=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2214,
-          "preview": "graph = _fully_reviewed_target_graph(additional_host=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2633,
-          "preview": "graph = _fully_reviewed_target_graph(additional_host=False)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "test_single_host_legacy_browser_completion_prevents_recovery_loop": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 767,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 767,
-          "preview": "def test_single_host_legacy_browser_completion_prevents_recovery_loop():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 721,
+          "preview": "def test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_other_host_browser_completion_cannot_exhaust_target": {
+    "test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 792,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 745,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 792,
-          "preview": "def test_other_host_browser_completion_cannot_exhaust_target():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 745,
+          "preview": "def test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_queued_endpoint_review_does_not_close_coverage_gap": {
+    "test_scoped_learning_rejects_malformed_intermediate_endpoint": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 824,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 764,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 824,
-          "preview": "def test_queued_endpoint_review_does_not_close_coverage_gap():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 764,
+          "preview": "def test_scoped_learning_rejects_malformed_intermediate_endpoint():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_failed_form_review_does_not_close_coverage_gap": {
+    "test_scoped_learning_rejects_cross_origin_form_with_approved_asset": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 845,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 783,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 845,
-          "preview": "def test_failed_form_review_does_not_close_coverage_gap():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 783,
+          "preview": "def test_scoped_learning_rejects_cross_origin_form_with_approved_asset():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_completed_scoped_review_closes_only_its_own_endpoint_gap": {
+    "test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 875,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 799,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 875,
-          "preview": "def test_completed_scoped_review_closes_only_its_own_endpoint_gap():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 799,
+          "preview": "def test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_review_without_terminal_status_cannot_claim_coverage": {
+    "test_scoped_learning_accepts_valid_endpoint_and_form_chain": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 905,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 819,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 905,
-          "preview": "def test_review_without_terminal_status_cannot_claim_coverage():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 819,
+          "preview": "def test_scoped_learning_accepts_valid_endpoint_and_form_chain():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_unattributed_scanner_failures": {
+    "test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 921,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 842,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 921,
-          "preview": "def _unattributed_scanner_failures():",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 954,
-          "preview": "worker_outcomes=_unattributed_scanner_failures(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 976,
-          "preview": "worker_outcomes=_unattributed_scanner_failures(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 988,
-          "preview": "worker_outcomes=_unattributed_scanner_failures(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1001,
-          "preview": "worker_outcomes=_unattributed_scanner_failures(),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "test_global_worker_failures_do_not_block_different_target_recovery": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 933,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 933,
-          "preview": "def test_global_worker_failures_do_not_block_different_target_recovery():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 842,
+          "preview": "def test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_global_worker_failures_cannot_create_missing_target_scan_evidence": {
+    "test_learning_memory_route_excludes_evidence_from_other_authorized_asset": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 969,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 859,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 969,
-          "preview": "def test_global_worker_failures_cannot_create_missing_target_scan_evidence():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 859,
+          "preview": "def test_learning_memory_route_excludes_evidence_from_other_authorized_asset(",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_single_observed_host_still_blocks_recovery_on_real_worker_failure": {
+    "test_worker_outcome_event_rejects_noninteger_attempts": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 984,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 916,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 984,
-          "preview": "def test_single_observed_host_still_blocks_recovery_on_real_worker_failure():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 916,
+          "preview": "def test_worker_outcome_event_rejects_noninteger_attempts(invalid_attempts):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_legacy_campaign_wide_health_retains_conservative_gate": {
+    "test_worker_summary_does_not_count_invalid_attempts": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 998,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 935,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 998,
-          "preview": "def test_legacy_campaign_wide_health_retains_conservative_gate():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 935,
+          "preview": "def test_worker_summary_does_not_count_invalid_attempts(invalid_attempts):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_healthy_multi_host_worker_summary_does_not_claim_attribution": {
+    "test_invalid_completion_attempts_cannot_overwrite_valid_queued_state": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1008,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 961,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1008,
-          "preview": "def test_healthy_multi_host_worker_summary_does_not_claim_attribution():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 961,
+          "preview": "def test_invalid_completion_attempts_cannot_overwrite_valid_queued_state():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_record_completed_scan": {
+    "test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries": {
       "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1038,
+        "file": "backend/tests/test_learning_memory.py",
+        "line": 987,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1038,
-          "preview": "def _record_completed_scan(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1064,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1067,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1083,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1086,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1099,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1102,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1115,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1118,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1121,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1135,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1151,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1154,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1168,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1527,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1551,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1558,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1577,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1593,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1611,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1617,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1650,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1669,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1676,
-          "preview": "_record_completed_scan(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 24
-    },
-    "test_conflicting_sources_for_same_scan_job_do_not_count_as_independent": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1062,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1062,
-          "preview": "def test_conflicting_sources_for_same_scan_job_do_not_count_as_independent():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_identical_repeated_scanner_source_for_one_job_counts_once": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1081,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1081,
-          "preview": "def test_identical_repeated_scanner_source_for_one_job_counts_once():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_distinct_jobs_with_same_source_do_not_inflate_source_diversity": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1097,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1097,
-          "preview": "def test_distinct_jobs_with_same_source_do_not_inflate_source_diversity():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_ambiguous_scan_does_not_hide_separate_trusted_scan": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1113,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1113,
-          "preview": "def test_ambiguous_scan_does_not_hide_separate_trusted_scan():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_missing_scanner_source_requires_review_not_recovery_escalation": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1133,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1133,
-          "preview": "def test_missing_scanner_source_requires_review_not_recovery_escalation():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_blank_duplicate_source_cannot_be_hidden_by_named_reporter": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1149,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1149,
-          "preview": "def test_blank_duplicate_source_cannot_be_hidden_by_named_reporter():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_oversized_scan_job_id_is_not_trusted_as_independent_source": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1166,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1166,
-          "preview": "def test_oversized_scan_job_id_is_not_trusted_as_independent_source():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_record_timestamped_recovery": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1180,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1180,
-          "preview": "def _record_timestamped_recovery(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1205,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1233,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1255,
-          "preview": "_record_timestamped_recovery(graph, completed_at=completed_at)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1289,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1323,
-          "preview": "_record_timestamped_recovery(graph, completed_at=\"2026-09-01T00:00:00Z\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1324,
-          "preview": "_record_timestamped_recovery(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2242,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2266,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2291,
-          "preview": "_record_timestamped_recovery(graph)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 2313,
-          "preview": "_record_timestamped_recovery(graph, kind=\"browser_observe\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 11
-    },
-    "test_new_target_endpoint_after_recovery_completion_reopens_bounded_task": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1203,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1203,
-          "preview": "def test_new_target_endpoint_after_recovery_completion_reopens_bounded_task():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_old_target_observation_cannot_reopen_exhausted_recon": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1231,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1231,
-          "preview": "def test_old_target_observation_cannot_reopen_exhausted_recon():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_missing_or_invalid_completion_timestamp_does_not_reopen_task": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1252,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1252,
-          "preview": "def test_missing_or_invalid_completion_timestamp_does_not_reopen_task():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_cross_host_or_orphan_observation_does_not_reopen_target_task": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1272,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1272,
-          "preview": "def test_cross_host_or_orphan_observation_does_not_reopen_target_task():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_later_recovery_completion_prevents_repeating_old_novelty": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1321,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1321,
-          "preview": "def test_later_recovery_completion_prevents_repeating_old_novelty():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_two_origin_graph": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1345,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1345,
-          "preview": "def _two_origin_graph() -> ObservationGraph:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1369,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1396,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1525,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1549,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1575,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1592,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1667,
-          "preview": "graph = _two_origin_graph()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "test_negative_scan_on_http_does_not_trigger_https_recovery": {
-      "definition": {
-        "file": "backend/tests/test_no_finding_recovery.py",
-        "line": 1368,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_no_finding_recovery.py",
-          "line": 1368,
-          "preview": "def test_negative_scan_on_http_does_not_trigger_https_recovery():",
+          "file": "backend/tests/test_learning_memory.py",
+          "line": 987,
+          "preview": "def test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries():",
           "definition_candidate": true
         }
       ],
