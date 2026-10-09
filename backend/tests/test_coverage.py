@@ -1375,6 +1375,24 @@ def test_endpoint_claim_subsetting_is_rejected_without_scope_checker():
 
 def test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all():
     graph = _two_endpoint_scan_scope_graph()
+    graph.add(
+        Observation(
+            "form:a",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "tech:a",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("asset:a",),
+        )
+    )
     _record_scan_scope(graph, "scan:conflicting:1", "endpoint:1", "shared-job")
     _record_scan_scope(graph, "scan:conflicting:2", "endpoint:2", "shared-job")
     for index in range(3):
