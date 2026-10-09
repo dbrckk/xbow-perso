@@ -443,10 +443,37 @@ def build_no_finding_recovery(
             for item in asset_records
         )
 
+        # A scan connected to a malformed, untrusted or different-origin
+        # endpoint cannot be credited merely because another ancestor is
+        # an authorized asset. Keep negative-scan recovery consistent with
+        # the more detailed scan coverage provenance report.
+        eligible_scan_endpoint_ids = {
+            item["id"]
+            for item in endpoints
+            if has_in_scope_asset_ancestor(item["id"])
+        }
+
         def scan_matches_target(item: Any) -> bool:
-            if item.parent_ids:
-                return has_in_scope_asset_ancestor(item.id)
-            return legacy_single_host
+            if not item.parent_ids:
+                return legacy_single_host
+            pending = list(item.parent_ids)
+            seen: set[str] = set()
+            while pending:
+                parent_id = pending.pop()
+                if parent_id in seen:
+                    continue
+                seen.add(parent_id)
+                parent = observations_by_id.get(parent_id)
+                if parent is None:
+                    return False
+                if (
+                    parent.kind == "endpoint"
+                    and parent.id not in eligible_scan_endpoint_ids
+                ):
+                    return False
+                if parent.kind != "asset":
+                    pending.extend(parent.parent_ids)
+            return has_in_scope_asset_ancestor(item.id)
 
         scan_filter = scan_matches_target
         (
