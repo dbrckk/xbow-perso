@@ -1,0 +1,103 @@
+FROM python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS builder
+
+ARG TARGETARCH
+ARG UV_VERSION=0.12.10
+ARG STRIX_VERSION=1.6.2
+ARG STRIX_SOURCE_COMMIT=ff5c8cc8e46d8e60c2bc2439f7bcb07c05ca3db2
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN set -eu; \
+    case "$TARGETARCH" in \
+      amd64) \
+        UV_ARCH=x86_64; \
+        UV_SHA256=173d95a0c32d18c896c46ba6fafbf3cf9c14ab74b033f81b76c883ef492a976b \
+        ;; \
+      arm64) \
+        UV_ARCH=aarch64; \
+        UV_SHA256=9ff6b9d4665edcdd3a88dcc73cd1eb641754deb927f14e8c62ebfde6bf4f5f5e \
+        ;; \
+      *) echo "unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
+    esac; \
+    UV_ASSET="uv-${UV_ARCH}-unknown-linux-gnu.tar.gz"; \
+    curl --fail --location --proto '=https' --tlsv1.2 \
+      "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/${UV_ASSET}" \
+      -o "/tmp/${UV_ASSET}"; \
+    printf '%s  %s\n' "$UV_SHA256" "/tmp/${UV_ASSET}" | sha256sum -c -; \
+    mkdir -p /tmp/uv-extract; \
+    tar -C /tmp/uv-extract -xzf "/tmp/${UV_ASSET}"; \
+    install -m 0755 "/tmp/uv-extract/uv-${UV_ARCH}-unknown-linux-gnu/uv" /usr/local/bin/uv; \
+    rm -rf /tmp/uv-extract "/tmp/${UV_ASSET}"
+
+COPY app/strix_python_lock_probe.py /tmp/xbow/app/strix_python_lock_probe.py
+
+RUN mkdir -p /opt/strix-src \
+    && curl --fail --location --proto '=https' --tlsv1.2 \
+      "https://raw.githubusercontent.com/usestrix/strix/${STRIX_SOURCE_COMMIT}/pyproject.toml" \
+      -o /opt/strix-src/pyproject.toml \
+    && curl --fail --location --proto '=https' --tlsv1.2 \
+      "https://raw.githubusercontent.com/usestrix/strix/${STRIX_SOURCE_COMMIT}/uv.lock" \
+      -o /opt/strix-src/uv.lock \
+    && PYTHONPATH=/tmp/xbow python -m app.strix_python_lock_probe \
+      --self-test \
+      --pyproject /opt/strix-src/pyproject.toml \
+      --lock /opt/strix-src/uv.lock
+
+WORKDIR /opt/strix-src
+
+RUN uv sync --frozen --no-dev --no-install-project --python /usr/local/bin/python
+
+RUN set -eu; \
+    case "$TARGETARCH" in \
+      amd64) \
+        WHEEL_ARCH=x86_64; \
+        WHEEL_SHA256=1a93fbf0f18fad6bf4802c41fa5e032ce50880a655fddee47f6bec4f1ea2155b \
+        ;; \
+      arm64) \
+        WHEEL_ARCH=aarch64; \
+        WHEEL_SHA256=b2939f8c6339817a2abeff2ba266838af3d45e4e05593fe89db11464c8e7a0d4 \
+        ;; \
+      *) echo "unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
+    esac; \
+    WHEEL="strix_agent-${STRIX_VERSION}-py3-none-manylinux_2_17_${WHEEL_ARCH}.whl"; \
+    curl --fail --location --proto '=https' --tlsv1.2 \
+      "https://github.com/usestrix/strix/releases/download/v${STRIX_VERSION}/${WHEEL}" \
+      -o "/tmp/${WHEEL}"; \
+    printf '%s  %s\n' "$WHEEL_SHA256" "/tmp/${WHEEL}" | sha256sum -c -; \
+    uv pip install --python /opt/strix-src/.venv/bin/python --no-deps "/tmp/${WHEEL}"; \
+    rm -f "/tmp/${WHEEL}"
+
+COPY app/strix_backend_hook.py /app/app/strix_backend_hook.py
+COPY app/strix_python_compat_probe.py /app/app/strix_python_compat_probe.py
+
+RUN PYTHONPATH=/app /opt/strix-src/.venv/bin/python \
+      -m app.strix_backend_hook --self-test \
+    && PYTHONPATH=/app /opt/strix-src/.venv/bin/python \
+      -m app.strix_python_compat_probe --self-test
+
+
+FROM python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS runtime
+
+RUN groupadd --system --gid 65532 strix-python \
+    && useradd --system --uid 65532 --gid 65532 --home-dir /nonexistent \
+       --shell /usr/sbin/nologin strix-python \
+    && mkdir -p /opt/strix-python /app/app \
+    && chown -R root:root /opt/strix-python /app
+
+COPY --from=builder /opt/strix-src/.venv /opt/strix-python/.venv
+COPY app/strix_backend_hook.py /app/app/strix_backend_hook.py
+COPY app/strix_python_compat_probe.py /app/app/strix_python_compat_probe.py
+
+RUN chmod -R a-w /opt/strix-python /app
+
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1 \
+    PATH="/opt/strix-python/.venv/bin:${PATH}" \
+    HOME=/tmp \
+    XBOW_STRIX_ACTIVE_EXECUTION=false
+
+USER 65532:65532
+
+CMD ["/opt/strix-python/.venv/bin/python", "-m", "app.strix_backend_hook", "--self-test"]
