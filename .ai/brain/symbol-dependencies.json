@@ -453,7 +453,7 @@
       "source": {
         "file": "backend/app/coverage.py",
         "start": 405,
-        "end": 487
+        "end": 500
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -461,8 +461,8 @@
     "prioritize_action_with_coverage": {
       "source": {
         "file": "backend/app/coverage.py",
-        "start": 491,
-        "end": 525
+        "start": 504,
+        "end": 538
       },
       "symbol_dependencies": [
         {
@@ -778,7 +778,7 @@
           "definitions": [
             {
               "file": "backend/app/coverage.py",
-              "line": 491,
+              "line": 504,
               "kind": "function",
               "language": "python"
             }
@@ -812,7 +812,7 @@
           "definitions": [
             {
               "file": "backend/app/coverage.py",
-              "line": 491,
+              "line": 504,
               "kind": "function",
               "language": "python"
             }
@@ -1764,7 +1764,7 @@
           "definitions": [
             {
               "file": "backend/app/coverage.py",
-              "line": 491,
+              "line": 504,
               "kind": "function",
               "language": "python"
             }
@@ -2358,7 +2358,7 @@
           "definitions": [
             {
               "file": "backend/app/coverage.py",
-              "line": 491,
+              "line": 504,
               "kind": "function",
               "language": "python"
             }
@@ -3269,6 +3269,176 @@
         }
       ],
       "dependency_count": 4
+    },
+    "test_untrusted_completed_scan_guides_to_provenance_review_not_more_scans": {
+      "source": {
+        "file": "backend/tests/test_coverage.py",
+        "start": 1581,
+        "end": 1619
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_evidence_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 293,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_unreconciled_findings_take_precedence_over_provenance_guidance": {
+      "source": {
+        "file": "backend/tests/test_coverage.py",
+        "start": 1622,
+        "end": 1640
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_untrusted_provenance_precedes_low_discovery_and_scanner_retry": {
+      "source": {
+        "file": "backend/tests/test_coverage.py",
+        "start": 1643,
+        "end": 1655
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_no_untrusted_scan_keeps_existing_discovery_guidance": {
+      "source": {
+        "file": "backend/tests/test_coverage.py",
+        "start": 1658,
+        "end": 1669
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_coverage_guidance",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 405,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_untrusted_provenance_does_not_change_planned_scan_or_authority": {
+      "source": {
+        "file": "backend/tests/test_coverage.py",
+        "start": 1672,
+        "end": 1690
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "PlannedAction",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 39,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "prioritize_action_with_coverage",
+          "definitions": [
+            {
+              "file": "backend/app/coverage.py",
+              "line": 504,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
     }
   }
 }

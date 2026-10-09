@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:26:31Z
+Generated: 2026-10-09T00:30:05Z
 
 ### Git
 - Branch: `main`
-- Head: `b38effa960b8`
-- Commit date: 2026-10-09T02:26:20+02:00
-- Commit: fix(coverage): quarantine scans linked through invalid forms
+- Head: `c177ddf5115b`
+- Commit date: 2026-10-09T02:29:53+02:00
+- Commit: feat(coverage): review untrusted scan provenance before retrying
 - Tracked files: 687
 
 ### Recently changed files

@@ -2112,9 +2112,12 @@ suspect_endpoint_claims = (
 # endpoint-wide coverage from a completed asset-level scan.
 endpoint_fraction = dimensions.get("documented_endpoint_scan_fraction")
 unreconciled = max(
+untrusted = max(
 ⋮----
 focus = "scan_result_reconciliation"
 reason = (
+⋮----
+focus = "scan_provenance_reconciliation"
 ⋮----
 focus = "surface_discovery"
 reason = "surface evidence is still sparse"
@@ -17245,6 +17248,18 @@ def test_mixed_valid_and_invalid_form_parents_quarantine_whole_scan()
 def test_valid_form_and_endpoint_lineage_keeps_completed_scan_credit()
 ⋮----
 def test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage()
+⋮----
+def test_untrusted_completed_scan_guides_to_provenance_review_not_more_scans()
+⋮----
+def test_unreconciled_findings_take_precedence_over_provenance_guidance()
+⋮----
+guidance = build_coverage_guidance({
+⋮----
+def test_untrusted_provenance_precedes_low_discovery_and_scanner_retry()
+⋮----
+def test_no_untrusted_scan_keeps_existing_discovery_guidance()
+⋮----
+def test_untrusted_provenance_does_not_change_planned_scan_or_authority()
 ```
 
 ## File: tests/test_cpe_consistency.py
