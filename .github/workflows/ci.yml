@@ -138,11 +138,25 @@ jobs:
       - run: |
           XBOW_PUBLIC_HOST=example.test \
           docker compose -f docker-compose.yml -f docker-compose.tls.yml config --quiet
-      - run: |
-          docker run --rm \
+      - name: Validate Caddy configuration with bounded registry retries
+        shell: bash
+        run: |
+          set -euo pipefail
+          caddy_image=public.ecr.aws/docker/library/caddy:2.11.4-alpine
+          for attempt in 1 2 3 4; do
+            if docker pull "$caddy_image"; then
+              break
+            fi
+            if [ "$attempt" -eq 4 ]; then
+              echo "Caddy image unavailable after bounded retries" >&2
+              exit 1
+            fi
+            sleep "$((attempt * 10))"
+          done
+          docker run --rm --pull never \
             -e XBOW_PUBLIC_HOST=example.test \
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            public.ecr.aws/docker/library/caddy:2.11.4-alpine \
+            "$caddy_image" \
             caddy validate --config /etc/caddy/Caddyfile
       - run: docker compose build --pull
       - name: Smoke-test hardened frontend
