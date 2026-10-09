@@ -179,11 +179,13 @@ def _completed_scan_evidence(
     observations for that job name exactly one non-empty source.
     """
     sources_by_job: dict[str, set[str]] = {}
+    terminal_conflicts = conflicting_scan_terminal_job_ids(graph)
     invalid_jobs: set[str] = {
         f"job:{job_id}"
-        for job_id in conflicting_scan_terminal_job_ids(graph)
+        for job_id in terminal_conflicts
     }
     rejected_cross_origin_jobs: set[str] = set()
+    current_time = datetime.now(timezone.utc)
     for item in graph.by_kind("evidence"):
         if (
             item.metadata.get("phase") != "scan"
@@ -204,6 +206,30 @@ def _completed_scan_evidence(
             invalid_jobs.add(key)
         else:
             key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+
+        # An explicitly dated completion that is malformed, from the future,
+        # or earlier than its recorded start cannot establish a trusted
+        # negative result. Missing timestamps remain legacy-compatible.
+        finished = None
+        if "completed_at" in item.metadata:
+            finished = _trusted_utc_timestamp(
+                item.metadata["completed_at"], now=current_time
+            )
+        started = None
+        if "started_at" in item.metadata:
+            started = _trusted_utc_timestamp(
+                item.metadata["started_at"], now=current_time
+            )
+        if (
+            ("completed_at" in item.metadata and finished is None)
+            or ("started_at" in item.metadata and started is None)
+            or (
+                started is not None
+                and finished is not None
+                and started > finished
+            )
+        ):
+            invalid_jobs.add(key)
 
         if evidence_filter is not None and not evidence_filter(item):
             # A job observed on another origin cannot be credited through
@@ -227,8 +253,10 @@ def _completed_scan_evidence(
     trusted_sources: set[str] = set()
     trusted_job_count = 0
     ambiguous = cross_origin_count
-    contradictions = sum(job in invalid_jobs and job.startswith("job:")
-                         for job in sources_by_job)
+    contradictions = sum(
+        job.startswith("job:") and job[4:] in terminal_conflicts
+        for job in sources_by_job
+    )
     for job, reporters in sources_by_job.items():
         if job in invalid_jobs or len(reporters) != 1 or "" in reporters:
             ambiguous += 1
