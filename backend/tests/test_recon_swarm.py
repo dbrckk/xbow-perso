@@ -462,3 +462,214 @@ def test_multi_host_recon_route_offers_missing_target_crawl_after_negative_scan(
     assert result["diff_priority"]["scope_expansion"] is False
     assert result["execution"] == "advisory_only"
     assert "redacted" not in str(result)
+
+
+def test_indirect_http_endpoint_cannot_satisfy_https_technology_coverage():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:http",
+            "endpoint",
+            "http://example.test/status",
+            "crawler",
+            parent_ids=("asset:https",),
+        )
+    )
+    for kind in ("technology", "waf"):
+        graph.add(
+            Observation(
+                f"{kind}:http",
+                kind,
+                "nginx/1.24.0" if kind == "technology" else "edge-proxy",
+                "observed",
+                parent_ids=("endpoint:http",),
+            )
+        )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+
+    assert [item.kind for item in tasks] == ["crawl", "detect_technology"]
+    assert all(item.target == "https://example.test/" for item in tasks)
+
+
+def test_indirect_wrong_port_form_cannot_close_target_recon_gaps():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:a",
+            "endpoint",
+            "https://example.test/account",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:wrong-port",
+            "form",
+            "https://example.test:8443/login",
+            "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    for kind in ("technology", "waf"):
+        graph.add(
+            Observation(
+                f"{kind}:wrong-port",
+                kind,
+                "nginx/1.24.0" if kind == "technology" else "edge-proxy",
+                "observed",
+                parent_ids=("form:wrong-port",),
+            )
+        )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert [item.kind for item in tasks] == [
+        "map_endpoints",
+        "detect_technology",
+        "map_forms",
+        "browser_observe",
+    ]
+
+
+def test_mixed_valid_and_unrelated_endpoint_ancestors_fail_closed():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:valid",
+            "endpoint",
+            "https://example.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:foreign",
+            "endpoint",
+            "https://other.test/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:mixed",
+            "technology",
+            "nginx/1.24.0",
+            "httpx",
+            parent_ids=("endpoint:valid", "endpoint:foreign"),
+        )
+    )
+    graph.add(
+        Observation(
+            "waf:valid",
+            "waf",
+            "edge-proxy",
+            "httpx",
+            parent_ids=("endpoint:valid",),
+        )
+    )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host in {"example.test", "other.test"},
+    )
+    assert "detect_technology" in [item.kind for item in tasks]
+    assert "crawl" not in [item.kind for item in tasks]
+
+
+def test_valid_indirect_origin_observations_still_close_technology_gap():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:valid",
+            "endpoint",
+            "https://example.test:443/api",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:valid",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("endpoint:valid",),
+        )
+    )
+    for kind in ("technology", "waf"):
+        graph.add(
+            Observation(
+                f"{kind}:valid",
+                kind,
+                "nginx/1.24.0" if kind == "technology" else "edge-proxy",
+                "observed",
+                parent_ids=("form:valid",),
+            )
+        )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    kinds = [item.kind for item in tasks]
+    assert "detect_technology" not in kinds
+    assert "map_forms" not in kinds
+    assert kinds == ["map_endpoints", "browser_observe"]
+
+
+def test_malformed_intermediate_endpoint_cannot_launder_technology_evidence():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:a", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "endpoint:malformed",
+            "endpoint",
+            "https://[not-a-host",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    for kind in ("technology", "waf"):
+        graph.add(
+            Observation(
+                f"{kind}:malformed",
+                kind,
+                "nginx/1.24.0" if kind == "technology" else "edge-proxy",
+                "observed",
+                parent_ids=("endpoint:malformed",),
+            )
+        )
+
+    tasks = build_recon_plan(
+        "https://example.test",
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    )
+    assert [item.kind for item in tasks] == ["crawl", "detect_technology"]
