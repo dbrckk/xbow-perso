@@ -115,12 +115,19 @@ def adapt_scanner_engines(
         # Technique-level "failure" may mean a valid negative security
         # result, not a scanner crash. Never suppress a configured engine
         # solely because it found no vulnerability.
-        unstable_worker = (requeued + failed) >= 2 and completed == 0
+        # A requeued job is not a terminal failure. Pending retries must
+        # not suppress an otherwise configured scanner, even if repeated.
+        unstable_worker = failed >= 2 and completed == 0
         if unstable_worker:
             reasons[engine] = (
-                "worker outcomes show repeated unstable execution"
+                "worker outcomes show repeated terminal execution failures"
             )
             suppressed.add(engine)
+        elif requeued and completed == 0:
+            reasons[engine] = (
+                "scanner jobs are pending retry; no terminal failure "
+                "threshold established"
+            )
         elif (
             technique
             and technique.failures >= 2
