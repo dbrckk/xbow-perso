@@ -1956,6 +1956,7 @@ items = {item.id: item for item in graph.values()}
 assets = graph.by_kind("asset")
 approved_asset_ids = {
 approved_endpoint_ids = {
+approved_form_ids = {
 ⋮----
 def trustworthy_lineage(observation: Any) -> bool
 ⋮----
@@ -1970,9 +1971,11 @@ parent_id = pending.pop()
 ⋮----
 parent = items.get(parent_id)
 ⋮----
-# A scan of an invalid, orphaned, out-of-scope or
-# mismatched endpoint cannot gain completion credit via
+# An invalid endpoint cannot gain completion credit via
 # an otherwise authorized asset ancestor.
+⋮----
+# Likewise, a malformed or out-of-scope form must not
+# launder an otherwise in-scope scan completion claim.
 ⋮----
 jobs: dict[str, list[Any]] = {}
 conflicting_terminal_jobs = conflicting_scan_terminal_job_ids(graph)
@@ -17232,6 +17235,16 @@ coverage = build_evidence_coverage(graph)
 attribution = coverage["evidence"]["endpoint_scan_attribution"]
 ⋮----
 def test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all()
+⋮----
+def test_out_of_scope_form_ancestry_cannot_credit_completed_scan()
+⋮----
+def test_malformed_form_ancestry_cannot_credit_completed_scan()
+⋮----
+def test_mixed_valid_and_invalid_form_parents_quarantine_whole_scan()
+⋮----
+def test_valid_form_and_endpoint_lineage_keeps_completed_scan_credit()
+⋮----
+def test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage()
 ```
 
 ## File: tests/test_cpe_consistency.py

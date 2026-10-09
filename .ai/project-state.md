@@ -39,20 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:25:06Z
+Generated: 2026-10-09T00:26:31Z
 
 ### Git
 - Branch: `main`
-- Head: `8d0557635dc3`
-- Commit date: 2026-10-09T02:24:56+02:00
-- Commit: fix(recovery): reject indirect untrusted endpoint and form ancestry
+- Head: `b38effa960b8`
+- Commit date: 2026-10-09T02:26:20+02:00
+- Commit: fix(coverage): quarantine scans linked through invalid forms
 - Tracked files: 687
 
 ### Recently changed files
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 
 ### Project signals
 - `pyproject.toml`
