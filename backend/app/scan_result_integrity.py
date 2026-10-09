@@ -35,6 +35,9 @@ def canonical_scan_source(raw: object) -> str | None:
         not 0 < len(normalized) <= 128
         or not all(char.isprintable() for char in raw)
         or any(char.isspace() and char != " " for char in normalized)
+        # Literal escape sequences are ambiguous when source labels are logged,
+        # exported or interpreted by downstream evidence processors.
+        or "\\" in normalized
     ):
         return None
     return normalized
