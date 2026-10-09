@@ -267,13 +267,16 @@ def _completed_scans_with_provenance(
             accepted -= count
             untrusted += count
 
-    # A scan reporting positive findings must be reconciled against
-    # observations on its own asset lineage. A finding on another authorized
-    # host cannot legitimize an unrelated scanner report.
-    def linked_asset_ids(observation: Any) -> frozenset[str]:
+    # Positive scan reports must match finding provenance at the same
+    # specificity as the scan itself. A report for endpoint A cannot borrow
+    # a finding on endpoint B merely because both share an asset.
+    def linked_lineage_ids(
+        observation: Any,
+    ) -> tuple[frozenset[str], frozenset[str]]:
         pending = list(observation.parent_ids)
         seen: set[str] = set()
-        result: set[str] = set()
+        assets: set[str] = set()
+        endpoints: set[str] = set()
         while pending:
             parent_id = pending.pop()
             if parent_id in seen:
@@ -281,15 +284,17 @@ def _completed_scans_with_provenance(
             seen.add(parent_id)
             parent = items.get(parent_id)
             if parent is None:
-                return frozenset()
+                return frozenset(), frozenset()
             if parent.kind == "asset":
-                result.add(parent.id)
+                assets.add(parent.id)
             else:
+                if parent.kind == "endpoint":
+                    endpoints.add(parent.id)
                 pending.extend(parent.parent_ids)
-        return frozenset(result)
+        return frozenset(assets), frozenset(endpoints)
 
-    finding_asset_sets = [
-        linked_asset_ids(item)
+    finding_lineages = [
+        linked_lineage_ids(item)
         for item in graph.by_kind("finding")
     ]
     representatives: list[Any] = []
@@ -323,12 +328,31 @@ def _completed_scans_with_provenance(
         inconsistent = (
             not malformed and len(set(reported_findings)) > 1
         )
+        scan_lineages = [linked_lineage_ids(item) for item in records]
         scan_asset_ids = set().union(
-            *(linked_asset_ids(item) for item in records)
+            *(assets for assets, _endpoints in scan_lineages)
         )
+        endpoint_claims = {
+            endpoints for _assets, endpoints in scan_lineages
+        }
+        # Different reporters for one job may not silently combine their
+        # endpoint claims to corroborate positive vulnerability findings.
+        ambiguous_endpoint_claim = (
+            len(endpoint_claims) > 1
+            and any(endpoints for endpoints in endpoint_claims)
+        )
+        scan_endpoint_ids = set().union(*endpoint_claims)
         matched_finding_count = sum(
-            bool(scan_asset_ids.intersection(finding_assets))
-            for finding_assets in finding_asset_sets
+            bool(finding_assets)
+            and finding_assets <= scan_asset_ids
+            and (
+                not scan_endpoint_ids
+                or (
+                    bool(finding_endpoints)
+                    and finding_endpoints <= scan_endpoint_ids
+                )
+            )
+            for finding_assets, finding_endpoints in finding_lineages
         )
         # An explicit count of two findings cannot be reconciled by just
         # one stored finding, even if it belongs to the right asset.
@@ -339,7 +363,12 @@ def _completed_scans_with_provenance(
                 for value in reported_findings
             )
         )
-        if malformed or inconsistent or missing_recorded_findings:
+        if (
+            malformed
+            or inconsistent
+            or missing_recorded_findings
+            or (ambiguous_endpoint_claim and any(reported_findings))
+        ):
             unreconciled += len(records)
             untrusted += len(records)
             accepted -= len(records)
