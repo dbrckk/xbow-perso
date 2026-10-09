@@ -8,6 +8,7 @@ from fastapi import APIRouter
 
 from .no_finding_recovery import _asset_matches_origin, _origin
 from .observation_graph import ObservationGraph, load_observation_graph
+from .scan_result_integrity import canonical_scan_job_id
 
 router = APIRouter()
 
@@ -103,14 +104,11 @@ def build_learning_memory(
             if item.id in scoped_ids:
                 continue
             technique = str(item.metadata.get("technique") or "").strip().lower()
-            job_id = item.metadata.get("job_id")
-            if (
-                technique
-                and isinstance(job_id, str)
-                and 0 < len(job_id.strip()) <= 128
-                and not any(ord(char) < 32 for char in job_id)
-            ):
-                out_of_scope_jobs.add((technique, f"job:{job_id.strip()}"))
+            job_id = canonical_scan_job_id(
+                item.metadata.get("job_id")
+            )
+            if technique and job_id is not None:
+                out_of_scope_jobs.add((technique, f"job:{job_id}"))
 
     # One scanner or validation job may emit multiple evidence observations.
     # Counting each observation as an independent attempt inflates both
@@ -125,15 +123,12 @@ def build_learning_memory(
         outcome = str(item.metadata.get("outcome", "")).strip().lower()
         if not technique or outcome not in {"success", "failure", "inconclusive"}:
             continue
-        job_id = item.metadata.get("job_id")
-        if job_id is None:
+        raw_job_id = item.metadata.get("job_id")
+        job_id = canonical_scan_job_id(raw_job_id)
+        if raw_job_id is None:
             identity = f"observation:{item.id}"
-        elif (
-            isinstance(job_id, str)
-            and 0 < len(job_id.strip()) <= 128
-            and not any(ord(char) < 32 for char in job_id)
-        ):
-            identity = f"job:{job_id.strip()}"
+        elif job_id is not None:
+            identity = f"job:{job_id}"
         else:
             # Invalid job identity cannot establish independent evidence.
             continue
@@ -244,9 +239,12 @@ def worker_outcome_event(job: dict[str, Any], *, success: bool, status: str) -> 
     attempts = int(job.get("attempts") or 0)
     if not 0 <= attempts <= 5:
         raise ValueError("invalid job attempts")
+    job_id = canonical_scan_job_id(job.get("id"))
+    if job_id is None:
+        raise ValueError("invalid job identity")
     return {
         "type": "worker_outcome",
-        "job_id": str(job["id"]),
+        "job_id": job_id,
         "job_kind": kind,
         "success": bool(success),
         "status": status,
@@ -276,12 +274,11 @@ def summarize_worker_outcomes(
             continue
         kind = str(event.get("job_kind") or "")
         status = str(event.get("status") or "")
-        job_id = str(event.get("job_id") or "").strip()
+        job_id = canonical_scan_job_id(event.get("job_id"))
         if (
             kind not in _ALLOWED_JOB_KINDS
             or status not in _ALLOWED_JOB_STATUSES
-            or not job_id
-            or len(job_id) > 128
+            or job_id is None
         ):
             continue
         try:
