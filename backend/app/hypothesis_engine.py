@@ -138,9 +138,12 @@ def _completed_reviews(
     }
     for evidence in graph.by_kind("evidence"):
         kind = evidence.metadata.get("review_type")
+        status = evidence.metadata.get("status")
         if (
-            kind not in _REVIEW_PARENT_KINDS
-            or evidence.metadata.get("status") not in {"completed", "reviewed"}
+            not isinstance(kind, str)
+            or kind not in _REVIEW_PARENT_KINDS
+            or not isinstance(status, str)
+            or status not in {"completed", "reviewed"}
             or not evidence.parent_ids
             or not _scope_allows(graph, evidence.id, scope_checker)
         ):
