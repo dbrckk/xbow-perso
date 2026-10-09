@@ -1242,3 +1242,156 @@ def test_ambiguous_job_does_not_discard_separately_documented_endpoint_job():
     assert attribution["documented_scanned_endpoints"] == 1
     assert attribution["documented_fraction"] == 0.5
     assert attribution["state"] == "partial_endpoint_documentation"
+
+
+def test_scan_linked_to_mismatched_endpoint_does_not_gain_completion_credit():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:good", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:mismatch",
+            "endpoint",
+            "https://other.test/private",
+            "crawler",
+            parent_ids=("asset:good",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mismatch",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:mismatch",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-mismatch",
+                "findings": 0,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+    assert coverage["dimensions"]["diminishing_returns"] == 0.0
+
+
+def test_scan_linked_to_malformed_endpoint_cannot_claim_valid_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:invalid",
+            "endpoint",
+            "https://[invalid-ipv6",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:invalid",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:invalid",),
+            metadata={"phase": "scan", "status": "completed", "job_id": "job-a"},
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_mixed_valid_and_invalid_endpoint_ancestors_taint_scan_job():
+    graph = _two_endpoint_scan_scope_graph()
+    graph.add(
+        Observation(
+            "endpoint:invalid",
+            "endpoint",
+            "https://bad.test/path",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mixed",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:1", "endpoint:invalid"),
+            metadata={"phase": "scan", "status": "completed", "job_id": "mix"},
+        )
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 0
+
+
+def test_endpoint_claim_subsetting_is_rejected_without_scope_checker():
+    graph = _two_endpoint_scan_scope_graph()
+    graph.add(
+        Observation(
+            "endpoint:invalid",
+            "endpoint",
+            "https://[invalid-ipv6",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mixed",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("endpoint:1", "endpoint:invalid"),
+            metadata={"phase": "scan", "status": "completed", "job_id": "mix"},
+        )
+    )
+    coverage = build_evidence_coverage(graph)
+    attribution = coverage["evidence"]["endpoint_scan_attribution"]
+
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert attribution["documented_scanned_endpoints"] == 0
+    assert attribution["ineligible_endpoint_scope_jobs"] == 1
+    assert attribution["documented_fraction"] is None
+
+
+def test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all():
+    graph = _two_endpoint_scan_scope_graph()
+    _record_scan_scope(graph, "scan:conflicting:1", "endpoint:1", "shared-job")
+    _record_scan_scope(graph, "scan:conflicting:2", "endpoint:2", "shared-job")
+    for index in range(3):
+        _record_scan_scope(
+            graph,
+            f"scan:good:{index}",
+            f"endpoint:{1 + index % 2}",
+            f"good-job-{index}",
+        )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    attribution = coverage["evidence"]["endpoint_scan_attribution"]
+    guidance = build_coverage_guidance(coverage)
+
+    assert attribution["state"] == "all_observed_endpoints_documented"
+    assert attribution["ambiguous_endpoint_scope_jobs"] == 1
+    assert coverage["dimensions"]["diminishing_returns"] >= 0.5
+    assert guidance["focus"] == "endpoint_scan_scope_review"
+    assert guidance["may_unlock_actions"] is False
