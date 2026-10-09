@@ -39,24 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:09:30Z
+Generated: 2026-10-09T00:10:51Z
 
 ### Git
 - Branch: `main`
-- Head: `d7ebb5165247`
-- Commit date: 2026-10-09T02:09:19+02:00
-- Commit: fix(coverage): validate endpoint lineage before trusting completed scans
+- Head: `5a45804075cc`
+- Commit date: 2026-10-09T02:10:40+02:00
+- Commit: fix(recovery): verify endpoint ancestry before negative-scan learning
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/adaptive_cycle.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/app/observation_graph.py`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_no_finding_recovery.py`
-- `backend/tests/test_observation_graph.py`
 
 ### Project signals
 - `pyproject.toml`

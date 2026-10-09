@@ -8534,7 +8534,15 @@ asset_records = surface["assets"]
 # be attributed to the target if every observed asset has its host.
 legacy_single_host = bool(asset_records) and all(
 ⋮----
+# A scan connected to a malformed, untrusted or different-origin
+# endpoint cannot be credited merely because another ancestor is
+# an authorized asset. Keep negative-scan recovery consistent with
+# the more detailed scan coverage provenance report.
+eligible_scan_endpoint_ids = {
+⋮----
 def scan_matches_target(item: Any) -> bool
+⋮----
+pending = list(item.parent_ids)
 ⋮----
 scan_filter = scan_matches_target
 ⋮----
@@ -22130,6 +22138,16 @@ def test_impossible_or_untrusted_first_discovery_never_reopens_task()
 "2099-09-02T00:00:00Z",  # future
 ⋮----
 def test_confirmed_new_form_can_reopen_completed_form_mapping()
+⋮----
+def test_negative_scan_with_mismatched_endpoint_ancestor_is_not_trusted()
+⋮----
+graph = _graph(scans=0, with_endpoint=False)
+⋮----
+def test_negative_scan_with_malformed_endpoint_ancestor_is_not_trusted()
+⋮----
+def test_mixed_valid_and_invalid_scan_endpoints_do_not_trigger_recovery()
+⋮----
+def test_endpoint_linked_completed_scan_still_supports_bounded_recovery()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
