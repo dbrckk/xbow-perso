@@ -2041,9 +2041,16 @@ identity = f"job:{job_id}"
 ⋮----
 count = len(jobs.pop(identity))
 ⋮----
+# A scan reporting positive findings must be reconciled against
+# observations on its own asset lineage. A finding on another authorized
+# host cannot legitimize an unrelated scanner report.
+def linked_asset_ids(observation: Any) -> frozenset[str]
+⋮----
+result: set[str] = set()
+⋮----
+finding_asset_sets = [
 representatives: list[Any] = []
 unreconciled = 0
-recorded_findings = len(graph.by_kind("finding"))
 ⋮----
 # Multiple reporters attached to one execution do not prove
 # independence. Conflicting or missing source labels make the entire
@@ -2056,6 +2063,10 @@ reported_findings = [
 # Contradictory or malformed duplicate reports also taint that job.
 malformed = any(
 inconsistent = (
+scan_asset_ids = set().union(
+matched_finding_count = sum(
+# An explicit count of two findings cannot be reconciled by just
+# one stored finding, even if it belongs to the right asset.
 missing_recorded_findings = (
 ⋮----
 """Describe observed endpoint-level evidence, never infer unseen coverage.
@@ -17496,6 +17507,14 @@ def test_form_with_incompatible_intermediate_endpoint_cannot_claim_scan()
 def test_same_origin_form_with_default_https_port_retains_scan_credit()
 ⋮----
 def test_mixed_form_asset_origins_do_not_credit_one_valid_parent()
+⋮----
+def test_positive_scan_on_asset_a_cannot_reconcile_finding_on_asset_b()
+⋮----
+def test_positive_scan_on_matching_endpoint_reconciles_recorded_finding()
+⋮----
+def test_orphan_finding_cannot_reconcile_positive_scan_claim()
+⋮----
+def test_positive_scan_count_cannot_exceed_same_asset_recorded_findings()
 ```
 
 ## File: tests/test_cpe_consistency.py

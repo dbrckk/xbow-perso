@@ -39,25 +39,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T16:47:58Z
+Generated: 2026-10-09T16:53:30Z
 
 ### Git
 - Branch: `main`
-- Head: `0eca1ec98291`
-- Commit date: 2026-10-09T18:47:46+02:00
-- Commit: fix(recovery): quarantine hostname-only scans across different origins
+- Head: `6605d1b41f43`
+- Commit date: 2026-10-09T18:53:18+02:00
+- Commit: fix(coverage): reconcile positive scan findings with linked assets
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 - `AGENTS.md`
-- `backend/app/recon_swarm.py`
-- `backend/tests/test_recon_swarm.py`
 
 ### Project signals
 - `pyproject.toml`
