@@ -3382,3 +3382,51 @@ def test_target_origin_accepts_explicitly_linked_plain_legacy_host_alias():
     assert result.completed_scan_count == 1
     assert result.recommended_task_kinds == ("crawl",)
     assert result.advisory_only is True
+
+
+def test_malformed_scan_source_cannot_establish_trusted_negative_yield():
+    for source in ("nuclei\\u200b", "nuclei\\nother", "x" * 129):
+        graph = ObservationGraph()
+        graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+        graph.add(Observation(
+            "scan:one",
+            "evidence",
+            "scan-complete",
+            source,
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-one",
+                "findings": 0,
+            },
+        ))
+        result = _feedback(graph, target_host="example.test")
+        assert result.state == "scan_source_unverified"
+        assert result.completed_scan_count == 1
+        assert result.trusted_completed_scan_count == 0
+        assert result.scanner_source_count == 0
+        assert result.recommended_task_kinds == ()
+
+
+def test_valid_scanner_source_still_supports_bounded_recovery():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(Observation(
+        "scan:one",
+        "evidence",
+        "scan-complete",
+        "  nuclei  ",
+        parent_ids=("asset:a",),
+        metadata={
+            "phase": "scan",
+            "status": "completed",
+            "job_id": "job-one",
+            "findings": 0,
+        },
+    ))
+    result = _feedback(graph, target_host="example.test", allowed=("crawl",))
+    assert result.state == "recovery_advisory"
+    assert result.scanner_source_count == 1
+    assert result.trusted_completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)

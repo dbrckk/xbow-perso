@@ -62,3 +62,13 @@ def test_invisible_job_ids_cannot_invent_terminal_status_conflicts():
         _event(graph, f"scan:done:{index}", job_id, "completed")
         _event(graph, f"scan:failed:{index}", job_id, "failed")
     assert conflicting_scan_terminal_job_ids(graph) == frozenset()
+
+
+def test_scanner_source_rejects_untrusted_identity_labels():
+    from app.scan_result_integrity import canonical_scan_source
+
+    for invalid in ("", "  ", "x" * 129, "nuclei\\nother", "nuclei\\x7f",
+                    "nuclei\\u200b", "nuclei\\tother", 123):
+        assert canonical_scan_source(invalid) is None
+    assert canonical_scan_source("  nuclei  ") == "nuclei"
+    assert canonical_scan_source("scanner v2") == "scanner v2"
