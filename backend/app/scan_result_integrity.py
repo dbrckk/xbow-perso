@@ -27,7 +27,10 @@ def canonical_scan_job_id(raw: object) -> str | None:
 
 
 def canonical_scan_source(raw: object) -> str | None:
-    """Reject unbounded, invisible or ambiguous scanner provenance labels."""
+    """Accept only bounded, printable scanner labels with no path escapes.
+
+    Provenance labels are identities, never filesystem paths or encoded text.
+    """
     if not isinstance(raw, str):
         return None
     normalized = raw.strip()
