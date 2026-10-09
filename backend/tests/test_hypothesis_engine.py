@@ -187,3 +187,128 @@ def test_limit_fails_closed_outside_bounds():
             assert "between 1 and 100" in str(exc)
         else:
             raise AssertionError("invalid limit should fail")
+
+
+def test_mixed_in_and_out_of_scope_ancestors_never_authorize_review():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:in", "asset", "example.test", "recon"))
+    graph.add(Observation("asset:out", "asset", "outside.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:mixed",
+            "endpoint",
+            "https://example.test/account?id=1",
+            "recon",
+            parent_ids=("asset:in", "asset:out"),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:mixed",
+            "form",
+            "https://example.test/login",
+            "browser",
+            parent_ids=("asset:in", "asset:out"),
+        )
+    )
+    graph.add(
+        Observation(
+            "technology:mixed",
+            "technology",
+            "nginx/1.24.0",
+            "recon",
+            parent_ids=("asset:in", "asset:out"),
+        )
+    )
+
+    assert build_hypotheses(
+        graph,
+        scope_checker=lambda host: host == "example.test",
+    ) == []
+
+
+def test_scoped_orphan_technology_cannot_be_attributed_to_allowed_target():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("technology:orphan", "technology", "nginx", "recon")
+    )
+
+    assert build_hypotheses(
+        graph, scope_checker=lambda host: host == "example.test"
+    ) == []
+
+
+def test_invalid_and_credentialed_endpoints_are_not_review_hypotheses():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index, value in enumerate((
+        "ftp://example.test/account?id=1",
+        "https://user:secret@example.test/account?id=2",
+        "https://example.test:0/account?id=3",
+        "https://[invalid-ipv6/account?id=4",
+        "https://example.test/acc\\nount?id=5".replace("\\n", "\n"),
+    )):
+        graph.add(
+            Observation(
+                f"endpoint:{index}", "endpoint", value, "recon",
+                parent_ids=("asset:a",),
+            )
+        )
+
+    assert build_hypotheses(graph) == []
+
+
+def test_invalid_form_url_cannot_generate_form_review():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "form:bad", "form", "https://user:password@example.test/login",
+            "recon", parent_ids=("asset:a",),
+        )
+    )
+
+    assert build_hypotheses(graph) == []
+
+
+def test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed():
+    graph = ObservationGraph()
+    graph.add(
+        Observation(
+            "endpoint:ipv6",
+            "endpoint",
+            "https://[2001:db8::1]:8443/account?id=42&token=secret",
+            "recon",
+        )
+    )
+
+    result = build_hypotheses(graph)
+
+    assert len(result) == 2
+    assert all(
+        item.target == "https://[2001:db8::1]:8443/account"
+        for item in result
+    )
+    assert "secret" not in str([item.to_dict() for item in result])
+
+
+def test_scoped_hypotheses_keep_valid_authorized_asset_lineage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:allowed", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:allowed",
+            "endpoint",
+            "https://example.test/profile?token=private",
+            "recon",
+            parent_ids=("asset:allowed",),
+        )
+    )
+
+    result = build_hypotheses(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert {item.kind for item in result} == {
+        "input_surface_review", "authorization_surface_review"
+    }
+    assert "private" not in str([item.to_dict() for item in result])

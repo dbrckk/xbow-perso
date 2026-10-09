@@ -43,24 +43,39 @@ class Hypothesis:
         return payload
 
 
-def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]]:
-    """Return an endpoint representation that never exposes query values/fragments."""
-    parsed = urlsplit(value)
-    host = (parsed.hostname or "").lower().rstrip(".")
+def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]] | None:
+    """Return a redacted, validated HTTP(S) endpoint or reject bad origins."""
+    raw = str(value or "").strip()
+    if not raw or any(ord(char) < 32 or ord(char) == 127 for char in raw):
+        return None
     try:
+        parsed = urlsplit(raw)
+        scheme = parsed.scheme.lower()
+        host = (parsed.hostname or "").lower().rstrip(".")
         port = parsed.port
     except ValueError:
-        port = None
-    if port and not (
-        (parsed.scheme.lower() == "http" and port == 80)
-        or (parsed.scheme.lower() == "https" and port == 443)
+        return None
+    if (
+        scheme not in {"http", "https"}
+        or not host
+        or parsed.username is not None
+        or parsed.password is not None
+        or port == 0
     ):
-        netloc = f"{host}:{port}"
-    else:
-        netloc = host
-    safe_url = urlunsplit((parsed.scheme.lower(), netloc, parsed.path or "/", "", ""))
-    parameter_names = tuple(sorted({key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)}))
-    return safe_url, parameter_names
+        return None
+    netloc = f"[{host}]" if ":" in host else host
+    if port is not None and not (
+        (scheme == "http" and port == 80)
+        or (scheme == "https" and port == 443)
+    ):
+        netloc += f":{port}"
+    safe_url = urlunsplit((scheme, netloc, parsed.path or "/", "", ""))
+    names = {
+        key
+        for key, _value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key and len(key) <= 80 and all(32 <= ord(char) < 127 for char in key)
+    }
+    return safe_url, tuple(sorted(names)[:64])
 
 
 def _lineage_hosts(graph: ObservationGraph, observation_id: str) -> set[str]:
@@ -98,7 +113,9 @@ def _scope_allows(
     if scope_checker is None:
         return True
     hosts = _lineage_hosts(graph, observation_id)
-    return not hosts or any(scope_checker(host) for host in hosts)
+    # A single permitted ancestor must never launder an out-of-scope
+    # parent. Missing origin evidence is not permission to recommend work.
+    return bool(hosts) and all(scope_checker(host) for host in hosts)
 
 
 def build_hypotheses(
@@ -122,8 +139,11 @@ def build_hypotheses(
     for endpoint in graph.by_kind("endpoint"):
         if not _scope_allows(graph, endpoint.id, scope_checker):
             continue
-        safe_target, parameter_names = _safe_endpoint(endpoint.value)
-        path = urlsplit(endpoint.value).path.lower()
+        safe = _safe_endpoint(endpoint.value)
+        if safe is None:
+            continue
+        safe_target, parameter_names = safe
+        path = urlsplit(safe_target).path.lower()
         if parameter_names:
             hypotheses.append(
                 Hypothesis(
@@ -154,7 +174,10 @@ def build_hypotheses(
     for form in graph.by_kind("form"):
         if not _scope_allows(graph, form.id, scope_checker):
             continue
-        safe_target, _query_names = _safe_endpoint(form.value)
+        safe = _safe_endpoint(form.value)
+        if safe is None:
+            continue
+        safe_target, _query_names = safe
         input_names = tuple(
             sorted({str(name).strip() for name in form.metadata.get("input_names", ()) if str(name).strip()})
         )
