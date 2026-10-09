@@ -468,10 +468,33 @@ def build_no_finding_recovery(
     legacy_single_host = False
     scan_filter: Callable[[Any], bool] | None = None
     if normalized_target_host is None:
+        # Campaign-wide negative results still need trustworthy ancestry.
+        # Orphan scans are legacy-compatible only for a single in-scope host.
+        asset_records = surface["assets"]
+        trusted_hosts = {
+            item["host"]
+            for item in asset_records
+            if item["in_scope"] is True and item["host"]
+        }
+        legacy_single_host = (
+            len(trusted_hosts) == 1
+            and bool(asset_records)
+            and all(
+                item["in_scope"] is True and item["host"] in trusted_hosts
+                for item in asset_records
+            )
+        )
+
+        def scan_matches_campaign(item: Any) -> bool:
+            if not item.parent_ids:
+                return legacy_single_host
+            return has_in_scope_asset_ancestor(item.id)
+
+        scan_filter = scan_matches_campaign
         (
             completed_scans, scanner_sources, ambiguous_sources,
             trusted_completed_scans, contradictory_scan_jobs,
-        ) = _completed_scan_evidence(graph)
+        ) = _completed_scan_evidence(graph, evidence_filter=scan_filter)
     else:
         asset_records = surface["assets"]
         # Legacy scan observations sometimes omit ancestry. They can only
