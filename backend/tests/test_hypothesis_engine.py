@@ -443,3 +443,184 @@ def test_distinct_targets_and_review_kinds_do_not_mix_evidence():
     assert grouped[
         ("input_surface_review", "https://example.test/search")
     ].evidence_ids == ("endpoint:search",)
+
+
+def test_completed_review_removes_only_covered_hypothesis_kind():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a", "endpoint",
+            "https://example.test/account?id=private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:auth",
+            "evidence",
+            "review-completed",
+            "analyst",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    hypotheses = build_hypotheses(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert [item.kind for item in hypotheses] == ["input_surface_review"]
+    assert hypotheses[0].parameter_names == ("id",)
+
+
+def test_negative_or_incomplete_reviews_do_not_close_remaining_gaps():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation(
+        "form:a", "form", "https://example.test/login", "browser",
+        parent_ids=("asset:a",),
+    ))
+    for index, status in enumerate(("failed", "queued", "cancelled", None)):
+        graph.add(
+            Observation(
+                f"review:{index}", "evidence", "review-attempt",
+                "analyst", parent_ids=("form:a",),
+                metadata={
+                    "review_type": "form_surface_review",
+                    "status": status,
+                },
+            )
+        )
+
+    hypotheses = build_hypotheses(graph)
+    assert len(hypotheses) == 1
+    assert hypotheses[0].kind == "form_surface_review"
+
+
+def test_partial_duplicate_url_review_keeps_unreviewed_parameter_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for name, query in (("done", "q"), ("todo", "page")):
+        graph.add(
+            Observation(
+                f"endpoint:{name}", "endpoint",
+                f"https://example.test/search?{query}=private", "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+    graph.add(
+        Observation(
+            "review:done", "evidence", "reviewed", "analyst",
+            parent_ids=("endpoint:done",),
+            metadata={
+                "review_type": "input_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    hypotheses = build_hypotheses(graph)
+
+    assert len(hypotheses) == 1
+    assert hypotheses[0].parameter_names == ("page",)
+    assert hypotheses[0].evidence_ids == ("endpoint:todo",)
+    assert "private" not in str([item.to_dict() for item in hypotheses])
+
+
+def test_review_linked_to_out_of_scope_parent_does_not_close_allowed_gap():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:in", "asset", "example.test", "recon"))
+    graph.add(Observation("asset:out", "asset", "outside.test", "recon"))
+    graph.add(Observation(
+        "endpoint:in", "endpoint",
+        "https://example.test/account?id=1", "recon",
+        parent_ids=("asset:in",),
+    ))
+    graph.add(Observation(
+        "endpoint:out", "endpoint",
+        "https://outside.test/account?id=2", "recon",
+        parent_ids=("asset:out",),
+    ))
+    graph.add(
+        Observation(
+            "review:mixed", "evidence", "reviewed", "analyst",
+            parent_ids=("endpoint:in", "endpoint:out"),
+            metadata={
+                "review_type": "input_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    hypotheses = build_hypotheses(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert "input_surface_review" in {item.kind for item in hypotheses}
+    assert all("outside.test" not in item.target for item in hypotheses)
+
+
+def test_review_with_mixed_parent_kinds_does_not_prove_completion():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:a", "endpoint",
+            "https://example.test/account?id=1", "recon",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "review:mixed", "evidence", "reviewed", "analyst",
+            parent_ids=("endpoint:a", "asset:a"),
+            metadata={
+                "review_type": "authorization_surface_review",
+                "status": "completed",
+            },
+        )
+    )
+
+    assert "authorization_surface_review" in {
+        item.kind for item in build_hypotheses(graph)
+    }
+
+
+def test_completed_technology_review_is_not_recommended_again():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation(
+        "technology:a", "technology", "nginx/1.24.0", "httpx",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "review:tech", "evidence", "reviewed", "analyst",
+        parent_ids=("technology:a",),
+        metadata={
+            "review_type": "technology_surface_review",
+            "status": "reviewed",
+        },
+    ))
+
+    assert build_hypotheses(graph) == []
+
+
+def test_malformed_review_metadata_never_crashes_hypothesis_builder():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation(
+        "endpoint:a", "endpoint",
+        "https://example.test/account?id=1", "recon",
+        parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "review:bad", "evidence", "reviewed", "analyst",
+        parent_ids=("endpoint:a",),
+        metadata={"review_type": ["input_surface_review"], "status": []},
+    ))
+
+    assert len(build_hypotheses(graph)) == 2
