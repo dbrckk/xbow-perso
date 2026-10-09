@@ -72,6 +72,7 @@ class NoFindingRecovery:
     worker_health_attribution: str = "campaign_aggregate"
     worker_instability_observed: bool = False
     worker_instability_applied: bool = False
+    target_origin_ambiguous: bool = False
     advisory_only: bool = True
     may_expand_scope: bool = False
     may_increase_request_budget: bool = False
@@ -450,6 +451,21 @@ def build_no_finding_recovery(
             )
         )
     }
+    # A hostname alone does not identify an HTTP origin. Separate HTTP,
+    # HTTPS and port observations cannot be merged into one negative-scan
+    # learning target, even when all hosts are in scope.
+    selected_asset_identities = {
+        _campaign_asset_identity(asset_values_by_id[asset_id])
+        for asset_id in asset_host_by_id
+    }
+    target_origin_ambiguous = bool(
+        normalized_target_host is not None
+        and target_origin is None
+        and (
+            len(selected_asset_identities) > 1
+            or None in selected_asset_identities
+        )
+    )
     observations_by_id = {item.id: item for item in graph.values()}
     eligible_endpoint_ids = {item["id"] for item in endpoints}
     eligible_form_ids = {item["id"] for item in forms}
@@ -490,10 +506,7 @@ def build_no_finding_recovery(
                 pending.extend(parent.parent_ids)
         return (
             len(ancestor_hosts) == 1
-            and (
-                normalized_target_host is not None
-                or len(ancestor_origins) == 1
-            )
+            and len(ancestor_origins) == 1
             and (
                 normalized_target_host is None
                 or normalized_target_host in ancestor_hosts
@@ -558,14 +571,22 @@ def build_no_finding_recovery(
         asset_records = surface["assets"]
         # Legacy scan observations sometimes omit ancestry. They can only
         # be attributed to the target if every observed asset has its host.
-        legacy_single_host = bool(asset_records) and all(
-            item["host"] == normalized_target_host
-            and item["in_scope"] is True
-            and (
-                target_origin is None
-                or _origin(asset_values_by_id[item["id"]]) == target_origin
+        legacy_single_host = (
+            bool(asset_records)
+            and len({
+                _campaign_asset_identity(asset_values_by_id[item["id"]])
+                for item in asset_records
+            }) == 1
+            and not target_origin_ambiguous
+            and all(
+                item["host"] == normalized_target_host
+                and item["in_scope"] is True
+                and (
+                    target_origin is None
+                    or _origin(asset_values_by_id[item["id"]]) == target_origin
+                )
+                for item in asset_records
             )
-            for item in asset_records
         )
 
         # A scan connected to a malformed, untrusted or different-origin
@@ -741,6 +762,12 @@ def build_no_finding_recovery(
     elif not asset_host_by_id:
         state = "scope_unverified"
         reasons.append("no observed asset matches the authorized target for recovery")
+    elif target_origin_ambiguous:
+        state = "target_origin_ambiguous"
+        reasons.append(
+            "hostname-only recovery spans incompatible or malformed observed "
+            "asset origins; specify the authorized HTTP(S) target URL"
+        )
     elif worker_instability_applied:
         state = "execution_unstable"
         reasons.append(
@@ -919,4 +946,5 @@ def build_no_finding_recovery(
         worker_health_attribution=worker_health_attribution,
         worker_instability_observed=worker_instability_observed,
         worker_instability_applied=worker_instability_applied,
+        target_origin_ambiguous=target_origin_ambiguous,
     )
