@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 1ab2cf9cad83e05d2e1196ee8f0270d58079114b
-Head: 77c593a4526eabecb2014daeb4d7403bb3abe19c
+Base: 519f43ee2becd60ea0dd0f289b7c7b45f1bb9ce2
+Head: ab0585d4b75948a2d96ff70db1c3bda3f792edf2
 
 ## Changed files
-- M backend/app/coverage.py
-- M backend/tests/test_coverage.py
+- M backend/app/scanner_adaptation.py
+- M backend/tests/test_scanner_adaptation.py
 
 ## Affected areas
 - backend

@@ -12242,7 +12242,9 @@ validated = _validated_worker_counters(outcome)
 # Technique-level "failure" may mean a valid negative security
 # result, not a scanner crash. Never suppress a configured engine
 # solely because it found no vulnerability.
-unstable_worker = (requeued + failed) >= 2 and completed == 0
+# A requeued job is not a terminal failure. Pending retries must
+# not suppress an otherwise configured scanner, even if repeated.
+unstable_worker = failed >= 2 and completed == 0
 ⋮----
 # Memory can reduce the configured set, but never eliminate all configured scanners.
 ⋮----
@@ -25074,6 +25076,12 @@ def test_invalid_worker_completed_counts_never_trigger_rotation(invalid_count)
 def test_invalid_counter_on_one_engine_disables_cross_engine_rotation()
 ⋮----
 def test_valid_bounded_worker_counters_preserve_suppression_behavior()
+⋮----
+def test_pending_retries_do_not_suppress_authorized_scanner()
+⋮----
+def test_one_failure_and_multiple_pending_retries_is_not_terminal_instability()
+⋮----
+def test_two_terminal_failures_still_suppress_scanner_with_alternative()
 ```
 
 ## File: tests/test_scanner_ingestion.py

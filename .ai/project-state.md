@@ -39,22 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T17:08:20Z
+Generated: 2026-10-09T20:13:49Z
 
 ### Git
 - Branch: `main`
-- Head: `77c593a4526e`
-- Commit date: 2026-10-09T19:08:10+02:00
-- Commit: fix(coverage): reject mixed-origin positive scan job claims
+- Head: `ab0585d4b759`
+- Commit date: 2026-10-09T22:13:37+02:00
+- Commit: fix(scanner): preserve scanners during pending retries
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/scanner_adaptation.py`
+- `backend/tests/test_scanner_adaptation.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/red_team_coverage.py`
-- `backend/tests/test_red_team_coverage.py`
 
 ### Project signals
 - `pyproject.toml`
