@@ -1,3 +1,5 @@
+import pytest
+
 from app.learning_memory import build_learning_memory, campaign_learning_memory
 from app.main import Campaign, ProgramRules, TargetInput, app
 from app.observation_graph import Observation, ObservationGraph
@@ -905,3 +907,98 @@ def test_learning_memory_route_excludes_evidence_from_other_authorized_asset(
     assert result["techniques"][0]["failures"] == 0
     assert result["summary"]["attempts"] == 1
     assert result["read_only"] is True
+
+
+@pytest.mark.parametrize(
+    "invalid_attempts",
+    [True, False, None, -1, 1.5, "2", float("nan"), float("inf"), 6],
+)
+def test_worker_outcome_event_rejects_noninteger_attempts(invalid_attempts):
+    from app.learning_memory import worker_outcome_event
+
+    with pytest.raises(ValueError, match="invalid job attempts"):
+        worker_outcome_event(
+            {
+                "id": "job-1",
+                "kind": "nuclei_scan",
+                "attempts": invalid_attempts,
+            },
+            success=False,
+            status="queued",
+        )
+
+
+@pytest.mark.parametrize(
+    "invalid_attempts",
+    [True, False, None, -1, 2.2, "3", float("nan"), float("inf"), 6],
+)
+def test_worker_summary_does_not_count_invalid_attempts(invalid_attempts):
+    from app.learning_memory import summarize_worker_outcomes
+
+    summary = summarize_worker_outcomes([
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "failed",
+            "attempts": invalid_attempts,
+        },
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "completed",
+            "attempts": 2,
+        },
+    ])
+
+    assert summary["totals"]["completed"] == 1
+    assert summary["totals"]["failed"] == 0
+    assert summary["distinct_jobs"] == 1
+    assert summary["duplicate_events"] == 0
+
+
+def test_invalid_completion_attempts_cannot_overwrite_valid_queued_state():
+    from app.learning_memory import summarize_worker_outcomes
+
+    summary = summarize_worker_outcomes([
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "queued",
+            "attempts": 0,
+        },
+        {
+            "type": "worker_outcome",
+            "job_id": "job-1",
+            "job_kind": "nuclei_scan",
+            "status": "completed",
+            "attempts": "invalid",
+        },
+    ])
+
+    assert summary["totals"]["completed"] == 0
+    assert summary["totals"]["requeued"] == 1
+    assert summary["distinct_jobs"] == 1
+    assert summary["duplicate_events"] == 0
+
+
+def test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries():
+    from app.learning_memory import summarize_worker_outcomes, worker_outcome_event
+
+    event = worker_outcome_event(
+        {"id": "legacy-job", "kind": "recon_task"},
+        success=True,
+        status="completed",
+    )
+    assert event["attempts"] == 0
+
+    summary = summarize_worker_outcomes([{
+        "type": "worker_outcome",
+        "job_id": "legacy-job",
+        "job_kind": "recon_task",
+        "status": "completed",
+    }])
+    assert summary["totals"]["completed"] == 1
+    assert summary["recent_outcomes"][0]["attempts"] == 0
