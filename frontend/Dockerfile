@@ -1,4 +1,4 @@
-FROM ghcr.io/nginxinc/nginx-unprivileged:1.29-alpine
+FROM public.ecr.aws/nginx/nginx-unprivileged:1.29-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY index.html /usr/share/nginx/html/index.html
 COPY app.css /usr/share/nginx/html/app.css
