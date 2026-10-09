@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:52:19Z
+Generated: 2026-10-09T16:47:58Z
 
 ### Git
 - Branch: `main`
-- Head: `488d16998edf`
-- Commit date: 2026-10-09T13:52:10+02:00
-- Commit: fix(coverage): exclude untrusted-origin reviews from completed coverage
+- Head: `0eca1ec98291`
+- Commit date: 2026-10-09T18:47:46+02:00
+- Commit: fix(recovery): quarantine hostname-only scans across different origins
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
 - `backend/app/coverage.py`
@@ -56,8 +58,6 @@ Generated: 2026-10-09T11:52:19Z
 - `AGENTS.md`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
-- `backend/app/learning_memory.py`
-- `backend/tests/test_learning_memory.py`
 
 ### Project signals
 - `pyproject.toml`

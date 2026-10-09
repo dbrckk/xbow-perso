@@ -8463,6 +8463,7 @@ trusted_completed_scan_count: int = 0
 worker_health_attribution: str = "campaign_aggregate"
 worker_instability_observed: bool = False
 worker_instability_applied: bool = False
+target_origin_ambiguous: bool = False
 advisory_only: bool = True
 may_expand_scope: bool = False
 may_increase_request_budget: bool = False
@@ -8601,6 +8602,11 @@ scope_issues = sum(
 # must not count as technology coverage of the authorized target.
 asset_values_by_id = {
 asset_host_by_id = {
+# A hostname alone does not identify an HTTP origin. Separate HTTP,
+# HTTPS and port observations cannot be merged into one negative-scan
+# learning target, even when all hosts are in scope.
+selected_asset_identities = {
+target_origin_ambiguous = bool(
 observations_by_id = {item.id: item for item in graph.values()}
 eligible_endpoint_ids = {item["id"] for item in endpoints}
 eligible_form_ids = {item["id"] for item in forms}
@@ -8643,7 +8649,6 @@ scan_filter = scan_matches_campaign
 ⋮----
 # Legacy scan observations sometimes omit ancestry. They can only
 # be attributed to the target if every observed asset has its host.
-legacy_single_host = bool(asset_records) and all(
 ⋮----
 # A scan connected to a malformed, untrusted or different-origin
 # endpoint cannot be credited merely because another ancestor is
@@ -8705,6 +8710,8 @@ candidates: list[tuple[int, str]] = []
 state = "findings_present"
 ⋮----
 state = "scope_unverified"
+⋮----
+state = "target_origin_ambiguous"
 ⋮----
 state = "execution_unstable"
 ⋮----
@@ -22497,6 +22504,18 @@ def test_valid_recovered_worker_history_allows_bounded_recovery()
 def test_valid_operational_failures_still_halt_recovery()
 ⋮----
 def test_invalid_campaign_wide_worker_health_does_not_block_unrelated_origin()
+⋮----
+def test_hostname_only_recovery_rejects_http_https_origin_mix()
+⋮----
+def test_hostname_only_recovery_rejects_distinct_origin_ports()
+⋮----
+def test_explicit_origin_selects_its_own_negative_scan_evidence()
+⋮----
+missing = _feedback(
+⋮----
+selected = _feedback(
+⋮----
+def test_equivalent_duplicate_explicit_origins_keep_legacy_scan_compatibility()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
