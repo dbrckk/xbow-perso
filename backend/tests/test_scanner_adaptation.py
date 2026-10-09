@@ -243,3 +243,113 @@ def test_corrupt_worker_counts_do_not_crash_or_change_execution_authority():
     assert result.coverage_rotation_applied is False
     assert "operator review" in result.reasons["nuclei"]
     assert result.may_expand_configuration is False
+
+
+@pytest.mark.parametrize(
+    "invalid_count",
+    [True, False, -1, 1.5, "2", None, float("nan"), float("inf"), 1_000_001],
+)
+def test_invalid_worker_completed_counts_never_trigger_rotation(invalid_count):
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {"completed": invalid_count},
+                "strix_scan": {"completed": 0},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("nuclei", "strix")
+    assert result.suppressed_engines == ()
+    assert result.coverage_rotation_applied is False
+    assert result.no_completed_run_engines == ()
+    assert "operator review" in result.reasons["nuclei"]
+    assert result.may_expand_configuration is False
+
+
+@pytest.mark.parametrize(
+    "invalid_count",
+    [True, -1, 2.5, "3", None, float("nan"), float("inf"), 1_000_001],
+)
+def test_invalid_worker_failure_counts_cannot_suppress_configured_engine(
+    invalid_count,
+):
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {
+                    "completed": 0,
+                    "failed": invalid_count,
+                    "requeued": 0,
+                }
+            }
+        },
+    )
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.suppressed_engines == ()
+    assert "operator review" in result.reasons["nuclei"]
+
+
+@pytest.mark.parametrize(
+    "bad_feedback",
+    [
+        [],
+        "malformed",
+        {"by_job_kind": []},
+        {"by_job_kind": None},
+        {"by_job_kind": {"nuclei_scan": None}},
+        {"by_job_kind": {"nuclei_scan": []}},
+    ],
+)
+def test_malformed_worker_outcome_structure_preserves_configured_order(
+    bad_feedback,
+):
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [_memory("nuclei", successes=3, confidence=1.0, success_rate=1.0)],
+        bad_feedback,
+    )
+
+    assert result.selected_engines == ("strix", "nuclei")
+    assert result.coverage_rotation_applied is False
+    assert result.suppressed_engines == ()
+    assert any("operator review" in reason for reason in result.reasons.values())
+
+
+def test_invalid_counter_on_one_engine_disables_cross_engine_rotation():
+    result = adapt_scanner_engines(
+        ("nuclei", "strix"),
+        [],
+        {
+            "by_job_kind": {
+                "nuclei_scan": {"completed": 4, "failed": 0},
+                "strix_scan": {"completed": 0, "requeued": "invalid"},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("nuclei", "strix")
+    assert result.coverage_rotation_applied is False
+    assert result.no_completed_run_engines == ()
+    assert "operator review" in result.reasons["strix"]
+
+
+def test_valid_bounded_worker_counters_preserve_suppression_behavior():
+    result = adapt_scanner_engines(
+        ("strix", "nuclei"),
+        [],
+        {
+            "by_job_kind": {
+                "strix_scan": {"completed": 1, "failed": 2},
+                "nuclei_scan": {"completed": 0, "failed": 2},
+            }
+        },
+    )
+
+    assert result.selected_engines == ("strix",)
+    assert result.suppressed_engines == ("nuclei",)
+    assert result.coverage_rotation_applied is False

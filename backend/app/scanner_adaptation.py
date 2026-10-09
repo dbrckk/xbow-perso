@@ -42,6 +42,24 @@ def _engine_memory(memories: Iterable[TechniqueMemory]) -> dict[str, TechniqueMe
     return result
 
 
+_MAX_WORKER_COUNTER = 1_000_000
+
+
+def _validated_worker_counters(
+    raw: Any,
+) -> tuple[int, int, int] | None:
+    """Treat only bounded integer worker counts as trusted diagnostics."""
+    if not isinstance(raw, dict):
+        return None
+    result = []
+    for key in ("completed", "requeued", "failed"):
+        value = raw.get(key, 0)
+        if type(value) is not int or not 0 <= value <= _MAX_WORKER_COUNTER:
+            return None
+        result.append(value)
+    return result[0], result[1], result[2]
+
+
 def adapt_scanner_engines(
     configured_engines: tuple[str, ...],
     memories: Iterable[TechniqueMemory],
@@ -56,7 +74,19 @@ def adapt_scanner_engines(
         raise ValueError(f"unsupported configured scanner engine: {unknown[0]}")
 
     memory = _engine_memory(memories)
-    by_kind = (worker_outcomes or {}).get("by_job_kind") or {}
+    if worker_outcomes is None or worker_outcomes == {}:
+        by_kind: dict[str, Any] = {}
+        invalid_structure = False
+    elif not isinstance(worker_outcomes, dict):
+        by_kind = {}
+        invalid_structure = True
+    else:
+        raw_by_kind = worker_outcomes.get("by_job_kind")
+        invalid_structure = (
+            "by_job_kind" in worker_outcomes
+            and not isinstance(raw_by_kind, dict)
+        )
+        by_kind = raw_by_kind if isinstance(raw_by_kind, dict) else {}
     reasons: dict[str, str] = {}
     suppressed: set[str] = set()
     completed_by_engine: dict[str, int] = {}
@@ -64,22 +94,22 @@ def adapt_scanner_engines(
     for engine in configured_engines:
         technique = memory.get(engine)
         job_kind = f"{engine}_scan"
-        outcome = by_kind.get(job_kind) if isinstance(by_kind, dict) else None
-        if isinstance(outcome, dict):
-            try:
-                completed = int(outcome.get("completed") or 0)
-                requeued = int(outcome.get("requeued") or 0)
-                failed = int(outcome.get("failed") or 0)
-                if min(completed, requeued, failed) < 0:
-                    raise ValueError("negative outcome count")
-            except (TypeError, ValueError):
-                # Untrusted or corrupt counters cannot justify suppressing
-                # an engine or boosting a coverage recommendation.
+        outcome = by_kind.get(job_kind)
+        if invalid_structure or (job_kind in by_kind and not isinstance(outcome, dict)):
+            reasons[engine] = "invalid worker outcome structure requires operator review"
+            completed_by_engine[engine] = -1
+            continue
+        if outcome is None:
+            completed = requeued = failed = 0
+        else:
+            validated = _validated_worker_counters(outcome)
+            if validated is None:
+                # Corrupt feedback cannot suppress a scanner or fabricate
+                # a positive run for coverage rotation.
                 reasons[engine] = "invalid worker outcome counters require operator review"
                 completed_by_engine[engine] = -1
                 continue
-        else:
-            completed = requeued = failed = 0
+            completed, requeued, failed = validated
         completed_by_engine[engine] = completed
 
         # Technique-level "failure" may mean a valid negative security
@@ -142,6 +172,9 @@ def adapt_scanner_engines(
         )
 
     def rank_key(engine: str) -> tuple[int, float, float, int, int]:
+        if not valid_counters:
+            # Do not reorder on partial or malformed operational feedback.
+            return (0, 0.0, 0.0, 0, configured_order[engine])
         rotation_rank = (
             0 if engine in no_completed else 1
         ) if rotation else 0
