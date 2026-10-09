@@ -1413,3 +1413,165 @@ def test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_job
     assert coverage["dimensions"]["diminishing_returns"] >= 0.5
     assert guidance["focus"] == "endpoint_scan_scope_review"
     assert guidance["may_unlock_actions"] is False
+
+
+
+def test_out_of_scope_form_ancestry_cannot_credit_completed_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:foreign", "form",
+            "https://other.test/login", "browser",
+            parent_ids=("asset:a",),
+            metadata={"method": "POST"},
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:foreign-form", "evidence", "completed", "nuclei",
+            parent_ids=("form:foreign",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "foreign-form", "findings": 0,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+
+
+def test_malformed_form_ancestry_cannot_credit_completed_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "form:invalid", "form",
+            "https://[invalid-ipv6", "browser",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:malformed-form", "evidence", "completed", "nuclei",
+            parent_ids=("form:invalid",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "malformed-form",
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_mixed_valid_and_invalid_form_parents_quarantine_whole_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for name, action in (
+        ("valid", "https://example.test/login"),
+        ("invalid", "https://other.test/login"),
+    ):
+        graph.add(
+            Observation(
+                f"form:{name}", "form", action, "browser",
+                parent_ids=("asset:a",),
+            )
+        )
+    graph.add(
+        Observation(
+            "scan:mixed-forms", "evidence", "completed", "nuclei",
+            parent_ids=("form:valid", "form:invalid"),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "mixed-forms", "findings": 0,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_valid_form_and_endpoint_lineage_keeps_completed_scan_credit():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:valid", "endpoint",
+            "https://example.test/login", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:valid", "form",
+            "https://example.test/login", "browser",
+            parent_ids=("endpoint:valid",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:valid-form", "evidence", "completed", "nuclei",
+            parent_ids=("form:valid",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "valid-form", "findings": 0,
+            },
+        )
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
+    assert coverage["evidence"]["scanner_sources"] == ["nuclei"]
+    assert coverage["dimensions"]["scanner_execution"] == 1.0
+
+
+def test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:invalid", "endpoint",
+            "https://other.test/private", "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "form:apparently-valid", "form",
+            "https://example.test/login", "browser",
+            parent_ids=("endpoint:invalid",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:via-invalid-endpoint", "evidence",
+            "completed", "nuclei",
+            parent_ids=("form:apparently-valid",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "invalid-endpoint-chain",
+            },
+        )
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
