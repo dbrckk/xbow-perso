@@ -2842,7 +2842,7 @@ def test_invisible_scan_job_identity_cannot_enable_no_finding_recovery():
             parent_ids=("asset:a",),
         )
     )
-    for index, job_id in enumerate(("job\\x7f", "job\\u200b")):
+    for index, job_id in enumerate(("job\x7f", "job\u200b")):
         graph.add(
             Observation(
                 f"scan:invalid-id:{index}",
@@ -2873,7 +2873,7 @@ def test_invisible_scan_job_identity_cannot_enable_no_finding_recovery():
 def test_invisible_scan_id_does_not_hide_independent_valid_negative_scan():
     graph = ObservationGraph()
     graph.add(Observation("asset:a", "asset", "example.test", "recon"))
-    for index, job_id in enumerate(("bad\\x7f", "valid-job")):
+    for index, job_id in enumerate(("bad\x7f", "valid-job")):
         graph.add(
             Observation(
                 f"scan:report:{index}",
