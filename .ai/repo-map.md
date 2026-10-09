@@ -8600,7 +8600,7 @@ started = _trusted_utc_timestamp(
 # a second conveniently in-scope report with the same job ID.
 # Only explicit job IDs can establish cross-observation identity.
 ⋮----
-source = item.source.strip() if isinstance(item.source, str) else ""
+source = canonical_scan_source(item.source)
 ⋮----
 # Fail closed on jobs with conflicting target ancestry even if scanner
 # names agree. Other-target-only jobs are not counted as ambiguous for
@@ -12771,6 +12771,16 @@ def canonical_scan_job_id(raw: object) -> str | None
     """
 ⋮----
 normalized = raw.strip()
+⋮----
+def canonical_scan_source(raw: object) -> str | None
+⋮----
+"""Accept only bounded, printable scanner labels with no path escapes.
+
+    Provenance labels are identities, never filesystem paths or encoded text.
+    """
+⋮----
+# Literal escape sequences are ambiguous when source labels are logged,
+# exported or interpreted by downstream evidence processors.
 ⋮----
 def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]
 ⋮----
@@ -22565,6 +22575,12 @@ def test_target_origin_rejects_path_bearing_legacy_asset_alias()
 def test_target_origin_rejects_query_bearing_legacy_asset_alias()
 ⋮----
 def test_target_origin_accepts_explicitly_linked_plain_legacy_host_alias()
+⋮----
+def test_malformed_scan_source_cannot_establish_trusted_negative_yield()
+⋮----
+def test_valid_scanner_source_still_supports_bounded_recovery()
+⋮----
+result = _feedback(graph, target_host="example.test", allowed=("crawl",))
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py
@@ -25635,6 +25651,8 @@ def test_completed_and_cancelled_same_job_is_terminal_contradiction()
 def test_scan_job_identity_rejects_invisible_and_control_characters()
 ⋮----
 def test_invisible_job_ids_cannot_invent_terminal_status_conflicts()
+⋮----
+def test_scanner_source_rejects_untrusted_identity_labels()
 ````
 
 ## File: backend/tests/test_scanner_adaptation.py

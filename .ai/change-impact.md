@@ -1,22 +1,16 @@
 # Change impact
 
-Base: 1b47f739124f1742daa8ce56c1b02c55b9e320ce
-Head: 7b20261053d1fa209a5fbd104a0b7930153ce5ad
+Base: 8d9beea18c7ae895e3a9a7bb564bbe6a6b70c886
+Head: c46f867ca40d08584df7d699c8bbdce4bcbc6124
 
 ## Changed files
-- M .github/workflows/ci.yml
-- M backend/Dockerfile
-- M backend/Dockerfile.scanner
-- M backend/Dockerfile.strix-runner
-- M docker-compose.distributed.yml
-- M docker-compose.tls.yml
-- M frontend/Dockerfile
+- M backend/app/no_finding_recovery.py
+- M backend/app/scan_result_integrity.py
+- M backend/tests/test_no_finding_recovery.py
+- M backend/tests/test_scan_result_integrity.py
 
 ## Affected areas
-- .github
 - backend
-- (root)
-- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
