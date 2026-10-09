@@ -673,10 +673,17 @@ def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ..
 ⋮----
 by_kind = worker_outcomes.get("by_job_kind")
 ⋮----
-unstable = []
+# Malformed worker diagnostics cannot establish safe execution.
 ⋮----
-requeued = int(values.get("requeued") or 0)
-completed = int(values.get("completed") or 0)
+unstable: set[str] = set()
+⋮----
+# Reject booleans, negative values and malformed counters rather
+# than treating them as healthy status or crashing the planner.
+counts: dict[str, int] = {}
+⋮----
+value = values.get(name, 0)
+⋮----
+number = int(value)
 ⋮----
 """Resolve one bounded campaign cycle without executing target actions."""
 suppressed = _suppressed_techniques(memories)
@@ -16292,6 +16299,16 @@ campaign = Campaign(
 store = Storage(db, artifacts)
 ⋮----
 result = campaign_adaptive_cycle(campaign.id)
+⋮----
+def test_malformed_worker_requeue_count_requires_review_not_exception()
+⋮----
+def test_negative_and_boolean_worker_counts_do_not_signal_healthy_execution()
+⋮----
+def test_malformed_worker_outcome_structure_requires_human_review()
+⋮----
+def test_valid_worker_feedback_retains_existing_completion_semantics()
+⋮----
+def test_repeated_failed_workers_require_review_without_requeue_events()
 ```
 
 ## File: tests/test_affected_version_range.py

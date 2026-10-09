@@ -1,15 +1,11 @@
 # Change impact
 
-Base: 5e07e66c1be01925fe48e90f7d58afee92ba52dc
-Head: e8c009104ad387441cd7185b641ac0d55cd3eb49
+Base: b2a9443e9d085ee0aaaaf1a5fc327a53d834d7ce
+Head: b97028efccc1f96c08336a7ffb4863323e26f840
 
 ## Changed files
 - M backend/app/adaptive_cycle.py
-- M backend/app/learning_memory.py
-- M backend/app/orchestrator.py
 - M backend/tests/test_adaptive_cycle.py
-- M backend/tests/test_learning_memory.py
-- M backend/tests/test_orchestrator.py
 
 ## Affected areas
 - backend

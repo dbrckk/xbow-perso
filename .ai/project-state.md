@@ -39,20 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T09:25:01Z
+Generated: 2026-10-09T09:31:21Z
 
 ### Git
 - Branch: `main`
-- Head: `e8c009104ad3`
-- Commit date: 2026-10-09T11:24:50+02:00
-- Commit: fix(learning): scope adaptive cycle and reports to campaign origin
+- Head: `b97028efccc1`
+- Commit date: 2026-10-09T11:31:00+02:00
+- Commit: fix(cycle): fail closed on invalid or unstable worker feedback
 - Tracked files: 687
 
 ### Recently changed files
 - `backend/app/adaptive_cycle.py`
+- `backend/tests/test_adaptive_cycle.py`
 - `backend/app/learning_memory.py`
 - `backend/app/orchestrator.py`
-- `backend/tests/test_adaptive_cycle.py`
 - `backend/tests/test_learning_memory.py`
 - `backend/tests/test_orchestrator.py`
 - `backend/app/coverage.py`
