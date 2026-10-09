@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T01:19:38Z
+Generated: 2026-10-09T07:52:07Z
 
 ### Git
 - Branch: `main`
-- Head: `bc82fc6c07fd`
-- Commit date: 2026-10-09T03:19:28+02:00
-- Commit: fix(learning): reject malformed worker identities in adaptive scanner memory
+- Head: `aab91a5f1c88`
+- Commit date: 2026-10-09T09:51:53+02:00
+- Commit: fix(learning): validate intermediate asset lineage for technique memory
 - Tracked files: 687
 
 ### Recently changed files

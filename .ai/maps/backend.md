@@ -7029,6 +7029,11 @@ parent = items.get(parent_id)
 ⋮----
 valid = False
 ⋮----
+# A matching asset ancestor cannot sanitize an
+# intermediate endpoint/form on another origin or a
+# malformed URL. Require exact web-origin provenance.
+normalized = canonical_endpoint(parent.value)
+⋮----
 """Aggregate safe technique outcomes from existing evidence only.
 
     Evidence contributes only when it carries an explicit technique and outcome.

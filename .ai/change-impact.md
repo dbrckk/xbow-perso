@@ -1,7 +1,7 @@
 # Change impact
 
-Base: f6bd1ec209c75c2d27900d57753be1130ed430d3
-Head: bc82fc6c07fdf494c56a64451fcd49acce96a433
+Base: 7a755facafd7f22f53e40a513e0d599a393e6022
+Head: aab91a5f1c88992ae7e1bf234afdefb8c1f3a66d
 
 ## Changed files
 - M backend/app/learning_memory.py
