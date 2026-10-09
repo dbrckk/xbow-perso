@@ -125,6 +125,36 @@ def _origin(value: str) -> tuple[str, str, int] | None:
     return scheme, host, port
 
 
+def _campaign_asset_identity(value: object) -> tuple[str, ...] | None:
+    """Canonicalize a campaign asset without equating HTTP, HTTPS or ports."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    if "://" in raw:
+        origin = _origin(raw)
+        if origin is None:
+            return None
+        scheme, host, port = origin
+        return ("origin", scheme, host, str(port))
+    try:
+        parsed = urlsplit(f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+        if (
+            not host
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+        ):
+            return None
+    except ValueError:
+        return None
+    # Host-only observations cannot establish a concrete web origin.
+    return ("legacy_host", host, str(port) if port is not None else "")
+
+
 def _asset_matches_origin(
     value: str,
     target: tuple[str, str, int],
@@ -412,6 +442,7 @@ def build_no_finding_recovery(
         pending = list(observations_by_id[observation_id].parent_ids)
         seen: set[str] = set()
         ancestor_hosts: set[str] = set()
+        ancestor_origins: set[tuple[str, ...]] = set()
         while pending:
             parent_id = pending.pop()
             if parent_id in seen:
@@ -435,11 +466,22 @@ def build_no_finding_recovery(
                 if not host:
                     return False
                 ancestor_hosts.add(host)
+                identity = _campaign_asset_identity(parent.value)
+                if identity is None:
+                    return False
+                ancestor_origins.add(identity)
             else:
                 pending.extend(parent.parent_ids)
-        return len(ancestor_hosts) == 1 and (
-            normalized_target_host is None
-            or normalized_target_host in ancestor_hosts
+        return (
+            len(ancestor_hosts) == 1
+            and (
+                normalized_target_host is not None
+                or len(ancestor_origins) == 1
+            )
+            and (
+                normalized_target_host is None
+                or normalized_target_host in ancestor_hosts
+            )
         )
 
     if target_origin is not None:
@@ -468,19 +510,20 @@ def build_no_finding_recovery(
     legacy_single_host = False
     scan_filter: Callable[[Any], bool] | None = None
     if normalized_target_host is None:
-        # Campaign-wide negative results still need trustworthy ancestry.
-        # Orphan scans are legacy-compatible only for a single in-scope host.
+        # Campaign-wide negative results must identify one compatible
+        # origin, not merely a hostname shared by HTTP, HTTPS or ports.
+        # Equivalent duplicate asset observations remain compatible.
         asset_records = surface["assets"]
-        trusted_hosts = {
-            item["host"]
+        campaign_origins = {
+            _campaign_asset_identity(asset_values_by_id[item["id"]])
             for item in asset_records
-            if item["in_scope"] is True and item["host"]
         }
         legacy_single_host = (
-            len(trusted_hosts) == 1
+            len(campaign_origins) == 1
+            and None not in campaign_origins
             and bool(asset_records)
             and all(
-                item["in_scope"] is True and item["host"] in trusted_hosts
+                item["in_scope"] is True and bool(item["host"])
                 for item in asset_records
             )
         )
