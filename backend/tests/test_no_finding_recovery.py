@@ -2739,6 +2739,7 @@ def test_explicit_impossible_scan_completion_cannot_drive_negative_learning():
         assert result.state == "scan_source_unverified"
         assert result.completed_scan_count == 1
         assert result.trusted_completed_scan_count == 0
+        assert result.contradictory_scan_terminal_jobs == 0
         assert result.ambiguous_scan_source_jobs == 1
         assert result.recommended_task_kinds == ()
 
@@ -2765,6 +2766,7 @@ def test_scan_started_after_completion_is_untrusted():
     result = _feedback(graph, target_url="https://example.test/")
     assert result.state == "scan_source_unverified"
     assert result.trusted_completed_scan_count == 0
+    assert result.contradictory_scan_terminal_jobs == 0
     assert result.negative_result_proves_safe is False
 
 
@@ -2793,6 +2795,7 @@ def test_bad_timestamp_duplicate_quarantines_entire_scan_job():
     result = _feedback(graph, target_url="https://example.test/")
     assert result.completed_scan_count == 1
     assert result.trusted_completed_scan_count == 0
+    assert result.contradictory_scan_terminal_jobs == 0
     assert result.state == "scan_source_unverified"
 
 
@@ -2821,6 +2824,7 @@ def test_temporal_quarantine_preserves_independent_good_scan():
         )
     result = _feedback(graph, target_url="https://example.test/")
     assert result.trusted_completed_scan_count == 1
+    assert result.contradictory_scan_terminal_jobs == 0
     assert result.ambiguous_scan_source_jobs == 1
     assert result.state == "recovery_advisory"
     assert result.recommended_task_kinds
