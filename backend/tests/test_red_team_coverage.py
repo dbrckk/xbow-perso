@@ -424,3 +424,147 @@ def test_completed_review_of_multiple_eligible_endpoints_is_creditable():
     assert result["summary"]["reviewed_endpoints"] == 2
     assert result["summary"]["observed_endpoints"] == 2
     assert result["domains"][0]["gaps"] == 0
+
+
+def test_cross_origin_form_review_remains_untrusted_coverage_gap():
+    graph = ObservationGraph()
+    graph.add(Observation(
+        "asset:https", "asset", "https://example.test", "inventory"
+    ))
+    graph.add(Observation(
+        "form:http", "form", "http://example.test/login",
+        "browser", parent_ids=("asset:https",),
+    ))
+    graph.add(Observation(
+        "review:form", "evidence", "reviewed", "analyst",
+        parent_ids=("form:http",),
+        metadata={"review_type": "form_surface_review", "status": "completed"},
+    ))
+
+    coverage = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["summary"]["observed_forms"] == 1
+    assert coverage["summary"]["reviewed_forms"] == 0
+    assert coverage["summary"]["untrusted_form_origins"] == 1
+    assert "untrusted_form_origin" in coverage["gaps"]
+    assert coverage["domains"][1]["gaps"] == 1
+    assert coverage["read_only"] is True
+
+
+def test_wrong_port_endpoint_review_does_not_close_coverage_gap():
+    graph = ObservationGraph()
+    graph.add(Observation(
+        "asset:8443", "asset", "https://example.test:8443", "inventory"
+    ))
+    graph.add(Observation(
+        "endpoint:443", "endpoint", "https://example.test/settings",
+        "crawler", parent_ids=("asset:8443",),
+    ))
+    graph.add(Observation(
+        "review:endpoint", "evidence", "reviewed", "analyst",
+        parent_ids=("endpoint:443",),
+        metadata={
+            "review_type": "authorization_surface_review",
+            "status": "completed",
+        },
+    ))
+
+    coverage = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["summary"]["observed_endpoints"] == 1
+    assert coverage["summary"]["reviewed_endpoints"] == 0
+    assert coverage["summary"]["untrusted_endpoint_origins"] == 1
+    assert "untrusted_endpoint_origin" in coverage["gaps"]
+    assert coverage["domains"][0]["gaps"] == 1
+
+
+def test_same_origin_review_through_valid_endpoint_is_creditable():
+    graph = ObservationGraph()
+    graph.add(Observation(
+        "asset:a", "asset", "https://example.test:443", "inventory"
+    ))
+    graph.add(Observation(
+        "endpoint:a", "endpoint", "https://example.test/login",
+        "crawler", parent_ids=("asset:a",),
+    ))
+    graph.add(Observation(
+        "form:a", "form", "https://example.test/login",
+        "browser", parent_ids=("endpoint:a",),
+    ))
+    graph.add(Observation(
+        "review:endpoint", "evidence", "reviewed", "analyst",
+        parent_ids=("endpoint:a",),
+        metadata={
+            "review_type": "authorization_surface_review",
+            "status": "completed",
+        },
+    ))
+    graph.add(Observation(
+        "review:form", "evidence", "reviewed", "analyst",
+        parent_ids=("form:a",),
+        metadata={
+            "review_type": "form_surface_review", "status": "completed"
+        },
+    ))
+
+    coverage = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["summary"]["observed_endpoints"] == 1
+    assert coverage["summary"]["reviewed_endpoints"] == 1
+    assert coverage["summary"]["observed_forms"] == 1
+    assert coverage["summary"]["reviewed_forms"] == 1
+    assert coverage["summary"]["untrusted_endpoint_origins"] == 0
+    assert coverage["summary"]["untrusted_form_origins"] == 0
+
+
+def test_orphan_form_review_does_not_inflate_scoped_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation(
+        "asset:a", "asset", "example.test", "inventory"
+    ))
+    graph.add(Observation(
+        "form:orphan", "form", "https://example.test/login", "browser"
+    ))
+    graph.add(Observation(
+        "review:orphan", "evidence", "reviewed", "analyst",
+        parent_ids=("form:orphan",),
+        metadata={"review_type": "form_surface_review", "status": "completed"},
+    ))
+
+    coverage = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["summary"]["observed_forms"] == 1
+    assert coverage["summary"]["reviewed_forms"] == 0
+    assert coverage["summary"]["untrusted_form_origins"] == 1
+    assert "untrusted_form_origin" in coverage["gaps"]
+
+
+def test_mixed_origin_form_review_cannot_credit_valid_parent_subset():
+    graph = ObservationGraph()
+    graph.add(Observation(
+        "asset:a", "asset", "https://example.test", "inventory"
+    ))
+    graph.add(Observation(
+        "asset:b", "asset", "http://example.test", "inventory"
+    ))
+    graph.add(Observation(
+        "form:mixed", "form", "https://example.test/login", "browser",
+        parent_ids=("asset:a", "asset:b"),
+    ))
+    graph.add(Observation(
+        "review:mixed", "evidence", "reviewed", "analyst",
+        parent_ids=("form:mixed",),
+        metadata={"review_type": "form_surface_review", "status": "completed"},
+    ))
+
+    coverage = build_red_team_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["summary"]["observed_forms"] == 1
+    assert coverage["summary"]["reviewed_forms"] == 0
+    assert coverage["summary"]["untrusted_form_origins"] == 1
+    assert coverage["domains"][1]["gaps"] == 1
