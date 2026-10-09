@@ -8,7 +8,10 @@ from urllib.parse import urlsplit
 from .attack_surface import build_attack_surface
 from .observation_graph import ObservationGraph
 from .review_evidence import is_completed_review_evidence
-from .scan_result_integrity import conflicting_scan_terminal_job_ids
+from .scan_result_integrity import (
+    canonical_scan_job_id,
+    conflicting_scan_terminal_job_ids,
+)
 
 
 NO_FINDING_RECOVERY_SCHEMA = "no-finding-recovery-v1"
@@ -193,19 +196,15 @@ def _completed_scan_evidence(
         ):
             continue
         raw_job_id = item.metadata.get("job_id")
-        job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
-        if raw_job_id is not None and (
-            not isinstance(raw_job_id, str)
-            or not 0 < len(job_id) <= 128
-            or any(ord(char) < 32 or ord(char) == 127 for char in raw_job_id)
-        ):
+        job_id = canonical_scan_job_id(raw_job_id)
+        if raw_job_id is not None and job_id is None:
             # A present but blank, control-bearing or malformed job ID is
             # not the same as an absent legacy job ID. It cannot establish
             # reliable completion or independent negative scan evidence.
             key = f"invalid:{item.id}"
             invalid_jobs.add(key)
         else:
-            key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+            key = f"job:{job_id}" if job_id is not None else f"observation:{item.id}"
 
         # An explicitly dated completion that is malformed, from the future,
         # or earlier than its recorded start cannot establish a trusted
