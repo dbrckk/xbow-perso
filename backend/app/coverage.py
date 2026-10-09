@@ -36,6 +36,11 @@ def _completed_scans_with_provenance(
             and item["asset_parent_ids"]
         )
     }
+    approved_form_ids = {
+        item["id"]
+        for item in surface["forms"]
+        if item["valid"] and item["in_scope"] is True
+    }
 
     def trustworthy_lineage(observation: Any) -> bool:
         if scope_checker is None:
@@ -62,9 +67,15 @@ def _completed_scans_with_provenance(
                     parent.kind == "endpoint"
                     and parent.id not in approved_endpoint_ids
                 ):
-                    # A scan of an invalid, orphaned, out-of-scope or
-                    # mismatched endpoint cannot gain completion credit via
+                    # An invalid endpoint cannot gain completion credit via
                     # an otherwise authorized asset ancestor.
+                    return False
+                if (
+                    parent.kind == "form"
+                    and parent.id not in approved_form_ids
+                ):
+                    # Likewise, a malformed or out-of-scope form must not
+                    # launder an otherwise in-scope scan completion claim.
                     return False
                 pending.extend(parent.parent_ids)
         return bool(linked_assets) and linked_assets <= approved_asset_ids
