@@ -2014,3 +2014,124 @@ def test_endpoint_with_mixed_http_and_https_asset_parents_is_untrusted():
     assert coverage["evidence"]["endpoint_scan_attribution"][
         "documented_scanned_endpoints"
     ] == 0
+
+
+def _form_scan_origin_graph(
+    asset_origin: str,
+    form_action: str,
+    *,
+    endpoint_origin: str | None = None,
+) -> ObservationGraph:
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:form", "asset", asset_origin, "inventory")
+    )
+    parent = "asset:form"
+    if endpoint_origin is not None:
+        graph.add(
+            Observation(
+                "endpoint:form", "endpoint", endpoint_origin,
+                "crawler", parent_ids=("asset:form",),
+            )
+        )
+        parent = "endpoint:form"
+    graph.add(
+        Observation(
+            "form:origin", "form", form_action,
+            "browser", parent_ids=(parent,),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:form-origin", "evidence", "completed", "nuclei",
+            parent_ids=("form:origin",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "form-origin-job", "findings": 0,
+            },
+        )
+    )
+    return graph
+
+
+def test_http_form_cannot_claim_https_asset_scan_coverage():
+    graph = _form_scan_origin_graph(
+        "https://example.test", "http://example.test/login"
+    )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 0
+    assert report["evidence"]["untrusted_scan_observations"] == 1
+    assert build_coverage_guidance(report)["focus"] == (
+        "scan_provenance_reconciliation"
+    )
+
+
+def test_form_action_on_wrong_port_cannot_claim_scan_coverage():
+    graph = _form_scan_origin_graph(
+        "https://example.test:8443", "https://example.test/login"
+    )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 0
+    assert report["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_form_with_incompatible_intermediate_endpoint_cannot_claim_scan():
+    graph = _form_scan_origin_graph(
+        "https://example.test",
+        "https://example.test/login",
+        endpoint_origin="http://example.test/start",
+    )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 0
+    assert report["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_same_origin_form_with_default_https_port_retains_scan_credit():
+    graph = _form_scan_origin_graph(
+        "https://example.test:443",
+        "https://example.test/login",
+        endpoint_origin="https://example.test/start",
+    )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 1
+    assert report["evidence"]["untrusted_scan_observations"] == 0
+    assert report["evidence"]["scanner_sources"] == ["nuclei"]
+
+
+def test_mixed_form_asset_origins_do_not_credit_one_valid_parent():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "inventory")
+    )
+    graph.add(
+        Observation("asset:http", "asset", "http://example.test", "inventory")
+    )
+    graph.add(
+        Observation(
+            "form:mixed", "form", "https://example.test/login",
+            "browser", parent_ids=("asset:https", "asset:http"),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mixed-form", "evidence", "completed", "nuclei",
+            parent_ids=("form:mixed",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "form-mixed-origins", "findings": 0,
+            },
+        )
+    )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 0
+    assert report["evidence"]["untrusted_scan_observations"] == 1
