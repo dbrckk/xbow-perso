@@ -589,10 +589,7 @@ def build_no_finding_recovery(
                 and item["in_scope"] is True
                 and (
                     target_origin is None
-                    or _asset_matches_origin(
-                        asset_values_by_id[item["id"]],
-                        target_origin,
-                    )
+                    or _origin(asset_values_by_id[item["id"]]) == target_origin
                 )
                 for item in asset_records
             )
