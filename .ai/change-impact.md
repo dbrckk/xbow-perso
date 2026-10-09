@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 8c5fd6a3f63ab9c5a5de369edc342acd927f569d
-Head: c177ddf5115b58746e78bd01df9b5514ef9e3e37
+Base: 15c31548e4e4957ec10d82c84ca0430351d0c2de
+Head: 17c4b5b7aae144a3a70242036915fa793d610abd
 
 ## Changed files
-- M backend/app/coverage.py
-- M backend/tests/test_coverage.py
+- M backend/app/no_finding_recovery.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend

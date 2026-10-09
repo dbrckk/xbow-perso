@@ -7852,6 +7852,9 @@ rejected_cross_origin_jobs: set[str] = set()
 raw_job_id = item.metadata.get("job_id")
 job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
 ⋮----
+# A present but blank, control-bearing or malformed job ID is
+# not the same as an absent legacy job ID. It cannot establish
+# reliable completion or independent negative scan evidence.
 key = f"invalid:{item.id}"
 ⋮----
 key = f"job:{job_id}" if job_id else f"observation:{item.id}"
@@ -21587,6 +21590,12 @@ def test_cross_protocol_endpoint_cannot_provide_https_form_lineage()
 def test_trusted_endpoint_ancestry_still_counts_forms_and_technology()
 ⋮----
 def test_untrusted_browser_lineage_does_not_exhaust_browser_recovery()
+⋮----
+def test_explicit_invalid_scan_job_ids_cannot_trigger_negative_learning()
+⋮----
+def test_invalid_scan_job_id_does_not_poison_independent_trusted_scan()
+⋮----
+def test_legacy_scan_without_job_id_remains_supported()
 ```
 
 ## File: tests/test_nuclei_preflight.py

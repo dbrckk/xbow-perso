@@ -39,20 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:30:05Z
+Generated: 2026-10-09T00:33:22Z
 
 ### Git
 - Branch: `main`
-- Head: `c177ddf5115b`
-- Commit date: 2026-10-09T02:29:53+02:00
-- Commit: feat(coverage): review untrusted scan provenance before retrying
+- Head: `17c4b5b7aae1`
+- Commit date: 2026-10-09T02:33:09+02:00
+- Commit: fix(recovery): reject malformed explicit scan job identifiers
 - Tracked files: 687
 
 ### Recently changed files
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`
