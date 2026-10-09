@@ -187,6 +187,11 @@ def self_test() -> dict[str, Any]:
     descriptor = register_xbow_backend()
     prepared = asyncio.run(_assert_backend_fails_closed())
     interface = prepared_remote_session_self_test()
+    repeated_interface = prepared_remote_session_self_test()
+    if interface["self_test_sha256"] != repeated_interface["self_test_sha256"]:
+        raise StrixBackendHookError(
+            "prepared Strix remote interface attestation is not deterministic"
+        )
     return {
         "schema": "strix-backend-hook-v1",
         "strix_version": version,

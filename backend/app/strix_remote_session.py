@@ -358,11 +358,18 @@ def prepared_remote_session_self_test() -> dict[str, Any]:
         timeout=15,
     )
     port_plan = session.plan_resolve_exposed_port(48080)
+    # Request IDs are fresh replay-protection nonces, not a part of the
+    # stable interface contract. Excluding only those IDs makes the
+    # self-test digest reproducible across otherwise identical runs.
+    exec_contract = exec_plan.to_dict()
+    port_contract = port_plan.to_dict()
+    exec_contract.pop("request_id")
+    port_contract.pop("request_id")
     canonical = json.dumps(
         {
             "descriptor": descriptor.to_dict(),
-            "exec": exec_plan.to_dict(),
-            "port": port_plan.to_dict(),
+            "exec": exec_contract,
+            "port": port_contract,
         },
         sort_keys=True,
         separators=(",", ":"),
