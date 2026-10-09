@@ -646,3 +646,95 @@ def test_scoped_learning_rejects_non_web_target_url():
             assert "HTTP(S)" in str(exc)
         else:
             raise AssertionError("invalid scoped-learning target must fail closed")
+
+
+def test_invisible_job_ids_cannot_inflate_scanner_technique_memory():
+    graph = ObservationGraph()
+    for index, job_id in enumerate(("job\x7f", "job\u200b", "job\u2060")):
+        graph.add(
+            Observation(
+                f"evidence:invalid:{index}",
+                "evidence",
+                "outcome",
+                "scanner",
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": job_id,
+                },
+            )
+        )
+    graph.add(_technique_job_observation(
+        "evidence:valid", job_id="job-good", outcome="failure"
+    ))
+
+    memory = build_learning_memory(graph)[0]
+    assert memory.attempts == 1
+    assert memory.successes == 0
+    assert memory.failures == 1
+
+
+def test_invisible_worker_event_ids_do_not_inflate_operational_failures():
+    from app.learning_memory import summarize_worker_outcomes
+
+    events = [
+        {
+            "type": "worker_outcome",
+            "job_id": job_id,
+            "job_kind": "nuclei_scan",
+            "status": "failed",
+            "attempts": 1,
+        }
+        for job_id in ("job\x7f", "job\u200b", "job\u2060")
+    ]
+    events.append({
+        "type": "worker_outcome",
+        "job_id": "valid-job",
+        "job_kind": "nuclei_scan",
+        "status": "completed",
+        "attempts": 1,
+    })
+
+    result = summarize_worker_outcomes(events)
+    assert result["totals"]["failed"] == 0
+    assert result["totals"]["completed"] == 1
+    assert result["distinct_jobs"] == 1
+    assert result["contains_job_payloads"] is False
+
+
+def test_worker_outcome_event_rejects_invalid_job_identifiers():
+    import pytest
+
+    from app.learning_memory import worker_outcome_event
+
+    for invalid in ("", "job\x7f", "job\u200b", 123, "x" * 129):
+        with pytest.raises(ValueError, match="invalid job identity"):
+            worker_outcome_event(
+                {"id": invalid, "kind": "nuclei_scan", "attempts": 1},
+                success=False,
+                status="failed",
+            )
+
+
+def test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "https://a.test", "recon"))
+    for index, job_id in enumerate(("bad\x7f", "good-job")):
+        graph.add(
+            Observation(
+                f"evidence:{index}",
+                "evidence",
+                "outcome",
+                "scanner",
+                parent_ids=("asset:a",),
+                metadata={
+                    "technique": "scanner:nuclei",
+                    "outcome": "success",
+                    "job_id": job_id,
+                },
+            )
+        )
+    memory = build_learning_memory(graph, target_url="https://a.test")
+    assert len(memory) == 1
+    assert memory[0].attempts == 1
+    assert memory[0].successes == 1
