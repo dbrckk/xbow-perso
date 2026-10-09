@@ -39,21 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T01:03:49Z
+Generated: 2026-10-09T01:14:42Z
 
 ### Git
 - Branch: `main`
-- Head: `ffef3a9c072f`
-- Commit date: 2026-10-09T03:03:33+02:00
-- Commit: fix(coverage): reject scan reports with impossible chronology
+- Head: `337e0707844b`
+- Commit date: 2026-10-09T03:14:30+02:00
+- Commit: fix(scan): unify strict scan-job identities across coverage and recovery
 - Tracked files: 687
 
 ### Recently changed files
 - `backend/app/coverage.py`
+- `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
+- `backend/tests/test_scan_result_integrity.py`
 
 ### Project signals
 - `pyproject.toml`

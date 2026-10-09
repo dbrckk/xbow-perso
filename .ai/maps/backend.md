@@ -1984,10 +1984,11 @@ untrusted = 0
 accepted = 0
 ⋮----
 raw_job_id = observation.metadata.get("job_id")
+job_id = canonical_scan_job_id(raw_job_id)
 ⋮----
 identity = f"observation:{observation.id}"
 ⋮----
-identity = f"job:{raw_job_id.strip()}"
+identity = f"job:{job_id}"
 ⋮----
 # A completed claim contradicted by a failed/cancelled claim
 # for this same worker job does not prove scan completion.
@@ -2035,13 +2036,13 @@ endpoints: set[str] = set()
 ⋮----
 reports_by_job: dict[str, list[Any]] = {}
 ⋮----
-job_id = observation.metadata.get("job_id")
+job_id = canonical_scan_job_id(
 ⋮----
 documented_ids: set[str] = set()
 ambiguous_scope_jobs = 0
 ineligible_scope_jobs = 0
 ⋮----
-job_id = scan.metadata.get("job_id")
+job_id = canonical_scan_job_id(scan.metadata.get("job_id"))
 reports = (
 # Job-level completion has already been reconciled. Endpoint scope
 # is a separate claim: conflicting duplicate reports cannot prove
@@ -7855,14 +7856,14 @@ rejected_cross_origin_jobs: set[str] = set()
 current_time = datetime.now(timezone.utc)
 ⋮----
 raw_job_id = item.metadata.get("job_id")
-job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
+job_id = canonical_scan_job_id(raw_job_id)
 ⋮----
 # A present but blank, control-bearing or malformed job ID is
 # not the same as an absent legacy job ID. It cannot establish
 # reliable completion or independent negative scan evidence.
 key = f"invalid:{item.id}"
 ⋮----
-key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+key = f"job:{job_id}" if job_id is not None else f"observation:{item.id}"
 ⋮----
 # An explicitly dated completion that is malformed, from the future,
 # or earlier than its recorded start cannot establish a trusted
@@ -11999,6 +12000,17 @@ priority = round((evidence + (2.0 * high_critical)) * gap_factor, 3)
 ```python
 _TERMINAL_SCAN_STATES = frozenset({"completed", "failed", "cancelled"})
 ⋮----
+def canonical_scan_job_id(raw: object) -> str | None
+⋮----
+"""Validate one explicit scan-job identity shared across evidence consumers.
+
+    Missing IDs are a separate legacy case. Reject invisible or control
+    characters, including DEL and Unicode format controls, before grouping
+    observations that claim to represent the same worker execution.
+    """
+⋮----
+normalized = raw.strip()
+⋮----
 def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]
 ⋮----
 """Identify one job reporting incompatible terminal scan outcomes.
@@ -12010,7 +12022,7 @@ states_by_job: dict[str, set[str]] = {}
 ⋮----
 status = item.metadata.get("status")
 ⋮----
-raw_id = item.metadata.get("job_id")
+job_id = canonical_scan_job_id(item.metadata.get("job_id"))
 ⋮----
 """Reject explicitly impossible scan times without inventing legacy dates.
 
@@ -17310,6 +17322,12 @@ def test_valid_temporal_scan_remains_counted_alongside_invalid_scan()
 def test_plausible_scan_timeline_accepts_legacy_absent_timestamps()
 ⋮----
 frozen = datetime(2026, 9, 10, tzinfo=timezone.utc)
+⋮----
+def test_invisible_scan_job_ids_never_count_as_completed_coverage()
+⋮----
+report = build_evidence_coverage(
+⋮----
+def test_invalid_scan_id_does_not_poison_independent_valid_scan()
 ```
 
 ## File: tests/test_cpe_consistency.py
@@ -21654,6 +21672,10 @@ def test_scan_started_after_completion_is_untrusted()
 def test_bad_timestamp_duplicate_quarantines_entire_scan_job()
 ⋮----
 def test_temporal_quarantine_preserves_independent_good_scan()
+⋮----
+def test_invisible_scan_job_identity_cannot_enable_no_finding_recovery()
+⋮----
+def test_invisible_scan_id_does_not_hide_independent_valid_negative_scan()
 ```
 
 ## File: tests/test_nuclei_preflight.py
@@ -24690,6 +24712,10 @@ def test_separate_job_ids_do_not_conflict()
 def test_invalid_ids_cannot_invent_job_identity()
 ⋮----
 def test_completed_and_cancelled_same_job_is_terminal_contradiction()
+⋮----
+def test_scan_job_identity_rejects_invisible_and_control_characters()
+⋮----
+def test_invisible_job_ids_cannot_invent_terminal_status_conflicts()
 ```
 
 ## File: tests/test_scanner_adaptation.py

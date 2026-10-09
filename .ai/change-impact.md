@@ -1,12 +1,15 @@
 # Change impact
 
-Base: ec146c8f0fe15a00f05af8082ef7f69ec323407b
-Head: ffef3a9c072f4dd4674f1d22242d4388cdc78178
+Base: 27eed0e5150246ddaa3ffbcd03f1b25e4c835179
+Head: 337e0707844b2b789b6d92c88aba093a53205db8
 
 ## Changed files
 - M backend/app/coverage.py
+- M backend/app/no_finding_recovery.py
 - M backend/app/scan_result_integrity.py
 - M backend/tests/test_coverage.py
+- M backend/tests/test_no_finding_recovery.py
+- M backend/tests/test_scan_result_integrity.py
 
 ## Affected areas
 - backend

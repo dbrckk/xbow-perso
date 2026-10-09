@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "17c4b5b7aae144a3a70242036915fa793d610abd",
-  "head": "ffef3a9c072f4dd4674f1d22242d4388cdc78178",
+  "base": "ffef3a9c072f4dd4674f1d22242d4388cdc78178",
+  "head": "337e0707844b2b789b6d92c88aba093a53205db8",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -24,6 +24,10 @@
     {
       "path": "backend/tests/test_no_finding_recovery.py",
       "status": "M"
+    },
+    {
+      "path": "backend/tests/test_scan_result_integrity.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
@@ -31,7 +35,8 @@
     "backend/app/no_finding_recovery.py",
     "backend/app/scan_result_integrity.py",
     "backend/tests/test_coverage.py",
-    "backend/tests/test_no_finding_recovery.py"
+    "backend/tests/test_no_finding_recovery.py",
+    "backend/tests/test_scan_result_integrity.py"
   ],
   "impacted_files": [
     "backend/app/adaptive_cycle.py",
@@ -94,49 +99,49 @@
       "name": "_completed_scans_with_provenance",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 18
+      "line": 19
     },
     {
       "name": "trustworthy_lineage",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 48
+      "line": 49
     },
     {
       "name": "_endpoint_scan_attribution",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 187
+      "line": 185
     },
     {
       "name": "explicit_endpoint_ancestry",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 213
+      "line": 211
     },
     {
       "name": "build_evidence_coverage",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 303
+      "line": 299
     },
     {
       "name": "campaign_coverage",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 398
+      "line": 394
     },
     {
       "name": "build_coverage_guidance",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 415
+      "line": 411
     },
     {
       "name": "prioritize_action_with_coverage",
       "kind": "function",
       "file": "backend/app/coverage.py",
-      "line": 514
+      "line": 510
     },
     {
       "name": "TechniqueMemory",
@@ -730,73 +735,73 @@
       "name": "_is_completed_recon_step",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 33
+      "line": 36
     },
     {
       "name": "NoFindingRecovery",
       "kind": "class",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 49
+      "line": 52
     },
     {
       "name": "to_dict",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 79
+      "line": 82
     },
     {
       "name": "_trusted_utc_timestamp",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 88
+      "line": 91
     },
     {
       "name": "_origin",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 103
+      "line": 106
     },
     {
       "name": "_asset_matches_origin",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 125
+      "line": 128
     },
     {
       "name": "_reviewed_ids",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 147
+      "line": 150
     },
     {
       "name": "_completed_scan_evidence",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 171
+      "line": 174
     },
     {
       "name": "_unstable_scanner_outcomes",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 269
+      "line": 268
     },
     {
       "name": "build_no_finding_recovery",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 288
+      "line": 287
     },
     {
       "name": "has_in_scope_asset_ancestor",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 412
+      "line": 411
     },
     {
       "name": "scan_matches_target",
       "kind": "function",
       "file": "backend/app/no_finding_recovery.py",
-      "line": 500
+      "line": 499
     },
     {
       "name": "_stable_id",
@@ -991,22 +996,28 @@
       "line": 283
     },
     {
+      "name": "canonical_scan_job_id",
+      "kind": "function",
+      "file": "backend/app/scan_result_integrity.py",
+      "line": 11
+    },
+    {
       "name": "conflicting_scan_terminal_job_ids",
       "kind": "function",
       "file": "backend/app/scan_result_integrity.py",
-      "line": 12
+      "line": 29
     },
     {
       "name": "plausible_scan_timeline",
       "kind": "function",
       "file": "backend/app/scan_result_integrity.py",
-      "line": 39
+      "line": 52
     },
     {
       "name": "parse",
       "kind": "function",
       "file": "backend/app/scan_result_integrity.py",
-      "line": 55
+      "line": 68
     },
     {
       "name": "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
@@ -1373,6 +1384,18 @@
       "kind": "function",
       "file": "backend/tests/test_coverage.py",
       "line": 1821
+    },
+    {
+      "name": "test_invisible_scan_job_ids_never_count_as_completed_coverage",
+      "kind": "function",
+      "file": "backend/tests/test_coverage.py",
+      "line": 1844
+    },
+    {
+      "name": "test_invalid_scan_id_does_not_poison_independent_valid_scan",
+      "kind": "function",
+      "file": "backend/tests/test_coverage.py",
+      "line": 1871
     },
     {
       "name": "test_learning_memory_aggregates_only_explicit_outcomes",
@@ -1829,24 +1852,6 @@
       "kind": "function",
       "file": "backend/tests/test_no_finding_recovery.py",
       "line": 987
-    },
-    {
-      "name": "_record_completed_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1017
-    },
-    {
-      "name": "test_conflicting_sources_for_same_scan_job_do_not_count_as_independent",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1041
-    },
-    {
-      "name": "test_identical_repeated_scanner_source_for_one_job_counts_once",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1060
     }
   ],
   "selected_tests": [
