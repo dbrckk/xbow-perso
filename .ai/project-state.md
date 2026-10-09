@@ -39,22 +39,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T09:12:43Z
+Generated: 2026-10-09T09:25:01Z
 
 ### Git
 - Branch: `main`
-- Head: `9f35d881c1b9`
-- Commit date: 2026-10-09T11:12:32+02:00
-- Commit: fix(coverage): verify endpoint origin against linked assets
+- Head: `e8c009104ad3`
+- Commit date: 2026-10-09T11:24:50+02:00
+- Commit: fix(learning): scope adaptive cycle and reports to campaign origin
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/adaptive_cycle.py`
+- `backend/app/learning_memory.py`
+- `backend/app/orchestrator.py`
+- `backend/tests/test_adaptive_cycle.py`
+- `backend/tests/test_learning_memory.py`
+- `backend/tests/test_orchestrator.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/learning_memory.py`
-- `backend/tests/test_learning_memory.py`
 
 ### Project signals
 - `pyproject.toml`
