@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:20:30Z
+Generated: 2026-10-09T11:47:15Z
 
 ### Git
 - Branch: `main`
-- Head: `b747973e85c0`
-- Commit date: 2026-10-09T13:20:17+02:00
-- Commit: docs(agents): adopt pinned 88-rule development standard
+- Head: `31986d83faf9`
+- Commit date: 2026-10-09T13:47:04+02:00
+- Commit: fix(coverage): validate full form-origin lineage for scan credit
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/tests/test_coverage.py`
 - `AGENTS.md`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
@@ -56,8 +58,6 @@ Generated: 2026-10-09T11:20:30Z
 - `backend/tests/test_learning_memory.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/scanner_adaptation.py`
-- `backend/tests/test_scanner_adaptation.py`
 
 ### Project signals
 - `pyproject.toml`

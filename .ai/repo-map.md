@@ -2582,6 +2582,24 @@ parsed = urlsplit(f"//{raw}")
 origin = _web_origin(row.get("url"))
 asset_ids = row.get("asset_parent_ids") or ()
 ⋮----
+"""Validate every parent branch against the form's declared web origin.
+
+    A form action on the allowed host is not enough: unrelated scheme,
+    port or intermediate endpoint lineage cannot certify scan provenance.
+    """
+origin = _web_origin(form_action)
+form = observations_by_id.get(form_id)
+⋮----
+pending = list(form.parent_ids)
+visited: set[str] = set()
+asset_found = False
+⋮----
+parent_id = pending.pop()
+⋮----
+parent = observations_by_id.get(parent_id)
+⋮----
+asset_found = True
+⋮----
 """Deduplicate completed scan jobs and reject untrusted scope or reports."""
 items = {item.id: item for item in graph.values()}
 assets = graph.by_kind("asset")
@@ -2598,8 +2616,6 @@ def trustworthy_lineage(observation: Any) -> bool
 pending = list(observation.parent_ids)
 seen: set[str] = set()
 linked_assets: set[str] = set()
-⋮----
-parent_id = pending.pop()
 ⋮----
 parent = items.get(parent_id)
 ⋮----
@@ -2662,7 +2678,7 @@ eligible_ids = {
 def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]
 ⋮----
 pending = list(scan.parent_ids)
-visited: set[str] = set()
+⋮----
 endpoints: set[str] = set()
 ⋮----
 # Do not infer another endpoint from the same asset.
@@ -18054,6 +18070,22 @@ def test_matching_https_asset_endpoint_remains_documented()
 def test_legacy_hostname_only_asset_remains_compatible_with_https_endpoint()
 ⋮----
 def test_endpoint_with_mixed_http_and_https_asset_parents_is_untrusted()
+⋮----
+parent = "asset:form"
+⋮----
+parent = "endpoint:form"
+⋮----
+def test_http_form_cannot_claim_https_asset_scan_coverage()
+⋮----
+graph = _form_scan_origin_graph(
+⋮----
+def test_form_action_on_wrong_port_cannot_claim_scan_coverage()
+⋮----
+def test_form_with_incompatible_intermediate_endpoint_cannot_claim_scan()
+⋮----
+def test_same_origin_form_with_default_https_port_retains_scan_credit()
+⋮----
+def test_mixed_form_asset_origins_do_not_credit_one_valid_parent()
 ````
 
 ## File: backend/tests/test_cpe_consistency.py

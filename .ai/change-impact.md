@@ -1,13 +1,14 @@
 # Change impact
 
-Base: 940d9bc03f467b29426fa789a219ac9af23bf948
-Head: b747973e85c0fad8bb4b5d6f520117ee7b9544df
+Base: d92875629af3f3fd9120ba16c329947c92671b21
+Head: 31986d83faf92ff60c7f710673fe76373b6cea5e
 
 ## Changed files
-- M AGENTS.md
+- M backend/app/coverage.py
+- M backend/tests/test_coverage.py
 
 ## Affected areas
-- (root)
+- backend
 
 ## Related test candidates
 - No direct filename-based test match detected.
