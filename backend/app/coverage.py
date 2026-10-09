@@ -84,6 +84,57 @@ def _endpoint_has_consistent_asset_origins(
     )
 
 
+
+def _form_has_consistent_asset_origins(
+    form_id: str,
+    form_action: str,
+    observations_by_id: dict[str, Any],
+    asset_values: dict[str, str],
+    approved_endpoint_ids: set[str],
+) -> bool:
+    """Validate every parent branch against the form's declared web origin.
+
+    A form action on the allowed host is not enough: unrelated scheme,
+    port or intermediate endpoint lineage cannot certify scan provenance.
+    """
+    origin = _web_origin(form_action)
+    form = observations_by_id.get(form_id)
+    if origin is None or form is None or not form.parent_ids:
+        return False
+
+    pending = list(form.parent_ids)
+    visited: set[str] = set()
+    asset_found = False
+    while pending:
+        parent_id = pending.pop()
+        if parent_id in visited:
+            continue
+        visited.add(parent_id)
+        parent = observations_by_id.get(parent_id)
+        if parent is None:
+            return False
+        if parent.kind == "asset":
+            if (
+                parent.id not in asset_values
+                or not _asset_supports_web_origin(
+                    asset_values[parent.id], origin
+                )
+            ):
+                return False
+            asset_found = True
+            continue
+        if parent.kind == "endpoint":
+            if (
+                parent.id not in approved_endpoint_ids
+                or _web_origin(parent.value) != origin
+            ):
+                return False
+        elif parent.kind == "form" and _web_origin(parent.value) != origin:
+            return False
+        pending.extend(parent.parent_ids)
+    return asset_found
+
+
 def _completed_scans_with_provenance(
     graph: ObservationGraph,
     surface: dict[str, Any],
@@ -114,7 +165,17 @@ def _completed_scans_with_provenance(
     approved_form_ids = {
         item["id"]
         for item in surface["forms"]
-        if item["valid"] and item["in_scope"] is True
+        if (
+            item["valid"]
+            and item["in_scope"] is True
+            and _form_has_consistent_asset_origins(
+                item["id"],
+                item["action"],
+                items,
+                asset_values,
+                approved_endpoint_ids,
+            )
+        )
     }
 
     def trustworthy_lineage(observation: Any) -> bool:
