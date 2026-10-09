@@ -168,7 +168,13 @@ def _asset_matches_origin(
         parsed = urlsplit(f"//{raw}")
         host = (parsed.hostname or "").lower().rstrip(".")
         port = parsed.port
-        if parsed.username is not None or parsed.password is not None:
+        if (
+            parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+        ):
             return False
     except ValueError:
         return False
