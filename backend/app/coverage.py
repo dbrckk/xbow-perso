@@ -26,6 +26,16 @@ def _completed_scans_with_provenance(
         for item in surface["assets"]
         if item["in_scope"] is True
     }
+    approved_endpoint_ids = {
+        item["id"]
+        for item in surface["endpoints"]
+        if (
+            item["valid"]
+            and item["in_scope"] is True
+            and not item["host_asset_mismatch"]
+            and item["asset_parent_ids"]
+        )
+    }
 
     def trustworthy_lineage(observation: Any) -> bool:
         if scope_checker is None:
@@ -48,6 +58,14 @@ def _completed_scans_with_provenance(
             if parent.kind == "asset":
                 linked_assets.add(parent.id)
             else:
+                if (
+                    parent.kind == "endpoint"
+                    and parent.id not in approved_endpoint_ids
+                ):
+                    # A scan of an invalid, orphaned, out-of-scope or
+                    # mismatched endpoint cannot gain completion credit via
+                    # an otherwise authorized asset ancestor.
+                    return False
                 pending.extend(parent.parent_ids)
         return bool(linked_assets) and linked_assets <= approved_asset_ids
 
@@ -208,6 +226,7 @@ def _endpoint_scan_attribution(
 
     documented_ids: set[str] = set()
     ambiguous_scope_jobs = 0
+    ineligible_scope_jobs = 0
     for scan in scan_evidence:
         job_id = scan.metadata.get("job_id")
         reports = (
@@ -225,7 +244,13 @@ def _endpoint_scan_attribution(
         if len(endpoint_claims) != 1:
             ambiguous_scope_jobs += 1
             continue
-        documented_ids.update(next(iter(endpoint_claims)) & eligible_ids)
+        claimed_ids = next(iter(endpoint_claims))
+        if not claimed_ids <= eligible_ids:
+            # Do not credit the convenient in-scope subset of a scan job
+            # that simultaneously asserts other, ineligible endpoints.
+            ineligible_scope_jobs += 1
+            continue
+        documented_ids.update(claimed_ids)
 
     if not scan_evidence:
         state = "no_completed_scan_evidence"
@@ -249,6 +274,7 @@ def _endpoint_scan_attribution(
         "documented_scanned_endpoints": len(documented_ids),
         "documented_fraction": fraction,
         "ambiguous_endpoint_scope_jobs": ambiguous_scope_jobs,
+        "ineligible_endpoint_scope_jobs": ineligible_scope_jobs,
         "not_proof_of_complete_scanning": True,
     }
 
@@ -378,6 +404,10 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(endpoint_attribution, dict):
         endpoint_attribution = {}
     endpoint_state = str(endpoint_attribution.get("state") or "unknown")
+    suspect_endpoint_claims = (
+        max(0, int(endpoint_attribution.get("ambiguous_endpoint_scope_jobs") or 0))
+        + max(0, int(endpoint_attribution.get("ineligible_endpoint_scope_jobs") or 0))
+    )
     # This is documented evidence, not a completeness claim. Do not infer
     # endpoint-wide coverage from a completed asset-level scan.
     endpoint_fraction = dimensions.get("documented_endpoint_scan_fraction")
@@ -402,10 +432,13 @@ def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:
     elif validation is not None and float(validation) < 1.0:
         focus = "independent_validation"
         reason = "not all observed findings have independent validation evidence"
-    elif diminishing_returns >= 0.5 and endpoint_state in {
-        "endpoint_scope_unrecorded",
-        "partial_endpoint_documentation",
-    }:
+    elif diminishing_returns >= 0.5 and (
+        suspect_endpoint_claims
+        or endpoint_state in {
+            "endpoint_scope_unrecorded",
+            "partial_endpoint_documentation",
+        }
+    ):
         focus = "endpoint_scan_scope_review"
         reason = (
             "repeated completed scans produced low finding yield, but "
