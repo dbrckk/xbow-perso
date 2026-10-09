@@ -163,6 +163,154 @@
       },
       "task": "game engine"
     },
+    "064ae9cc00992c411073fe41db946322a99bf281de67a2d05c83d0f58e4aef2b": {
+      "route": {
+        "budget": {
+          "confidence": "medium",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "bounded",
+          "top_score": 17
+        },
+        "candidate_count": 10,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progression"
+            ],
+            "path": "backend/app/autonomy_gate.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "AutonomyGate",
+              "build_autonomy_gate",
+              "campaign_autonomy_gate",
+              "scope_checker",
+              "to_dict"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progression"
+            ],
+            "path": "backend/app/observation_graph.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "AdaptivePlanner",
+              "Observation",
+              "ObservationGraph",
+              "PlannedAction",
+              "__init__",
+              "_campaign_finding_id",
+              "add",
+              "by_kind",
+              "from_records",
+              "load_observation_graph",
+              "plan",
+              "values"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "Hypothesis",
+              "_completed_reviews",
+              "_lineage_hosts",
+              "_safe_endpoint",
+              "_scope_allows",
+              "build_hypotheses",
+              "campaign_hypotheses"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/tests/test_hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "build_graph",
+              "test_completed_review_removes_only_covered_hypothesis_kind",
+              "test_completed_technology_review_is_not_recommended_again",
+              "test_distinct_targets_and_review_kinds_do_not_mix_evidence",
+              "test_duplicate_url_hypotheses_are_order_independent",
+              "test_duplicate_url_merges_distinct_parameter_names_and_evidence",
+              "test_hypotheses_are_bounded_and_deterministic",
+              "test_hypothesis_redacts_query_values_and_keeps_parameter_names",
+              "test_hypothesis_route_is_exposed_and_reads_durable_graph",
+              "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses",
+              "test_invalid_form_url_cannot_generate_form_review",
+              "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed",
+              "test_limit_fails_closed_outside_bounds",
+              "test_malformed_review_metadata_never_crashes_hypothesis_builder",
+              "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review",
+              "test_negative_or_incomplete_reviews_do_not_close_remaining_gaps",
+              "test_observed_independent_validation_closes_validation_gap",
+              "test_partial_duplicate_url_review_keeps_unreviewed_parameter_evidence",
+              "test_query_evidence_merge_stays_bounded_for_many_observations",
+              "test_review_linked_to_out_of_scope_parent_does_not_close_allowed_gap"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/attack_surface.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "_safe_form",
+              "build_attack_surface",
+              "campaign_attack_surface",
+              "canonical_endpoint",
+              "canonical_host"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/campaign_overview.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "campaign_overview",
+              "scope_checker"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "income progression",
+        "terms": [
+          "income",
+          "progression"
+        ]
+      },
+      "task": "income progression"
+    },
     "07671b5fe0e2eb8a309ddd2269d09798b7037b4c0064865a279b205ab676bdb7": {
       "route": {
         "budget": {
@@ -1654,142 +1802,6 @@
       },
       "task": "offline progress"
     },
-    "1a364104ced39aab62ecec8758527f7350f91ea99703a52d2ccbb56dafa97558": {
-      "route": {
-        "budget": {
-          "confidence": "low",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 0,
-          "tier": "broad",
-          "top_score": 9
-        },
-        "candidate_count": 4,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_completed_scans_with_provenance",
-              "_endpoint_scan_attribution",
-              "build_coverage_guidance",
-              "build_evidence_coverage",
-              "campaign_coverage",
-              "explicit_endpoint_ancestry",
-              "prioritize_action_with_coverage",
-              "trustworthy_lineage"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/tests/test_coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_record_scan_scope",
-              "_two_endpoint_scan_scope_graph",
-              "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job",
-              "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage",
-              "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope",
-              "test_completed_scan_duplicates_do_not_inflate_rotation_guidance",
-              "test_completed_scan_through_endpoint_ancestry_is_counted",
-              "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job",
-              "test_conflicting_reporters_for_same_scan_job_are_not_credited",
-              "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
-              "test_consistent_duplicate_reports_preserve_documented_endpoint_scope",
-              "test_coverage_counts_scan_and_independent_validation",
-              "test_coverage_detects_diminishing_scan_returns_without_findings",
-              "test_coverage_guidance_is_advisory_only",
-              "test_coverage_guidance_prioritizes_validation_after_scan",
-              "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-              "test_coverage_priority_never_changes_non_scan_action",
-              "test_coverage_route_is_exposed",
-              "test_diminishing_returns_does_not_override_needed_validation",
-              "test_documented_scans_keep_existing_low_yield_surface_rotation"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/main.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "Campaign",
-              "CampaignState",
-              "EvidenceInput",
-              "Finding",
-              "FindingReviewMetadataInput",
-              "HackerOneScopePreviewInput",
-              "IncidentAcknowledgeInput",
-              "OpenApiPreviewInput",
-              "ProgramRules",
-              "TargetInput",
-              "_apply_local_outbox_repairs",
-              "_campaign_graph",
-              "_ensure_completion_report",
-              "_has_evidence_backed_independent_validation",
-              "_pending_campaign_start_request",
-              "_pentagi_dispatch_fingerprint",
-              "_reconcile_campaign_started",
-              "_reconcile_pentagi_queued_event",
-              "_reconcile_report_job",
-              "_reconcile_validation_queued"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/orchestrator.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "_decision_explanation",
-              "_enqueue_action",
-              "_enqueue_recon_tasks",
-              "_graph_fingerprint",
-              "_intelligence_context",
-              "_load_graph",
-              "_minimum_enrichment_score",
-              "_pending_findings",
-              "_record_decision",
-              "_result",
-              "_scan_engines",
-              "_seed_primary_target",
-              "_stable_id",
-              "_surface_enrichment",
-              "_validation_saturated_cluster_ids",
-              "advance_campaign",
-              "scope_checker"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "privacy consent",
-        "terms": [
-          "privacy",
-          "consent"
-        ]
-      },
-      "task": "privacy consent"
-    },
     "1e55e5863ef65ec92d420286762769e4d629970e7de08377f5f9284bdead510d": {
       "route": {
         "budget": {
@@ -2769,6 +2781,189 @@
         ]
       },
       "task": "privacy consent"
+    },
+    "2d4e577f938200674ab55944d208aaee8c5211e942e8860594c55090599c1d84": {
+      "route": {
+        "budget": {
+          "confidence": "medium",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "bounded",
+          "top_score": 21
+        },
+        "candidate_count": 16,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "backend/tests/test_decision_timeline.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "_add_decision",
+              "_campaign",
+              "_graph",
+              "test_decision_timeline_builds_deterministic_causal_summary",
+              "test_decision_timeline_combines_timestamped_planner_and_campaign_events",
+              "test_decision_timeline_diffs_successive_why_snapshots",
+              "test_decision_timeline_exposes_historical_why_snapshot",
+              "test_decision_timeline_keeps_un_timestamped_legacy_decisions_out_of_merged_timeline",
+              "test_decision_timeline_route_is_exposed",
+              "test_planner_stability_detects_oscillation",
+              "test_planner_stability_flags_action_after_stop",
+              "test_planner_stability_is_high_for_monotonic_progress"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "frontend/hackerone.js",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "applyDiscoveryResult",
+              "applyHackerOneAttentionFilters",
+              "applyHackerOneAttentionSavedView",
+              "applyQuickPrefs",
+              "applySelectedHackerOneAttentionCustomView",
+              "approveHackerOneReport",
+              "attentionExportRows",
+              "attentionSeenKey",
+              "attentionText",
+              "autoQueueBatch",
+              "autoSelectBatchProfiles",
+              "batchCatalogPrograms",
+              "batchPayloadForHandle",
+              "batchProgramHasSavedProfile",
+              "buildFindingReviewEditor",
+              "buildPayload",
+              "buildPolicy",
+              "cancelActiveBatch",
+              "clearRemoteBinding",
+              "compareDate"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "backend/app/htb_lab.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "HtbLabCampaignInput",
+              "HtbLabOutcomeInput",
+              "_active_same_target_htb_campaign",
+              "_assert_htb_campaign",
+              "_current_htb_feedback_observations",
+              "_latest_htb_outcome_event",
+              "_normalize_technique",
+              "build_htb_benchmark_summary",
+              "build_htb_cross_lab_learning_summary",
+              "build_htb_focus_summary",
+              "build_htb_live_readiness",
+              "collect_htb_cross_lab_learning",
+              "create_htb_lab_campaign",
+              "finish_htb_lab_campaign",
+              "htb_benchmark_summary",
+              "htb_focus_summary",
+              "htb_global_learning_summary",
+              "htb_lab_learning_summary",
+              "htb_lab_session_status",
+              "htb_live_readiness"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "Hypothesis",
+              "_completed_reviews",
+              "_lineage_hosts",
+              "_safe_endpoint",
+              "_scope_allows",
+              "build_hypotheses",
+              "campaign_hypotheses"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/tests/test_hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "build_graph",
+              "test_completed_review_removes_only_covered_hypothesis_kind",
+              "test_completed_technology_review_is_not_recommended_again",
+              "test_distinct_targets_and_review_kinds_do_not_mix_evidence",
+              "test_duplicate_url_hypotheses_are_order_independent",
+              "test_duplicate_url_merges_distinct_parameter_names_and_evidence",
+              "test_hypotheses_are_bounded_and_deterministic",
+              "test_hypothesis_redacts_query_values_and_keeps_parameter_names",
+              "test_hypothesis_route_is_exposed_and_reads_durable_graph",
+              "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses",
+              "test_invalid_form_url_cannot_generate_form_review",
+              "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed",
+              "test_limit_fails_closed_outside_bounds",
+              "test_malformed_review_metadata_never_crashes_hypothesis_builder",
+              "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review",
+              "test_negative_or_incomplete_reviews_do_not_close_remaining_gaps",
+              "test_observed_independent_validation_closes_validation_gap",
+              "test_partial_duplicate_url_review_keeps_unreviewed_parameter_evidence",
+              "test_query_evidence_merge_stays_bounded_for_many_observations",
+              "test_review_linked_to_out_of_scope_parent_does_not_close_allowed_gap"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/attack_surface.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "_safe_form",
+              "build_attack_surface",
+              "campaign_attack_surface",
+              "canonical_endpoint",
+              "canonical_host"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "offline progress",
+        "terms": [
+          "offline",
+          "progress"
+        ]
+      },
+      "task": "offline progress"
     },
     "2f1f84ba087e0cc7ba06c77d363dd8e6a845218f179b0dee0b7de3f8f5890146": {
       "route": {
@@ -4692,205 +4887,6 @@
         ]
       },
       "task": "game engine"
-    },
-    "453cec41a37579e498865e71de7e11f8e41edb8eb169fa16820a8a2b4b65beea": {
-      "route": {
-        "budget": {
-          "confidence": "medium",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 0,
-          "tier": "bounded",
-          "top_score": 21
-        },
-        "candidate_count": 12,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "backend/tests/test_decision_timeline.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "_add_decision",
-              "_campaign",
-              "_graph",
-              "test_decision_timeline_builds_deterministic_causal_summary",
-              "test_decision_timeline_combines_timestamped_planner_and_campaign_events",
-              "test_decision_timeline_diffs_successive_why_snapshots",
-              "test_decision_timeline_exposes_historical_why_snapshot",
-              "test_decision_timeline_keeps_un_timestamped_legacy_decisions_out_of_merged_timeline",
-              "test_decision_timeline_route_is_exposed",
-              "test_planner_stability_detects_oscillation",
-              "test_planner_stability_flags_action_after_stop",
-              "test_planner_stability_is_high_for_monotonic_progress"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "frontend/hackerone.js",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "applyDiscoveryResult",
-              "applyHackerOneAttentionFilters",
-              "applyHackerOneAttentionSavedView",
-              "applyQuickPrefs",
-              "applySelectedHackerOneAttentionCustomView",
-              "approveHackerOneReport",
-              "attentionExportRows",
-              "attentionSeenKey",
-              "attentionText",
-              "autoQueueBatch",
-              "autoSelectBatchProfiles",
-              "batchCatalogPrograms",
-              "batchPayloadForHandle",
-              "batchProgramHasSavedProfile",
-              "buildFindingReviewEditor",
-              "buildPayload",
-              "buildPolicy",
-              "cancelActiveBatch",
-              "clearRemoteBinding",
-              "compareDate"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "backend/app/htb_lab.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "HtbLabCampaignInput",
-              "HtbLabOutcomeInput",
-              "_active_same_target_htb_campaign",
-              "_assert_htb_campaign",
-              "_current_htb_feedback_observations",
-              "_latest_htb_outcome_event",
-              "_normalize_technique",
-              "build_htb_benchmark_summary",
-              "build_htb_cross_lab_learning_summary",
-              "build_htb_focus_summary",
-              "build_htb_live_readiness",
-              "collect_htb_cross_lab_learning",
-              "create_htb_lab_campaign",
-              "finish_htb_lab_campaign",
-              "htb_benchmark_summary",
-              "htb_focus_summary",
-              "htb_global_learning_summary",
-              "htb_lab_learning_summary",
-              "htb_lab_session_status",
-              "htb_live_readiness"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_completed_scans_with_provenance",
-              "_endpoint_scan_attribution",
-              "build_coverage_guidance",
-              "build_evidence_coverage",
-              "campaign_coverage",
-              "explicit_endpoint_ancestry",
-              "prioritize_action_with_coverage",
-              "trustworthy_lineage"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/tests/test_coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_record_scan_scope",
-              "_two_endpoint_scan_scope_graph",
-              "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job",
-              "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage",
-              "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope",
-              "test_completed_scan_duplicates_do_not_inflate_rotation_guidance",
-              "test_completed_scan_through_endpoint_ancestry_is_counted",
-              "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job",
-              "test_conflicting_reporters_for_same_scan_job_are_not_credited",
-              "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
-              "test_consistent_duplicate_reports_preserve_documented_endpoint_scope",
-              "test_coverage_counts_scan_and_independent_validation",
-              "test_coverage_detects_diminishing_scan_returns_without_findings",
-              "test_coverage_guidance_is_advisory_only",
-              "test_coverage_guidance_prioritizes_validation_after_scan",
-              "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-              "test_coverage_priority_never_changes_non_scan_action",
-              "test_coverage_route_is_exposed",
-              "test_diminishing_returns_does_not_override_needed_validation",
-              "test_documented_scans_keep_existing_low_yield_surface_rotation"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/main.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "Campaign",
-              "CampaignState",
-              "EvidenceInput",
-              "Finding",
-              "FindingReviewMetadataInput",
-              "HackerOneScopePreviewInput",
-              "IncidentAcknowledgeInput",
-              "OpenApiPreviewInput",
-              "ProgramRules",
-              "TargetInput",
-              "_apply_local_outbox_repairs",
-              "_campaign_graph",
-              "_ensure_completion_report",
-              "_has_evidence_backed_independent_validation",
-              "_pending_campaign_start_request",
-              "_pentagi_dispatch_fingerprint",
-              "_reconcile_campaign_started",
-              "_reconcile_pentagi_queued_event",
-              "_reconcile_report_job",
-              "_reconcile_validation_queued"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "offline progress",
-        "terms": [
-          "offline",
-          "progress"
-        ]
-      },
-      "task": "offline progress"
     },
     "472a32b94d1d462b12053c3623e408299fb2f84fa27e39c7deabbaaed66457d3": {
       "route": {
@@ -7941,6 +7937,143 @@
       },
       "task": "offline progress"
     },
+    "683646016648856d29109b02b78d052a1d3bbc0816f44678bb57dbb2d4bf252b": {
+      "route": {
+        "budget": {
+          "confidence": "low",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "broad",
+          "top_score": 9
+        },
+        "candidate_count": 8,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "Hypothesis",
+              "_completed_reviews",
+              "_lineage_hosts",
+              "_safe_endpoint",
+              "_scope_allows",
+              "build_hypotheses",
+              "campaign_hypotheses"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/tests/test_hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "build_graph",
+              "test_completed_review_removes_only_covered_hypothesis_kind",
+              "test_completed_technology_review_is_not_recommended_again",
+              "test_distinct_targets_and_review_kinds_do_not_mix_evidence",
+              "test_duplicate_url_hypotheses_are_order_independent",
+              "test_duplicate_url_merges_distinct_parameter_names_and_evidence",
+              "test_hypotheses_are_bounded_and_deterministic",
+              "test_hypothesis_redacts_query_values_and_keeps_parameter_names",
+              "test_hypothesis_route_is_exposed_and_reads_durable_graph",
+              "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses",
+              "test_invalid_form_url_cannot_generate_form_review",
+              "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed",
+              "test_limit_fails_closed_outside_bounds",
+              "test_malformed_review_metadata_never_crashes_hypothesis_builder",
+              "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review",
+              "test_negative_or_incomplete_reviews_do_not_close_remaining_gaps",
+              "test_observed_independent_validation_closes_validation_gap",
+              "test_partial_duplicate_url_review_keeps_unreviewed_parameter_evidence",
+              "test_query_evidence_merge_stays_bounded_for_many_observations",
+              "test_review_linked_to_out_of_scope_parent_does_not_close_allowed_gap"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/attack_surface.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "_safe_form",
+              "build_attack_surface",
+              "campaign_attack_surface",
+              "canonical_endpoint",
+              "canonical_host"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/campaign_overview.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "campaign_overview",
+              "scope_checker"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/red_team_coverage.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "CoverageDomain",
+              "_ratio",
+              "_reviewed_parent_ids",
+              "build_red_team_coverage",
+              "campaign_red_team_coverage"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/red_team_decision.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "RedTeamDecision",
+              "build_red_team_decisions",
+              "campaign_red_team_decisions",
+              "prioritize_finding_ids",
+              "scope_checker"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "privacy consent",
+        "terms": [
+          "privacy",
+          "consent"
+        ]
+      },
+      "task": "privacy consent"
+    },
     "68f21ee2fd967c29682a027f9767d3f3ecc2439d02fd7d6e781c3bb23022695e": {
       "route": {
         "budget": {
@@ -8112,6 +8245,181 @@
         ]
       },
       "task": "privacy consent"
+    },
+    "69fe2d16a4680f71215c746cea9ca39e85b2a3ad89dc37c0694658c12dab3585": {
+      "route": {
+        "budget": {
+          "confidence": "medium",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "bounded",
+          "top_score": 21
+        },
+        "candidate_count": 44,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/app/orchestrator.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "_decision_explanation",
+              "_enqueue_action",
+              "_enqueue_recon_tasks",
+              "_graph_fingerprint",
+              "_intelligence_context",
+              "_load_graph",
+              "_minimum_enrichment_score",
+              "_pending_findings",
+              "_record_decision",
+              "_result",
+              "_scan_engines",
+              "_seed_primary_target",
+              "_stable_id",
+              "_surface_enrichment",
+              "_validation_saturated_cluster_ids",
+              "advance_campaign",
+              "scope_checker"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/app/scanner_adaptation.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "ScannerAdaptation",
+              "_engine_memory",
+              "_validated_worker_counters",
+              "adapt_scanner_engines",
+              "rank_key"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/app/scanner_sandbox.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "ScannerSandboxAdmission",
+              "ScannerSandboxConfigError",
+              "_allowed_engines",
+              "_runtime_hardening_attestation",
+              "_strict_bool",
+              "require_scanner_sandbox",
+              "safe_scanner_sandbox_admission",
+              "scanner_sandbox_admission",
+              "strix_runtime_contract_enforceable"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/tests/test_nuclei_queue_lifecycle.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "_campaign",
+              "fake_execute",
+              "test_nuclei_worker_dry_run_preserves_safe_default",
+              "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
+              "test_scan_engines_default_preserves_strix",
+              "test_scan_engines_support_explicit_nuclei_and_fail_closed",
+              "test_sqlite_queue_accepts_nuclei_scan"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/tests/test_scanner_adaptation.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "_memory",
+              "test_adaptation_never_expands_configured_engines",
+              "test_adaptation_never_suppresses_last_configured_engine",
+              "test_adaptation_preserves_engine_after_negative_technique_outcomes",
+              "test_adaptation_ranks_successful_memory_first",
+              "test_adaptation_rejects_unknown_or_duplicate_configuration",
+              "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
+              "test_completed_scanner_run_overrides_negative_memory_for_suppression",
+              "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
+              "test_invalid_counter_on_one_engine_disables_cross_engine_rotation",
+              "test_invalid_worker_completed_counts_never_trigger_rotation",
+              "test_invalid_worker_failure_counts_cannot_suppress_configured_engine",
+              "test_malformed_worker_outcome_structure_preserves_configured_order",
+              "test_negative_memory_cannot_expand_scanner_configuration",
+              "test_negative_only_memory_does_not_out_rank_configured_engine_order",
+              "test_no_completed_history_does_not_invent_scanner_rotation",
+              "test_one_failure_and_multiple_pending_retries_is_not_terminal_instability",
+              "test_pending_retries_do_not_suppress_authorized_scanner",
+              "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
+              "test_positive_security_signal_prevents_negative_yield_rotation"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine"
+            ],
+            "path": "backend/tests/test_scanner_normalization.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "test_normalized_ids_are_engine_scoped_and_stable",
+              "test_normalizers_fail_closed_outside_scope",
+              "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
+              "test_nuclei_jsonl_parser_rejects_invalid_line",
+              "test_nuclei_jsonl_parser_rejects_oversized_file",
+              "test_scanner_registry_discovers_artifacts_by_adapter_glob",
+              "test_scanner_registry_dispatches_nuclei_parser",
+              "test_scanner_registry_dispatches_strix_parser",
+              "test_scanner_registry_exposes_supported_engines",
+              "test_scanner_registry_missing_run_directory_is_empty",
+              "test_scanner_registry_rejects_symlinked_artifacts",
+              "test_scanner_registry_rejects_unknown_engine",
+              "test_scanner_registry_selects_latest_artifact",
+              "test_strix_and_nuclei_normalize_to_same_canonical_shape"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "game engine",
+        "terms": [
+          "game",
+          "engine"
+        ]
+      },
+      "task": "game engine"
     },
     "725683df220eecc6ee146e659f3885d3c89fd4c48d91f80963ac850ec8bb36db": {
       "route": {
@@ -12790,177 +13098,6 @@
         ]
       },
       "task": "privacy consent"
-    },
-    "aa2646013f5a3185d35ba3496bab93296edd0fe9cc4575d2b41b6acdd61ffbc9": {
-      "route": {
-        "budget": {
-          "confidence": "medium",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 6,
-          "tier": "bounded",
-          "top_score": 27
-        },
-        "candidate_count": 41,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/app/orchestrator.py",
-            "reasons": [
-              "impact",
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "_decision_explanation",
-              "_enqueue_action",
-              "_enqueue_recon_tasks",
-              "_graph_fingerprint",
-              "_intelligence_context",
-              "_load_graph",
-              "_minimum_enrichment_score",
-              "_pending_findings",
-              "_record_decision",
-              "_result",
-              "_scan_engines",
-              "_seed_primary_target",
-              "_stable_id",
-              "_surface_enrichment",
-              "_validation_saturated_cluster_ids",
-              "advance_campaign",
-              "scope_checker"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/app/scanner_adaptation.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "ScannerAdaptation",
-              "_engine_memory",
-              "adapt_scanner_engines",
-              "rank_key"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/app/scanner_sandbox.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "ScannerSandboxAdmission",
-              "ScannerSandboxConfigError",
-              "_allowed_engines",
-              "_runtime_hardening_attestation",
-              "_strict_bool",
-              "require_scanner_sandbox",
-              "safe_scanner_sandbox_admission",
-              "scanner_sandbox_admission",
-              "strix_runtime_contract_enforceable"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/tests/test_nuclei_queue_lifecycle.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "_campaign",
-              "fake_execute",
-              "test_nuclei_worker_dry_run_preserves_safe_default",
-              "test_nuclei_worker_ingests_scoped_findings_and_queues_validation",
-              "test_scan_engines_default_preserves_strix",
-              "test_scan_engines_support_explicit_nuclei_and_fail_closed",
-              "test_sqlite_queue_accepts_nuclei_scan"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/tests/test_scanner_adaptation.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "_memory",
-              "test_adaptation_never_expands_configured_engines",
-              "test_adaptation_never_suppresses_last_configured_engine",
-              "test_adaptation_preserves_engine_after_negative_technique_outcomes",
-              "test_adaptation_ranks_successful_memory_first",
-              "test_adaptation_rejects_unknown_or_duplicate_configuration",
-              "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists",
-              "test_completed_scanner_run_overrides_negative_memory_for_suppression",
-              "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority",
-              "test_negative_memory_cannot_expand_scanner_configuration",
-              "test_negative_only_memory_does_not_out_rank_configured_engine_order",
-              "test_no_completed_history_does_not_invent_scanner_rotation",
-              "test_positive_scanner_evidence_can_improve_ranking_without_new_engines",
-              "test_positive_security_signal_prevents_negative_yield_rotation",
-              "test_repeated_negative_runs_prioritize_unobserved_configured_engine",
-              "test_scanner_rotation_never_overrides_safety_suppression"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine"
-            ],
-            "path": "backend/tests/test_scanner_normalization.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "test_normalized_ids_are_engine_scoped_and_stable",
-              "test_normalizers_fail_closed_outside_scope",
-              "test_nuclei_jsonl_parser_normalizes_deduplicates_and_filters_scope",
-              "test_nuclei_jsonl_parser_rejects_invalid_line",
-              "test_nuclei_jsonl_parser_rejects_oversized_file",
-              "test_scanner_registry_discovers_artifacts_by_adapter_glob",
-              "test_scanner_registry_dispatches_nuclei_parser",
-              "test_scanner_registry_dispatches_strix_parser",
-              "test_scanner_registry_exposes_supported_engines",
-              "test_scanner_registry_missing_run_directory_is_empty",
-              "test_scanner_registry_rejects_symlinked_artifacts",
-              "test_scanner_registry_rejects_unknown_engine",
-              "test_scanner_registry_selects_latest_artifact",
-              "test_strix_and_nuclei_normalize_to_same_canonical_shape"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "game engine",
-        "terms": [
-          "game",
-          "engine"
-        ]
-      },
-      "task": "game engine"
     },
     "acab4554c46e87458b0c1c584404746536ec977a65942f7a3c151d78ce7069c5": {
       "route": {
@@ -19381,321 +19518,6 @@
       },
       "task": "purchase billing"
     },
-    "eafacb75f406e540218bd204099ccc19d3f9629592a61c72c78c9f9295c4a9a6": {
-      "route": {
-        "budget": {
-          "confidence": "medium",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 0,
-          "tier": "bounded",
-          "top_score": 17
-        },
-        "candidate_count": 6,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progression"
-            ],
-            "path": "backend/app/autonomy_gate.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "AutonomyGate",
-              "build_autonomy_gate",
-              "campaign_autonomy_gate",
-              "scope_checker",
-              "to_dict"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progression"
-            ],
-            "path": "backend/app/observation_graph.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "AdaptivePlanner",
-              "Observation",
-              "ObservationGraph",
-              "PlannedAction",
-              "__init__",
-              "_campaign_finding_id",
-              "add",
-              "by_kind",
-              "from_records",
-              "load_observation_graph",
-              "plan",
-              "values"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_completed_scans_with_provenance",
-              "_endpoint_scan_attribution",
-              "build_coverage_guidance",
-              "build_evidence_coverage",
-              "campaign_coverage",
-              "explicit_endpoint_ancestry",
-              "prioritize_action_with_coverage",
-              "trustworthy_lineage"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/tests/test_coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_record_scan_scope",
-              "_two_endpoint_scan_scope_graph",
-              "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job",
-              "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage",
-              "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope",
-              "test_completed_scan_duplicates_do_not_inflate_rotation_guidance",
-              "test_completed_scan_through_endpoint_ancestry_is_counted",
-              "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job",
-              "test_conflicting_reporters_for_same_scan_job_are_not_credited",
-              "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
-              "test_consistent_duplicate_reports_preserve_documented_endpoint_scope",
-              "test_coverage_counts_scan_and_independent_validation",
-              "test_coverage_detects_diminishing_scan_returns_without_findings",
-              "test_coverage_guidance_is_advisory_only",
-              "test_coverage_guidance_prioritizes_validation_after_scan",
-              "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-              "test_coverage_priority_never_changes_non_scan_action",
-              "test_coverage_route_is_exposed",
-              "test_diminishing_returns_does_not_override_needed_validation",
-              "test_documented_scans_keep_existing_low_yield_surface_rotation"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/main.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "Campaign",
-              "CampaignState",
-              "EvidenceInput",
-              "Finding",
-              "FindingReviewMetadataInput",
-              "HackerOneScopePreviewInput",
-              "IncidentAcknowledgeInput",
-              "OpenApiPreviewInput",
-              "ProgramRules",
-              "TargetInput",
-              "_apply_local_outbox_repairs",
-              "_campaign_graph",
-              "_ensure_completion_report",
-              "_has_evidence_backed_independent_validation",
-              "_pending_campaign_start_request",
-              "_pentagi_dispatch_fingerprint",
-              "_reconcile_campaign_started",
-              "_reconcile_pentagi_queued_event",
-              "_reconcile_report_job",
-              "_reconcile_validation_queued"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/orchestrator.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "_decision_explanation",
-              "_enqueue_action",
-              "_enqueue_recon_tasks",
-              "_graph_fingerprint",
-              "_intelligence_context",
-              "_load_graph",
-              "_minimum_enrichment_score",
-              "_pending_findings",
-              "_record_decision",
-              "_result",
-              "_scan_engines",
-              "_seed_primary_target",
-              "_stable_id",
-              "_surface_enrichment",
-              "_validation_saturated_cluster_ids",
-              "advance_campaign",
-              "scope_checker"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "income progression",
-        "terms": [
-          "income",
-          "progression"
-        ]
-      },
-      "task": "income progression"
-    },
-    "eb66aa4c4e166ffff2f06b17e8f0f5157e51211e75ee646d9c1097ab040f1c3b": {
-      "route": {
-        "budget": {
-          "confidence": "low",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 0,
-          "tier": "broad",
-          "top_score": 9
-        },
-        "candidate_count": 4,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_completed_scans_with_provenance",
-              "_endpoint_scan_attribution",
-              "build_coverage_guidance",
-              "build_evidence_coverage",
-              "campaign_coverage",
-              "explicit_endpoint_ancestry",
-              "prioritize_action_with_coverage",
-              "trustworthy_lineage"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/tests/test_coverage.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "_record_scan_scope",
-              "_two_endpoint_scan_scope_graph",
-              "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job",
-              "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage",
-              "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope",
-              "test_completed_scan_duplicates_do_not_inflate_rotation_guidance",
-              "test_completed_scan_through_endpoint_ancestry_is_counted",
-              "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job",
-              "test_conflicting_reporters_for_same_scan_job_are_not_credited",
-              "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
-              "test_consistent_duplicate_reports_preserve_documented_endpoint_scope",
-              "test_coverage_counts_scan_and_independent_validation",
-              "test_coverage_detects_diminishing_scan_returns_without_findings",
-              "test_coverage_guidance_is_advisory_only",
-              "test_coverage_guidance_prioritizes_validation_after_scan",
-              "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-              "test_coverage_priority_never_changes_non_scan_action",
-              "test_coverage_route_is_exposed",
-              "test_diminishing_returns_does_not_override_needed_validation",
-              "test_documented_scans_keep_existing_low_yield_surface_rotation"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/main.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "Campaign",
-              "CampaignState",
-              "EvidenceInput",
-              "Finding",
-              "FindingReviewMetadataInput",
-              "HackerOneScopePreviewInput",
-              "IncidentAcknowledgeInput",
-              "OpenApiPreviewInput",
-              "ProgramRules",
-              "TargetInput",
-              "_apply_local_outbox_repairs",
-              "_campaign_graph",
-              "_ensure_completion_report",
-              "_has_evidence_backed_independent_validation",
-              "_pending_campaign_start_request",
-              "_pentagi_dispatch_fingerprint",
-              "_reconcile_campaign_started",
-              "_reconcile_pentagi_queued_event",
-              "_reconcile_report_job",
-              "_reconcile_validation_queued"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "backend/app/orchestrator.py",
-            "reasons": [
-              "impact"
-            ],
-            "score": 6,
-            "symbols": [
-              "_decision_explanation",
-              "_enqueue_action",
-              "_enqueue_recon_tasks",
-              "_graph_fingerprint",
-              "_intelligence_context",
-              "_load_graph",
-              "_minimum_enrichment_score",
-              "_pending_findings",
-              "_record_decision",
-              "_result",
-              "_scan_engines",
-              "_seed_primary_target",
-              "_stable_id",
-              "_surface_enrichment",
-              "_validation_saturated_cluster_ids",
-              "advance_campaign",
-              "scope_checker"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "purchase billing",
-        "terms": [
-          "purchase",
-          "billing"
-        ]
-      },
-      "task": "purchase billing"
-    },
     "ec531a0216fa110ec90080828d6d28bc47adb0290238194eaa39cb3c73cb858d": {
       "route": {
         "budget": {
@@ -20498,6 +20320,143 @@
       },
       "task": "offline progress"
     },
+    "f1f1242eb884e2aa3e828fc65a6ca326dc7962cf77c701ecbddc6011b68a0404": {
+      "route": {
+        "budget": {
+          "confidence": "low",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "broad",
+          "top_score": 9
+        },
+        "candidate_count": 8,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "Hypothesis",
+              "_completed_reviews",
+              "_lineage_hosts",
+              "_safe_endpoint",
+              "_scope_allows",
+              "build_hypotheses",
+              "campaign_hypotheses"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/tests/test_hypothesis_engine.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "build_graph",
+              "test_completed_review_removes_only_covered_hypothesis_kind",
+              "test_completed_technology_review_is_not_recommended_again",
+              "test_distinct_targets_and_review_kinds_do_not_mix_evidence",
+              "test_duplicate_url_hypotheses_are_order_independent",
+              "test_duplicate_url_merges_distinct_parameter_names_and_evidence",
+              "test_hypotheses_are_bounded_and_deterministic",
+              "test_hypothesis_redacts_query_values_and_keeps_parameter_names",
+              "test_hypothesis_route_is_exposed_and_reads_durable_graph",
+              "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses",
+              "test_invalid_form_url_cannot_generate_form_review",
+              "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed",
+              "test_limit_fails_closed_outside_bounds",
+              "test_malformed_review_metadata_never_crashes_hypothesis_builder",
+              "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review",
+              "test_negative_or_incomplete_reviews_do_not_close_remaining_gaps",
+              "test_observed_independent_validation_closes_validation_gap",
+              "test_partial_duplicate_url_review_keeps_unreviewed_parameter_evidence",
+              "test_query_evidence_merge_stays_bounded_for_many_observations",
+              "test_review_linked_to_out_of_scope_parent_does_not_close_allowed_gap"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/attack_surface.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "_safe_form",
+              "build_attack_surface",
+              "campaign_attack_surface",
+              "canonical_endpoint",
+              "canonical_host"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/campaign_overview.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "campaign_overview",
+              "scope_checker"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/red_team_coverage.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "CoverageDomain",
+              "_ratio",
+              "_reviewed_parent_ids",
+              "build_red_team_coverage",
+              "campaign_red_team_coverage"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "backend/app/red_team_decision.py",
+            "reasons": [
+              "impact"
+            ],
+            "score": 6,
+            "symbols": [
+              "RedTeamDecision",
+              "build_red_team_decisions",
+              "campaign_red_team_decisions",
+              "prioritize_finding_ids",
+              "scope_checker"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "purchase billing",
+        "terms": [
+          "purchase",
+          "billing"
+        ]
+      },
+      "task": "purchase billing"
+    },
     "f27f2786cc669d5a3c2696d457dc23b556ba28b4c1940ef0a9975a96c3b496a0": {
       "route": {
         "budget": {
@@ -21174,11 +21133,6 @@
   },
   "generated_by": "dbrckk/repo-brain-query-cache-v2",
   "order": [
-    "1a364104ced39aab62ecec8758527f7350f91ea99703a52d2ccbb56dafa97558",
-    "453cec41a37579e498865e71de7e11f8e41edb8eb169fa16820a8a2b4b65beea",
-    "aa2646013f5a3185d35ba3496bab93296edd0fe9cc4575d2b41b6acdd61ffbc9",
-    "eb66aa4c4e166ffff2f06b17e8f0f5157e51211e75ee646d9c1097ab040f1c3b",
-    "eafacb75f406e540218bd204099ccc19d3f9629592a61c72c78c9f9295c4a9a6",
     "673c720e78ad39d24ff5b6ef5fbcb9937484aef94ea0d5a3dccc5dca56d71e4b",
     "7c9f59f65fbce11905e1937dc18df388dd88f01c243fca532cb9f46a174ebec2",
     "93e088c62188139c667a7f7a81ba25d90d3081511a48f10251ba4b3e7e0af3e0",
@@ -21301,7 +21255,12 @@
     "5ff2dce7066bbe03244958781b7e8669cfdabaa353857aa8c5b4e89d3f966f13",
     "c1f021eb9ff34adf95471c01280b15b5cca902f09dcea92b54437cfe22085ce3",
     "4954e2c860460e525df3234ba7814ee95b2577545b876bea46e67dc8f4de864d",
-    "44968e1c760f85172ffa2bb3874b63143218ed2e9a4879e5777e226236fc68d5"
+    "44968e1c760f85172ffa2bb3874b63143218ed2e9a4879e5777e226236fc68d5",
+    "f1f1242eb884e2aa3e828fc65a6ca326dc7962cf77c701ecbddc6011b68a0404",
+    "064ae9cc00992c411073fe41db946322a99bf281de67a2d05c83d0f58e4aef2b",
+    "683646016648856d29109b02b78d052a1d3bbc0816f44678bb57dbb2d4bf252b",
+    "2d4e577f938200674ab55944d208aaee8c5211e942e8860594c55090599c1d84",
+    "69fe2d16a4680f71215c746cea9ca39e85b2a3ad89dc37c0694658c12dab3585"
   ],
   "schema_version": 1
 }

@@ -6311,6 +6311,20 @@ hosts = _lineage_hosts(graph, observation_id)
 # A single permitted ancestor must never launder an out-of-scope
 # parent. Missing origin evidence is not permission to recommend work.
 ⋮----
+_REVIEW_PARENT_KINDS = {
+⋮----
+"""Credit only completed reviews with unambiguous same-kind parents."""
+indexed = {item.id: item for item in graph.values()}
+reviewed: dict[str, set[str]] = {
+⋮----
+kind = evidence.metadata.get("review_type")
+status = evidence.metadata.get("status")
+⋮----
+parent_kind = _REVIEW_PARENT_KINDS[kind]
+⋮----
+# A mixed-type or inconsistent review cannot close a gap by
+# borrowing the convenient subset of linked observations.
+⋮----
 """Derive bounded, scope-aware review hypotheses from existing observations.
 
     This layer never emits payloads, exploit instructions, shell commands, or new
@@ -6320,6 +6334,7 @@ hosts = _lineage_hosts(graph, observation_id)
 ⋮----
 hypotheses: list[Hypothesis] = []
 validation_state = analyze_validation_state(graph)
+reviewed = _completed_reviews(graph, scope_checker)
 ⋮----
 safe = _safe_endpoint(endpoint.value)
 ⋮----

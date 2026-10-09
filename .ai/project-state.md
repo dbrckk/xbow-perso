@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T20:34:52Z
+Generated: 2026-10-09T20:39:13Z
 
 ### Git
 - Branch: `main`
-- Head: `6b7dca33e194`
-- Commit date: 2026-10-09T22:34:02+02:00
-- Commit: feat(hypotheses): retain all observed input names for duplicate URLs
+- Head: `707dd5dc9ad3`
+- Commit date: 2026-10-09T22:39:04+02:00
+- Commit: feat(hypotheses): avoid re-recommending completed security reviews
 - Tracked files: 687
 
 ### Recently changed files
@@ -55,8 +55,6 @@ Generated: 2026-10-09T20:34:52Z
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`

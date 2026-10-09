@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 9c911d67bc852a977a164ff5aa6a08084338876f
-Head: 6b7dca33e194aadb4e26f4597aa29d06917387fe
+Base: 6f1b3748275624c6a5b54da70c3bacb6a70d609b
+Head: 707dd5dc9ad3ceefa370956a3571eb417459d9c8
 
 ## Changed files
 - M backend/app/hypothesis_engine.py
