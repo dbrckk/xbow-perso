@@ -138,11 +138,25 @@ jobs:
       - run: |
           XBOW_PUBLIC_HOST=example.test \
           docker compose -f docker-compose.yml -f docker-compose.tls.yml config --quiet
-      - run: |
-          docker run --rm \
+      - name: Validate Caddy configuration with bounded registry retries
+        shell: bash
+        run: |
+          set -euo pipefail
+          caddy_image=public.ecr.aws/docker/library/caddy:2.11.4-alpine
+          for attempt in 1 2 3 4; do
+            if docker pull "$caddy_image"; then
+              break
+            fi
+            if [ "$attempt" -eq 4 ]; then
+              echo "Caddy image unavailable after bounded retries" >&2
+              exit 1
+            fi
+            sleep "$((attempt * 10))"
+          done
+          docker run --rm --pull never \
             -e XBOW_PUBLIC_HOST=example.test \
             -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            public.ecr.aws/docker/library/caddy:2.11.4-alpine \
+            "$caddy_image" \
             caddy validate --config /etc/caddy/Caddyfile
       - run: docker compose build --pull
       - name: Smoke-test hardened frontend
@@ -220,3 +234,30 @@ jobs:
             echo "direct public egress unexpectedly succeeded" >&2
             exit 1
           fi
+
+  strix-python-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build pinned Strix Python runtime
+        run: |
+          docker build --pull \
+            --file backend/Dockerfile.strix-python-runtime \
+            --tag xbow-strix-python-runtime:ci \
+            backend
+      - name: Verify inert runtime in locked-down container
+        shell: bash
+        run: |
+          set -euo pipefail
+          for probe in app.strix_backend_hook app.strix_python_compat_probe app.strix_python_bootstrap_runtime; do
+            docker run --rm \
+              --network none \
+              --read-only \
+              --tmpfs /tmp:size=16m,noexec,nosuid,nodev \
+              --cap-drop ALL \
+              --pids-limit 128 \
+              --security-opt no-new-privileges:true \
+              xbow-strix-python-runtime:ci \
+              /opt/strix-python/.venv/bin/python -m "$probe" --self-test
+          done
