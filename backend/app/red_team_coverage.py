@@ -6,6 +6,10 @@ from typing import Any, Callable
 from fastapi import APIRouter
 
 from .attack_surface import build_attack_surface
+from .coverage import (
+    _endpoint_has_consistent_asset_origins,
+    _form_has_consistent_asset_origins,
+)
 from .evidence_chain import build_evidence_chains
 from .hypothesis_engine import build_hypotheses
 from .review_evidence import is_completed_review_evidence
@@ -78,6 +82,44 @@ def build_red_team_coverage(
         for item in surface["forms"]
         if item["valid"] and item["in_scope"] is not False
     }
+    # Keep observed-but-untrusted surfaces in the denominator as gaps.
+    # Only review attribution is gated on verified in-scope ancestry.
+    if scope_checker is None:
+        reviewable_endpoint_ids = set(valid_endpoint_ids)
+        reviewable_form_ids = set(valid_form_ids)
+    else:
+        observations = {item.id: item for item in graph.values()}
+        asset_values = {
+            item.id: item.value for item in graph.by_kind("asset")
+        }
+        reviewable_endpoint_ids = {
+            item["id"]
+            for item in surface["endpoints"]
+            if (
+                item["id"] in valid_endpoint_ids
+                and item["in_scope"] is True
+                and not item["host_asset_mismatch"]
+                and _endpoint_has_consistent_asset_origins(
+                    item, asset_values
+                )
+            )
+        }
+        reviewable_form_ids = {
+            item["id"]
+            for item in surface["forms"]
+            if (
+                item["id"] in valid_form_ids
+                and item["in_scope"] is True
+                and _form_has_consistent_asset_origins(
+                    item["id"],
+                    item["action"],
+                    observations,
+                    asset_values,
+                    reviewable_endpoint_ids,
+                )
+            )
+        }
+
     technology_ids = {
         item["id"]
         for item in surface["technologies"]
@@ -126,12 +168,12 @@ def build_red_team_coverage(
     endpoint_reviewed_ids = _reviewed_parent_ids(
         graph,
         {"input_surface_review", "authorization_surface_review"},
-        eligible_ids=valid_endpoint_ids,
+        eligible_ids=reviewable_endpoint_ids,
     )
     form_reviewed_ids = _reviewed_parent_ids(
         graph,
         {"form_surface_review"},
-        eligible_ids=valid_form_ids,
+        eligible_ids=reviewable_form_ids,
     )
     technology_reviewed_ids = _reviewed_parent_ids(
         graph,
@@ -219,6 +261,10 @@ def build_red_team_coverage(
         gaps.append("orphan_endpoints")
     if surface["summary"]["host_asset_mismatch_count"]:
         gaps.append("host_asset_mismatch")
+    if valid_endpoint_ids - reviewable_endpoint_ids:
+        gaps.append("untrusted_endpoint_origin")
+    if valid_form_ids - reviewable_form_ids:
+        gaps.append("untrusted_form_origin")
     if input_reviews:
         gaps.append("input_review_pending")
     if authorization_reviews:
@@ -248,8 +294,14 @@ def build_red_team_coverage(
             "unobserved_domain_count": len(unobserved_domains),
             "observed_endpoints": endpoints,
             "reviewed_endpoints": len(endpoint_reviewed_ids),
+            "untrusted_endpoint_origins": len(
+                valid_endpoint_ids - reviewable_endpoint_ids
+            ),
             "observed_forms": forms,
             "reviewed_forms": len(form_reviewed_ids),
+            "untrusted_form_origins": len(
+                valid_form_ids - reviewable_form_ids
+            ),
             "observed_technologies": technologies,
             "reviewed_technologies": len(technology_reviewed_ids),
             "observed_wafs": wafs,
