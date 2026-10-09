@@ -296,20 +296,36 @@ def _completed_scan_evidence(
             trusted_job_count, contradictions)
 
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool:
-    by_kind = (outcomes or {}).get("by_job_kind")
-    if not isinstance(by_kind, Mapping):
+    """Treat invalid scanner diagnostics as unsafe to use for null-scan recovery.
+
+    Only distinct-job, bounded integer counters can establish worker health.
+    Absence of a worker history is unknown, not proof of a healthy run.
+    """
+    if outcomes is None or outcomes == {}:
         return False
+    if not isinstance(outcomes, Mapping):
+        return True
+    if "by_job_kind" not in outcomes:
+        return False
+    by_kind = outcomes["by_job_kind"]
+    if not isinstance(by_kind, Mapping):
+        return True
     for kind in ("strix_scan", "nuclei_scan"):
-        counts = by_kind.get(kind)
-        if not isinstance(counts, Mapping):
+        if kind not in by_kind:
             continue
-        try:
-            completed = int(counts.get("completed") or 0)
-            failed = int(counts.get("failed") or 0)
-            requeued = int(counts.get("requeued") or 0)
-        except (TypeError, ValueError):
+        counts = by_kind[kind]
+        if not isinstance(counts, Mapping):
             return True
-        if completed <= 0 and failed + requeued >= 2:
+        parsed: dict[str, int] = {}
+        for name in ("completed", "failed", "requeued"):
+            number = counts.get(name, 0)
+            if type(number) is not int or not 0 <= number <= 1_000_000:
+                return True
+            parsed[name] = number
+        if (
+            parsed["completed"] == 0
+            and parsed["failed"] + parsed["requeued"] >= 2
+        ):
             return True
     return False
 
@@ -723,7 +739,9 @@ def build_no_finding_recovery(
         reasons.append("no observed asset matches the authorized target for recovery")
     elif worker_instability_applied:
         state = "execution_unstable"
-        reasons.append("repeated scanner worker errors require operator review")
+        reasons.append(
+            "unstable or untrusted scanner worker diagnostics require operator review"
+        )
     elif contradictory_scan_jobs:
         state = "scan_status_unreconciled"
         reasons.append(
