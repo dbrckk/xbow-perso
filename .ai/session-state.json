@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-05",
-  "task": "Define a pinned Strix-compatible remote client/session interface without enabling remote operations",
+  "updated_at": "2026-10-09",
+  "task": "Validate actual pinned Strix Python import and live runner fail-closed RPC while keeping active dispatch disabled",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -75,18 +75,24 @@
     "The prepared session defines async exec(*args, timeout=...), resolve_exposed_port(port), and client.delete(session) while all three live operations fail closed.",
     "The prepared backend validates images, exposed ports, argv bounds, timeout bounds, shell/path rejection and records only hashed argv metadata.",
     "The xbow-remote-v1 backend now returns the prepared client/session pair but performs no manifest materialization, network I/O or process execution.",
-    "Backend self-test now proves the prepared pair is returned and resolve-port, exec and delete all remain blocked."
+    "Backend self-test now proves the prepared pair is returned and resolve-port, exec and delete all remain blocked.",
+    "PR #663 merged: public registry mirrors eliminate Docker Hub authentication throttling for primary container builds.",
+    "PR #662 merged: scanner source provenance is canonicalized before negative-result learning.",
+    "PR #665 merged: prepared Strix remote interface self-test digest excludes randomized operation request IDs and is reproducible.",
+    "PR #664 merged: official pinned Strix 1.6.2 Python runtime image builds and passes isolated offline backend, compatibility, and synthetic bootstrap checks.",
+    "PR #666 merged: pinned upstream source identity is verified, real strix.interface.main is imported after xbow-remote-v1 registration, and Docker preflight aliases are restored; no entrypoint is called.",
+    "CI at PR #666: 2,743 existing tests pass; Docker images, security, supply-chain, and offline real-upstream-import check pass."
   ],
-  "current_branch": "codex/strix-remote-session-interface-v1",
-  "current_priority": "Validate and merge the prepared remote client/session interface, then define bounded manifest serialization/upload without enabling session creation.",
+  "current_branch": "codex/strix-runner-failclosed-live-proof-20261009",
+  "current_priority": "Verify live broker-to-runner health and HMAC-denied RPC operations; then implement bounded manifest lifecycle and ticket-bound isolated sessions without exposing host Docker.",
   "blockers": [
-    "Prepared remote client/session methods are structurally compatible with pinned Strix but resolve-port, exec and delete deliberately fail closed.",
-    "Manifest entries are not serialized, uploaded or materialized by the remote backend.",
-    "Runner RPC create/exec/resolve/delete operations remain deliberately unimplemented.",
-    "The official standalone PyInstaller Strix binary does not automatically import the Python xbow-remote-v1 backend hook.",
-    "A pinned Python runtime/bootstrap using the verified Strix v1.6.2 package is required before the custom backend can be selected by a real run.",
-    "Strix v1.6.2's Python entrypoint still performs Docker CLI/image preflight before scan execution even when a custom runtime backend is selected.",
-    "The bounded broker path supports only read-only GET/HEAD traffic, not the full method/tool surface Strix may require.",
+    "Real Strix Python interface import is proven, but the upstream scan entrypoint is deliberately not invoked and no active Strix scan is wired.",
+    "Prepared remote client/session exec, resolve-port, and delete remain fail-closed.",
+    "Runner RPC create, exec, resolve-port and delete operations remain unimplemented.",
+    "Manifest entries are not uploaded or materialized by the remote backend.",
+    "The bounded broker path supports only read-only GET/HEAD traffic, not the full Strix method/tool surface.",
+    "The official standalone PyInstaller binary does not automatically import the custom Python backend; prefer the pinned Python bootstrap for integration.",
+    "Enabling any executable session requires strong broker-issued admission, sandbox/egress enforcement, request budgets and real end-to-end validation.",
     "The upstream v1.6.2 Git tag object is unsigned; trust is anchored to the pinned source commit and official release-asset digests.",
     "Execution contract and runner admission ticket v1 still use symmetric HMAC verification rather than asymmetric verification."
   ],
@@ -97,11 +103,10 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge strix-remote-session-interface-v1 through CI, security and supply-chain.",
-    "Define bounded manifest serialization and content digests for remote upload without exposing host paths or enabling session creation.",
-    "Add a broker/runner manifest admission envelope with strict byte/file/path limits and no executable materialization.",
-    "Bind the future session exec method to broker-issued tickets and runner transport authentication without enabling subprocess execution.",
-    "Keep target traffic broker-routed and fail closed on any direct runner egress attempt.",
-    "Enable active Strix entrypoint execution only after manifest upload plus session create/exec/resolve/delete and broker scope enforcement pass end-to-end tests."
+    "Validate and merge the live broker-to-runner fail-closed HMAC and health integration proof.",
+    "Introduce bounded, content-addressed manifest serialization and upload without accepting host paths or unreviewed executable material.",
+    "Implement broker-authenticated runner session create/delete state transition with strict ticket checks and no active process execution.",
+    "Enforce scope, authorization, rate budgets and broker-only networking before any runner exec/resolve-port operations.",
+    "Run end-to-end isolation and authorized local-lab integration; enable Strix execution only after all safety gates pass."
   ]
 }
