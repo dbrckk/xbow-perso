@@ -39,20 +39,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:33:22Z
+Generated: 2026-10-09T01:03:49Z
 
 ### Git
 - Branch: `main`
-- Head: `17c4b5b7aae1`
-- Commit date: 2026-10-09T02:33:09+02:00
-- Commit: fix(recovery): reject malformed explicit scan job identifiers
+- Head: `ffef3a9c072f`
+- Commit date: 2026-10-09T03:03:33+02:00
+- Commit: fix(coverage): reject scan reports with impossible chronology
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/coverage.py`
+- `backend/app/scan_result_integrity.py`
+- `backend/tests/test_coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/tests/test_no_finding_recovery.py`
-- `backend/app/coverage.py`
-- `backend/tests/test_coverage.py`
 
 ### Project signals
 - `pyproject.toml`

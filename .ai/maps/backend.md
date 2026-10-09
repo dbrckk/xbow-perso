@@ -1992,6 +1992,9 @@ identity = f"job:{raw_job_id.strip()}"
 # A completed claim contradicted by a failed/cancelled claim
 # for this same worker job does not prove scan completion.
 ⋮----
+# One impossible report invalidates all completion claims
+# for the same explicit job ID.
+⋮----
 # A job documented on incompatible assets cannot be
 # credited through just its convenient in-scope record.
 ⋮----
@@ -7846,8 +7849,10 @@ parents = set(item.parent_ids)
     observations for that job name exactly one non-empty source.
     """
 sources_by_job: dict[str, set[str]] = {}
+terminal_conflicts = conflicting_scan_terminal_job_ids(graph)
 invalid_jobs: set[str] = {
 rejected_cross_origin_jobs: set[str] = set()
+current_time = datetime.now(timezone.utc)
 ⋮----
 raw_job_id = item.metadata.get("job_id")
 job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
@@ -7858,6 +7863,16 @@ job_id = raw_job_id.strip() if isinstance(raw_job_id, str) else ""
 key = f"invalid:{item.id}"
 ⋮----
 key = f"job:{job_id}" if job_id else f"observation:{item.id}"
+⋮----
+# An explicitly dated completion that is malformed, from the future,
+# or earlier than its recorded start cannot establish a trusted
+# negative result. Missing timestamps remain legacy-compatible.
+finished = None
+⋮----
+finished = _trusted_utc_timestamp(
+started = None
+⋮----
+started = _trusted_utc_timestamp(
 ⋮----
 # A job observed on another origin cannot be credited through
 # a second conveniently in-scope report with the same job ID.
@@ -7873,7 +7888,7 @@ cross_origin_count = sum(
 trusted_sources: set[str] = set()
 trusted_job_count = 0
 ambiguous = cross_origin_count
-contradictions = sum(job in invalid_jobs and job.startswith("job:")
+contradictions = sum(
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
 ⋮----
@@ -8021,7 +8036,6 @@ state = "no_supported_recovery_task"
 candidate_kinds = {kind for _score, kind in candidates} & allowed
 reopened: set[str] = set()
 ⋮----
-current_time = datetime.now(timezone.utc)
 valid_endpoint_ids = {item["id"] for item in endpoints}
 valid_form_ids = {item["id"] for item in forms}
 surface_times: dict[str, list[datetime]] = {}
@@ -11997,6 +12011,27 @@ states_by_job: dict[str, set[str]] = {}
 status = item.metadata.get("status")
 ⋮----
 raw_id = item.metadata.get("job_id")
+⋮----
+"""Reject explicitly impossible scan times without inventing legacy dates.
+
+    Timestamps must contain a UTC offset. An absent timestamp is unknown,
+    not contradictory. Explicit future, malformed or reversed chronology
+    cannot corroborate scan completion.
+    """
+current_time = now or datetime.now(timezone.utc)
+⋮----
+current_time = current_time.astimezone(timezone.utc)
+⋮----
+def parse(key: str) -> datetime | None
+⋮----
+value = metadata[key]
+⋮----
+parsed = datetime.fromisoformat(
+⋮----
+parsed = parsed.astimezone(timezone.utc)
+⋮----
+start = parse("started_at")
+finish = parse("completed_at")
 ```
 
 ## File: app/scanner_adaptation.py
@@ -17263,6 +17298,18 @@ def test_untrusted_provenance_precedes_low_discovery_and_scanner_retry()
 def test_no_untrusted_scan_keeps_existing_discovery_guidance()
 ⋮----
 def test_untrusted_provenance_does_not_change_planned_scan_or_authority()
+⋮----
+def test_coverage_does_not_count_impossible_scan_completion_times()
+⋮----
+def test_scan_completion_before_start_cannot_claim_coverage()
+⋮----
+def test_malformed_temporal_duplicate_taints_entire_scan_job()
+⋮----
+def test_valid_temporal_scan_remains_counted_alongside_invalid_scan()
+⋮----
+def test_plausible_scan_timeline_accepts_legacy_absent_timestamps()
+⋮----
+frozen = datetime(2026, 9, 10, tzinfo=timezone.utc)
 ```
 
 ## File: tests/test_cpe_consistency.py
@@ -21596,6 +21643,17 @@ def test_explicit_invalid_scan_job_ids_cannot_trigger_negative_learning()
 def test_invalid_scan_job_id_does_not_poison_independent_trusted_scan()
 ⋮----
 def test_legacy_scan_without_job_id_remains_supported()
+⋮----
+def test_explicit_impossible_scan_completion_cannot_drive_negative_learning()
+⋮----
+"2026-09-03T00:00:00",  # missing timezone
+"2099-09-03T00:00:00Z",  # future
+⋮----
+def test_scan_started_after_completion_is_untrusted()
+⋮----
+def test_bad_timestamp_duplicate_quarantines_entire_scan_job()
+⋮----
+def test_temporal_quarantine_preserves_independent_good_scan()
 ```
 
 ## File: tests/test_nuclei_preflight.py
