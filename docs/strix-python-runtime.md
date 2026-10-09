@@ -31,19 +31,38 @@ The default command runs the bootstrap self-check without invoking the Strix
 scan entrypoint. CI additionally runs the pinned backend registration and
 upstream compatibility checks as independent probes.
 
+CI also performs a **real import** of the pinned upstream
+`strix.interface.main` and `strix.interface.environment` modules. This is
+not an execution of `main()` or a scan. The bootstrap registers the
+`xbow-remote-v1` backend before importing the upstream interface, checks
+that only the two Docker-preflight aliases are temporarily bypassed, and
+verifies the original upstream callables are restored afterwards.
+
+To reproduce that isolated import check after building the image:
+
+```bash
+docker run --rm --network none --read-only \
+  --tmpfs /tmp:size=16m,noexec,nosuid,nodev \
+  --cap-drop ALL --pids-limit 128 \
+  --security-opt no-new-privileges:true \
+  xbow-strix-python-runtime:local \
+  /opt/strix-python/.venv/bin/python \
+  -m app.strix_python_bootstrap_runtime --verify-upstream-import
+```
+
 ## Explicit limitations
 
 - No target or internet traffic: runtime verification uses `--network none`.
 - No host Docker socket, bind mounts, ports, or writable root filesystem.
 - The `xbow-remote-v1` session methods are deliberately non-executable;
   no session creation, command execution, or manifest upload is enabled.
-- The bootstrap check validates synthetic interface imports, **not** a live
-  execution of `strix.interface.main`; do not interpret a green build as
-  proof of active Strix support.
+- The regular bootstrap self-test remains synthetic. The additional CI probe
+  imports the real upstream interface but does **not** invoke `main()`, execute
+  a scan, connect to a broker, or establish a runnable Strix session.
+- A successful import is **not** proof of active Strix scanning support.
 - Nuclei remains the independently gated active-scanning path for scopes
   explicitly authorizing automation.
 
-Next: validate a real pinned upstream Python interface import in this
-isolated image, then design authenticated runner session lifecycle with
+Next: complete authenticated runner session lifecycle with
 strict allowlisted manifests and policy-bound request budgets. Keep active
 Strix dispatch fail-closed until those components pass end-to-end checks.
