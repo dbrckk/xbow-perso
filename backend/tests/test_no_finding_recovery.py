@@ -3097,3 +3097,103 @@ def test_campaign_duplicate_legacy_host_observations_remain_supported():
     result = _feedback(graph, allowed=("crawl",))
     assert result.state == "recovery_advisory"
     assert result.trusted_completed_scan_count == 1
+
+
+def test_malformed_scanner_health_data_blocks_negative_scan_recovery():
+    malformed = (
+        {"by_job_kind": []},
+        {"by_job_kind": None},
+        {"by_job_kind": {"nuclei_scan": []}},
+        {"by_job_kind": {"nuclei_scan": None}},
+        [],
+    )
+    for feedback in malformed:
+        result = _feedback(_graph(), worker_outcomes=feedback)
+        assert result.state == "execution_unstable"
+        assert result.recommended_task_kinds == ()
+        assert result.worker_instability_observed is True
+        assert result.worker_instability_applied is True
+        assert result.may_enable_exploitation is False
+
+
+def test_invalid_scanner_worker_counts_require_manual_review():
+    invalid = (True, False, None, -1, 1.5, "2", float("nan"),
+               float("inf"), 1_000_001)
+    for count in invalid:
+        result = _feedback(
+            _graph(),
+            worker_outcomes={
+                "by_job_kind": {
+                    "nuclei_scan": {
+                        "completed": count,
+                        "failed": 0,
+                        "requeued": 0,
+                    }
+                }
+            },
+        )
+        assert result.state == "execution_unstable"
+        assert result.recommended_task_kinds == ()
+        assert "operator review" in " ".join(result.reasons)
+
+
+def test_valid_recovered_worker_history_allows_bounded_recovery():
+    result = _feedback(
+        _graph(),
+        worker_outcomes={
+            "by_job_kind": {
+                "nuclei_scan": {
+                    "completed": 1,
+                    "failed": 3,
+                    "requeued": 2,
+                }
+            }
+        },
+    )
+    assert result.state == "recovery_advisory"
+    assert result.worker_instability_observed is False
+    assert result.recommended_task_kinds
+
+
+def test_valid_operational_failures_still_halt_recovery():
+    result = _feedback(
+        _graph(),
+        worker_outcomes={
+            "by_job_kind": {
+                "nuclei_scan": {"completed": 0, "failed": 2}
+            }
+        },
+    )
+    assert result.state == "execution_unstable"
+    assert result.recommended_task_kinds == ()
+
+
+def test_invalid_campaign_wide_worker_health_does_not_block_unrelated_origin():
+    graph = _graph(scans=0)
+    graph.add(Observation("asset:b", "asset", "https://other.test", "recon"))
+    graph.add(
+        Observation(
+            "scan:explicit",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-explicit",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_host="example.test",
+        scope=lambda host: host in {"example.test", "other.test"},
+        worker_outcomes={
+            "by_job_kind": {"nuclei_scan": {"completed": True}}
+        },
+    )
+    assert result.worker_instability_observed is True
+    assert result.worker_instability_applied is False
+    assert result.worker_health_attribution == "unattributed_multi_host"
+    assert result.state == "recovery_advisory"
