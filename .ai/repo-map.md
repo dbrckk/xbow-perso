@@ -2649,14 +2649,14 @@ identity = f"job:{job_id}"
 ⋮----
 count = len(jobs.pop(identity))
 ⋮----
-# A scan reporting positive findings must be reconciled against
-# observations on its own asset lineage. A finding on another authorized
-# host cannot legitimize an unrelated scanner report.
-def linked_asset_ids(observation: Any) -> frozenset[str]
+# Positive scan reports must match finding provenance at the same
+# specificity as the scan itself. A report for endpoint A cannot borrow
+# a finding on endpoint B merely because both share an asset.
 ⋮----
-result: set[str] = set()
+assets: set[str] = set()
+endpoints: set[str] = set()
 ⋮----
-finding_asset_sets = [
+finding_lineages = [
 representatives: list[Any] = []
 unreconciled = 0
 ⋮----
@@ -2671,7 +2671,13 @@ reported_findings = [
 # Contradictory or malformed duplicate reports also taint that job.
 malformed = any(
 inconsistent = (
+scan_lineages = [linked_lineage_ids(item) for item in records]
 scan_asset_ids = set().union(
+endpoint_claims = {
+# Different reporters for one job may not silently combine their
+# endpoint claims to corroborate positive vulnerability findings.
+ambiguous_endpoint_claim = (
+scan_endpoint_ids = set().union(*endpoint_claims)
 matched_finding_count = sum(
 # An explicit count of two findings cannot be reconciled by just
 # one stored finding, even if it belongs to the right asset.
@@ -2690,8 +2696,6 @@ def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]
 ⋮----
 pending = list(scan.parent_ids)
 ⋮----
-endpoints: set[str] = set()
-⋮----
 # Do not infer another endpoint from the same asset.
 ⋮----
 reports_by_job: dict[str, list[Any]] = {}
@@ -2708,7 +2712,6 @@ reports = (
 # is a separate claim: conflicting duplicate reports cannot prove
 # either endpoint set, nor can an asset-only report corroborate
 # a report asserting an individual endpoint.
-endpoint_claims = {
 ⋮----
 claimed_ids = next(iter(endpoint_claims))
 ⋮----
@@ -18123,6 +18126,20 @@ def test_positive_scan_on_matching_endpoint_reconciles_recorded_finding()
 def test_orphan_finding_cannot_reconcile_positive_scan_claim()
 ⋮----
 def test_positive_scan_count_cannot_exceed_same_asset_recorded_findings()
+⋮----
+def _positive_scan_endpoint_graph()
+⋮----
+def test_positive_endpoint_scan_cannot_borrow_other_endpoint_finding()
+⋮----
+graph = _positive_scan_endpoint_graph()
+⋮----
+def test_positive_endpoint_scan_requires_endpoint_linked_finding()
+⋮----
+def test_positive_asset_scan_rejects_finding_with_extra_asset_ancestor()
+⋮----
+def test_positive_job_conflicting_endpoint_reporters_fail_reconciliation()
+⋮----
+def test_positive_asset_only_scan_still_reconciles_asset_finding()
 ````
 
 ## File: backend/tests/test_cpe_consistency.py

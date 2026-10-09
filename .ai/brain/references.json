@@ -103,7 +103,7 @@
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 376,
+          "line": 405,
           "preview": "and _endpoint_has_consistent_asset_origins(",
           "definition_candidate": false
         },
@@ -173,7 +173,7 @@
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 485,
+          "line": 514,
           "preview": ") = _completed_scans_with_provenance(",
           "definition_candidate": false
         }
@@ -203,7 +203,7 @@
       ],
       "occurrence_count": 2
     },
-    "linked_asset_ids": {
+    "linked_lineage_ids": {
       "definition": {
         "file": "backend/app/coverage.py",
         "line": 273,
@@ -214,19 +214,19 @@
         {
           "file": "backend/app/coverage.py",
           "line": 273,
-          "preview": "def linked_asset_ids(observation: Any) -> frozenset[str]:",
+          "preview": "def linked_lineage_ids(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 292,
-          "preview": "linked_asset_ids(item)",
+          "line": 297,
+          "preview": "linked_lineage_ids(item)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 327,
-          "preview": "*(linked_asset_ids(item) for item in records)",
+          "line": 331,
+          "preview": "scan_lineages = [linked_lineage_ids(item) for item in records]",
           "definition_candidate": false
         }
       ],
@@ -235,20 +235,20 @@
     "_endpoint_scan_attribution": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 352,
+        "line": 381,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 352,
+          "line": 381,
           "preview": "def _endpoint_scan_attribution(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 497,
+          "line": 526,
           "preview": "endpoint_attribution = _endpoint_scan_attribution(",
           "definition_candidate": false
         }
@@ -258,20 +258,20 @@
     "explicit_endpoint_ancestry": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 383,
+        "line": 412,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 383,
+          "line": 412,
           "preview": "def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 431,
+          "line": 460,
           "preview": "explicit_endpoint_ancestry(item) for item in reports",
           "definition_candidate": false
         }
@@ -281,20 +281,20 @@
     "build_evidence_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 471,
+        "line": 500,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 471,
+          "line": 500,
           "preview": "def build_evidence_coverage(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 572,
+          "line": 601,
           "preview": "coverage = build_evidence_coverage(",
           "definition_candidate": false
         },
@@ -687,21 +687,51 @@
           "line": 2285,
           "preview": "coverage = build_evidence_coverage(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2337,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2373,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2411,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2446,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2480,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 67
+      "occurrence_count": 72
     },
     "campaign_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 566,
+        "line": 595,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 566,
+          "line": 595,
           "preview": "def campaign_coverage(campaign_id: str):",
           "definition_candidate": true
         }
@@ -711,14 +741,14 @@
     "build_coverage_guidance": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 583,
+        "line": 612,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 583,
+          "line": 612,
           "preview": "def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
@@ -859,21 +889,27 @@
           "line": 2291,
           "preview": "assert build_coverage_guidance(coverage)[\"focus\"] == \"scan_result_reconciliation\"",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2343,
+          "preview": "assert build_coverage_guidance(result)[\"focus\"] == \"scan_result_reconciliation\"",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 24
+      "occurrence_count": 25
     },
     "prioritize_action_with_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 682,
+        "line": 711,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 682,
+          "line": 711,
           "preview": "def prioritize_action_with_coverage(",
           "definition_candidate": true
         },

@@ -3,7 +3,7 @@
 - Index mode: incremental
 - Files indexed: 489
 - Files reparsed this run: 2
-- Symbols: 5220
+- Symbols: 5226
 - Internal import edges: 1531
 - Impacted files: 5
 - Selected tests: 2
@@ -16,7 +16,7 @@
 - backend/tests/test_no_finding_recovery.py: 147 symbols
 - frontend/hackerone.js: 126 symbols
 - backend/app/main.py: 91 symbols
-- backend/tests/test_coverage.py: 79 symbols
+- backend/tests/test_coverage.py: 85 symbols
 - backend/tests/test_openapi_testgen.py: 71 symbols
 - backend/app/hackerone_api.py: 62 symbols
 - backend/tests/test_frontend_auth_proxy.py: 50 symbols
@@ -45,7 +45,7 @@
 - AST index mode: incremental
 - AST files reparsed this run: 2
 - outline files retained: 487
-- top-level items retained: 7028
+- top-level items retained: 7034
 - direct members retained: 1792
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

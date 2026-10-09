@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T16:53:30Z
+Generated: 2026-10-09T17:04:01Z
 
 ### Git
 - Branch: `main`
-- Head: `6605d1b41f43`
-- Commit date: 2026-10-09T18:53:18+02:00
-- Commit: fix(coverage): reconcile positive scan findings with linked assets
+- Head: `a84db0470323`
+- Commit date: 2026-10-09T19:03:49+02:00
+- Commit: fix(coverage): reconcile positive scan reports at endpoint granularity
 - Tracked files: 687
 
 ### Recently changed files
@@ -55,7 +55,6 @@ Generated: 2026-10-09T16:53:30Z
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/red_team_coverage.py`
 - `backend/tests/test_red_team_coverage.py`
-- `AGENTS.md`
 
 ### Project signals
 - `pyproject.toml`
