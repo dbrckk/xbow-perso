@@ -6337,6 +6337,11 @@ deduped: dict[tuple[str, str], Hypothesis] = {}
 key = (item.kind, item.target)
 previous = deduped.get(key)
 ⋮----
+# Multiple observations of the same safe URL can expose different
+# input names. Keep their union and provenance instead of silently
+# discarding all but one while redacting their query values.
+preferred = (
+⋮----
 @router.get("/api/campaigns/{campaign_id}/hypotheses")
 def campaign_hypotheses(campaign_id: str, limit: int = 20)
 ⋮----
@@ -21931,6 +21936,12 @@ missing = _feedback(
 selected = _feedback(
 ⋮----
 def test_equivalent_duplicate_explicit_origins_keep_legacy_scan_compatibility()
+⋮----
+def test_target_origin_rejects_path_bearing_legacy_asset_alias()
+⋮----
+def test_target_origin_rejects_query_bearing_legacy_asset_alias()
+⋮----
+def test_target_origin_accepts_explicitly_linked_plain_legacy_host_alias()
 ```
 
 ## File: tests/test_nuclei_preflight.py

@@ -39,18 +39,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T20:30:12Z
+Generated: 2026-10-09T20:34:52Z
 
 ### Git
 - Branch: `main`
-- Head: `45105a7fb648`
-- Commit date: 2026-10-09T22:29:40+02:00
-- Commit: fix(hypotheses): validate entire scope lineage and web origins
+- Head: `6b7dca33e194`
+- Commit date: 2026-10-09T22:34:02+02:00
+- Commit: feat(hypotheses): retain all observed input names for duplicate URLs
 - Tracked files: 687
 
 ### Recently changed files
 - `backend/app/hypothesis_engine.py`
 - `backend/tests/test_hypothesis_engine.py`
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/coverage.py`
