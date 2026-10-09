@@ -234,6 +234,51 @@ jobs:
             echo "direct public egress unexpectedly succeeded" >&2
             exit 1
           fi
+          # Live integration check: the broker may reach runner health, but
+          # cannot use session mutation endpoints without runner RPC HMAC.
+          # The runner must continue advertising zero executable operations.
+          docker compose exec -T strix-broker python - <<'PY'
+          import json
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          runner = "http://strix-runner:8092"
+          with urlopen(f"{runner}/healthz", timeout=3) as response:
+              health = json.load(response)
+          assert health["active_execution_enabled"] is False
+          assert health["implemented_operations"] == []
+          assert health["exec_admission_required"] is True
+          assert health["manifest_admission_required"] is True
+
+          with urlopen(f"{runner}/readyz", timeout=3) as response:
+              ready = json.load(response)
+          assert ready["active_execution_enabled"] is False
+          assert ready["implemented_operations"] == []
+          assert ready["exec_admission_configured"] is True
+          assert ready["manifest_admission_configured"] is True
+
+          for endpoint in (
+              "/v1/session/create",
+              "/v1/session/exec",
+              "/v1/session/resolve-port",
+              "/v1/session/delete",
+          ):
+              request = Request(
+                  f"{runner}{endpoint}",
+                  data=b"{}",
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+              )
+              try:
+                  with urlopen(request, timeout=3):
+                      raise AssertionError(f"unauthorized session endpoint accepted: {endpoint}")
+              except HTTPError as exc:
+                  if exc.code != 401:
+                      raise AssertionError(
+                          f"session endpoint must require authentication: {endpoint}: {exc.code}"
+                      ) from exc
+          print("Runner live fail-closed readiness and unauthenticated RPC verified")
+          PY
 
   strix-python-runtime:
     runs-on: ubuntu-latest
