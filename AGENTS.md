@@ -1,5 +1,14 @@
 # Repository agent instructions
 
+## Shared development policy — 88 validated rules (2026-10-09)
+
+The project adopts the [88-rule standard](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/standards/88-rules.md), the [operational agent skill](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/skills/repo-excellence-88/SKILL.md), and the [educational wiki](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/docs/WIKI-88.md). Read the relevant parts before substantial work and apply conditional rules only where appropriate.
+
+**Owner preference: do not create new unit tests.** Existing tests may be run for diagnostics; prioritize real functional and integration verification, lint, build, and reproducible checks. Never claim an unexecuted check passed.
+
+Preserve repository-specific constraints and authorized scope. The pinned policy commit above governs the 88 rules; `.repo-standards.yml` continues to configure existing repository intelligence and reusable workflows independently. Do not change workflow refs merely to adopt these rules.
+
+
 This repository adopts shared standards from `dbrckk/repo-standards` at the release recorded in `.repo-standards.yml`.
 
 Before substantial work:
@@ -27,7 +36,7 @@ Before substantial work:
 Repository-specific rules:
 - Preserve existing architecture and public interfaces unless the task requires a change.
 - Prefer the smallest coherent change.
-- Prefer targeted tests from `.ai/brain/selected-tests.json`; expand validation when impact is ambiguous or targeted tests fail.
+- Prefer targeted functional or integration checks; existing selected tests may be run as diagnostics, but do not create new unit tests. Expand validation when impact is ambiguous.
 - Treat hotset/context packets and graph shards as routing hints, not authoritative source.
 - Verify reference/dependency/impact/AST hits against authoritative source before editing.
 - Treat security signals and static graph edges as heuristics, not proof.
