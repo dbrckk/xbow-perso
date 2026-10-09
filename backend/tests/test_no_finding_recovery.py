@@ -2973,3 +2973,127 @@ def test_campaign_legacy_single_host_scan_remains_supported():
     assert result.completed_scan_count == 1
     assert result.trusted_completed_scan_count == 1
     assert result.state == "recovery_advisory"
+
+
+def _same_host_multi_origin_graph(*, second_origin: str) -> ObservationGraph:
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:second", "asset", second_origin, "recon")
+    )
+    return graph
+
+
+def _campaign_scan(
+    graph: ObservationGraph,
+    *,
+    observation_id: str = "scan:campaign",
+    parent_ids: tuple[str, ...] = (),
+) -> None:
+    graph.add(
+        Observation(
+            observation_id,
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=parent_ids,
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": observation_id,
+                "findings": 0,
+            },
+        )
+    )
+
+
+def test_campaign_orphan_scan_does_not_bridge_http_and_https_same_host():
+    graph = _same_host_multi_origin_graph(
+        second_origin="http://example.test"
+    )
+    _campaign_scan(graph)
+
+    result = _feedback(
+        graph,
+        allowed=("crawl",),
+        scope=lambda host: host == "example.test",
+    )
+
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+    assert result.trusted_completed_scan_count == 0
+    assert result.recommended_task_kinds == ()
+
+
+def test_campaign_orphan_scan_does_not_bridge_distinct_ports_same_host():
+    graph = _same_host_multi_origin_graph(
+        second_origin="https://example.test:8443"
+    )
+    _campaign_scan(graph)
+
+    result = _feedback(graph, allowed=("crawl",))
+
+    assert result.state == "no_completed_scans"
+    assert result.trusted_completed_scan_count == 0
+
+
+def test_campaign_scan_claiming_both_web_origins_is_not_trusted():
+    graph = _same_host_multi_origin_graph(
+        second_origin="http://example.test"
+    )
+    _campaign_scan(
+        graph,
+        parent_ids=("asset:https", "asset:second"),
+    )
+
+    result = _feedback(graph, allowed=("crawl",))
+    assert result.state == "no_completed_scans"
+    assert result.completed_scan_count == 0
+
+
+def test_campaign_scan_with_explicit_https_ancestry_remains_trusted():
+    graph = _same_host_multi_origin_graph(
+        second_origin="http://example.test"
+    )
+    _campaign_scan(graph, parent_ids=("asset:https",))
+
+    result = _feedback(graph, allowed=("crawl",))
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)
+
+
+def test_campaign_duplicate_observations_same_origin_allow_legacy_scan():
+    graph = _same_host_multi_origin_graph(
+        second_origin="https://example.test:443/"
+    )
+    _campaign_scan(graph)
+
+    result = _feedback(graph, allowed=("crawl",))
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)
+
+
+def test_campaign_mixed_legacy_host_and_explicit_origin_requires_lineage():
+    graph = _same_host_multi_origin_graph(
+        second_origin="example.test"
+    )
+    _campaign_scan(graph)
+
+    result = _feedback(graph, allowed=("crawl",))
+    assert result.state == "no_completed_scans"
+    assert result.recommended_task_kinds == ()
+
+
+def test_campaign_duplicate_legacy_host_observations_remain_supported():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(Observation("asset:b", "asset", "example.test.", "httpx"))
+    _campaign_scan(graph)
+
+    result = _feedback(graph, allowed=("crawl",))
+    assert result.state == "recovery_advisory"
+    assert result.trusted_completed_scan_count == 1
