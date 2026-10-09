@@ -1839,3 +1839,57 @@ def test_plausible_scan_timeline_accepts_legacy_absent_timestamps():
         },
         now=frozen,
     ) is False
+
+
+def test_invisible_scan_job_ids_never_count_as_completed_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:one", "asset", "example.test", "recon"))
+    for index, job_id in enumerate(("job\\x7f", "job\\u200b", "job\\u2060")):
+        graph.add(
+            Observation(
+                f"scan:invalid-id:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:one",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                    "findings": 0,
+                },
+            )
+        )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 0
+    assert report["evidence"]["untrusted_scan_observations"] == 3
+    assert report["dimensions"]["scanner_execution"] == 0.0
+
+
+def test_invalid_scan_id_does_not_poison_independent_valid_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:one", "asset", "example.test", "recon"))
+    for index, job_id in enumerate(("bad\\x7f", "valid-job")):
+        graph.add(
+            Observation(
+                f"scan:report:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:one",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                    "findings": 0,
+                },
+            )
+        )
+    report = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert report["evidence"]["completed_scans"] == 1
+    assert report["evidence"]["untrusted_scan_observations"] == 1
+    assert report["evidence"]["scanner_sources"] == ["nuclei"]
