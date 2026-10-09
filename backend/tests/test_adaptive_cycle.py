@@ -225,3 +225,17 @@ def test_valid_worker_feedback_retains_existing_completion_semantics():
     assert cycle.state == "recon"
     assert cycle.safe_to_progress is True
     assert cycle.retry_suppressed_job_kinds == ()
+
+
+def test_repeated_failed_workers_require_review_without_requeue_events():
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("scan", "example.test", "scan", 80)],
+        [],
+        {"by_job_kind": {"nuclei_scan": {
+            "completed": 0, "failed": 2, "requeued": 0
+        }}},
+    )
+    assert cycle.state == "human_review"
+    assert cycle.retry_suppressed_job_kinds == ("nuclei_scan",)
+    assert cycle.safe_to_progress is False
