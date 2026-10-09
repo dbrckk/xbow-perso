@@ -12,17 +12,21 @@ Status: active
 - A dedicated inert Strix runner pins v1.6.2, verifies official amd64/arm64 release digests and the exact CLI version at build time, then re-attests the build manifest and extracted binary SHA-256 at runtime without executing the PyInstaller binary; it is attached only to the internal broker network.
 - The xbow `xbow-remote-v1` backend hook is verified against the official Strix v1.6.2 Python wheel and registry API; it declares no bind-mount support and intentionally rejects every execution request.
 - The isolated runner now exposes authenticated `strix-runner-rpc-v1` on internal port 8092 with strict schemas, HMAC authentication, a 5-second idle socket timeout, a 10-second absolute request-read deadline, a 16-connection concurrency cap, timestamp/nonce replay defenses and no implemented session operations; runner RPC keys must be at least 32 bytes.
+- The pinned Strix 1.6.2 Python runtime image is built from attested upstream sources and offline-verified in a non-root, read-only, network-disabled container; `xbow-remote-v1` is registered before the **real** upstream Python interface imports, without invoking the scan entrypoint.
+- The remote interface self-test digest is deterministic and excludes random request nonces, while the underlying operation nonces remain random for replay defense.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
-- The pinned standalone Strix binary does not automatically load the Python `xbow-remote-v1` registration; a pinned Python bootstrap path is still required.
-- Strix v1.6.2's Python entrypoint still performs Docker CLI/image preflight before runtime-backend selection can be useful; the bootstrap must address this without exposing a host Docker socket.
+- The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
+- Runner RPC create, exec, resolve-port and delete remain unimplemented; manifests cannot be uploaded/materialized and broker-routed authenticated execution is not wired.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed while building a reproducible Python Strix v1.6.2 bootstrap that loads `xbow-remote-v1` in the actual runtime process.
+- Keep Strix active dispatch fail-closed; validate live broker/runner authentication and then implement bounded manifest admission and isolated session lifecycle before considering any active Strix entrypoint.
 
 ## Validation
+- PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
+- PR #666 passed 2,743 existing Python tests; no new unit tests were created. `strix.interface.main` was imported but its scan entrypoint was not invoked.
 - PR #484 hardened Strix run-bundle provenance and passed CI, security, supply-chain, Docker builds, Ruff, pytest, and pip-audit before merge.
 - Runtime-contract changes require the same full CI/security/supply-chain gates before merge.
 - Execution-contract v1 adds deterministic hashing, optional HMAC authentication, policy/job binding, scope checks, rate-cap checks and redacted scan-event tracing.
@@ -34,7 +38,7 @@ Status: active
 - The runner RPC contract is independently testable and remains non-executing even if a service instance is constructed with an active flag; the real runner startup attestation still forbids active execution. RPC sockets use a 5-second idle timeout, request headers/body have a 10-second absolute read deadline, truncated bodies are rejected, concurrent connections are capped at 16, and HMAC secrets shorter than 32 bytes are rejected.
 
 ## Last verified
-- 2026-10-03
+- 2026-10-09
 
 <!-- AUTO:START -->
 ## Automatic repository state
