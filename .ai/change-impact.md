@@ -1,15 +1,11 @@
 # Change impact
 
-Base: 27eed0e5150246ddaa3ffbcd03f1b25e4c835179
-Head: 337e0707844b2b789b6d92c88aba093a53205db8
+Base: f6bd1ec209c75c2d27900d57753be1130ed430d3
+Head: bc82fc6c07fdf494c56a64451fcd49acce96a433
 
 ## Changed files
-- M backend/app/coverage.py
-- M backend/app/no_finding_recovery.py
-- M backend/app/scan_result_integrity.py
-- M backend/tests/test_coverage.py
-- M backend/tests/test_no_finding_recovery.py
-- M backend/tests/test_scan_result_integrity.py
+- M backend/app/learning_memory.py
+- M backend/tests/test_learning_memory.py
 
 ## Affected areas
 - backend

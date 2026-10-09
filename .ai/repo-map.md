@@ -7649,7 +7649,7 @@ scoped_ids = (
 out_of_scope_jobs: set[tuple[str, str]] = set()
 ⋮----
 technique = str(item.metadata.get("technique") or "").strip().lower()
-job_id = item.metadata.get("job_id")
+job_id = canonical_scan_job_id(
 ⋮----
 # One scanner or validation job may emit multiple evidence observations.
 # Counting each observation as an independent attempt inflates both
@@ -7661,9 +7661,12 @@ attempts: dict[tuple[str, str], dict[str, set[str]]] = {}
 technique = str(item.metadata.get("technique", "")).strip().lower()
 outcome = str(item.metadata.get("outcome", "")).strip().lower()
 ⋮----
+raw_job_id = item.metadata.get("job_id")
+job_id = canonical_scan_job_id(raw_job_id)
+⋮----
 identity = f"observation:{item.id}"
 ⋮----
-identity = f"job:{job_id.strip()}"
+identity = f"job:{job_id}"
 ⋮----
 # Invalid job identity cannot establish independent evidence.
 ⋮----
@@ -7707,6 +7710,8 @@ kind = str(job.get("kind") or "")
 ⋮----
 attempts = int(job.get("attempts") or 0)
 ⋮----
+job_id = canonical_scan_job_id(job.get("id"))
+⋮----
 totals = {"completed": 0, "failed": 0, "cancelled": 0, "requeued": 0}
 by_kind: dict[str, dict[str, int]] = defaultdict(
 recent: list[dict[str, Any]] = []
@@ -7718,7 +7723,7 @@ valid_events = 0
 ⋮----
 kind = str(event.get("job_kind") or "")
 status = str(event.get("status") or "")
-job_id = str(event.get("job_id") or "").strip()
+job_id = canonical_scan_job_id(event.get("job_id"))
 ⋮----
 attempts = int(event.get("attempts") or 0)
 ⋮----

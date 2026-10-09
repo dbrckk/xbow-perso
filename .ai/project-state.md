@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T01:14:42Z
+Generated: 2026-10-09T01:19:38Z
 
 ### Git
 - Branch: `main`
-- Head: `337e0707844b`
-- Commit date: 2026-10-09T03:14:30+02:00
-- Commit: fix(scan): unify strict scan-job identities across coverage and recovery
+- Head: `bc82fc6c07fd`
+- Commit date: 2026-10-09T03:19:28+02:00
+- Commit: fix(learning): reject malformed worker identities in adaptive scanner memory
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/learning_memory.py`
+- `backend/tests/test_learning_memory.py`
 - `backend/app/coverage.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
