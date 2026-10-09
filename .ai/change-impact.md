@@ -1,13 +1,11 @@
 # Change impact
 
-Base: 8d9beea18c7ae895e3a9a7bb564bbe6a6b70c886
-Head: c46f867ca40d08584df7d699c8bbdce4bcbc6124
+Base: 8a009e11cc8733bb18cbb8a2905f16b38dc57ef0
+Head: fdef73b1c9dac0fbe3265aa4f25ea67cdd02ac87
 
 ## Changed files
-- M backend/app/no_finding_recovery.py
-- M backend/app/scan_result_integrity.py
-- M backend/tests/test_no_finding_recovery.py
-- M backend/tests/test_scan_result_integrity.py
+- M backend/app/strix_backend_hook.py
+- M backend/app/strix_remote_session.py
 
 ## Affected areas
 - backend

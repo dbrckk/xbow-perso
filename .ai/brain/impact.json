@@ -1,1851 +1,674 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "7b20261053d1fa209a5fbd104a0b7930153ce5ad",
-  "head": "c46f867ca40d08584df7d699c8bbdce4bcbc6124",
+  "base": "c46f867ca40d08584df7d699c8bbdce4bcbc6124",
+  "head": "fdef73b1c9dac0fbe3265aa4f25ea67cdd02ac87",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "backend/app/no_finding_recovery.py",
+      "path": "backend/app/strix_backend_hook.py",
       "status": "M"
     },
     {
-      "path": "backend/app/scan_result_integrity.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_no_finding_recovery.py",
-      "status": "M"
-    },
-    {
-      "path": "backend/tests/test_scan_result_integrity.py",
+      "path": "backend/app/strix_remote_session.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "backend/app/no_finding_recovery.py",
-    "backend/app/scan_result_integrity.py",
-    "backend/tests/test_no_finding_recovery.py",
-    "backend/tests/test_scan_result_integrity.py"
+    "backend/app/strix_backend_hook.py",
+    "backend/app/strix_remote_session.py"
   ],
   "impacted_files": [
-    "backend/app/adaptive_cycle.py",
-    "backend/app/coverage.py",
-    "backend/app/learning_memory.py",
-    "backend/app/no_finding_recovery.py",
-    "backend/app/recon_swarm.py",
-    "backend/app/scan_result_integrity.py",
-    "backend/tests/test_coverage.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_no_finding_recovery.py",
-    "backend/tests/test_scan_result_integrity.py"
+    "backend/app/runtime_capabilities.py",
+    "backend/app/strix_backend_hook.py",
+    "backend/app/strix_python_bootstrap_plan.py",
+    "backend/app/strix_python_bootstrap_runtime.py",
+    "backend/app/strix_python_compat_probe.py",
+    "backend/app/strix_python_preflight_surface.py",
+    "backend/app/strix_remote_session.py",
+    "backend/tests/test_strix_backend_hook.py",
+    "backend/tests/test_strix_remote_session.py"
   ],
   "impacted_symbols": [
     {
-      "name": "AdaptiveCycle",
+      "name": "CapabilityConfigError",
       "kind": "class",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 24
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 19
     },
     {
-      "name": "to_dict",
+      "name": "_strict_bool",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 33
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 23
     },
     {
-      "name": "_suppressed_techniques",
+      "name": "_bounded_int_env",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 40
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 35
     },
     {
-      "name": "_unstable_job_kinds",
+      "name": "validation_runtime_capability",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 60
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 54
     },
     {
-      "name": "build_adaptive_cycle",
+      "name": "safe_validation_runtime_capability",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 98
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 134
     },
     {
-      "name": "campaign_adaptive_cycle",
+      "name": "pentagi_runtime_capability",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 173
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 169
     },
     {
-      "name": "scope_checker",
+      "name": "safe_pentagi_runtime_capability",
       "kind": "function",
-      "file": "backend/app/adaptive_cycle.py",
-      "line": 183
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 222
     },
     {
-      "name": "_web_origin",
+      "name": "scanner_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 20
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 247
     },
     {
-      "name": "_asset_claim_identity",
+      "name": "safe_scanner_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 43
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 398
     },
     {
-      "name": "_asset_supports_web_origin",
+      "name": "browser_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 70
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 488
     },
     {
-      "name": "_endpoint_has_consistent_asset_origins",
+      "name": "safe_browser_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 98
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 512
     },
     {
-      "name": "_form_has_consistent_asset_origins",
+      "name": "recon_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 116
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 527
     },
     {
-      "name": "_completed_scans_with_provenance",
+      "name": "safe_recon_runtime_capability",
       "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 166
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 565
     },
     {
-      "name": "trustworthy_lineage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 209
-    },
-    {
-      "name": "linked_lineage_ids",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 301
-    },
-    {
-      "name": "_endpoint_scan_attribution",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 422
-    },
-    {
-      "name": "explicit_endpoint_ancestry",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 453
-    },
-    {
-      "name": "build_evidence_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 541
-    },
-    {
-      "name": "campaign_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 636
-    },
-    {
-      "name": "build_coverage_guidance",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 653
-    },
-    {
-      "name": "prioritize_action_with_coverage",
-      "kind": "function",
-      "file": "backend/app/coverage.py",
-      "line": 752
-    },
-    {
-      "name": "TechniqueMemory",
+      "name": "StrixBackendHookError",
       "kind": "class",
-      "file": "backend/app/learning_memory.py",
-      "line": 18
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 28
-    },
-    {
-      "name": "_target_scoped_evidence_ids",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 32
-    },
-    {
-      "name": "build_learning_memory",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 92
-    },
-    {
-      "name": "campaign_learning_memory",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 212
-    },
-    {
-      "name": "worker_outcome_event",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 248
-    },
-    {
-      "name": "summarize_worker_outcomes",
-      "kind": "function",
-      "file": "backend/app/learning_memory.py",
-      "line": 271
-    },
-    {
-      "name": "_is_completed_recon_step",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 37
-    },
-    {
-      "name": "NoFindingRecovery",
-      "kind": "class",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 53
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 84
-    },
-    {
-      "name": "_trusted_utc_timestamp",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 93
-    },
-    {
-      "name": "_origin",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 108
-    },
-    {
-      "name": "_campaign_asset_identity",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 130
-    },
-    {
-      "name": "_asset_matches_origin",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 160
-    },
-    {
-      "name": "_reviewed_ids",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 188
-    },
-    {
-      "name": "_completed_scan_evidence",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 212
-    },
-    {
-      "name": "_unstable_scanner_outcomes",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 306
-    },
-    {
-      "name": "build_no_finding_recovery",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 341
-    },
-    {
-      "name": "has_in_scope_asset_ancestor",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 480
-    },
-    {
-      "name": "scan_matches_campaign",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 567
-    },
-    {
-      "name": "scan_matches_target",
-      "kind": "function",
-      "file": "backend/app/no_finding_recovery.py",
-      "line": 609
-    },
-    {
-      "name": "ReconCapability",
-      "kind": "class",
-      "file": "backend/app/recon_swarm.py",
+      "file": "backend/app/strix_backend_hook.py",
       "line": 27
     },
     {
-      "name": "to_dict",
+      "name": "_prepared_backend",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 38
+      "file": "backend/app/strix_backend_hook.py",
+      "line": 31
     },
     {
-      "name": "ReconTask",
-      "kind": "class",
-      "file": "backend/app/recon_swarm.py",
+      "name": "_installed_strix_version",
+      "kind": "function",
+      "file": "backend/app/strix_backend_hook.py",
       "line": 46
     },
     {
-      "name": "to_dict",
+      "name": "_backend_api",
       "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 57
-    },
-    {
-      "name": "recon_capabilities",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 72
-    },
-    {
-      "name": "_origin_identity",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 76
-    },
-    {
-      "name": "_safe_target",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 109
-    },
-    {
-      "name": "_same_origin",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 127
-    },
-    {
-      "name": "_compatible_asset",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 132
-    },
-    {
-      "name": "_recon_observation_is_for_target",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 148
-    },
-    {
-      "name": "build_recon_plan",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 193
-    },
-    {
-      "name": "matching",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 220
-    },
-    {
-      "name": "recon_swarm_capabilities",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 272
-    },
-    {
-      "name": "campaign_recon_plan",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 281
-    },
-    {
-      "name": "scope_checker",
-      "kind": "function",
-      "file": "backend/app/recon_swarm.py",
-      "line": 290
-    },
-    {
-      "name": "canonical_scan_job_id",
-      "kind": "function",
-      "file": "backend/app/scan_result_integrity.py",
-      "line": 11
-    },
-    {
-      "name": "canonical_scan_source",
-      "kind": "function",
-      "file": "backend/app/scan_result_integrity.py",
-      "line": 29
-    },
-    {
-      "name": "conflicting_scan_terminal_job_ids",
-      "kind": "function",
-      "file": "backend/app/scan_result_integrity.py",
-      "line": 49
-    },
-    {
-      "name": "plausible_scan_timeline",
-      "kind": "function",
-      "file": "backend/app/scan_result_integrity.py",
-      "line": 72
-    },
-    {
-      "name": "parse",
-      "kind": "function",
-      "file": "backend/app/scan_result_integrity.py",
-      "line": 88
-    },
-    {
-      "name": "test_coverage_is_read_only_and_does_not_claim_unknown_completeness",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 6
-    },
-    {
-      "name": "test_coverage_counts_scan_and_independent_validation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 28
-    },
-    {
-      "name": "test_coverage_route_is_exposed",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 76
-    },
-    {
-      "name": "test_coverage_guidance_is_advisory_only",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 80
-    },
-    {
-      "name": "test_coverage_guidance_prioritizes_validation_after_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 98
-    },
-    {
-      "name": "test_coverage_detects_diminishing_scan_returns_without_findings",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 114
-    },
-    {
-      "name": "test_diminishing_returns_does_not_override_needed_validation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 174
-    },
-    {
-      "name": "test_low_yield_scan_deprioritization_preserves_kind_and_target",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 192
-    },
-    {
-      "name": "test_coverage_priority_never_changes_non_scan_action",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 216
-    },
-    {
-      "name": "test_completed_scan_duplicates_do_not_inflate_rotation_guidance",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 236
-    },
-    {
-      "name": "test_only_in_scope_linked_scan_evidence_contributes_to_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 276
-    },
-    {
-      "name": "test_single_asset_legacy_completed_scan_remains_compatible",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 338
-    },
-    {
-      "name": "test_scan_with_conflicting_asset_ancestors_is_not_trusted",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 359
-    },
-    {
-      "name": "test_completed_scan_through_endpoint_ancestry_is_counted",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 382
-    },
-    {
-      "name": "test_invalid_scan_job_identifiers_do_not_inflate_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 412
-    },
-    {
-      "name": "test_same_job_reported_on_out_of_scope_asset_taints_entire_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 439
-    },
-    {
-      "name": "test_conflicting_reporters_for_same_scan_job_are_not_credited",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 469
-    },
-    {
-      "name": "test_missing_source_on_duplicate_scan_taints_job",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 497
-    },
-    {
-      "name": "test_positive_scan_report_without_recorded_findings_does_not_count_as_negative",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 524
-    },
-    {
-      "name": "test_conflicting_duplicate_scan_finding_counts_invalidate_entire_job",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 553
-    },
-    {
-      "name": "test_invalid_scan_report_count_is_not_credited_as_completed_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 587
-    },
-    {
-      "name": "test_explicit_zero_finding_scan_report_counts_as_completed_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 615
-    },
-    {
-      "name": "test_explicit_findings_report_does_not_discard_scans_with_recorded_finding",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 645
-    },
-    {
-      "name": "test_unreconciled_scan_report_takes_precedence_over_low_yield_rotation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 677
-    },
-    {
-      "name": "test_unreconciled_scan_guidance_never_modifies_planned_scan_authority",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 740
-    },
-    {
-      "name": "test_conflicting_terminal_scan_job_is_not_credited_as_completed",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 758
-    },
-    {
-      "name": "test_queued_then_completed_scan_keeps_coverage_credit",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 785
-    },
-    {
-      "name": "test_asset_only_completed_scan_does_not_claim_endpoint_level_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 811
-    },
-    {
-      "name": "test_endpoint_linked_scan_documents_only_its_observed_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 851
-    },
-    {
-      "name": "test_independent_endpoint_scan_records_document_all_observed_endpoints",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 890
-    },
-    {
-      "name": "test_out_of_scope_endpoint_scan_never_fills_authorized_endpoint_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 928
-    },
-    {
-      "name": "test_partial_endpoint_scan_documentation_prioritizes_provenance_review",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 975
-    },
-    {
-      "name": "test_documented_scans_keep_existing_low_yield_surface_rotation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1040
-    },
-    {
-      "name": "test_incomplete_endpoint_provenance_never_changes_scan_authority",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1097
-    },
-    {
-      "name": "test_scan_report_conflict_outranks_missing_endpoint_provenance",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1118
-    },
-    {
-      "name": "_two_endpoint_scan_scope_graph",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1143
-    },
-    {
-      "name": "_record_scan_scope",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1159
-    },
-    {
-      "name": "test_one_scan_job_with_conflicting_endpoint_reports_does_not_claim_either",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1177
-    },
-    {
-      "name": "test_consistent_duplicate_reports_preserve_documented_endpoint_scope",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1196
-    },
-    {
-      "name": "test_asset_only_duplicate_disagrees_with_explicit_endpoint_scan_scope",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1213
-    },
-    {
-      "name": "test_ambiguous_job_does_not_discard_separately_documented_endpoint_job",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1229
-    },
-    {
-      "name": "test_scan_linked_to_mismatched_endpoint_does_not_gain_completion_credit",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1247
-    },
-    {
-      "name": "test_scan_linked_to_malformed_endpoint_cannot_claim_valid_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1285
-    },
-    {
-      "name": "test_mixed_valid_and_invalid_endpoint_ancestors_taint_scan_job",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1315
-    },
-    {
-      "name": "test_endpoint_claim_subsetting_is_rejected_without_scope_checker",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1346
-    },
-    {
-      "name": "test_suspicious_duplicate_scope_triggers_provenance_review_even_if_other_jobs_document_all",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1376
-    },
-    {
-      "name": "test_out_of_scope_form_ancestry_cannot_credit_completed_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1419
-    },
-    {
-      "name": "test_malformed_form_ancestry_cannot_credit_completed_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1449
-    },
-    {
-      "name": "test_mixed_valid_and_invalid_form_parents_quarantine_whole_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1477
-    },
-    {
-      "name": "test_valid_form_and_endpoint_lineage_keeps_completed_scan_credit",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1508
-    },
-    {
-      "name": "test_valid_form_with_invalid_endpoint_parent_fails_scan_lineage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1545
-    },
-    {
-      "name": "test_untrusted_completed_scan_guides_to_provenance_review_not_more_scans",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1581
-    },
-    {
-      "name": "test_unreconciled_findings_take_precedence_over_provenance_guidance",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1622
-    },
-    {
-      "name": "test_untrusted_provenance_precedes_low_discovery_and_scanner_retry",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1643
-    },
-    {
-      "name": "test_no_untrusted_scan_keeps_existing_discovery_guidance",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1658
-    },
-    {
-      "name": "test_untrusted_provenance_does_not_change_planned_scan_or_authority",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1672
-    },
-    {
-      "name": "test_coverage_does_not_count_impossible_scan_completion_times",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1693
-    },
-    {
-      "name": "test_scan_completion_before_start_cannot_claim_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1732
-    },
-    {
-      "name": "test_malformed_temporal_duplicate_taints_entire_scan_job",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1759
-    },
-    {
-      "name": "test_valid_temporal_scan_remains_counted_alongside_invalid_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1789
-    },
-    {
-      "name": "test_plausible_scan_timeline_accepts_legacy_absent_timestamps",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1821
-    },
-    {
-      "name": "test_invisible_scan_job_ids_never_count_as_completed_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1844
-    },
-    {
-      "name": "test_invalid_scan_id_does_not_poison_independent_valid_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1871
-    },
-    {
-      "name": "_origin_scan_graph",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1898
-    },
-    {
-      "name": "test_http_endpoint_does_not_inherit_https_asset_scan_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1922
-    },
-    {
-      "name": "test_https_endpoint_with_different_port_does_not_claim_scan_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1940
-    },
-    {
-      "name": "test_matching_https_asset_endpoint_remains_documented",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1953
-    },
-    {
-      "name": "test_legacy_hostname_only_asset_remains_compatible_with_https_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1969
-    },
-    {
-      "name": "test_endpoint_with_mixed_http_and_https_asset_parents_is_untrusted",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 1983
-    },
-    {
-      "name": "_form_scan_origin_graph",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2019
-    },
-    {
-      "name": "test_http_form_cannot_claim_https_asset_scan_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2057
-    },
-    {
-      "name": "test_form_action_on_wrong_port_cannot_claim_scan_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2071
-    },
-    {
-      "name": "test_form_with_incompatible_intermediate_endpoint_cannot_claim_scan",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2082
-    },
-    {
-      "name": "test_same_origin_form_with_default_https_port_retains_scan_credit",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2095
-    },
-    {
-      "name": "test_mixed_form_asset_origins_do_not_credit_one_valid_parent",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2109
-    },
-    {
-      "name": "test_positive_scan_on_asset_a_cannot_reconcile_finding_on_asset_b",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2140
-    },
-    {
-      "name": "test_positive_scan_on_matching_endpoint_reconciles_recorded_finding",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2180
-    },
-    {
-      "name": "test_orphan_finding_cannot_reconcile_positive_scan_claim",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2228
-    },
-    {
-      "name": "test_positive_scan_count_cannot_exceed_same_asset_recorded_findings",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2257
-    },
-    {
-      "name": "_positive_scan_endpoint_graph",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2294
-    },
-    {
-      "name": "test_positive_endpoint_scan_cannot_borrow_other_endpoint_finding",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2310
-    },
-    {
-      "name": "test_positive_endpoint_scan_requires_endpoint_linked_finding",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2346
-    },
-    {
-      "name": "test_positive_asset_scan_rejects_finding_with_extra_asset_ancestor",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2381
-    },
-    {
-      "name": "test_positive_job_conflicting_endpoint_reporters_fail_reconciliation",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2419
-    },
-    {
-      "name": "test_positive_asset_only_scan_still_reconciles_asset_finding",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2454
-    },
-    {
-      "name": "test_positive_duplicate_scan_job_cannot_merge_different_asset_origins",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2488
-    },
-    {
-      "name": "test_single_positive_scan_with_two_unrelated_assets_is_unreconciled",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2523
-    },
-    {
-      "name": "test_positive_duplicate_asset_observations_with_same_origin_remain_valid",
-      "kind": "function",
-      "file": "backend/tests/test_coverage.py",
-      "line": 2557
-    },
-    {
-      "name": "test_learning_memory_aggregates_only_explicit_outcomes",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 9
-    },
-    {
-      "name": "test_learning_memory_is_bounded_and_deterministic",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
+      "file": "backend/app/strix_backend_hook.py",
       "line": 55
     },
     {
-      "name": "test_learning_memory_route_is_exposed",
+      "name": "register_xbow_backend",
       "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 77
-    },
-    {
-      "name": "test_learning_memory_rejects_unbounded_limits",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 105
-    },
-    {
-      "name": "test_worker_outcome_memory_excludes_payloads_and_errors",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 116
-    },
-    {
-      "name": "test_worker_outcome_memory_rejects_unknown_kinds_and_unbounded_limits",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 141
-    },
-    {
-      "name": "test_worker_summary_counts_one_final_state_per_job",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 163
-    },
-    {
-      "name": "event",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 166
-    },
-    {
-      "name": "test_worker_summary_does_not_merge_different_job_kinds",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 199
-    },
-    {
-      "name": "test_invalid_worker_events_cannot_inflate_recovery_failure_counts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 217
-    },
-    {
-      "name": "test_no_finding_feedback_uses_final_worker_state_not_retry_event_count",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 258
-    },
-    {
-      "name": "_technique_job_observation",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 300
-    },
-    {
-      "name": "test_technique_memory_deduplicates_multiple_observations_from_same_job",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 313
-    },
-    {
-      "name": "test_contradictory_job_results_are_inconclusive_regardless_of_order",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 333
-    },
-    {
-      "name": "test_distinct_job_ids_remain_independent_technique_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 356
-    },
-    {
-      "name": "test_legacy_observations_without_job_id_keep_independent_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 373
-    },
-    {
-      "name": "test_malformed_job_id_cannot_create_extra_technique_confidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 388
-    },
-    {
-      "name": "test_worker_completed_state_survives_late_failed_and_queued_events",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 414
-    },
-    {
-      "name": "test_failed_job_without_completion_can_still_be_requeued",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 439
-    },
-    {
-      "name": "test_terminal_worker_state_prevents_false_scanner_instability",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 458
-    },
-    {
-      "name": "test_scoped_learning_excludes_other_authorized_host_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 481
-    },
-    {
-      "name": "test_scoped_learning_rejects_orphan_evidence_in_multi_asset_graph",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 511
-    },
-    {
-      "name": "test_scoped_learning_preserves_single_asset_legacy_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 531
-    },
-    {
-      "name": "test_scoped_learning_rejects_different_protocol_and_port",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 552
-    },
-    {
-      "name": "test_scoped_learning_does_not_credit_job_id_reused_on_other_host",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 581
-    },
-    {
-      "name": "test_scoped_learning_accepts_indirect_in_scope_ancestry_only",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 603
-    },
-    {
-      "name": "test_scoped_learning_rejects_non_web_target_url",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 642
-    },
-    {
-      "name": "test_invisible_job_ids_cannot_inflate_scanner_technique_memory",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 653
-    },
-    {
-      "name": "test_invisible_worker_event_ids_do_not_inflate_operational_failures",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 679
-    },
-    {
-      "name": "test_worker_outcome_event_rejects_invalid_job_identifiers",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 707
-    },
-    {
-      "name": "test_scoped_technique_memory_keeps_valid_job_when_bad_job_is_present",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 721
-    },
-    {
-      "name": "test_scoped_learning_rejects_cross_origin_endpoint_with_approved_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 745
-    },
-    {
-      "name": "test_scoped_learning_rejects_malformed_intermediate_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 764
-    },
-    {
-      "name": "test_scoped_learning_rejects_cross_origin_form_with_approved_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 783
-    },
-    {
-      "name": "test_scoped_learning_rejects_mixed_valid_and_invalid_ancestry",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 799
-    },
-    {
-      "name": "test_scoped_learning_accepts_valid_endpoint_and_form_chain",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 819
-    },
-    {
-      "name": "test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 842
-    },
-    {
-      "name": "test_learning_memory_route_excludes_evidence_from_other_authorized_asset",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 859
-    },
-    {
-      "name": "test_worker_outcome_event_rejects_noninteger_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 916
-    },
-    {
-      "name": "test_worker_summary_does_not_count_invalid_attempts",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 935
-    },
-    {
-      "name": "test_invalid_completion_attempts_cannot_overwrite_valid_queued_state",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 961
-    },
-    {
-      "name": "test_legacy_missing_attempts_defaults_to_zero_without_inventing_retries",
-      "kind": "function",
-      "file": "backend/tests/test_learning_memory.py",
-      "line": 987
-    },
-    {
-      "name": "_graph",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 7
-    },
-    {
-      "name": "_feedback",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 37
-    },
-    {
-      "name": "test_negative_scan_shifts_focus_to_unobserved_in_scope_surfaces",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 48
-    },
-    {
-      "name": "test_repeated_completed_scans_rotate_instead_of_repeating_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 66
-    },
-    {
-      "name": "test_duplicate_observations_for_one_scan_job_do_not_inflate_yield",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
+      "file": "backend/app/strix_backend_hook.py",
       "line": 75
     },
     {
-      "name": "test_failed_scans_do_not_count_as_null_findings",
+      "name": "_assert_backend_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
+      "file": "backend/app/strix_backend_hook.py",
+      "line": 116
+    },
+    {
+      "name": "self_test",
+      "kind": "function",
+      "file": "backend/app/strix_backend_hook.py",
+      "line": 180
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "backend/app/strix_backend_hook.py",
+      "line": 207
+    },
+    {
+      "name": "StrixPythonBootstrapPlanError",
+      "kind": "class",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 75
+    },
+    {
+      "name": "_require_exact_contract",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 79
+    },
+    {
+      "name": "_verify_compatibility",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 90
+    },
+    {
+      "name": "_verify_dependency_lock",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 116
+    },
+    {
+      "name": "_verify_toolchain",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 130
+    },
+    {
+      "name": "build_bootstrap_plan",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_plan.py",
+      "line": 153
+    },
+    {
+      "name": "StrixPythonBootstrapRuntimeError",
+      "kind": "class",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 35
+    },
+    {
+      "name": "_module_namespace",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 39
+    },
+    {
+      "name": "_verify_backend_descriptor",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 53
+    },
+    {
+      "name": "prepared_strix_python_runtime",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 61
+    },
+    {
+      "name": "_self_test_plan",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 151
+    },
+    {
+      "name": "self_test",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 176
+    },
+    {
+      "name": "check_docker_installed",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 177
+    },
+    {
+      "name": "pull_docker_image",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 180
+    },
+    {
+      "name": "validate_environment",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 183
+    },
+    {
+      "name": "synthetic_import",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 198
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "backend/app/strix_python_bootstrap_runtime.py",
+      "line": 247
+    },
+    {
+      "name": "StrixPythonCompatError",
+      "kind": "class",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 35
+    },
+    {
+      "name": "_installed_strix_version",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 39
+    },
+    {
+      "name": "_upstream_source_path",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 48
+    },
+    {
+      "name": "_upstream_main_path",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 64
+    },
+    {
+      "name": "_read_bounded_bytes",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 68
+    },
+    {
+      "name": "_git_blob_sha1",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 82
+    },
+    {
+      "name": "_read_upstream_main_source",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 91
+    },
+    {
+      "name": "_verify_docker_preflight",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 101
+    },
+    {
+      "name": "_verify_preflight_structure",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 113
+    },
+    {
+      "name": "probe_python_runtime",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 182
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "backend/app/strix_python_compat_probe.py",
+      "line": 234
+    },
+    {
+      "name": "StrixPythonPreflightSurfaceError",
+      "kind": "class",
+      "file": "backend/app/strix_python_preflight_surface.py",
+      "line": 49
+    },
+    {
+      "name": "_verify_plan",
+      "kind": "function",
+      "file": "backend/app/strix_python_preflight_surface.py",
+      "line": 53
+    },
+    {
+      "name": "_require_callable_identity",
+      "kind": "function",
+      "file": "backend/app/strix_python_preflight_surface.py",
+      "line": 82
+    },
+    {
+      "name": "inspect_preflight_surface",
+      "kind": "function",
+      "file": "backend/app/strix_python_preflight_surface.py",
+      "line": 100
+    },
+    {
+      "name": "StrixRemoteSessionError",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 35
+    },
+    {
+      "name": "StrixRemoteSessionBlocked",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 39
+    },
+    {
+      "name": "PreparedRemoteSessionDescriptor",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 44
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 56
+    },
+    {
+      "name": "PreparedRemoteOperation",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 63
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 77
+    },
+    {
+      "name": "_valid_session_id",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 81
+    },
+    {
+      "name": "_validate_image",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 87
+    },
+    {
+      "name": "_validate_ports",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
       "line": 97
     },
     {
-      "name": "test_campaign_findings_disable_no_finding_recovery_even_without_graph_record",
+      "name": "_new_session_id",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 115
+      "file": "backend/app/strix_remote_session.py",
+      "line": 114
     },
     {
-      "name": "test_existing_graph_finding_disables_null_scan_recovery",
+      "name": "_new_request_id",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 123
+      "file": "backend/app/strix_remote_session.py",
+      "line": 118
     },
     {
-      "name": "test_out_of_scope_asset_cannot_trigger_recovery",
+      "name": "_validate_exec",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 137
+      "file": "backend/app/strix_remote_session.py",
+      "line": 122
     },
     {
-      "name": "test_missing_scope_checker_disables_recommendations",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 146
+      "name": "PreparedStrixRemoteSession",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 171
     },
     {
-      "name": "test_repeated_failed_worker_requires_review_not_retry",
+      "name": "__init__",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 157
+      "file": "backend/app/strix_remote_session.py",
+      "line": 172
     },
     {
-      "name": "test_feedback_never_invents_task_kinds_or_expands_configured_set",
+      "name": "session_id",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 191
+    },
+    {
+      "name": "plan_exec",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 194
+    },
+    {
+      "name": "exec",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 218
+    },
+    {
+      "name": "plan_resolve_exposed_port",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 229
+    },
+    {
+      "name": "resolve_exposed_port",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 253
+    },
+    {
+      "name": "PreparedStrixRemoteClient",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 260
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 261
+    },
+    {
+      "name": "plan_delete",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 264
+    },
+    {
+      "name": "delete",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 284
+    },
+    {
+      "name": "prepare_strix_remote_session",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 291
+    },
+    {
+      "name": "prepared_remote_session_self_test",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 340
+    },
+    {
+      "name": "_restore_runtime_backend_env",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 23
+    },
+    {
+      "name": "_install_fake_strix_backend_api",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 27
+    },
+    {
+      "name": "register_backend",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 35
+    },
+    {
+      "name": "get_backend",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 42
+    },
+    {
+      "name": "supported_backends",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 45
+    },
+    {
+      "name": "backend_supports_bind_mounts",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 48
+    },
+    {
+      "name": "test_registers_fail_closed_backend_without_bind_mounts",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 73
+    },
+    {
+      "name": "test_registration_is_idempotent_for_same_backend",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 89
+    },
+    {
+      "name": "test_backend_name_collision_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 98
+    },
+    {
+      "name": "test_registered_backend_returns_prepared_non_executing_client_session",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 108
+    },
+    {
+      "name": "test_self_test_requires_exact_strix_version",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 140
+    },
+    {
+      "name": "test_self_test_proves_fail_closed_backend",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
+      "line": 152
+    },
+    {
+      "name": "test_ci_checks_real_pinned_strix_backend_api",
+      "kind": "function",
+      "file": "backend/tests/test_strix_backend_hook.py",
       "line": 175
     },
     {
-      "name": "test_unavailable_recovery_tasks_fail_closed",
+      "name": "_manifest",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 185
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 18
     },
     {
-      "name": "test_no_endpoints_prefers_existing_bounded_crawl",
+      "name": "_prepared",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 192
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 30
     },
     {
-      "name": "test_scope_integrity_gap_prioritized_before_more_scanning",
+      "name": "test_prepared_backend_returns_client_and_session_without_side_effects",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 199
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 41
     },
     {
-      "name": "test_reviewed_forms_no_longer_count_as_review_gap",
+      "name": "test_exec_plan_matches_pinned_caido_bootstrap_call_shape",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 216
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 56
     },
     {
-      "name": "test_feedback_rejects_negative_campaign_finding_count",
+      "name": "test_exec_is_async_and_always_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 244
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 81
     },
     {
-      "name": "_graph_with_explicitly_linked_scan",
+      "name": "test_resolve_exposed_port_is_async_and_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 251
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 96
     },
     {
-      "name": "test_out_of_scope_technology_does_not_satisfy_authorized_inventory",
+      "name": "test_resolve_exposed_port_rejects_undeclared_port_before_blocker",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 272
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 104
     },
     {
-      "name": "test_orphan_form_does_not_close_authorized_form_inventory_gap",
+      "name": "test_client_delete_is_async_and_fails_closed",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 293
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 111
     },
     {
-      "name": "test_out_of_scope_form_does_not_close_authorized_form_inventory_gap",
+      "name": "test_client_delete_rejects_session_mismatch",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 311
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 119
     },
     {
-      "name": "test_browser_already_attempted_does_not_create_infinite_recovery_loop",
+      "name": "test_prepared_exec_plan_rejects_shells_and_executable_paths",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 332
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 136
     },
     {
-      "name": "_completed_recon_evidence",
+      "name": "test_prepared_exec_plan_rejects_invalid_timeout",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 390
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 144
     },
     {
-      "name": "test_completed_in_scope_recovery_task_is_not_recommended_twice",
+      "name": "test_prepared_backend_rejects_bind_mounts",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 410
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 151
     },
     {
-      "name": "test_completed_all_candidate_recovery_tasks_requires_review",
+      "name": "test_prepared_backend_rejects_duplicate_or_invalid_ports",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 425
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 169
     },
     {
-      "name": "test_out_of_scope_recon_completion_does_not_exhaust_in_scope_task",
+      "name": "test_self_test_reports_non_executing_interface",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 442
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 175
     },
     {
-      "name": "test_orphan_recon_completion_does_not_exhaust_task",
+      "name": "test_prepared_backend_rejects_manifest_before_session_creation",
       "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 458
-    },
-    {
-      "name": "test_failed_or_queued_recon_task_does_not_exhaust_option",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 472
-    },
-    {
-      "name": "test_completed_recovery_cannot_create_new_authority",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 491
-    },
-    {
-      "name": "test_recovery_targets_only_requested_host_in_multi_host_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 505
-    },
-    {
-      "name": "test_recovery_rejects_other_authorized_host_as_target_inventory",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 572
-    },
-    {
-      "name": "test_recovery_target_host_exhaustion_is_not_cross_host",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 585
-    },
-    {
-      "name": "test_recovery_target_host_cannot_be_empty",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 620
-    },
-    {
-      "name": "test_recovery_scopes_untrusted_endpoint_count_to_target",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 627
-    },
-    {
-      "name": "test_unscoped_scan_is_not_misattributed_to_target_in_multi_host_campaign",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 663
-    },
-    {
-      "name": "test_scoped_scan_on_other_host_cannot_trigger_negative_target_feedback",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 677
-    },
-    {
-      "name": "test_legacy_unscoped_scan_remains_valid_for_single_observed_host",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 705
-    },
-    {
-      "name": "_fully_reviewed_target_graph",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 713
-    },
-    {
-      "name": "test_single_host_legacy_browser_completion_prevents_recovery_loop",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 767
-    },
-    {
-      "name": "test_other_host_browser_completion_cannot_exhaust_target",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 792
-    },
-    {
-      "name": "test_queued_endpoint_review_does_not_close_coverage_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 824
-    },
-    {
-      "name": "test_failed_form_review_does_not_close_coverage_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 845
-    },
-    {
-      "name": "test_completed_scoped_review_closes_only_its_own_endpoint_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 875
-    },
-    {
-      "name": "test_review_without_terminal_status_cannot_claim_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 905
-    },
-    {
-      "name": "_unattributed_scanner_failures",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 921
-    },
-    {
-      "name": "test_global_worker_failures_do_not_block_different_target_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 933
-    },
-    {
-      "name": "test_global_worker_failures_cannot_create_missing_target_scan_evidence",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 969
-    },
-    {
-      "name": "test_single_observed_host_still_blocks_recovery_on_real_worker_failure",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 984
-    },
-    {
-      "name": "test_legacy_campaign_wide_health_retains_conservative_gate",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 998
-    },
-    {
-      "name": "test_healthy_multi_host_worker_summary_does_not_claim_attribution",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1008
-    },
-    {
-      "name": "_record_completed_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1038
-    },
-    {
-      "name": "test_conflicting_sources_for_same_scan_job_do_not_count_as_independent",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1062
-    },
-    {
-      "name": "test_identical_repeated_scanner_source_for_one_job_counts_once",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1081
-    },
-    {
-      "name": "test_distinct_jobs_with_same_source_do_not_inflate_source_diversity",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1097
-    },
-    {
-      "name": "test_ambiguous_scan_does_not_hide_separate_trusted_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1113
-    },
-    {
-      "name": "test_missing_scanner_source_requires_review_not_recovery_escalation",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1133
-    },
-    {
-      "name": "test_blank_duplicate_source_cannot_be_hidden_by_named_reporter",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1149
-    },
-    {
-      "name": "test_oversized_scan_job_id_is_not_trusted_as_independent_source",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1166
-    },
-    {
-      "name": "_record_timestamped_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1180
-    },
-    {
-      "name": "test_new_target_endpoint_after_recovery_completion_reopens_bounded_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1203
-    },
-    {
-      "name": "test_old_target_observation_cannot_reopen_exhausted_recon",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1231
-    },
-    {
-      "name": "test_missing_or_invalid_completion_timestamp_does_not_reopen_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1252
-    },
-    {
-      "name": "test_cross_host_or_orphan_observation_does_not_reopen_target_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1272
-    },
-    {
-      "name": "test_later_recovery_completion_prevents_repeating_old_novelty",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1321
-    },
-    {
-      "name": "_two_origin_graph",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1345
-    },
-    {
-      "name": "test_negative_scan_on_http_does_not_trigger_https_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1368
-    },
-    {
-      "name": "test_origin_scoped_scan_recovers_only_its_endpoint_inventory",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1395
-    },
-    {
-      "name": "test_endpoint_linked_to_different_port_does_not_fill_target_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1443
-    },
-    {
-      "name": "test_legacy_unlinked_scan_requires_explicit_matching_asset_origin",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1482
-    },
-    {
-      "name": "test_invalid_or_mismatched_target_origin_is_rejected",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1510
-    },
-    {
-      "name": "test_shared_scan_job_across_origins_cannot_prove_target_negative_yield",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1524
-    },
-    {
-      "name": "test_cross_origin_job_cannot_poison_independent_target_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1548
-    },
-    {
-      "name": "test_same_origin_reports_of_one_job_remain_one_trusted_scan",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1574
-    },
-    {
-      "name": "test_scans_exclusively_on_another_origin_are_not_target_ambiguities",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1591
-    },
-    {
-      "name": "test_ambiguous_scan_jobs_do_not_trigger_premature_surface_rotation",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1607
-    },
-    {
-      "name": "test_three_trusted_scans_can_trigger_coverage_rotation",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1636
-    },
-    {
-      "name": "test_only_ambiguous_scan_jobs_require_manual_source_review",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1648
-    },
-    {
-      "name": "test_cross_origin_ambiguity_does_not_reduce_separate_trusted_job_count",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1666
-    },
-    {
-      "name": "_scan_report",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1692
-    },
-    {
-      "name": "test_positive_scan_count_with_no_recorded_finding_blocks_negative_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1716
-    },
-    {
-      "name": "test_explicit_zero_finding_count_retains_safe_recovery_guidance",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1729
-    },
-    {
-      "name": "test_malformed_finding_counter_requires_ingestion_reconciliation",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1739
-    },
-    {
-      "name": "test_other_origin_scan_finding_count_does_not_block_target_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1750
-    },
-    {
-      "name": "test_existing_findings_do_not_get_misclassified_as_missing_ingestion",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1772
-    },
-    {
-      "name": "test_review_with_mixed_authorized_and_other_host_parents_is_not_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1789
-    },
-    {
-      "name": "test_form_review_cannot_use_mixed_endpoint_parent_to_close_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1839
-    },
-    {
-      "name": "test_review_of_two_valid_target_endpoints_closes_both_gaps",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1869
-    },
-    {
-      "name": "test_review_with_no_surface_parent_never_closes_coverage",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1899
-    },
-    {
-      "name": "test_contradictory_scan_terminal_status_blocks_negative_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1917
-    },
-    {
-      "name": "test_unrelated_origin_status_conflict_does_not_block_target_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1945
-    },
-    {
-      "name": "test_queued_then_completed_scan_allows_bounded_negative_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 1987
-    },
-    {
-      "name": "test_review_marked_completed_but_failed_outcome_keeps_endpoint_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2011
-    },
-    {
-      "name": "test_review_marked_reviewed_but_inconclusive_outcome_keeps_form_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2033
-    },
-    {
-      "name": "test_explicit_completed_and_successful_review_closes_only_eligible_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2065
-    },
-    {
-      "name": "test_invalid_review_outcome_type_cannot_close_endpoint_gap",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2087
-    },
-    {
-      "name": "test_failed_outcome_does_not_exhaust_completed_recon_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2107
-    },
-    {
-      "name": "test_inconclusive_outcome_does_not_exhaust_completed_recon_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2129
-    },
-    {
-      "name": "test_successful_completed_recon_remains_exhausted_without_new_surface",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2151
-    },
-    {
-      "name": "test_no_finding_recon_completion_still_counts_as_a_completed_attempt",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2173
-    },
-    {
-      "name": "test_malformed_outcome_does_not_claim_completed_recon",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2193
-    },
-    {
-      "name": "test_failed_browser_observation_does_not_stop_recovery_advisory",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2213
-    },
-    {
-      "name": "test_refreshing_old_endpoint_cannot_reopen_completed_recon",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2240
-    },
-    {
-      "name": "test_observation_refresh_without_first_discovery_is_not_novelty",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2264
-    },
-    {
-      "name": "test_impossible_or_untrusted_first_discovery_never_reopens_task",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2283
-    },
-    {
-      "name": "test_confirmed_new_form_can_reopen_completed_form_mapping",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2311
-    },
-    {
-      "name": "test_negative_scan_with_mismatched_endpoint_ancestor_is_not_trusted",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2336
-    },
-    {
-      "name": "test_negative_scan_with_malformed_endpoint_ancestor_is_not_trusted",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2374
-    },
-    {
-      "name": "test_mixed_valid_and_invalid_scan_endpoints_do_not_trigger_recovery",
-      "kind": "function",
-      "file": "backend/tests/test_no_finding_recovery.py",
-      "line": 2409
+      "file": "backend/tests/test_strix_remote_session.py",
+      "line": 190
     }
   ],
   "selected_tests": [
-    "backend/tests/test_coverage.py",
-    "backend/tests/test_learning_memory.py",
-    "backend/tests/test_no_finding_recovery.py",
-    "backend/tests/test_scan_result_integrity.py"
+    "backend/tests/test_strix_backend_hook.py",
+    "backend/tests/test_strix_remote_session.py"
   ]
 }

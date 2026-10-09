@@ -13120,6 +13120,7 @@ version = _installed_strix_version()
 descriptor = register_xbow_backend()
 prepared = asyncio.run(_assert_backend_fails_closed())
 interface = prepared_remote_session_self_test()
+repeated_interface = prepared_remote_session_self_test()
 ⋮----
 def _main() -> int
 ⋮----
@@ -14260,6 +14261,12 @@ def prepared_remote_session_self_test() -> dict[str, Any]
 ⋮----
 exec_plan = session.plan_exec(
 port_plan = session.plan_resolve_exposed_port(48080)
+# Request IDs are fresh replay-protection nonces, not a part of the
+# stable interface contract. Excluding only those IDs makes the
+# self-test digest reproducible across otherwise identical runs.
+exec_contract = exec_plan.to_dict()
+port_contract = port_plan.to_dict()
+⋮----
 canonical = json.dumps(
 ```
 

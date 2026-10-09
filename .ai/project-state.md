@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T21:27:37Z
+Generated: 2026-10-09T21:52:31Z
 
 ### Git
 - Branch: `main`
-- Head: `c46f867ca40d`
-- Commit date: 2026-10-09T23:27:26+02:00
-- Commit: fix(recovery): validate scanner source provenance before negative-result learning (#662)
+- Head: `fdef73b1c9da`
+- Commit date: 2026-10-09T23:51:32+02:00
+- Commit: fix(strix): make remote interface self-test fingerprint reproducible (#665)
 - Tracked files: 688
 
 ### Recently changed files
+- `backend/app/strix_backend_hook.py`
+- `backend/app/strix_remote_session.py`
 - `backend/app/no_finding_recovery.py`
 - `backend/app/scan_result_integrity.py`
 - `backend/tests/test_no_finding_recovery.py`
