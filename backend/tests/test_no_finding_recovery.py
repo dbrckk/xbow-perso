@@ -3355,10 +3355,30 @@ def test_target_origin_rejects_query_bearing_legacy_asset_alias():
     assert result.recommended_task_kinds == ()
 
 
-def test_target_origin_accepts_plain_legacy_host_alias():
-    graph = _graph()
-    result = _feedback(graph, target_url="https://example.test")
+def test_target_origin_accepts_explicitly_linked_plain_legacy_host_alias():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:legacy", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:legacy",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:legacy",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-legacy-linked",
+            },
+        )
+    )
+    result = _feedback(
+        graph,
+        target_url="https://example.test",
+        allowed=("crawl",),
+    )
 
     assert result.state == "recovery_advisory"
     assert result.completed_scan_count == 1
+    assert result.recommended_task_kinds == ("crawl",)
     assert result.advisory_only is True
