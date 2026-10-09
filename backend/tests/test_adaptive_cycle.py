@@ -235,3 +235,67 @@ def test_adaptive_cycle_route_does_not_suppress_target_from_other_host_failures(
     assert result["cycle"]["retry_suppressed_techniques"] == []
     assert result["recovery_requires_new_authorized_planning"] is True
     assert result["read_only"] is True
+
+
+def test_malformed_worker_requeue_count_requires_review_not_exception():
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("crawl", "example.test", "crawl", 90)],
+        [],
+        {"by_job_kind": {"recon_task": {"completed": 0, "requeued": "invalid"}}},
+    )
+
+    assert cycle.state == "human_review"
+    assert cycle.next_action == "stop"
+    assert cycle.requires_human is True
+    assert cycle.retry_suppressed_job_kinds == ("recon_task",)
+
+
+def test_negative_and_boolean_worker_counts_do_not_signal_healthy_execution():
+    for bad in (-1, True, None, float("nan")):
+        cycle = build_adaptive_cycle(
+            _gate(),
+            [PlannedAction("crawl", "example.test", "crawl", 90)],
+            [],
+            {"by_job_kind": {"recon_task": {"completed": bad, "requeued": 0}}},
+        )
+        assert cycle.state == "human_review"
+        assert cycle.safe_to_progress is False
+        assert cycle.retry_suppressed_job_kinds == ("recon_task",)
+
+
+def test_malformed_worker_outcome_structure_requires_human_review():
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("crawl", "example.test", "crawl", 90)],
+        [],
+        {"by_job_kind": []},
+    )
+    assert cycle.state == "human_review"
+    assert cycle.retry_suppressed_job_kinds == ("untrusted_worker_outcomes",)
+
+
+def test_valid_worker_feedback_retains_existing_completion_semantics():
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("crawl", "example.test", "crawl", 90)],
+        [],
+        {"by_job_kind": {"recon_task": {"completed": 1, "requeued": 8}}},
+    )
+    assert cycle.state == "recon"
+    assert cycle.safe_to_progress is True
+    assert cycle.retry_suppressed_job_kinds == ()
+
+
+def test_repeated_failed_workers_require_review_without_requeue_events():
+    cycle = build_adaptive_cycle(
+        _gate(),
+        [PlannedAction("scan", "example.test", "scan", 80)],
+        [],
+        {"by_job_kind": {"nuclei_scan": {
+            "completed": 0, "failed": 2, "requeued": 0
+        }}},
+    )
+    assert cycle.state == "human_review"
+    assert cycle.retry_suppressed_job_kinds == ("nuclei_scan",)
+    assert cycle.safe_to_progress is False

@@ -62,16 +62,37 @@ def _unstable_job_kinds(worker_outcomes: dict[str, Any] | None) -> tuple[str, ..
         return ()
     by_kind = worker_outcomes.get("by_job_kind")
     if not isinstance(by_kind, dict):
-        return ()
-    unstable = []
+        # Malformed worker diagnostics cannot establish safe execution.
+        return ("untrusted_worker_outcomes",)
+    unstable: set[str] = set()
     for kind, values in by_kind.items():
-        if not isinstance(values, dict):
+        if not isinstance(kind, str) or not kind.strip() or len(kind) > 80:
+            unstable.add("untrusted_worker_outcomes")
             continue
-        requeued = int(values.get("requeued") or 0)
-        completed = int(values.get("completed") or 0)
-        if requeued >= 2 and completed == 0:
-            unstable.append(str(kind))
-    return tuple(sorted(set(unstable)))
+        if not isinstance(values, dict):
+            unstable.add(kind)
+            continue
+        # Reject booleans, negative values and malformed counters rather
+        # than treating them as healthy status or crashing the planner.
+        counts: dict[str, int] = {}
+        for name in ("requeued", "failed", "completed"):
+            value = values.get(name, 0)
+            if isinstance(value, bool):
+                unstable.add(kind)
+                break
+            try:
+                number = int(value)
+            except (ValueError, TypeError, OverflowError):
+                unstable.add(kind)
+                break
+            if not 0 <= number <= 1_000_000:
+                unstable.add(kind)
+                break
+            counts[name] = number
+        else:
+            if counts["requeued"] + counts["failed"] >= 2 and counts["completed"] == 0:
+                unstable.add(kind)
+    return tuple(sorted(unstable))
 
 
 def build_adaptive_cycle(
