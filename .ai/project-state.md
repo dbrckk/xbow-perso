@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T09:05:15Z
+Generated: 2026-10-09T09:10:39Z
 
 ### Git
 - Branch: `main`
-- Head: `88d535894cd9`
-- Commit date: 2026-10-09T11:04:28+02:00
-- Commit: fix(recovery): require provenance for multi-host negative scans
+- Head: `0a3e3e6f4a18`
+- Commit date: 2026-10-09T11:10:19+02:00
+- Commit: fix(recovery): isolate negative scan evidence by campaign origin
 - Tracked files: 687
 
 ### Recently changed files

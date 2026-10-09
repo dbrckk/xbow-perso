@@ -7841,9 +7841,17 @@ port = parsed.port
 ⋮----
 port = 443 if scheme == "https" else 80
 ⋮----
-"""Allow legacy hostname-only assets, never incompatible explicit origins."""
+def _campaign_asset_identity(value: object) -> tuple[str, ...] | None
+⋮----
+"""Canonicalize a campaign asset without equating HTTP, HTTPS or ports."""
+⋮----
+origin = _origin(raw)
 ⋮----
 parsed = urlsplit(f"//{raw}")
+⋮----
+# Host-only observations cannot establish a concrete web origin.
+⋮----
+"""Allow legacy hostname-only assets, never incompatible explicit origins."""
 ⋮----
 """Only explicit, completed reviews may close in-scope coverage gaps."""
 reviewed: set[str] = set()
@@ -7944,6 +7952,7 @@ def has_in_scope_asset_ancestor(observation_id: str) -> bool
 pending = list(observations_by_id[observation_id].parent_ids)
 seen: set[str] = set()
 ancestor_hosts: set[str] = set()
+ancestor_origins: set[tuple[str, ...]] = set()
 ⋮----
 parent_id = pending.pop()
 ⋮----
@@ -7954,6 +7963,8 @@ parent = observations_by_id.get(parent_id)
 ⋮----
 host = asset_host_by_id.get(parent.id)
 ⋮----
+identity = _campaign_asset_identity(parent.value)
+⋮----
 # Matching the endpoint URL is insufficient if its graph ancestor
 # identifies a different scheme or port on the same host.
 excluded_endpoints = [
@@ -7961,10 +7972,11 @@ excluded_endpoints = [
 legacy_single_host = False
 scan_filter: Callable[[Any], bool] | None = None
 ⋮----
-# Campaign-wide negative results still need trustworthy ancestry.
-# Orphan scans are legacy-compatible only for a single in-scope host.
+# Campaign-wide negative results must identify one compatible
+# origin, not merely a hostname shared by HTTP, HTTPS or ports.
+# Equivalent duplicate asset observations remain compatible.
 asset_records = surface["assets"]
-trusted_hosts = {
+campaign_origins = {
 legacy_single_host = (
 ⋮----
 def scan_matches_campaign(item: Any) -> bool
@@ -21711,6 +21723,26 @@ def test_campaign_orphan_scan_with_out_of_scope_asset_is_not_trusted()
 def test_campaign_legacy_single_host_scan_remains_supported()
 ⋮----
 result = _feedback(_graph(scans=1))
+⋮----
+def _same_host_multi_origin_graph(*, second_origin: str) -> ObservationGraph
+⋮----
+def test_campaign_orphan_scan_does_not_bridge_http_and_https_same_host()
+⋮----
+graph = _same_host_multi_origin_graph(
+⋮----
+def test_campaign_orphan_scan_does_not_bridge_distinct_ports_same_host()
+⋮----
+result = _feedback(graph, allowed=("crawl",))
+⋮----
+def test_campaign_scan_claiming_both_web_origins_is_not_trusted()
+⋮----
+def test_campaign_scan_with_explicit_https_ancestry_remains_trusted()
+⋮----
+def test_campaign_duplicate_observations_same_origin_allow_legacy_scan()
+⋮----
+def test_campaign_mixed_legacy_host_and_explicit_origin_requires_lineage()
+⋮----
+def test_campaign_duplicate_legacy_host_observations_remain_supported()
 ```
 
 ## File: tests/test_nuclei_preflight.py
