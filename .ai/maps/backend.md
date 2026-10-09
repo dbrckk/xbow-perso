@@ -7901,6 +7901,8 @@ scope_issues = sum(
 asset_values_by_id = {
 asset_host_by_id = {
 observations_by_id = {item.id: item for item in graph.values()}
+eligible_endpoint_ids = {item["id"] for item in endpoints}
+eligible_form_ids = {item["id"] for item in forms}
 ⋮----
 def has_in_scope_asset_ancestor(observation_id: str) -> bool
 ⋮----
@@ -7911,6 +7913,9 @@ ancestor_hosts: set[str] = set()
 parent_id = pending.pop()
 ⋮----
 parent = observations_by_id.get(parent_id)
+⋮----
+# A valid asset ancestor cannot sanitize an invalid intermediate
+# endpoint or form. Check every branch of the full ancestry graph.
 ⋮----
 host = asset_host_by_id.get(parent.id)
 ⋮----
@@ -21540,6 +21545,20 @@ def test_negative_scan_with_malformed_endpoint_ancestor_is_not_trusted()
 def test_mixed_valid_and_invalid_scan_endpoints_do_not_trigger_recovery()
 ⋮----
 def test_endpoint_linked_completed_scan_still_supports_bounded_recovery()
+⋮----
+def test_form_via_invalid_endpoint_does_not_close_target_inventory_gap()
+⋮----
+def test_technology_via_invalid_endpoint_cannot_complete_target_context()
+⋮----
+def test_recon_completion_via_invalid_endpoint_does_not_exhaust_target_task()
+⋮----
+def test_mixed_valid_and_invalid_endpoint_ancestors_do_not_credit_form()
+⋮----
+def test_cross_protocol_endpoint_cannot_provide_https_form_lineage()
+⋮----
+def test_trusted_endpoint_ancestry_still_counts_forms_and_technology()
+⋮----
+def test_untrusted_browser_lineage_does_not_exhaust_browser_recovery()
 ```
 
 ## File: tests/test_nuclei_preflight.py

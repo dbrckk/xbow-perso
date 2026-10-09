@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T00:10:51Z
+Generated: 2026-10-09T00:25:06Z
 
 ### Git
 - Branch: `main`
-- Head: `5a45804075cc`
-- Commit date: 2026-10-09T02:10:40+02:00
-- Commit: fix(recovery): verify endpoint ancestry before negative-scan learning
+- Head: `8d0557635dc3`
+- Commit date: 2026-10-09T02:24:56+02:00
+- Commit: fix(recovery): reject indirect untrusted endpoint and form ancestry
 - Tracked files: 687
 
 ### Recently changed files
