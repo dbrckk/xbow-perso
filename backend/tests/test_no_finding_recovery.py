@@ -3316,3 +3316,49 @@ def test_equivalent_duplicate_explicit_origins_keep_legacy_scan_compatibility():
     assert result.target_origin_ambiguous is False
     assert result.completed_scan_count == 1
     assert result.recommended_task_kinds == ("crawl",)
+
+
+def test_target_origin_rejects_path_bearing_legacy_asset_alias():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:ambiguous", "asset", "example.test/private", "inventory")
+    )
+    graph.add(
+        Observation(
+            "scan:ambiguous",
+            "evidence",
+            "scan-complete",
+            "nuclei",
+            parent_ids=("asset:ambiguous",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "job-ambiguous",
+            },
+        )
+    )
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "scope_unverified"
+    assert result.completed_scan_count == 0
+    assert result.recommended_task_kinds == ()
+
+
+def test_target_origin_rejects_query_bearing_legacy_asset_alias():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:ambiguous", "asset", "example.test?scope=other", "inventory")
+    )
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "scope_unverified"
+    assert result.recommended_task_kinds == ()
+
+
+def test_target_origin_accepts_plain_legacy_host_alias():
+    graph = _graph()
+    result = _feedback(graph, target_url="https://example.test")
+
+    assert result.state == "recovery_advisory"
+    assert result.completed_scan_count == 1
+    assert result.advisory_only is True
