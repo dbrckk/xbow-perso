@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 519f43ee2becd60ea0dd0f289b7c7b45f1bb9ce2
-Head: ab0585d4b75948a2d96ff70db1c3bda3f792edf2
+Base: db18335b08516887f1fbb9b4233b1167c43259ec
+Head: 45105a7fb6489b408d54044e280e104345d2c554
 
 ## Changed files
-- M backend/app/scanner_adaptation.py
-- M backend/tests/test_scanner_adaptation.py
+- M backend/app/hypothesis_engine.py
+- M backend/tests/test_hypothesis_engine.py
 
 ## Affected areas
 - backend

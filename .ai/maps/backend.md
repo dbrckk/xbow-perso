@@ -6275,21 +6275,20 @@ def to_dict(self) -> dict[str, Any]
 ⋮----
 payload = asdict(self)
 ⋮----
-def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]]
+def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]] | None
 ⋮----
-"""Return an endpoint representation that never exposes query values/fragments."""
-parsed = urlsplit(value)
+"""Return a redacted, validated HTTP(S) endpoint or reject bad origins."""
+raw = str(value or "").strip()
+⋮----
+parsed = urlsplit(raw)
+scheme = parsed.scheme.lower()
 host = (parsed.hostname or "").lower().rstrip(".")
-⋮----
 port = parsed.port
 ⋮----
-port = None
+netloc = f"[{host}]" if ":" in host else host
 ⋮----
-netloc = f"{host}:{port}"
-⋮----
-netloc = host
-safe_url = urlunsplit((parsed.scheme.lower(), netloc, parsed.path or "/", "", ""))
-parameter_names = tuple(sorted({key for key, _value in parse_qsl(parsed.query, keep_blank_values=True)}))
+safe_url = urlunsplit((scheme, netloc, parsed.path or "/", "", ""))
+names = {
 ⋮----
 def _lineage_hosts(graph: ObservationGraph, observation_id: str) -> set[str]
 ⋮----
@@ -6309,6 +6308,8 @@ host = (urlsplit(host).hostname or "").lower().rstrip(".")
 host = (urlsplit(current.value).hostname or "").lower().rstrip(".")
 ⋮----
 hosts = _lineage_hosts(graph, observation_id)
+# A single permitted ancestor must never launder an out-of-scope
+# parent. Missing origin evidence is not permission to recommend work.
 ⋮----
 """Derive bounded, scope-aware review hypotheses from existing observations.
 
@@ -6320,7 +6321,11 @@ hosts = _lineage_hosts(graph, observation_id)
 hypotheses: list[Hypothesis] = []
 validation_state = analyze_validation_state(graph)
 ⋮----
-path = urlsplit(endpoint.value).path.lower()
+safe = _safe_endpoint(endpoint.value)
+⋮----
+path = urlsplit(safe_target).path.lower()
+⋮----
+safe = _safe_endpoint(form.value)
 ⋮----
 input_names = tuple(
 ⋮----
@@ -20716,43 +20721,6 @@ summary = build_htb_focus_summary(Storage(db, artifacts), limit=3)
 def test_htb_focus_route_is_exposed()
 ⋮----
 def test_htb_readiness_route_is_exposed()
-```
-
-## File: tests/test_hypothesis_engine.py
-```python
-def test_hypotheses_are_bounded_and_deterministic()
-⋮----
-graph = ObservationGraph()
-⋮----
-first = build_hypotheses(graph, limit=2)
-second = build_hypotheses(graph, limit=2)
-⋮----
-def test_hypothesis_redacts_query_values_and_keeps_parameter_names()
-⋮----
-hypotheses = build_hypotheses(graph)
-payload = [item.to_dict() for item in hypotheses]
-⋮----
-def test_scope_checker_filters_out_of_scope_lineage()
-⋮----
-hypotheses = build_hypotheses(
-⋮----
-def test_unvalidated_finding_gets_high_priority_validation_gap()
-⋮----
-def test_observed_independent_validation_closes_validation_gap()
-⋮----
-def test_self_validation_does_not_close_validation_gap()
-⋮----
-def test_hypothesis_route_is_exposed_and_reads_durable_graph(tmp_path, monkeypatch)
-⋮----
-db = str(tmp_path / "db.sqlite3")
-artifacts = str(tmp_path / "artifacts")
-⋮----
-campaign = Campaign(
-store = Storage(db, artifacts)
-⋮----
-result = campaign_hypotheses(campaign.id)
-⋮----
-def test_limit_fails_closed_outside_bounds()
 ```
 
 ## File: tests/test_hypothesis_memory.py

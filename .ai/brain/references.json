@@ -5,39 +5,111 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "ScannerAdaptation": {
+    "Hypothesis": {
       "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 12,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 28,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 12,
-          "preview": "class ScannerAdaptation:",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 28,
+          "preview": "class Hypothesis:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 67,
-          "preview": ") -> ScannerAdaptation:",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 126,
+          "preview": ") -> list[Hypothesis]:",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 207,
-          "preview": "return ScannerAdaptation(",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 136,
+          "preview": "hypotheses: list[Hypothesis] = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 149,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 162,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 185,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 201,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 218,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 234,
+          "preview": "Hypothesis(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 245,
+          "preview": "deduped: dict[tuple[str, str], Hypothesis] = {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 12,
+          "preview": "class Hypothesis:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 55,
+          "preview": "def hypothesis_snapshot_is_current(hypothesis: Hypothesis, graph: ObservationGraph) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 59,
+          "preview": "def build_hypotheses(graph: ObservationGraph) -> list[Hypothesis]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 68,
+          "preview": "result: list[Hypothesis] = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 86,
+          "preview": "Hypothesis(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 15
     },
     "to_dict": {
       "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 23,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 39,
         "kind": "function",
         "language": "python"
       },
@@ -616,11 +688,11 @@
           "file": "backend/app/hypothesis_engine.py",
           "line": 39,
           "preview": "def to_dict(self) -> dict[str, Any]:",
-          "definition_candidate": false
+          "definition_candidate": true
         },
         {
           "file": "backend/app/hypothesis_engine.py",
-          "line": 252,
+          "line": 275,
           "preview": "\"hypotheses\": [item.to_dict() for item in hypotheses],",
           "definition_candidate": false
         },
@@ -765,759 +837,642 @@
       ],
       "occurrence_count": 120
     },
-    "_engine_memory": {
+    "_safe_endpoint": {
       "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 33,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 46,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 33,
-          "preview": "def _engine_memory(memories: Iterable[TechniqueMemory]) -> dict[str, TechniqueMemory]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 76,
-          "preview": "memory = _engine_memory(memories)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_validated_worker_counters": {
-      "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 48,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 48,
-          "preview": "def _validated_worker_counters(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 105,
-          "preview": "validated = _validated_worker_counters(outcome)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "adapt_scanner_engines": {
-      "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 63,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 51,
-          "preview": "from .scanner_adaptation import adapt_scanner_engines",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/orchestrator.py",
-          "line": 240,
-          "preview": "scanner_adaptation = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 63,
-          "preview": "def adapt_scanner_engines(",
-          "definition_candidate": true
-        },
-        {
-          "file": "backend/tests/test_learning_memory.py",
-          "line": 460,
-          "preview": "from app.scanner_adaptation import adapt_scanner_engines",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_learning_memory.py",
-          "line": 473,
-          "preview": "adaptation = adapt_scanner_engines((\"nuclei\", \"strix\"), [], outcomes)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 4,
-          "preview": "from app.scanner_adaptation import adapt_scanner_engines",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 21,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 34,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
+          "file": "backend/app/hypothesis_engine.py",
           "line": 46,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 67,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 82,
-          "preview": "adapt_scanner_engines((\"strix\", \"shell\"), [], {})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 85,
-          "preview": "adapt_scanner_engines((\"strix\", \"strix\"), [], {})",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 89,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 109,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 129,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 142,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 154,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 169,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 190,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 202,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 213,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 230,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 253,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 279,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 311,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 324,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 342,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 359,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 373,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 385,
-          "preview": "result = adapt_scanner_engines(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 30
-    },
-    "rank_key": {
-      "definition": {
-        "file": "backend/app/scanner_adaptation.py",
-        "line": 181,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 181,
-          "preview": "def rank_key(engine: str) -> tuple[int, float, float, int, int]:",
+          "preview": "def _safe_endpoint(value: str) -> tuple[str, tuple[str, ...]] | None:",
           "definition_candidate": true
         },
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 204,
-          "preview": "for engine in sorted(configured_engines, key=rank_key)",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 142,
+          "preview": "safe = _safe_endpoint(endpoint.value)",
           "definition_candidate": false
         },
         {
-          "file": "backend/app/scanner_adaptation.py",
-          "line": 211,
-          "preview": "ranked_engines=tuple(sorted(configured_engines, key=rank_key)),",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 177,
+          "preview": "safe = _safe_endpoint(form.value)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 3
     },
-    "_memory": {
+    "_lineage_hosts": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 7,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 81,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 7,
-          "preview": "def _memory(engine, *, successes=0, failures=0, confidence=0.0, success_rate=0.0):",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 81,
+          "preview": "def _lineage_hosts(graph: ObservationGraph, observation_id: str) -> set[str]:",
           "definition_candidate": true
         },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 23,
-          "preview": "[_memory(\"nuclei\", successes=3, confidence=1.0, success_rate=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 36,
-          "preview": "[_memory(\"nuclei\", failures=2, confidence=0.8, success_rate=0.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 48,
-          "preview": "[_memory(\"nuclei\", failures=3, confidence=1.0, success_rate=0.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 70,
-          "preview": "_memory(\"strix\", successes=1, confidence=0.4, success_rate=1.0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 71,
-          "preview": "_memory(\"nuclei\", successes=3, confidence=0.8, success_rate=1.0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 91,
-          "preview": "[_memory(\"nuclei\", failures=4, confidence=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 111,
-          "preview": "[_memory(\"nuclei\", failures=8, confidence=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 131,
-          "preview": "[_memory(\"nuclei\", failures=6, confidence=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 144,
-          "preview": "[_memory(\"nuclei\", failures=10, confidence=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 157,
-          "preview": "_memory(\"strix\", failures=9, confidence=1.0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 158,
-          "preview": "_memory(\"nuclei\", successes=2, confidence=0.4, success_rate=1.0),",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 171,
-          "preview": "[_memory(\"nuclei\", failures=4, confidence=0.8)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 192,
-          "preview": "[_memory(\"nuclei\", successes=1, confidence=0.8, success_rate=1.0)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 313,
-          "preview": "[_memory(\"nuclei\", successes=3, confidence=1.0, success_rate=1.0)],",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 115,
+          "preview": "hosts = _lineage_hosts(graph, observation_id)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 15
+      "occurrence_count": 2
     },
-    "test_adaptation_never_expands_configured_engines": {
+    "_scope_allows": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 20,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 20,
-          "preview": "def test_adaptation_never_expands_configured_engines():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_adaptation_preserves_engine_after_negative_technique_outcomes": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 33,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 33,
-          "preview": "def test_adaptation_preserves_engine_after_negative_technique_outcomes():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_adaptation_never_suppresses_last_configured_engine": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 45,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 45,
-          "preview": "def test_adaptation_never_suppresses_last_configured_engine():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_adaptation_ranks_successful_memory_first": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 66,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 66,
-          "preview": "def test_adaptation_ranks_successful_memory_first():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_adaptation_rejects_unknown_or_duplicate_configuration": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 80,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 80,
-          "preview": "def test_adaptation_rejects_unknown_or_duplicate_configuration():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 88,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 88,
-          "preview": "def test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_completed_scanner_run_overrides_negative_memory_for_suppression": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
+        "file": "backend/app/hypothesis_engine.py",
         "line": 108,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
+          "file": "backend/app/hypothesis_engine.py",
           "line": 108,
-          "preview": "def test_completed_scanner_run_overrides_negative_memory_for_suppression():",
+          "preview": "def _scope_allows(",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 140,
+          "preview": "if not _scope_allows(graph, endpoint.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 175,
+          "preview": "if not _scope_allows(graph, form.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 198,
+          "preview": "if not _scope_allows(graph, technology.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 213,
+          "preview": "if not _scope_allows(graph, waf.id, scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 230,
+          "preview": "if not _scope_allows(graph, finding.id, scope_checker):",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 6
     },
-    "test_negative_memory_cannot_expand_scanner_configuration": {
+    "build_hypotheses": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 128,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 121,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 128,
-          "preview": "def test_negative_memory_cannot_expand_scanner_configuration():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_negative_only_memory_does_not_out_rank_configured_engine_order": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 141,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/campaign_overview.py",
+          "line": 16,
+          "preview": "from .hypothesis_engine import build_hypotheses",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 141,
-          "preview": "def test_negative_only_memory_does_not_out_rank_configured_engine_order():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_positive_scanner_evidence_can_improve_ranking_without_new_engines": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 153,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/campaign_overview.py",
+          "line": 61,
+          "preview": "hypotheses = build_hypotheses(graph, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 153,
-          "preview": "def test_positive_scanner_evidence_can_improve_ranking_without_new_engines():",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 121,
+          "preview": "def build_hypotheses(",
           "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_repeated_negative_runs_prioritize_unobserved_configured_engine": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 168,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 168,
-          "preview": "def test_repeated_negative_runs_prioritize_unobserved_configured_engine():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_positive_security_signal_prevents_negative_yield_rotation": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 189,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 265,
+          "preview": "hypotheses = build_hypotheses(",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 189,
-          "preview": "def test_positive_security_signal_prevents_negative_yield_rotation():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_no_completed_history_does_not_invent_scanner_rotation": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 201,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/hypothesis_memory.py",
+          "line": 59,
+          "preview": "def build_hypotheses(graph: ObservationGraph) -> list[Hypothesis]:",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 201,
-          "preview": "def test_no_completed_history_does_not_invent_scanner_rotation():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_scanner_rotation_never_overrides_safety_suppression": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 212,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/main.py",
+          "line": 1008,
+          "preview": "from .hypothesis_memory import build_hypotheses",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 212,
-          "preview": "def test_scanner_rotation_never_overrides_safety_suppression():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 229,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/main.py",
+          "line": 1013,
+          "preview": "\"hypotheses\": [item.to_dict() for item in build_hypotheses(graph)],",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 229,
-          "preview": "def test_corrupt_worker_counts_do_not_crash_or_change_execution_authority():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_invalid_worker_completed_counts_never_trigger_rotation": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 252,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/main.py",
+          "line": 1124,
+          "preview": "from .hypothesis_memory import build_hypotheses, summarize_hypothesis_stability",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 252,
-          "preview": "def test_invalid_worker_completed_counts_never_trigger_rotation(invalid_count):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_invalid_worker_failure_counts_cannot_suppress_configured_engine": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 276,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/main.py",
+          "line": 1149,
+          "preview": "\"hypotheses\": [item.to_dict() for item in build_hypotheses(graph)],",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 276,
-          "preview": "def test_invalid_worker_failure_counts_cannot_suppress_configured_engine(",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_malformed_worker_outcome_structure_preserves_configured_order": {
-      "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 308,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "backend/app/orchestrator.py",
+          "line": 23,
+          "preview": "from .hypothesis_memory import build_hypotheses",
+          "definition_candidate": false
+        },
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
+          "file": "backend/app/orchestrator.py",
+          "line": 320,
+          "preview": "hypotheses = {item.finding_id: item for item in build_hypotheses(graph)}",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/orchestrator.py",
+          "line": 645,
+          "preview": "hypotheses = build_hypotheses(refreshed_graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 14,
+          "preview": "from .hypothesis_engine import build_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_coverage.py",
+          "line": 71,
+          "preview": "hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 14,
+          "preview": "from .hypothesis_engine import build_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/red_team_decision.py",
+          "line": 81,
+          "preview": "hypotheses = build_hypotheses(graph, limit=100, scope_checker=scope_checker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 9,
+          "preview": "from .hypothesis_engine import build_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/review_queue.py",
+          "line": 63,
+          "preview": "for hypothesis in build_hypotheses(graph, limit=100, scope_checker=scope_checker):",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 1,
+          "preview": "from app.hypothesis_engine import build_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_form_waf_reasoning.py",
+          "line": 43,
+          "preview": "hypotheses = build_hypotheses(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 1,
+          "preview": "from app.hypothesis_engine import build_hypotheses, campaign_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 21,
+          "preview": "first = build_hypotheses(graph, limit=2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 22,
+          "preview": "second = build_hypotheses(graph, limit=2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 44,
+          "preview": "hypotheses = build_hypotheses(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 77,
+          "preview": "hypotheses = build_hypotheses(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 93,
+          "preview": "hypotheses = build_hypotheses(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 114,
+          "preview": "assert build_hypotheses(graph) == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 131,
+          "preview": "hypotheses = build_hypotheses(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 185,
+          "preview": "build_hypotheses(graph, limit=invalid)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 224,
+          "preview": "assert build_hypotheses(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 236,
+          "preview": "assert build_hypotheses(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 258,
+          "preview": "assert build_hypotheses(graph) == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 271,
+          "preview": "assert build_hypotheses(graph) == []",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 285,
+          "preview": "result = build_hypotheses(graph)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
           "line": 308,
-          "preview": "def test_malformed_worker_outcome_structure_preserves_configured_order(",
-          "definition_candidate": true
+          "preview": "result = build_hypotheses(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 2,
+          "preview": "build_hypotheses,",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 18,
+          "preview": "hypotheses = build_hypotheses(_graph())",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 40,
+          "preview": "item = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 58,
+          "preview": "partial = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 73,
+          "preview": "supported = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 100,
+          "preview": "item = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 109,
+          "preview": "item = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 128,
+          "preview": "item = build_hypotheses(graph)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_memory.py",
+          "line": 149,
+          "preview": "item = build_hypotheses(graph)[0]",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 44
     },
-    "test_invalid_counter_on_one_engine_disables_cross_engine_rotation": {
+    "campaign_hypotheses": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 323,
+        "file": "backend/app/hypothesis_engine.py",
+        "line": 259,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 323,
-          "preview": "def test_invalid_counter_on_one_engine_disables_cross_engine_rotation():",
+          "file": "backend/app/hypothesis_engine.py",
+          "line": 259,
+          "preview": "def campaign_hypotheses(campaign_id: str, limit: int = 20):",
           "definition_candidate": true
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 1,
+          "preview": "from app.hypothesis_engine import build_hypotheses, campaign_hypotheses",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 165,
+          "preview": "result = campaign_hypotheses(campaign.id)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 3
     },
-    "test_valid_bounded_worker_counters_preserve_suppression_behavior": {
+    "test_hypotheses_are_bounded_and_deterministic": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 341,
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 7,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 341,
-          "preview": "def test_valid_bounded_worker_counters_preserve_suppression_behavior():",
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 7,
+          "preview": "def test_hypotheses_are_bounded_and_deterministic():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_pending_retries_do_not_suppress_authorized_scanner": {
+    "test_hypothesis_redacts_query_values_and_keeps_parameter_names": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 358,
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 31,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 358,
-          "preview": "def test_pending_retries_do_not_suppress_authorized_scanner():",
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 31,
+          "preview": "def test_hypothesis_redacts_query_values_and_keeps_parameter_names():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_one_failure_and_multiple_pending_retries_is_not_terminal_instability": {
+    "test_scope_checker_filters_out_of_scope_lineage": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 372,
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 54,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 372,
-          "preview": "def test_one_failure_and_multiple_pending_retries_is_not_terminal_instability():",
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 54,
+          "preview": "def test_scope_checker_filters_out_of_scope_lineage():",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_two_terminal_failures_still_suppress_scanner_with_alternative": {
+    "test_unvalidated_finding_gets_high_priority_validation_gap": {
       "definition": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "line": 384,
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 88,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "backend/tests/test_scanner_adaptation.py",
-          "line": 384,
-          "preview": "def test_two_terminal_failures_still_suppress_scanner_with_alternative():",
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 88,
+          "preview": "def test_unvalidated_finding_gets_high_priority_validation_gap():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_observed_independent_validation_closes_validation_gap": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 100,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 100,
+          "preview": "def test_observed_independent_validation_closes_validation_gap():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_self_validation_does_not_close_validation_gap": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 117,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 117,
+          "preview": "def test_self_validation_does_not_close_validation_gap():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_hypothesis_route_is_exposed_and_reads_durable_graph": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 135,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 135,
+          "preview": "def test_hypothesis_route_is_exposed_and_reads_durable_graph(tmp_path, monkeypatch):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_limit_fails_closed_outside_bounds": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 180,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 180,
+          "preview": "def test_limit_fails_closed_outside_bounds():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 192,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 192,
+          "preview": "def test_mixed_in_and_out_of_scope_ancestors_never_authorize_review():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scoped_orphan_technology_cannot_be_attributed_to_allowed_target": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 230,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 230,
+          "preview": "def test_scoped_orphan_technology_cannot_be_attributed_to_allowed_target():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 241,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 241,
+          "preview": "def test_invalid_and_credentialed_endpoints_are_not_review_hypotheses():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_invalid_form_url_cannot_generate_form_review": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 261,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 261,
+          "preview": "def test_invalid_form_url_cannot_generate_form_review():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 274,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 274,
+          "preview": "def test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scoped_hypotheses_keep_valid_authorized_asset_lineage": {
+      "definition": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "line": 295,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/tests/test_hypothesis_engine.py",
+          "line": 295,
+          "preview": "def test_scoped_hypotheses_keep_valid_authorized_asset_lineage():",
           "definition_candidate": true
         }
       ],

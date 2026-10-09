@@ -39,22 +39,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T20:13:49Z
+Generated: 2026-10-09T20:30:12Z
 
 ### Git
 - Branch: `main`
-- Head: `ab0585d4b759`
-- Commit date: 2026-10-09T22:13:37+02:00
-- Commit: fix(scanner): preserve scanners during pending retries
+- Head: `45105a7fb648`
+- Commit date: 2026-10-09T22:29:40+02:00
+- Commit: fix(hypotheses): validate entire scope lineage and web origins
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/hypothesis_engine.py`
+- `backend/tests/test_hypothesis_engine.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 
 ### Project signals
 - `pyproject.toml`

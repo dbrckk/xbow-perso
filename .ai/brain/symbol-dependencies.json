@@ -5,352 +5,191 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "ScannerAdaptation": {
+    "Hypothesis": {
       "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 12,
-        "end": 30
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 28,
+        "end": 43
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
     "to_dict": {
       "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 23,
-        "end": 30
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 39,
+        "end": 159
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Hypothesis",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_lineage_hosts",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 81,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_scope_allows",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "analyze_validation_state",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_safe_endpoint": {
+      "source": {
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 46,
+        "end": 78
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "_engine_memory": {
+    "_lineage_hosts": {
       "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 33,
-        "end": 42
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_validated_worker_counters": {
-      "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 48,
-        "end": 60
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "adapt_scanner_engines": {
-      "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 63,
-        "end": 215
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ScannerAdaptation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_engine_memory",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 33,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_validated_worker_counters",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "rank_key",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 181,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "rank_key": {
-      "source": {
-        "file": "backend/app/scanner_adaptation.py",
-        "start": 181,
-        "end": 301
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ScannerAdaptation",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 12,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_memory": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 7,
-        "end": 17
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "TechniqueMemory",
-          "definitions": [
-            {
-              "file": "backend/app/learning_memory.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_adaptation_never_expands_configured_engines": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 20,
-        "end": 30
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_adaptation_preserves_engine_after_negative_technique_outcomes": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 33,
-        "end": 42
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_adaptation_never_suppresses_last_configured_engine": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 45,
-        "end": 63
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_adaptation_ranks_successful_memory_first": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 66,
-        "end": 77
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_adaptation_rejects_unknown_or_duplicate_configuration": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 80,
-        "end": 85
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_adaptation_suppresses_genuinely_unstable_worker_when_alternative_exists": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 88,
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 81,
         "end": 105
       },
       "symbol_dependencies": [
         {
-          "symbol": "_memory",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "values",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
               "kind": "function",
               "language": "python"
             }
@@ -358,21 +197,79 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
-    "test_completed_scanner_run_overrides_negative_memory_for_suppression": {
+    "_scope_allows": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
+        "file": "backend/app/hypothesis_engine.py",
         "start": 108,
-        "end": 125
+        "end": 118
       },
       "symbol_dependencies": [
         {
-          "symbol": "_memory",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_lineage_hosts",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 81,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "build_hypotheses": {
+      "source": {
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 121,
+        "end": 255
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Hypothesis",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 28,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_endpoint",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 46,
               "kind": "function",
               "language": "python"
             }
@@ -380,11 +277,629 @@
           "relation": "same_file"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "_scope_allows",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "analyze_validation_state",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "observed_independent_finding_ids",
+          "definitions": [
+            {
+              "file": "backend/app/validation_state.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "values",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 92,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "campaign_hypotheses": {
+      "source": {
+        "file": "backend/app/hypothesis_engine.py",
+        "start": 259,
+        "end": 283
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "assert_campaign_exists",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_observation_graph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "storage",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_hypotheses_are_bounded_and_deterministic": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 7,
+        "end": 28
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_hypothesis_redacts_query_values_and_keeps_parameter_names": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 31,
+        "end": 51
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_scope_checker_filters_out_of_scope_lineage": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 54,
+        "end": 85
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_unvalidated_finding_gets_high_priority_validation_gap": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 88,
+        "end": 97
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_observed_independent_validation_closes_validation_gap": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 100,
+        "end": 114
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_self_validation_does_not_close_validation_gap": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 117,
+        "end": 132
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_hypothesis_route_is_exposed_and_reads_durable_graph": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 135,
+        "end": 177
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 178,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Observation",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProgramRules",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 83,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Storage",
+          "definitions": [
+            {
+              "file": "backend/app/storage.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "TargetInput",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 96,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "api",
+          "definitions": [
+            {
+              "file": "frontend/app.js",
+              "line": 60,
+              "kind": "function",
+              "language": "javascript"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "by_kind",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "campaign_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 259,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "save_campaign",
+          "definitions": [
+            {
+              "file": "backend/app/main.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "test_limit_fails_closed_outside_bounds": {
+      "source": {
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 180,
+        "end": 189
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -394,99 +909,55 @@
       ],
       "dependency_count": 2
     },
-    "test_negative_memory_cannot_expand_scanner_configuration": {
+    "test_mixed_in_and_out_of_scope_ancestors_never_authorize_review": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 128,
-        "end": 138
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 192,
+        "end": 227
       },
       "symbol_dependencies": [
         {
-          "symbol": "_memory",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_negative_only_memory_does_not_out_rank_configured_engine_order": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 141,
-        "end": 150
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "add",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_positive_scanner_evidence_can_improve_ranking_without_new_engines": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 153,
-        "end": 165
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "build_hypotheses",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -494,211 +965,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 4
     },
-    "test_repeated_negative_runs_prioritize_unobserved_configured_engine": {
+    "test_scoped_orphan_technology_cannot_be_attributed_to_allowed_target": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 168,
-        "end": 186
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 230,
+        "end": 238
       },
       "symbol_dependencies": [
         {
-          "symbol": "_memory",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_positive_security_signal_prevents_negative_yield_rotation": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 189,
-        "end": 198
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "add",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_no_completed_history_does_not_invent_scanner_rotation": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 201,
-        "end": 209
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_scanner_rotation_never_overrides_safety_suppression": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 212,
-        "end": 226
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_corrupt_worker_counts_do_not_crash_or_change_execution_authority": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 229,
-        "end": 245
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invalid_worker_completed_counts_never_trigger_rotation": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 252,
-        "end": 269
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_invalid_worker_failure_counts_cannot_suppress_configured_engine": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 276,
-        "end": 294
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "adapt_scanner_engines",
-          "definitions": [
-            {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_malformed_worker_outcome_structure_preserves_configured_order": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 308,
-        "end": 320
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_memory",
-          "definitions": [
-            {
-              "file": "backend/tests/test_scanner_adaptation.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "build_hypotheses",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -706,21 +1023,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 4
     },
-    "test_invalid_counter_on_one_engine_disables_cross_engine_rotation": {
+    "test_invalid_and_credentialed_endpoints_are_not_review_hypotheses": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 323,
-        "end": 338
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 241,
+        "end": 258
       },
       "symbol_dependencies": [
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -728,21 +1081,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 4
     },
-    "test_valid_bounded_worker_counters_preserve_suppression_behavior": {
+    "test_invalid_form_url_cannot_generate_form_review": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 341,
-        "end": 355
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 261,
+        "end": 271
       },
       "symbol_dependencies": [
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -750,21 +1139,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 4
     },
-    "test_pending_retries_do_not_suppress_authorized_scanner": {
+    "test_ipv6_endpoint_hypothesis_is_redacted_and_bracketed": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 358,
-        "end": 369
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 274,
+        "end": 292
       },
       "symbol_dependencies": [
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ObservationGraph",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -772,43 +1197,57 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 4
     },
-    "test_one_failure_and_multiple_pending_retries_is_not_terminal_instability": {
+    "test_scoped_hypotheses_keep_valid_authorized_asset_lineage": {
       "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 372,
-        "end": 381
+        "file": "backend/tests/test_hypothesis_engine.py",
+        "start": 295,
+        "end": 314
       },
       "symbol_dependencies": [
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "Observation",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
-              "kind": "function",
+              "file": "backend/app/observation_graph.py",
+              "line": 24,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_two_terminal_failures_still_suppress_scanner_with_alternative": {
-      "source": {
-        "file": "backend/tests/test_scanner_adaptation.py",
-        "start": 384,
-        "end": 393
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "adapt_scanner_engines",
+          "symbol": "ObservationGraph",
           "definitions": [
             {
-              "file": "backend/app/scanner_adaptation.py",
-              "line": 63,
+              "file": "backend/app/observation_graph.py",
+              "line": 49,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "add",
+          "definitions": [
+            {
+              "file": "backend/app/observation_graph.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "build_hypotheses",
+          "definitions": [
+            {
+              "file": "backend/app/hypothesis_engine.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
@@ -816,7 +1255,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 4
     }
   }
 }
