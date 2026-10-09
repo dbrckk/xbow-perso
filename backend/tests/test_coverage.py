@@ -1688,3 +1688,154 @@ def test_untrusted_provenance_does_not_change_planned_scan_or_authority():
     assert signal["applied"] is False
     assert signal["action_kind_unchanged"] is True
     assert signal["target_unchanged"] is True
+
+
+def test_coverage_does_not_count_impossible_scan_completion_times():
+    for invalid_time in (
+        "",
+        "not-a-date",
+        "2026-09-03T00:00:00",
+        "2099-09-03T00:00:00Z",
+        123,
+    ):
+        graph = ObservationGraph()
+        graph.add(
+            Observation("asset:a", "asset", "example.test", "inventory")
+        )
+        graph.add(
+            Observation(
+                "scan:bad",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "invalid-time-job",
+                    "completed_at": invalid_time,
+                },
+            )
+        )
+
+        result = build_evidence_coverage(
+            graph, scope_checker=lambda host: host == "example.test"
+        )
+        assert result["evidence"]["completed_scans"] == 0
+        assert result["evidence"]["untrusted_scan_observations"] == 1
+        assert result["dimensions"]["scanner_execution"] == 0.0
+        assert build_coverage_guidance(result)["focus"] == (
+            "scan_provenance_reconciliation"
+        )
+
+
+def test_scan_completion_before_start_cannot_claim_coverage():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    graph.add(
+        Observation(
+            "scan:reversed",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "reversed-job",
+                "started_at": "2026-09-04T00:00:00Z",
+                "completed_at": "2026-09-03T00:00:00Z",
+            },
+        )
+    )
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert result["evidence"]["completed_scans"] == 0
+    assert result["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_malformed_temporal_duplicate_taints_entire_scan_job():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for index, finished in enumerate((
+        "2026-09-03T00:00:00Z",
+        "2099-09-03T00:00:00Z",
+    )):
+        graph.add(
+            Observation(
+                f"scan:duplicate:{index}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "shared-time-job",
+                    "started_at": "2026-09-02T00:00:00Z",
+                    "completed_at": finished,
+                },
+            )
+        )
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert result["evidence"]["completed_scans"] == 0
+    assert result["evidence"]["untrusted_scan_observations"] == 2
+
+
+def test_valid_temporal_scan_remains_counted_alongside_invalid_scan():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "inventory"))
+    for job_id, finished in (
+        ("valid-job", "2026-09-03T00:00:00Z"),
+        ("invalid-job", "2099-09-03T00:00:00Z"),
+    ):
+        graph.add(
+            Observation(
+                f"scan:{job_id}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=("asset:a",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": job_id,
+                    "started_at": "2026-09-02T00:00:00Z",
+                    "completed_at": finished,
+                },
+            )
+        )
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert result["evidence"]["completed_scans"] == 1
+    assert result["evidence"]["untrusted_scan_observations"] == 1
+    assert result["evidence"]["scanner_sources"] == ["nuclei"]
+
+
+def test_plausible_scan_timeline_accepts_legacy_absent_timestamps():
+    from datetime import datetime, timezone
+
+    from app.scan_result_integrity import plausible_scan_timeline
+
+    frozen = datetime(2026, 9, 10, tzinfo=timezone.utc)
+    assert plausible_scan_timeline({}, now=frozen) is True
+    assert plausible_scan_timeline(
+        {
+            "started_at": "2026-09-02T00:00:00Z",
+            "completed_at": "2026-09-03T00:00:00+00:00",
+        },
+        now=frozen,
+    ) is True
+    assert plausible_scan_timeline(
+        {
+            "started_at": "2026-09-04T00:00:00Z",
+            "completed_at": "2026-09-03T00:00:00Z",
+        },
+        now=frozen,
+    ) is False
