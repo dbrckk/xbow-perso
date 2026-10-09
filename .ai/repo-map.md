@@ -8544,13 +8544,19 @@ contradictions = sum(
 ⋮----
 def _unstable_scanner_outcomes(outcomes: Mapping[str, Any] | None) -> bool
 ⋮----
-by_kind = (outcomes or {}).get("by_job_kind")
+"""Treat invalid scanner diagnostics as unsafe to use for null-scan recovery.
+
+    Only distinct-job, bounded integer counters can establish worker health.
+    Absence of a worker history is unknown, not proof of a healthy run.
+    """
 ⋮----
-counts = by_kind.get(kind)
+by_kind = outcomes["by_job_kind"]
 ⋮----
-completed = int(counts.get("completed") or 0)
-failed = int(counts.get("failed") or 0)
-requeued = int(counts.get("requeued") or 0)
+counts = by_kind[kind]
+⋮----
+parsed: dict[str, int] = {}
+⋮----
+number = counts.get(name, 0)
 ⋮----
 """Rank *existing* authorized recon task kinds after evidence-backed null scans.
 
@@ -8647,7 +8653,7 @@ form_reviewed = _reviewed_ids(
 uncovered_forms = sum(
 missing_technology = not any(
 observed_browser_work = any(
-browser_job_outcomes = (worker_outcomes or {}).get("by_job_kind")
+browser_job_outcomes = (
 ⋮----
 # Worker outcomes have no target lineage. Trust legacy counts only
 # when one observed asset host can be associated with the campaign.
@@ -22425,6 +22431,22 @@ def test_campaign_duplicate_observations_same_origin_allow_legacy_scan()
 def test_campaign_mixed_legacy_host_and_explicit_origin_requires_lineage()
 ⋮----
 def test_campaign_duplicate_legacy_host_observations_remain_supported()
+⋮----
+def test_malformed_scanner_health_data_blocks_negative_scan_recovery()
+⋮----
+malformed = (
+⋮----
+result = _feedback(_graph(), worker_outcomes=feedback)
+⋮----
+def test_invalid_scanner_worker_counts_require_manual_review()
+⋮----
+invalid = (True, False, None, -1, 1.5, "2", float("nan"),
+⋮----
+def test_valid_recovered_worker_history_allows_bounded_recovery()
+⋮----
+def test_valid_operational_failures_still_halt_recovery()
+⋮----
+def test_invalid_campaign_wide_worker_health_does_not_block_unrelated_origin()
 ````
 
 ## File: backend/tests/test_nuclei_preflight.py

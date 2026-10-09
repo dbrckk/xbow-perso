@@ -39,16 +39,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T10:13:36Z
+Generated: 2026-10-09T10:17:11Z
 
 ### Git
 - Branch: `main`
-- Head: `67c47ee10e56`
-- Commit date: 2026-10-09T12:13:25+02:00
-- Commit: fix(scanner): reject malformed outcome counters before recovery ranking
+- Head: `2c1c85f66a96`
+- Commit date: 2026-10-09T12:17:00+02:00
+- Commit: fix(recovery): quarantine untrusted scanner worker health feedback
 - Tracked files: 687
 
 ### Recently changed files
+- `backend/app/no_finding_recovery.py`
+- `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
 - `backend/app/adaptive_cycle.py`
@@ -59,8 +61,6 @@ Generated: 2026-10-09T10:13:36Z
 - `backend/tests/test_orchestrator.py`
 - `backend/app/coverage.py`
 - `backend/tests/test_coverage.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/tests/test_no_finding_recovery.py`
 
 ### Project signals
 - `pyproject.toml`

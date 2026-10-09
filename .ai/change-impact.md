@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 8cdbd6b38264d0286c0df1358757e3be4f9a7d6e
-Head: 67c47ee10e56dee9e364a20695f5c64ee58a5e73
+Base: 78a19762065e5cd56a574b3d2c4c149f014bd128
+Head: 2c1c85f66a9637347ff5cde404b755434ffbf12a
 
 ## Changed files
-- M backend/app/scanner_adaptation.py
-- M backend/tests/test_scanner_adaptation.py
+- M backend/app/no_finding_recovery.py
+- M backend/tests/test_no_finding_recovery.py
 
 ## Affected areas
 - backend
