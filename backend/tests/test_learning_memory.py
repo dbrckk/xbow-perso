@@ -852,3 +852,56 @@ def test_scoped_learning_rejects_wrong_protocol_or_port_of_endpoint():
         ))
 
     assert build_learning_memory(graph, target_url="https://a.test") == []
+
+
+def test_learning_memory_route_excludes_evidence_from_other_authorized_asset(
+    tmp_path, monkeypatch
+):
+    db = str(tmp_path / "scoped-learning.sqlite3")
+    artifacts = str(tmp_path / "artifacts")
+    monkeypatch.setenv("XBOW_DB_PATH", db)
+    monkeypatch.setenv("XBOW_ARTIFACT_ROOT", artifacts)
+    campaign = Campaign(
+        id="scoped-learning-campaign",
+        target=TargetInput(
+            name="authorized-target",
+            primary_url="https://example.test",
+            rules=ProgramRules(
+                authorization_reference="explicit-test-authorization",
+                allowed_targets=["example.test", "other.test"],
+            ),
+        ),
+    )
+    store = Storage(db, artifacts)
+    store.save_campaign(campaign.model_dump(mode="json"), expected_version=0)
+    for label, asset, outcome in (
+        ("target", "https://example.test", "success"),
+        ("other", "https://other.test", "failure"),
+    ):
+        store.put_observation(
+            campaign.id,
+            Observation(f"asset:{label}", "asset", asset, "recon").to_dict(),
+        )
+        store.put_observation(
+            campaign.id,
+            Observation(
+                f"review:{label}",
+                "evidence",
+                "review-outcome",
+                "validator",
+                parent_ids=(f"asset:{label}",),
+                metadata={
+                    "technique": "bounded-review",
+                    "outcome": outcome,
+                    "job_id": f"job-{label}",
+                },
+            ).to_dict(),
+        )
+
+    result = campaign_learning_memory(campaign.id)
+    assert len(result["techniques"]) == 1
+    assert result["techniques"][0]["technique"] == "bounded-review"
+    assert result["techniques"][0]["successes"] == 1
+    assert result["techniques"][0]["failures"] == 0
+    assert result["summary"]["attempts"] == 1
+    assert result["read_only"] is True
