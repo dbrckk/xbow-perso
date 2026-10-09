@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Callable
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter
 
@@ -16,6 +17,73 @@ from .validation_state import analyze_validation_state
 router = APIRouter()
 
 
+def _web_origin(value: object) -> tuple[str, str, int] | None:
+    """Reject malformed or credential-bearing web origins."""
+    try:
+        parsed = urlsplit(str(value or "").strip())
+        scheme = parsed.scheme.lower()
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+        if (
+            scheme not in {"http", "https"}
+            or not host
+            or parsed.username is not None
+            or parsed.password is not None
+            or port == 0
+        ):
+            return None
+    except ValueError:
+        return None
+    return scheme, host, port if port is not None else (
+        443 if scheme == "https" else 80
+    )
+
+
+def _asset_supports_web_origin(
+    asset_value: object,
+    endpoint_origin: tuple[str, str, int],
+) -> bool:
+    raw = str(asset_value or "").strip()
+    if "://" in raw:
+        return _web_origin(raw) == endpoint_origin
+    try:
+        parsed = urlsplit(f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+        if (
+            not host
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+            or port == 0
+        ):
+            return False
+    except ValueError:
+        return False
+    return host == endpoint_origin[1] and (
+        port is None or port == endpoint_origin[2]
+    )
+
+
+def _endpoint_has_consistent_asset_origins(
+    row: dict[str, Any],
+    asset_values: dict[str, str],
+) -> bool:
+    origin = _web_origin(row.get("url"))
+    asset_ids = row.get("asset_parent_ids") or ()
+    return bool(
+        origin is not None
+        and asset_ids
+        and all(
+            asset_id in asset_values
+            and _asset_supports_web_origin(asset_values[asset_id], origin)
+            for asset_id in asset_ids
+        )
+    )
+
+
 def _completed_scans_with_provenance(
     graph: ObservationGraph,
     surface: dict[str, Any],
@@ -25,6 +93,7 @@ def _completed_scans_with_provenance(
     """Deduplicate completed scan jobs and reject untrusted scope or reports."""
     items = {item.id: item for item in graph.values()}
     assets = graph.by_kind("asset")
+    asset_values = {item.id: item.value for item in assets}
     approved_asset_ids = {
         item["id"]
         for item in surface["assets"]
@@ -37,7 +106,9 @@ def _completed_scans_with_provenance(
             item["valid"]
             and item["in_scope"] is True
             and not item["host_asset_mismatch"]
-            and item["asset_parent_ids"]
+            and _endpoint_has_consistent_asset_origins(
+                item, asset_values
+            )
         )
     }
     approved_form_ids = {
@@ -195,6 +266,9 @@ def _endpoint_scan_attribution(
     asset's individual endpoints the scanner checked. Only explicit
     endpoint ancestry of a trusted completed scan contributes here.
     """
+    asset_values = {
+        item.id: item.value for item in graph.by_kind("asset")
+    }
     eligible_ids = {
         row["id"]
         for row in surface["endpoints"]
@@ -203,7 +277,9 @@ def _endpoint_scan_attribution(
             and row["in_scope"] is not False
             and (scope_checker is None or row["in_scope"] is True)
             and not row["host_asset_mismatch"]
-            and row["asset_parent_ids"]
+            and _endpoint_has_consistent_asset_origins(
+                row, asset_values
+            )
         )
     }
     items = {item.id: item for item in graph.values()}
