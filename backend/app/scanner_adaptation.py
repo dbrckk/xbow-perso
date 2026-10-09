@@ -120,7 +120,7 @@ def adapt_scanner_engines(
         unstable_worker = failed >= 2 and completed == 0
         if unstable_worker:
             reasons[engine] = (
-                "worker outcomes show repeated terminal execution failures"
+                "worker outcomes show repeated unstable execution (terminal failures)"
             )
             suppressed.add(engine)
         elif requeued and completed == 0:
