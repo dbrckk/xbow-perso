@@ -26,6 +26,20 @@ def canonical_scan_job_id(raw: object) -> str | None:
 
 
 
+def canonical_scan_source(raw: object) -> str | None:
+    """Reject unbounded, invisible or ambiguous scanner provenance labels."""
+    if not isinstance(raw, str):
+        return None
+    normalized = raw.strip()
+    if (
+        not 0 < len(normalized) <= 128
+        or not all(char.isprintable() for char in raw)
+        or any(char.isspace() and char != " " for char in normalized)
+    ):
+        return None
+    return normalized
+
+
 def conflicting_scan_terminal_job_ids(graph: ObservationGraph) -> frozenset[str]:
     """Identify one job reporting incompatible terminal scan outcomes.
 
