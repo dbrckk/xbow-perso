@@ -3106,6 +3106,7 @@ def test_malformed_scanner_health_data_blocks_negative_scan_recovery():
         {"by_job_kind": {"nuclei_scan": []}},
         {"by_job_kind": {"nuclei_scan": None}},
         [],
+        "invalid-worker-diagnostics",
     )
     for feedback in malformed:
         result = _feedback(_graph(), worker_outcomes=feedback)
