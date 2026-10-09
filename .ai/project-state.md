@@ -39,16 +39,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T10:22:23Z
+Generated: 2026-10-09T11:20:30Z
 
 ### Git
 - Branch: `main`
-- Head: `d2051c8f0104`
-- Commit date: 2026-10-09T12:22:11+02:00
-- Commit: fix(recon): validate full endpoint/form ancestry before crediting technology
+- Head: `b747973e85c0`
+- Commit date: 2026-10-09T13:20:17+02:00
+- Commit: docs(agents): adopt pinned 88-rule development standard
 - Tracked files: 687
 
 ### Recently changed files
+- `AGENTS.md`
 - `backend/app/recon_swarm.py`
 - `backend/tests/test_recon_swarm.py`
 - `backend/app/learning_memory.py`
@@ -57,8 +58,6 @@ Generated: 2026-10-09T10:22:23Z
 - `backend/tests/test_no_finding_recovery.py`
 - `backend/app/scanner_adaptation.py`
 - `backend/tests/test_scanner_adaptation.py`
-- `backend/app/adaptive_cycle.py`
-- `backend/tests/test_adaptive_cycle.py`
 
 ### Project signals
 - `pyproject.toml`

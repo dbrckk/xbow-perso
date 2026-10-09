@@ -1,14 +1,13 @@
 # Change impact
 
-Base: eea7f115962a3d765669e474c5e1125fa584d81f
-Head: d2051c8f01041f76415f31b78bb6abc5bc8a218f
+Base: 940d9bc03f467b29426fa789a219ac9af23bf948
+Head: b747973e85c0fad8bb4b5d6f520117ee7b9544df
 
 ## Changed files
-- M backend/app/recon_swarm.py
-- M backend/tests/test_recon_swarm.py
+- M AGENTS.md
 
 ## Affected areas
-- backend
+- (root)
 
 ## Related test candidates
 - No direct filename-based test match detected.
