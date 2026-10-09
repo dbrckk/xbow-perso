@@ -171,6 +171,13 @@ def _recon_observation_is_for_target(
         if parent.kind == "asset":
             linked_assets.append(parent)
         else:
+            # A compatible asset ancestor cannot legitimize a technology
+            # or form discovered through an endpoint/form on another
+            # scheme, hostname or port.
+            if parent.kind in {"endpoint", "form"} and not _same_origin(
+                parent.value, target_origin
+            ):
+                return False
             pending.extend(parent.parent_ids)
     if linked_assets:
         return all(
