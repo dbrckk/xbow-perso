@@ -312,3 +312,134 @@ def test_scoped_hypotheses_keep_valid_authorized_asset_lineage():
         "input_surface_review", "authorization_surface_review"
     }
     assert "private" not in str([item.to_dict() for item in result])
+
+
+def test_duplicate_url_merges_distinct_parameter_names_and_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:target", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:alpha",
+            "endpoint",
+            "https://example.test/search?q=secret-one",
+            "crawler",
+            parent_ids=("asset:target",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:beta",
+            "endpoint",
+            "https://example.test/search?page=secret-two",
+            "browser",
+            parent_ids=("asset:target",),
+        )
+    )
+
+    results = build_hypotheses(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert len(results) == 1
+    assert results[0].kind == "input_surface_review"
+    assert results[0].target == "https://example.test/search"
+    assert results[0].parameter_names == ("page", "q")
+    assert results[0].evidence_ids == (
+        "endpoint:alpha", "endpoint:beta"
+    )
+    assert results[0].confidence == 0.55
+    assert "secret-one" not in str([item.to_dict() for item in results])
+    assert "secret-two" not in str([item.to_dict() for item in results])
+
+
+def test_duplicate_url_hypotheses_are_order_independent():
+    def build_graph(reverse: bool) -> ObservationGraph:
+        graph = ObservationGraph()
+        graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+        observations = [
+            Observation(
+                "endpoint:one", "endpoint",
+                "https://example.test/account?role=private",
+                "crawler", parent_ids=("asset:a",),
+            ),
+            Observation(
+                "endpoint:two", "endpoint",
+                "https://example.test/account?page=private",
+                "browser", parent_ids=("asset:a",),
+            ),
+        ]
+        for item in reversed(observations) if reverse else observations:
+            graph.add(item)
+        return graph
+
+    forward = build_hypotheses(build_graph(False))
+    backward = build_hypotheses(build_graph(True))
+
+    assert [item.to_dict() for item in forward] == [
+        item.to_dict() for item in backward
+    ]
+    assert len(forward) == 2
+    assert all(
+        item.evidence_ids == ("endpoint:one", "endpoint:two")
+        for item in forward
+    )
+    assert all(
+        item.parameter_names == ("page", "role")
+        for item in forward
+    )
+
+
+def test_query_evidence_merge_stays_bounded_for_many_observations():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    for index in range(50):
+        graph.add(
+            Observation(
+                f"endpoint:{index:03d}",
+                "endpoint",
+                f"https://example.test/search?key{index:03d}=private",
+                "crawler",
+                parent_ids=("asset:a",),
+            )
+        )
+
+    matches = build_hypotheses(graph)
+    assert len(matches) == 1
+    assert len(matches[0].evidence_ids) == 32
+    assert len(matches[0].parameter_names) == 50
+    assert matches[0].evidence_ids[0] == "endpoint:000"
+    assert matches[0].parameter_names[0] == "key000"
+    assert "private" not in str([item.to_dict() for item in matches])
+
+
+def test_distinct_targets_and_review_kinds_do_not_mix_evidence():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "example.test", "recon"))
+    graph.add(
+        Observation(
+            "endpoint:account",
+            "endpoint",
+            "https://example.test/account?id=private",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "endpoint:search",
+            "endpoint",
+            "https://example.test/search?q=private",
+            "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    results = build_hypotheses(graph)
+    grouped = {(item.kind, item.target): item for item in results}
+
+    assert len(results) == 3
+    assert grouped[
+        ("authorization_surface_review", "https://example.test/account")
+    ].evidence_ids == ("endpoint:account",)
+    assert grouped[
+        ("input_surface_review", "https://example.test/search")
+    ].evidence_ids == ("endpoint:search",)
