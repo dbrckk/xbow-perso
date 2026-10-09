@@ -39,13 +39,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T17:04:01Z
+Generated: 2026-10-09T17:08:20Z
 
 ### Git
 - Branch: `main`
-- Head: `a84db0470323`
-- Commit date: 2026-10-09T19:03:49+02:00
-- Commit: fix(coverage): reconcile positive scan reports at endpoint granularity
+- Head: `77c593a4526e`
+- Commit date: 2026-10-09T19:08:10+02:00
+- Commit: fix(coverage): reject mixed-origin positive scan job claims
 - Tracked files: 687
 
 ### Recently changed files

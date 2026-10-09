@@ -21,67 +21,67 @@
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 48,
+          "line": 49,
+          "preview": "origin = _web_origin(raw)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 76,
           "preview": "return _web_origin(raw) == endpoint_origin",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 74,
+          "line": 102,
           "preview": "origin = _web_origin(row.get(\"url\"))",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 100,
+          "line": 128,
           "preview": "origin = _web_origin(form_action)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 129,
+          "line": 157,
           "preview": "or _web_origin(parent.value) != origin",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 132,
+          "line": 160,
           "preview": "elif parent.kind == \"form\" and _web_origin(parent.value) != origin:",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 6
+      "occurrence_count": 7
     },
-    "_asset_supports_web_origin": {
+    "_asset_claim_identity": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 42,
+        "line": 43,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 42,
-          "preview": "def _asset_supports_web_origin(",
+          "line": 43,
+          "preview": "def _asset_claim_identity(value: object) -> tuple[str, ...] | None:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 81,
-          "preview": "and _asset_supports_web_origin(asset_values[asset_id], origin)",
-          "definition_candidate": false
-        },
-        {
-          "file": "backend/app/coverage.py",
-          "line": 119,
-          "preview": "or not _asset_supports_web_origin(",
+          "line": 364,
+          "preview": "_asset_claim_identity(asset_values.get(asset_id))",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 2
     },
-    "_endpoint_has_consistent_asset_origins": {
+    "_asset_supports_web_origin": {
       "definition": {
         "file": "backend/app/coverage.py",
         "line": 70,
@@ -92,18 +92,47 @@
         {
           "file": "backend/app/coverage.py",
           "line": 70,
+          "preview": "def _asset_supports_web_origin(",
+          "definition_candidate": true
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 109,
+          "preview": "and _asset_supports_web_origin(asset_values[asset_id], origin)",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/app/coverage.py",
+          "line": 147,
+          "preview": "or not _asset_supports_web_origin(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_endpoint_has_consistent_asset_origins": {
+      "definition": {
+        "file": "backend/app/coverage.py",
+        "line": 98,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "backend/app/coverage.py",
+          "line": 98,
           "preview": "def _endpoint_has_consistent_asset_origins(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 160,
+          "line": 188,
           "preview": "and _endpoint_has_consistent_asset_origins(",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 405,
+          "line": 446,
           "preview": "and _endpoint_has_consistent_asset_origins(",
           "definition_candidate": false
         },
@@ -125,20 +154,20 @@
     "_form_has_consistent_asset_origins": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 88,
+        "line": 116,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 88,
+          "line": 116,
           "preview": "def _form_has_consistent_asset_origins(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 171,
+          "line": 199,
           "preview": "and _form_has_consistent_asset_origins(",
           "definition_candidate": false
         },
@@ -160,20 +189,20 @@
     "_completed_scans_with_provenance": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 138,
+        "line": 166,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 138,
+          "line": 166,
           "preview": "def _completed_scans_with_provenance(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 514,
+          "line": 555,
           "preview": ") = _completed_scans_with_provenance(",
           "definition_candidate": false
         }
@@ -183,20 +212,20 @@
     "trustworthy_lineage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 181,
+        "line": 209,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 181,
+          "line": 209,
           "preview": "def trustworthy_lineage(observation: Any) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 254,
+          "line": 282,
           "preview": "if not trustworthy_lineage(observation):",
           "definition_candidate": false
         }
@@ -206,26 +235,26 @@
     "linked_lineage_ids": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 273,
+        "line": 301,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 273,
+          "line": 301,
           "preview": "def linked_lineage_ids(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 297,
+          "line": 325,
           "preview": "linked_lineage_ids(item)",
           "definition_candidate": false
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 331,
+          "line": 359,
           "preview": "scan_lineages = [linked_lineage_ids(item) for item in records]",
           "definition_candidate": false
         }
@@ -235,20 +264,20 @@
     "_endpoint_scan_attribution": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 381,
+        "line": 422,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 381,
+          "line": 422,
           "preview": "def _endpoint_scan_attribution(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 526,
+          "line": 567,
           "preview": "endpoint_attribution = _endpoint_scan_attribution(",
           "definition_candidate": false
         }
@@ -258,20 +287,20 @@
     "explicit_endpoint_ancestry": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 412,
+        "line": 453,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 412,
+          "line": 453,
           "preview": "def explicit_endpoint_ancestry(scan: Any) -> frozenset[str]:",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 460,
+          "line": 501,
           "preview": "explicit_endpoint_ancestry(item) for item in reports",
           "definition_candidate": false
         }
@@ -281,20 +310,20 @@
     "build_evidence_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 500,
+        "line": 541,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 500,
+          "line": 541,
           "preview": "def build_evidence_coverage(",
           "definition_candidate": true
         },
         {
           "file": "backend/app/coverage.py",
-          "line": 601,
+          "line": 642,
           "preview": "coverage = build_evidence_coverage(",
           "definition_candidate": false
         },
@@ -717,21 +746,39 @@
           "line": 2480,
           "preview": "result = build_evidence_coverage(",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2515,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2549,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2584,
+          "preview": "result = build_evidence_coverage(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 72
+      "occurrence_count": 75
     },
     "campaign_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 595,
+        "line": 636,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 595,
+          "line": 636,
           "preview": "def campaign_coverage(campaign_id: str):",
           "definition_candidate": true
         }
@@ -741,14 +788,14 @@
     "build_coverage_guidance": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 612,
+        "line": 653,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 612,
+          "line": 653,
           "preview": "def build_coverage_guidance(coverage: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
@@ -895,21 +942,27 @@
           "line": 2343,
           "preview": "assert build_coverage_guidance(result)[\"focus\"] == \"scan_result_reconciliation\"",
           "definition_candidate": false
+        },
+        {
+          "file": "backend/tests/test_coverage.py",
+          "line": 2520,
+          "preview": "assert build_coverage_guidance(result)[\"focus\"] == \"scan_result_reconciliation\"",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 25
+      "occurrence_count": 26
     },
     "prioritize_action_with_coverage": {
       "definition": {
         "file": "backend/app/coverage.py",
-        "line": 711,
+        "line": 752,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "backend/app/coverage.py",
-          "line": 711,
+          "line": 752,
           "preview": "def prioritize_action_with_coverage(",
           "definition_candidate": true
         },
@@ -2219,23 +2272,6 @@
           "file": "backend/tests/test_coverage.py",
           "line": 1940,
           "preview": "def test_https_endpoint_with_different_port_does_not_claim_scan_coverage():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_matching_https_asset_endpoint_remains_documented": {
-      "definition": {
-        "file": "backend/tests/test_coverage.py",
-        "line": 1953,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "backend/tests/test_coverage.py",
-          "line": 1953,
-          "preview": "def test_matching_https_asset_endpoint_remains_documented():",
           "definition_candidate": true
         }
       ],

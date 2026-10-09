@@ -2575,9 +2575,16 @@ scheme = parsed.scheme.lower()
 host = (parsed.hostname or "").lower().rstrip(".")
 port = parsed.port
 ⋮----
-raw = str(asset_value or "").strip()
+def _asset_claim_identity(value: object) -> tuple[str, ...] | None
+⋮----
+"""Canonicalize a claimed scan asset without equating different origins."""
+raw = str(value or "").strip()
+⋮----
+origin = _web_origin(raw)
 ⋮----
 parsed = urlsplit(f"//{raw}")
+⋮----
+raw = str(asset_value or "").strip()
 ⋮----
 origin = _web_origin(row.get("url"))
 asset_ids = row.get("asset_parent_ids") or ()
@@ -2673,6 +2680,10 @@ malformed = any(
 inconsistent = (
 scan_lineages = [linked_lineage_ids(item) for item in records]
 scan_asset_ids = set().union(
+claimed_asset_identities = {
+# A shared job ID does not make several HTTP origins one source
+# of positive findings. Require one canonical origin/host claim.
+ambiguous_asset_claim = (
 endpoint_claims = {
 # Different reporters for one job may not silently combine their
 # endpoint claims to corroborate positive vulnerability findings.
@@ -18140,6 +18151,12 @@ def test_positive_asset_scan_rejects_finding_with_extra_asset_ancestor()
 def test_positive_job_conflicting_endpoint_reporters_fail_reconciliation()
 ⋮----
 def test_positive_asset_only_scan_still_reconciles_asset_finding()
+⋮----
+def test_positive_duplicate_scan_job_cannot_merge_different_asset_origins()
+⋮----
+def test_single_positive_scan_with_two_unrelated_assets_is_unreconciled()
+⋮----
+def test_positive_duplicate_asset_observations_with_same_origin_remain_valid()
 ````
 
 ## File: backend/tests/test_cpe_consistency.py
