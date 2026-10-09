@@ -39,6 +39,34 @@ def _web_origin(value: object) -> tuple[str, str, int] | None:
     )
 
 
+
+def _asset_claim_identity(value: object) -> tuple[str, ...] | None:
+    """Canonicalize a claimed scan asset without equating different origins."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    if "://" in raw:
+        origin = _web_origin(raw)
+        return ("origin", *map(str, origin)) if origin is not None else None
+    try:
+        parsed = urlsplit(f"//{raw}")
+        host = (parsed.hostname or "").lower().rstrip(".")
+        port = parsed.port
+    except ValueError:
+        return None
+    if (
+        not host
+        or port == 0
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.path
+        or parsed.query
+        or parsed.fragment
+    ):
+        return None
+    return ("host", host, str(port) if port is not None else "")
+
+
 def _asset_supports_web_origin(
     asset_value: object,
     endpoint_origin: tuple[str, str, int],
@@ -332,6 +360,16 @@ def _completed_scans_with_provenance(
         scan_asset_ids = set().union(
             *(assets for assets, _endpoints in scan_lineages)
         )
+        claimed_asset_identities = {
+            _asset_claim_identity(asset_values.get(asset_id))
+            for asset_id in scan_asset_ids
+        }
+        # A shared job ID does not make several HTTP origins one source
+        # of positive findings. Require one canonical origin/host claim.
+        ambiguous_asset_claim = (
+            len(claimed_asset_identities) != 1
+            or None in claimed_asset_identities
+        )
         endpoint_claims = {
             endpoints for _assets, endpoints in scan_lineages
         }
@@ -367,7 +405,10 @@ def _completed_scans_with_provenance(
             malformed
             or inconsistent
             or missing_recorded_findings
-            or (ambiguous_endpoint_claim and any(reported_findings))
+            or (
+                (ambiguous_endpoint_claim or ambiguous_asset_claim)
+                and any(reported_findings)
+            )
         ):
             unreconciled += len(records)
             untrusted += len(records)
