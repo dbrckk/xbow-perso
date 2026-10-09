@@ -1893,3 +1893,124 @@ def test_invalid_scan_id_does_not_poison_independent_valid_scan():
     assert report["evidence"]["completed_scans"] == 1
     assert report["evidence"]["untrusted_scan_observations"] == 1
     assert report["evidence"]["scanner_sources"] == ["nuclei"]
+
+
+def _origin_scan_graph(asset: str, endpoint: str) -> ObservationGraph:
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", asset, "inventory"))
+    graph.add(
+        Observation(
+            "endpoint:a", "endpoint", endpoint, "crawler",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:linked", "evidence", "completed", "nuclei",
+            parent_ids=("endpoint:a",),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "origin-scan",
+                "findings": 0,
+            },
+        )
+    )
+    return graph
+
+
+def test_http_endpoint_does_not_inherit_https_asset_scan_coverage():
+    graph = _origin_scan_graph(
+        "https://example.test",
+        "http://example.test/login",
+    )
+
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 0
+    assert coverage["dimensions"]["scanner_execution"] == 0.0
+
+
+def test_https_endpoint_with_different_port_does_not_claim_scan_coverage():
+    graph = _origin_scan_graph(
+        "https://example.test:8443",
+        "https://example.test/profile",
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+
+
+def test_matching_https_asset_endpoint_remains_documented():
+    graph = _origin_scan_graph(
+        "https://example.test:443",
+        "https://example.test/login",
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 1
+    assert coverage["evidence"]["untrusted_scan_observations"] == 0
+
+
+def test_legacy_hostname_only_asset_remains_compatible_with_https_endpoint():
+    graph = _origin_scan_graph(
+        "example.test",
+        "https://example.test/profile",
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert coverage["evidence"]["completed_scans"] == 1
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 1
+
+
+def test_endpoint_with_mixed_http_and_https_asset_parents_is_untrusted():
+    graph = ObservationGraph()
+    graph.add(
+        Observation("asset:https", "asset", "https://example.test", "recon")
+    )
+    graph.add(
+        Observation("asset:http", "asset", "http://example.test", "recon")
+    )
+    graph.add(
+        Observation(
+            "endpoint:mixed", "endpoint",
+            "https://example.test/profile", "crawler",
+            parent_ids=("asset:https", "asset:http"),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:mixed", "evidence", "completed", "nuclei",
+            parent_ids=("endpoint:mixed",),
+            metadata={
+                "phase": "scan", "status": "completed",
+                "job_id": "mixed-origins", "findings": 0,
+            },
+        )
+    )
+    coverage = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+
+    assert coverage["evidence"]["completed_scans"] == 0
+    assert coverage["evidence"]["untrusted_scan_observations"] == 1
+    assert coverage["evidence"]["endpoint_scan_attribution"][
+        "documented_scanned_endpoints"
+    ] == 0
