@@ -2483,3 +2483,107 @@ def test_positive_asset_only_scan_still_reconciles_asset_finding():
 
     assert result["evidence"]["completed_scans"] == 1
     assert result["evidence"]["unreconciled_scan_observations"] == 0
+
+
+def test_positive_duplicate_scan_job_cannot_merge_different_asset_origins():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:http", "asset", "http://example.test", "inventory"))
+    graph.add(Observation("asset:https", "asset", "https://example.test", "inventory"))
+    graph.add(
+        Observation(
+            "finding:https", "finding", "positive finding", "nuclei",
+            parent_ids=("asset:https",),
+        )
+    )
+    for name in ("http", "https"):
+        graph.add(
+            Observation(
+                f"scan:{name}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=(f"asset:{name}",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "shared-job",
+                    "findings": 1,
+                },
+            )
+        )
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert result["evidence"]["completed_scans"] == 0
+    assert result["evidence"]["unreconciled_scan_observations"] == 2
+    assert build_coverage_guidance(result)["focus"] == "scan_result_reconciliation"
+
+
+def test_single_positive_scan_with_two_unrelated_assets_is_unreconciled():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:a", "asset", "a.example.test", "inventory"))
+    graph.add(Observation("asset:b", "asset", "b.example.test", "inventory"))
+    graph.add(
+        Observation(
+            "finding:a", "finding", "positive finding", "nuclei",
+            parent_ids=("asset:a",),
+        )
+    )
+    graph.add(
+        Observation(
+            "scan:both",
+            "evidence",
+            "completed",
+            "nuclei",
+            parent_ids=("asset:a", "asset:b"),
+            metadata={
+                "phase": "scan",
+                "status": "completed",
+                "job_id": "shared-job",
+                "findings": 1,
+            },
+        )
+    )
+
+    result = build_evidence_coverage(
+        graph,
+        scope_checker=lambda host: host in {"a.example.test", "b.example.test"},
+    )
+    assert result["evidence"]["completed_scans"] == 0
+    assert result["evidence"]["unreconciled_scan_observations"] == 1
+
+
+def test_positive_duplicate_asset_observations_with_same_origin_remain_valid():
+    graph = ObservationGraph()
+    graph.add(Observation("asset:one", "asset", "https://example.test", "inventory"))
+    graph.add(Observation("asset:two", "asset", "https://example.test:443/", "inventory"))
+    graph.add(
+        Observation(
+            "finding:one", "finding", "positive finding", "nuclei",
+            parent_ids=("asset:one",),
+        )
+    )
+    for name in ("one", "two"):
+        graph.add(
+            Observation(
+                f"scan:{name}",
+                "evidence",
+                "completed",
+                "nuclei",
+                parent_ids=(f"asset:{name}",),
+                metadata={
+                    "phase": "scan",
+                    "status": "completed",
+                    "job_id": "shared-job",
+                    "findings": 1,
+                },
+            )
+        )
+
+    result = build_evidence_coverage(
+        graph, scope_checker=lambda host: host == "example.test"
+    )
+    assert result["evidence"]["completed_scans"] == 1
+    assert result["evidence"]["unreconciled_scan_observations"] == 0
+    assert result["evidence"]["duplicate_scan_observations"] == 1
