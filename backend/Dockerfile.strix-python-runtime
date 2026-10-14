@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS builder
+FROM public.ecr.aws/docker/library/python:3.15.0-slim@sha256:f48fda6d59b2b3437781d1c3ccf4aa0e26ae871de3cdd758b49ab45ee7291619 AS builder
 
 ARG TARGETARCH
 ARG UV_VERSION=0.12.10
@@ -89,7 +89,7 @@ RUN PYTHONPATH=/app /opt/strix-src/.venv/bin/python \
       -m app.strix_python_bootstrap_runtime --self-test
 
 
-FROM public.ecr.aws/docker/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS runtime
+FROM public.ecr.aws/docker/library/python:3.15.0-slim@sha256:f48fda6d59b2b3437781d1c3ccf4aa0e26ae871de3cdd758b49ab45ee7291619 AS runtime
 
 RUN groupadd --system --gid 65532 strix-python \
     && useradd --system --uid 65532 --gid 65532 --home-dir /nonexistent \

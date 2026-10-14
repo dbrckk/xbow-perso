@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.12-slim
+FROM public.ecr.aws/docker/library/python:3.15-slim
 
 ARG TARGETARCH
 ARG KATANA_VERSION=1.7.0
