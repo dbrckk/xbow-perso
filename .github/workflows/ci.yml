@@ -51,6 +51,53 @@ jobs:
       - run: pip install -r backend/requirements-dev.txt
       - run: python -m pip check
       - run: python -m compileall -q backend/app backend/tests
+      - name: Verify Strix manifest is safe to materialize later
+        shell: bash
+        run: |
+          PYTHONPATH=backend python - <<'PY'
+          from types import SimpleNamespace
+          from app.strix_manifest_admission import (
+              StrixManifestAdmissionError,
+              build_strix_manifest_admission_plan,
+          )
+
+          def file(data=b"safe"):
+              return SimpleNamespace(type="file", content=data)
+
+          def check(entries, environment=None):
+              manifest = SimpleNamespace(
+                  version=1,
+                  root="/workspace",
+                  entries=entries,
+                  environment=SimpleNamespace(value=environment or {}),
+                  users=[],
+                  groups=[],
+                  extra_path_grants=[],
+              )
+              return build_strix_manifest_admission_plan(manifest)
+
+          for entries, environment in (
+              ({"config": file(), "config/child": file()}, {}),
+              ({"repo/a": file(), "repo": file()}, {}),
+              ({}, {"CONFIG": "safe\x00unsafe"}),
+              ({"large": file(bytearray(1024 * 1024 + 1))}, {}),
+              ({"invalid": file()}, {"CONFIG": "\ud800"}),
+          ):
+              try:
+                  check(entries, environment)
+              except StrixManifestAdmissionError:
+                  continue
+              raise AssertionError("unsafe Strix manifest was admitted")
+
+          valid = check(
+              {"a/config": file(), "a/other": file(), "b/config": file()},
+              {"VALID": "yes"},
+          )
+          assert valid.entry_count == 3
+          assert valid.manifest_materialized is False
+          assert valid.upload_enabled is False
+          print("Strix manifest overlap, encoding, NUL and size limits verified")
+          PY
       - run: ruff check backend/app backend/tests
       - name: Verify pinned Strix backend hook
         shell: bash
