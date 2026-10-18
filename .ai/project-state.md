@@ -21,6 +21,11 @@ Status: active
 - Runner RPC create, exec, resolve-port and delete remain unimplemented; manifests cannot be uploaded/materialized and broker-routed authenticated execution is not wired.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
+## Manifest-admission hardening (2026-10-18)
+- Pre-materialization checks now reject overlapping file/directory entry paths, NUL-containing environment values, invalid UTF-8 text and oversized content before copying buffers.
+- The manifest path remains deliberately non-materializing: no host-path reads, uploads, session execution, or target-network I/O are enabled by these checks.
+- The CI workflow validates malformed manifests against the real admission module; existing Python, Docker, security and supply-chain gates remain required before merge.
+
 ## Current priority
 - Keep Strix active dispatch fail-closed; validate live broker/runner authentication and then implement bounded manifest admission and isolated session lifecycle before considering any active Strix entrypoint.
 
