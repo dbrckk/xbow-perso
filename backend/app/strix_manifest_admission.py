@@ -86,10 +86,16 @@ class StrixManifestAdmissionPlan:
 def _safe_text(value: object, *, name: str, max_bytes: int) -> str:
     if not isinstance(value, str):
         raise StrixManifestAdmissionError(f"{name} must be text")
-    encoded = value.encode("utf-8")
+    # Check character count before UTF-8 encoding to avoid allocating huge
+    # intermediate byte strings for attacker-controlled manifest fields.
+    if not value or len(value) > max_bytes:
+        raise StrixManifestAdmissionError(f"{name} is invalid")
+    try:
+        encoded = value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise StrixManifestAdmissionError(f"{name} is invalid") from exc
     if (
-        not encoded
-        or len(encoded) > max_bytes
+        len(encoded) > max_bytes
         or any(ord(char) < 0x20 or ord(char) == 0x7F for char in value)
     ):
         raise StrixManifestAdmissionError(f"{name} is invalid")
@@ -144,11 +150,12 @@ def _plan_file(path: str, entry: object) -> StrixManifestEntryPlan:
         raise StrixManifestAdmissionError(
             "manifest file content must be bytes"
         )
-    payload = bytes(content)
-    if len(payload) > _MAX_INLINE_FILE_BYTES:
+    # Reject oversized mutable buffers before copying their bytes.
+    if len(content) > _MAX_INLINE_FILE_BYTES:
         raise StrixManifestAdmissionError(
             "manifest inline file exceeds byte limit"
         )
+    payload = bytes(content)
     return StrixManifestEntryPlan(
         path=path,
         kind="file",
@@ -224,6 +231,19 @@ def _plan_entries(entries: object) -> tuple[StrixManifestEntryPlan, ...]:
             item = _plan_local_dir(path, entry)
         planned.append(item)
 
+    # A manifest must not describe both a path and a child of that path.
+    # Such entries would depend on write order or copy/mount semantics when
+    # eventual materialization is implemented, and may overwrite files.
+    for item in planned:
+        segments = item.path.split("/")
+        if any(
+            "/".join(segments[:length]) in seen
+            for length in range(1, len(segments))
+        ):
+            raise StrixManifestAdmissionError(
+                "manifest entry paths overlap"
+            )
+
     return tuple(sorted(planned, key=lambda item: item.path))
 
 
@@ -256,7 +276,22 @@ def _plan_environment(
             raise StrixManifestAdmissionError(
                 "manifest environment supports literal string values only"
             )
-        value_bytes = raw_value.encode("utf-8")
+        if len(raw_value) > _MAX_ENV_VALUE_BYTES:
+            raise StrixManifestAdmissionError(
+                "manifest environment value exceeds byte limit"
+            )
+        # NUL cannot be represented in a subprocess environment. Reject it
+        # now rather than admitting a digest for an unmaterializable value.
+        if "\x00" in raw_value:
+            raise StrixManifestAdmissionError(
+                "manifest environment value contains NUL"
+            )
+        try:
+            value_bytes = raw_value.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise StrixManifestAdmissionError(
+                "manifest environment value is invalid"
+            ) from exc
         if len(value_bytes) > _MAX_ENV_VALUE_BYTES:
             raise StrixManifestAdmissionError(
                 "manifest environment value exceeds byte limit"
