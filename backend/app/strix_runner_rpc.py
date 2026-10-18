@@ -8,6 +8,7 @@ import json
 import math
 import os
 import re
+import secrets
 import socket
 import threading
 import time
@@ -40,12 +41,17 @@ RUNNER_RPC_READ_DEADLINE_SECONDS = 10.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 RUNNER_RPC_MIN_SECRET_BYTES = 32
 RUNNER_RPC_MAX_SECRET_BYTES = 4096
+RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
+RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
+RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
 
 _MUTATION_PATHS = {
     "/v1/session/create",
     "/v1/session/exec",
     "/v1/session/resolve-port",
     "/v1/session/delete",
+    "/v1/session/prepare",
+    "/v1/session/release",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -58,6 +64,14 @@ class RunnerRpcResponse:
     status: int
     json_body: dict[str, Any]
     headers: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class _PreparedSession:
+    session_id: str
+    contract_hash: str
+    manifest_digest: str
+    expires_at: float
 
 
 class RunnerRpcService:
@@ -80,6 +94,13 @@ class RunnerRpcService:
         self._now = now
         self._nonces: OrderedDict[str, float] = OrderedDict()
         self._nonce_lock = threading.Lock()
+        # Inert metadata only: no files, subprocesses, ports or target network.
+        # State is process-local and expires even if the broker never releases it.
+        self._prepared_sessions: dict[str, _PreparedSession] = {}
+        self._preparation_tickets: OrderedDict[tuple[str, str], float] = (
+            OrderedDict()
+        )
+        self._prepared_lock = threading.Lock()
 
     def handle(
         self,
@@ -124,6 +145,7 @@ class RunnerRpcService:
                     "manifest_admission_required": True,
                     "manifest_admission_configured": True,
                     "implemented_operations": [],
+                    "inert_preparation_operations": ["prepare", "release"],
                 },
             )
 
@@ -155,6 +177,11 @@ class RunnerRpcService:
             return _error(400, "invalid_request")
         if not _validate_operation_payload(path, payload):
             return _error(400, "invalid_request")
+
+        if path == "/v1/session/prepare":
+            return self._prepare_session(payload)
+        if path == "/v1/session/release":
+            return self._release_session(payload)
 
         if path == "/v1/session/create":
             if not self._admission_secret:
@@ -189,6 +216,102 @@ class RunnerRpcService:
         if not self._active_execution:
             return _error(503, "active_execution_disabled")
         return _error(501, "rpc_operation_not_implemented")
+
+    def _prune_prepared_sessions(self, now: float) -> None:
+        # Called only under _prepared_lock. Monotonic time avoids an NTP clock
+        # adjustment extending the lifetime of a preparation record.
+        expired = [
+            key for key, record in self._prepared_sessions.items()
+            if now >= record.expires_at
+        ]
+        for key in expired:
+            del self._prepared_sessions[key]
+        while self._preparation_tickets:
+            key, expiry = next(iter(self._preparation_tickets.items()))
+            if now < expiry:
+                break
+            del self._preparation_tickets[key]
+
+    def _prepare_session(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        if not self._admission_secret:
+            return _error(503, "manifest_admission_key_unavailable")
+        try:
+            ticket = verify_strix_runner_manifest_ticket(
+                payload["admission"],
+                request_id=payload["request_id"],
+                image=payload["image"],
+                exposed_ports=payload["exposed_ports"],
+                manifest_digest=payload["manifest_digest"],
+                verification_secret=self._admission_secret,
+            )
+        except StrixRunnerManifestTicketError:
+            return _error(403, "manifest_admission_rejected")
+
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        ticket_id = (ticket.contract_hash, ticket.request_id)
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            if ticket_id in self._preparation_tickets:
+                return _error(409, "preparation_ticket_replayed")
+            if len(self._prepared_sessions) >= RUNNER_RPC_MAX_PREPARED_SESSIONS:
+                return _error(503, "prepared_session_capacity_reached")
+            if len(self._preparation_tickets) >= RUNNER_RPC_MAX_PREPARATION_TICKETS:
+                return _error(503, "preparation_ticket_capacity_reached")
+            session_id = f"prepared-{secrets.token_hex(16)}"
+            while session_id in self._prepared_sessions:
+                session_id = f"prepared-{secrets.token_hex(16)}"
+            expires_at = now + RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS
+            self._prepared_sessions[session_id] = _PreparedSession(
+                session_id=session_id,
+                contract_hash=ticket.contract_hash,
+                manifest_digest=ticket.manifest_digest,
+                expires_at=expires_at,
+            )
+            # Ticket replay stays rejected even if the session is released.
+            self._preparation_tickets[ticket_id] = expires_at
+
+        return RunnerRpcResponse(
+            status=201,
+            json_body={
+                "status": "prepared",
+                "protocol": RUNNER_RPC_PROTOCOL,
+                "session_id": session_id,
+                "contract_hash": ticket.contract_hash,
+                "manifest_digest": ticket.manifest_digest,
+                "expires_in_seconds": RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS,
+                "manifest_materialized": False,
+                "active_execution_enabled": False,
+            },
+        )
+
+    def _release_session(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._prepared_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "prepared_session_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            del self._prepared_sessions[item.session_id]
+        return RunnerRpcResponse(
+            status=200,
+            json_body={
+                "status": "released",
+                "protocol": RUNNER_RPC_PROTOCOL,
+                "session_id": item.session_id,
+                "manifest_materialized": False,
+                "active_execution_enabled": False,
+            },
+        )
 
     def _authenticate(
         self,
@@ -337,7 +460,7 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
     if not _valid_common(payload):
         return False
 
-    if path == "/v1/session/create":
+    if path in {"/v1/session/create", "/v1/session/prepare"}:
         if not _exact_keys(
             payload,
             {
@@ -423,6 +546,21 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             )
             and _valid_id(payload.get("session_id"))
             and _valid_port(payload.get("port"))
+        )
+
+    if path == "/v1/session/release":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema",
+                    "request_id",
+                    "session_id",
+                    "contract_hash",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_digest(payload.get("contract_hash"))
         )
 
     if path == "/v1/session/delete":
