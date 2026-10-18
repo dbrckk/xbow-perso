@@ -323,6 +323,123 @@ jobs:
                       ) from exc
           print("Runner live fail-closed readiness and unauthenticated RPC verified")
           PY
+          # Exercise signed inert lifecycle against the actual runner over the
+          # isolated broker network. No manifest bytes or processes are created.
+          docker compose exec -T strix-broker python - <<'PY'
+          import json
+          import os
+          import secrets
+          import time
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          from app.strix_runner_manifest_ticket import build_strix_runner_manifest_ticket
+          from app.strix_runner_rpc import RUNNER_RPC_PROTOCOL, sign_runner_rpc_request
+
+          runner = "http://strix-runner:8092"
+          rpc_secret = "ci-runner-proof-key-at-least-32-bytes"
+          signing_key = os.environ["XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY"]
+          image = "ghcr.io/example/test-sandbox@sha256:" + "a" * 64
+          descriptor = {
+              "schema": "strix-manifest-admission-v1",
+              "contract_hash": "c" * 64,
+              "request_id": "ci-inert-prepare-1",
+              "image": image,
+              "exposed_ports": [],
+              "manifest_digest": "b" * 64,
+              "entry_count": 0,
+              "inline_file_count": 0,
+              "local_dir_count": 0,
+              "inline_file_bytes": 0,
+              "environment_value_bytes": 0,
+              "host_paths_included": False,
+              "raw_file_content_included": False,
+              "filesystem_io_performed": False,
+              "manifest_materialized": False,
+              "upload_enabled": False,
+              "active_execution_enabled": False,
+          }
+          ticket = build_strix_runner_manifest_ticket(
+              descriptor, signing_secret=signing_key
+          ).to_dict()
+
+          def invoke(path, payload):
+              raw = json.dumps(
+                  payload, sort_keys=True, separators=(",", ":")
+              ).encode("utf-8")
+              timestamp = int(time.time())
+              nonce = secrets.token_hex(16)
+              signature = sign_runner_rpc_request(
+                  method="POST",
+                  path=path,
+                  body=raw,
+                  timestamp=timestamp,
+                  nonce=nonce,
+                  secret=rpc_secret,
+              )
+              request = Request(
+                  runner + path,
+                  data=raw,
+                  headers={
+                      "Content-Type": "application/json",
+                      "X-Xbow-Runner-Timestamp": str(timestamp),
+                      "X-Xbow-Runner-Nonce": nonce,
+                      "X-Xbow-Runner-Signature": signature,
+                  },
+                  method="POST",
+              )
+              try:
+                  with urlopen(request, timeout=4) as response:
+                      return response.status, json.load(response)
+              except HTTPError as exc:
+                  return exc.code, json.load(exc)
+
+          prepare = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": descriptor["request_id"],
+              "image": image,
+              "exposed_ports": [],
+              "manifest_digest": descriptor["manifest_digest"],
+              "admission": ticket,
+          }
+          path = "/v1/session/prepare"
+          status, prepared = invoke(path, prepare)
+          assert status == 201, (status, prepared)
+          assert prepared["session_id"].startswith("prepared-")
+          assert prepared["manifest_materialized"] is False
+          assert prepared["active_execution_enabled"] is False
+          assert prepared["expires_in_seconds"] == 900
+
+          status, repeated = invoke(path, prepare)
+          assert status == 409, (status, repeated)
+          assert repeated["error"] == "preparation_ticket_replayed"
+
+          tampered = dict(prepare)
+          tampered["manifest_digest"] = "f" * 64
+          status, rejected = invoke(path, tampered)
+          assert status == 403, (status, rejected)
+
+          release = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-inert-release-1",
+              "session_id": prepared["session_id"],
+              "contract_hash": descriptor["contract_hash"],
+          }
+          wrong_contract = dict(release, contract_hash="d" * 64)
+          status, denied = invoke("/v1/session/release", wrong_contract)
+          assert status == 403, (status, denied)
+          status, closed = invoke("/v1/session/release", release)
+          assert status == 200, (status, closed)
+          assert closed["active_execution_enabled"] is False
+          status, missing = invoke("/v1/session/release", release)
+          assert status == 404, (status, missing)
+
+          # The legacy active lifecycle must remain unavailable even to a
+          # caller with valid authentication and a signed manifest ticket.
+          status, blocked = invoke("/v1/session/create", prepare)
+          assert status == 503, (status, blocked)
+          print("Signed inert runner prepare/release lifecycle verified")
+          PY
 
   strix-python-runtime:
     runs-on: ubuntu-latest

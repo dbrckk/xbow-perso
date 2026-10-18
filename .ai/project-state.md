@@ -15,10 +15,18 @@ Status: active
 - The pinned Strix 1.6.2 Python runtime image is built from attested upstream sources and offline-verified in a non-root, read-only, network-disabled container; `xbow-remote-v1` is registered before the **real** upstream Python interface imports, without invoking the scan entrypoint.
 - The remote interface self-test digest is deterministic and excludes random request nonces, while the underlying operation nonces remain random for replay defense.
 
+- The runner now has separate **inert** signed `/v1/session/prepare` and
+  `/v1/session/release` metadata operations: an authenticated ticket is
+  bound to a contract and manifest digest, sessions get 128-bit random IDs,
+  900-second monotonic expiry and bounded concurrency-safe storage.
+- A real broker-to-runner integration check covers signed preparation,
+  ticket replay rejection, wrong-contract release, release and legacy
+  execution blocking.
+
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
 - The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
-- Runner RPC create, exec, resolve-port and delete remain unimplemented; manifests cannot be uploaded/materialized and broker-routed authenticated execution is not wired.
+- The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session and manifests cannot be uploaded/materialized.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Manifest-admission hardening (2026-10-18)
@@ -27,7 +35,7 @@ Status: active
 - The CI workflow validates malformed manifests against the real admission module; existing Python, Docker, security and supply-chain gates remain required before merge.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed; validate live broker/runner authentication and then implement bounded manifest admission and isolated session lifecycle before considering any active Strix entrypoint.
+- Keep Strix active dispatch fail-closed; next add content-addressed manifest upload verification and expiring broker-issued session tickets before any executable session lifecycle.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
