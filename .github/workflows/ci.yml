@@ -16,31 +16,28 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    services:
-      redis:
-        image: public.ecr.aws/docker/library/redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-      postgres:
-        image: public.ecr.aws/docker/library/postgres:16-alpine
-        env:
-          POSTGRES_DB: xbow
-          POSTGRES_USER: xbow
-          POSTGRES_PASSWORD: xbow-ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U xbow -d xbow"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
     steps:
       - uses: actions/checkout@v7
+      # Hosted Ubuntu includes PostgreSQL 16, but public ECR's anonymous
+      # Redis image downloads can exceed its data quota before steps start.
+      # Use signed Ubuntu packages and the local PostgreSQL service instead.
+      - name: Start Redis and PostgreSQL without container registries
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v redis-server >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server redis-tools
+          fi
+          sudo systemctl start redis-server.service
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -v ON_ERROR_STOP=1 \
+            -c "CREATE ROLE xbow LOGIN PASSWORD 'xbow-ci'"
+          sudo -u postgres createdb -O xbow xbow
+          redis-cli -h 127.0.0.1 -p 6379 ping | grep -qx PONG
+          PGPASSWORD=xbow-ci psql \
+            -h 127.0.0.1 -p 5432 -U xbow -d xbow \
+            -v ON_ERROR_STOP=1 -tAc "SELECT 1" | grep -qx 1
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
