@@ -44,7 +44,7 @@ jobs:
           driver-opts: |
             image=ghcr.io/dockerhub-mirror/moby__buildkit:buildx-stable-1@sha256:0168606be2315b7c807a03b3d8aa79beefdb31c98740cebdffdfeebf31190c9f
       - name: Build backend without publishing
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./backend
           push: false
@@ -53,7 +53,7 @@ jobs:
           sbom: true
           tags: xbow-perso-backend:ci
       - name: Build frontend without publishing
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./frontend
           push: false
