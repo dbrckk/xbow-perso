@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-09",
-  "task": "Validate actual pinned Strix Python import and live runner fail-closed RPC while keeping active dispatch disabled",
+  "updated_at": "2026-10-18",
+  "task": "Hardening Strix pre-materialization manifest admission before implementing remote session lifecycle",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -81,10 +81,13 @@
     "PR #665 merged: prepared Strix remote interface self-test digest excludes randomized operation request IDs and is reproducible.",
     "PR #664 merged: official pinned Strix 1.6.2 Python runtime image builds and passes isolated offline backend, compatibility, and synthetic bootstrap checks.",
     "PR #666 merged: pinned upstream source identity is verified, real strix.interface.main is imported after xbow-remote-v1 registration, and Docker preflight aliases are restored; no entrypoint is called.",
-    "CI at PR #666: 2,743 existing tests pass; Docker images, security, supply-chain, and offline real-upstream-import check pass."
+    "CI at PR #666: 2,743 existing tests pass; Docker images, security, supply-chain, and offline real-upstream-import check pass.",
+    "Merged PR #667: live isolated broker-to-runner health and no-HMAC rejection checks passed CI, security and supply-chain.",
+    "Prepared manifest admission rejects overlapping ancestor/descendant entries, malformed Unicode, NUL-containing environment strings and oversized buffers before copying.",
+    "New workflow-level functional preflight verifies malicious manifest input is rejected without any execution or uploads."
   ],
-  "current_branch": "codex/strix-runner-failclosed-live-proof-20261009",
-  "current_priority": "Verify live broker-to-runner health and HMAC-denied RPC operations; then implement bounded manifest lifecycle and ticket-bound isolated sessions without exposing host Docker.",
+  "current_branch": "codex/strix-manifest-preflight-hardening-20261018",
+  "current_priority": "Verify and merge manifest-admission hardening after CI/security/supply-chain, then implement safe broker-approved manifest materialization and bounded inert session lifecycle.",
   "blockers": [
     "Real Strix Python interface import is proven, but the upstream scan entrypoint is deliberately not invoked and no active Strix scan is wired.",
     "Prepared remote client/session exec, resolve-port, and delete remain fail-closed.",
@@ -103,10 +106,9 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Validate and merge the live broker-to-runner fail-closed HMAC and health integration proof.",
-    "Introduce bounded, content-addressed manifest serialization and upload without accepting host paths or unreviewed executable material.",
-    "Implement broker-authenticated runner session create/delete state transition with strict ticket checks and no active process execution.",
-    "Enforce scope, authorization, rate budgets and broker-only networking before any runner exec/resolve-port operations.",
-    "Run end-to-end isolation and authorized local-lab integration; enable Strix execution only after all safety gates pass."
+    "Validate/merge manifest path-collision, environment and size-limit hardening with all CI gates.",
+    "Define a content-addressed manifest transfer that attests actual bytes without local directory mounts.",
+    "Implement broker-authenticated session metadata create/delete with bounded state and admission tickets before enabling process execution.",
+    "Enforce scope and rate caps through broker-only egress; keep active Strix scanner dispatch disabled until live end-to-end integration passes."
   ]
 }
