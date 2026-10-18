@@ -14374,6 +14374,9 @@ payload = asdict(self)
 ⋮----
 def _safe_text(value: object, *, name: str, max_bytes: int) -> str
 ⋮----
+# Check character count before UTF-8 encoding to avoid allocating huge
+# intermediate byte strings for attacker-controlled manifest fields.
+⋮----
 encoded = value.encode("utf-8")
 ⋮----
 def _normalize_entry_path(value: object) -> str
@@ -14395,6 +14398,8 @@ kind = getattr(entry, "type", None)
 def _plan_file(path: str, entry: object) -> StrixManifestEntryPlan
 ⋮----
 content = getattr(entry, "content", None)
+⋮----
+# Reject oversized mutable buffers before copying their bytes.
 ⋮----
 payload = bytes(content)
 ⋮----
@@ -14418,12 +14423,21 @@ item = _plan_file(path, entry)
 ⋮----
 item = _plan_local_dir(path, entry)
 ⋮----
+# A manifest must not describe both a path and a child of that path.
+# Such entries would depend on write order or copy/mount semantics when
+# eventual materialization is implemented, and may overwrite files.
+⋮----
+segments = item.path.split("/")
+⋮----
 values = getattr(environment, "value", None)
 ⋮----
 planned: list[StrixManifestEnvironmentPlan] = []
 total_bytes = 0
 ⋮----
 key = _safe_text(
+⋮----
+# NUL cannot be represented in a subprocess environment. Reject it
+# now rather than admitting a digest for an unmaterializable value.
 ⋮----
 value_bytes = raw_value.encode("utf-8")
 ⋮----
@@ -30912,7 +30926,7 @@ Repository-specific rules:
 ````yaml
 services:
   postgres:
-    image: public.ecr.aws/docker/library/postgres:16-alpine
+    image: mirror.gcr.io/library/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${XBOW_POSTGRES_DB:-xbow}
@@ -30931,7 +30945,7 @@ services:
     networks: [control]
 
   redis:
-    image: public.ecr.aws/docker/library/redis:7-alpine
+    image: mirror.gcr.io/library/redis:7-alpine
     restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${XBOW_REDIS_PASSWORD:?set XBOW_REDIS_PASSWORD}
@@ -31044,7 +31058,7 @@ volumes:
 ````yaml
 services:
   tls-proxy:
-    image: public.ecr.aws/docker/library/caddy:2.11.4-alpine
+    image: mirror.gcr.io/library/caddy:2.11.4-alpine
     restart: unless-stopped
     environment:
       XBOW_PUBLIC_HOST: ${XBOW_PUBLIC_HOST:?set XBOW_PUBLIC_HOST}

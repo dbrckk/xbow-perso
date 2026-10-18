@@ -48,27 +48,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T22:05:56Z
+Generated: 2026-10-18T12:14:00Z
 
 ### Git
 - Branch: `main`
-- Head: `839d0e800c7d`
-- Commit date: 2026-10-10T00:05:37+02:00
-- Commit: ci(strix): verify live runner RPC fails closed over broker network (#667)
+- Head: `956a8516e679`
+- Commit date: 2026-10-18T08:13:49-04:00
+- Commit: security(strix): harden manifest admission before materialization (#670)
 - Tracked files: 691
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `backend/Dockerfile`
+- `backend/Dockerfile.scanner`
+- `backend/Dockerfile.strix-python-runtime`
+- `backend/Dockerfile.strix-runner`
+- `backend/app/strix_manifest_admission.py`
+- `docker-compose.distributed.yml`
+- `docker-compose.tls.yml`
+- `frontend/Dockerfile`
 - `backend/app/strix_python_bootstrap_runtime.py`
 - `docs/strix-python-runtime.md`
 - `.github/workflows/supply-chain.yml`
-- `backend/Dockerfile.strix-python-runtime`
 - `backend/app/strix_backend_hook.py`
 - `backend/app/strix_remote_session.py`
-- `backend/app/no_finding_recovery.py`
-- `backend/app/scan_result_integrity.py`
-- `backend/tests/test_no_finding_recovery.py`
-- `backend/tests/test_scan_result_integrity.py`
 
 ### Project signals
 - `pyproject.toml`

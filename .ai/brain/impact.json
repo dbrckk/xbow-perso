@@ -1,17 +1,491 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "7844a07791716d9e6f112e01c4f62f5809e3875b",
-  "head": "839d0e800c7dedcfbd9e7144d4ec18f12b0e61ac",
+  "base": "839d0e800c7dedcfbd9e7144d4ec18f12b0e61ac",
+  "head": "956a8516e67963d391a09fc47f254c879dfa87c9",
   "index_mode": "incremental",
   "changed_files": [
     {
       "path": ".github/workflows/ci.yml",
       "status": "M"
+    },
+    {
+      "path": "backend/Dockerfile",
+      "status": "M"
+    },
+    {
+      "path": "backend/Dockerfile.scanner",
+      "status": "M"
+    },
+    {
+      "path": "backend/Dockerfile.strix-python-runtime",
+      "status": "M"
+    },
+    {
+      "path": "backend/Dockerfile.strix-runner",
+      "status": "M"
+    },
+    {
+      "path": "backend/app/strix_manifest_admission.py",
+      "status": "M"
+    },
+    {
+      "path": "docker-compose.distributed.yml",
+      "status": "M"
+    },
+    {
+      "path": "docker-compose.tls.yml",
+      "status": "M"
+    },
+    {
+      "path": "frontend/Dockerfile",
+      "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "backend/app/strix_manifest_admission.py"
+  ],
+  "impacted_files": [
+    "backend/app/runtime_capabilities.py",
+    "backend/app/strix_manifest_admission.py",
+    "backend/app/strix_remote_session.py",
+    "backend/tests/test_strix_manifest_admission.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "CapabilityConfigError",
+      "kind": "class",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 19
+    },
+    {
+      "name": "_strict_bool",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 23
+    },
+    {
+      "name": "_bounded_int_env",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 35
+    },
+    {
+      "name": "validation_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 54
+    },
+    {
+      "name": "safe_validation_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 134
+    },
+    {
+      "name": "pentagi_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 169
+    },
+    {
+      "name": "safe_pentagi_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 222
+    },
+    {
+      "name": "scanner_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 247
+    },
+    {
+      "name": "safe_scanner_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 398
+    },
+    {
+      "name": "browser_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 488
+    },
+    {
+      "name": "safe_browser_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 512
+    },
+    {
+      "name": "recon_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 527
+    },
+    {
+      "name": "safe_recon_runtime_capability",
+      "kind": "function",
+      "file": "backend/app/runtime_capabilities.py",
+      "line": 565
+    },
+    {
+      "name": "StrixManifestAdmissionError",
+      "kind": "class",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 27
+    },
+    {
+      "name": "StrixManifestEntryPlan",
+      "kind": "class",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 32
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 44
+    },
+    {
+      "name": "StrixManifestEnvironmentPlan",
+      "kind": "class",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 49
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 54
+    },
+    {
+      "name": "StrixManifestAdmissionPlan",
+      "kind": "class",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 59
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 77
+    },
+    {
+      "name": "_safe_text",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 86
+    },
+    {
+      "name": "_normalize_entry_path",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 105
+    },
+    {
+      "name": "_entry_kind",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 138
+    },
+    {
+      "name": "_plan_file",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 147
+    },
+    {
+      "name": "_plan_local_dir",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 173
+    },
+    {
+      "name": "_plan_entries",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 201
+    },
+    {
+      "name": "_plan_environment",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 250
+    },
+    {
+      "name": "_assert_empty_collection",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 314
+    },
+    {
+      "name": "_canonical_payload",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 322
+    },
+    {
+      "name": "build_strix_manifest_admission_plan",
+      "kind": "function",
+      "file": "backend/app/strix_manifest_admission.py",
+      "line": 349
+    },
+    {
+      "name": "StrixRemoteSessionError",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 35
+    },
+    {
+      "name": "StrixRemoteSessionBlocked",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 39
+    },
+    {
+      "name": "PreparedRemoteSessionDescriptor",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 44
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 56
+    },
+    {
+      "name": "PreparedRemoteOperation",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 63
+    },
+    {
+      "name": "to_dict",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 77
+    },
+    {
+      "name": "_valid_session_id",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 81
+    },
+    {
+      "name": "_validate_image",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 87
+    },
+    {
+      "name": "_validate_ports",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 97
+    },
+    {
+      "name": "_new_session_id",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 114
+    },
+    {
+      "name": "_new_request_id",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 118
+    },
+    {
+      "name": "_validate_exec",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 122
+    },
+    {
+      "name": "PreparedStrixRemoteSession",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 171
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 172
+    },
+    {
+      "name": "session_id",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 191
+    },
+    {
+      "name": "plan_exec",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 194
+    },
+    {
+      "name": "exec",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 218
+    },
+    {
+      "name": "plan_resolve_exposed_port",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 229
+    },
+    {
+      "name": "resolve_exposed_port",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 253
+    },
+    {
+      "name": "PreparedStrixRemoteClient",
+      "kind": "class",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 260
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 261
+    },
+    {
+      "name": "plan_delete",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 264
+    },
+    {
+      "name": "delete",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 284
+    },
+    {
+      "name": "prepare_strix_remote_session",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 291
+    },
+    {
+      "name": "prepared_remote_session_self_test",
+      "kind": "function",
+      "file": "backend/app/strix_remote_session.py",
+      "line": 340
+    },
+    {
+      "name": "_file",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 13
+    },
+    {
+      "name": "_local_dir",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 17
+    },
+    {
+      "name": "_manifest",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 21
+    },
+    {
+      "name": "test_manifest_plan_admits_strix_local_dir_and_inline_file_without_raw_content",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 35
+    },
+    {
+      "name": "test_manifest_digest_is_order_independent",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 83
+    },
+    {
+      "name": "test_manifest_digest_binds_redacted_local_source_path_identity",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 109
+    },
+    {
+      "name": "test_manifest_digest_changes_when_inline_file_changes",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 124
+    },
+    {
+      "name": "test_manifest_rejects_unsafe_entry_paths",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 146
+    },
+    {
+      "name": "test_manifest_rejects_non_path_entry_key",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 153
+    },
+    {
+      "name": "test_manifest_rejects_unreviewed_entry_types",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 161
+    },
+    {
+      "name": "test_manifest_rejects_inline_file_above_per_file_limit",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 172
+    },
+    {
+      "name": "test_manifest_rejects_total_inline_content_above_limit",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 183
+    },
+    {
+      "name": "test_manifest_rejects_dynamic_environment_values",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 191
+    },
+    {
+      "name": "test_manifest_environment_hides_raw_values",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 200
+    },
+    {
+      "name": "test_manifest_rejects_unsupported_manifest_surface",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 226
+    },
+    {
+      "name": "test_manifest_local_dir_path_is_never_resolved_or_read",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 233
+    },
+    {
+      "name": "forbidden",
+      "kind": "function",
+      "file": "backend/tests/test_strix_manifest_admission.py",
+      "line": 236
+    }
+  ],
+  "selected_tests": [
+    "backend/tests/test_strix_manifest_admission.py"
+  ]
 }

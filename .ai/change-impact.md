@@ -1,13 +1,24 @@
 # Change impact
 
-Base: 07d30e3d33138cd49c1a6276c54e3d5695c5526b
-Head: 839d0e800c7dedcfbd9e7144d4ec18f12b0e61ac
+Base: d33dd562cad9201274841f3db61fe0a1800d6866
+Head: 956a8516e67963d391a09fc47f254c879dfa87c9
 
 ## Changed files
 - M .github/workflows/ci.yml
+- M backend/Dockerfile
+- M backend/Dockerfile.scanner
+- M backend/Dockerfile.strix-python-runtime
+- M backend/Dockerfile.strix-runner
+- M backend/app/strix_manifest_admission.py
+- M docker-compose.distributed.yml
+- M docker-compose.tls.yml
+- M frontend/Dockerfile
 
 ## Affected areas
 - .github
+- backend
+- (root)
+- frontend
 
 ## Related test candidates
 - No direct filename-based test match detected.
