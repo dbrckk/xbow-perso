@@ -172,6 +172,24 @@ jobs:
       - run: bash -n scripts/mobile-disable-hackerone-nuclei.sh
       - run: bash -n scripts/mobile-vault-cutover.sh
       - run: bash -n scripts/mobile-vault-rollback.sh
+      - name: Diagnose Google's official Docker Hub mirror cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          for image in \
+            library/python:3.12-slim \
+            library/python:3.12.14-slim \
+            library/caddy:2.11.4-alpine \
+            library/debian:bookworm-slim \
+            library/redis:7-alpine \
+            library/postgres:16-alpine \
+            nginxinc/nginx-unprivileged:1.29-alpine; do
+            if docker manifest inspect "mirror.gcr.io/$image" >/dev/null 2>&1; then
+              echo "MIRROR_CACHED=$image"
+            else
+              echo "MIRROR_MISSING=$image"
+            fi
+          done
       - run: docker compose config --quiet
       - run: |
           XBOW_POSTGRES_PASSWORD=ci-postgres \
