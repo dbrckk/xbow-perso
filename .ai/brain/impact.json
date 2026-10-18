@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "839d0e800c7dedcfbd9e7144d4ec18f12b0e61ac",
-  "head": "956a8516e67963d391a09fc47f254c879dfa87c9",
+  "base": "956a8516e67963d391a09fc47f254c879dfa87c9",
+  "head": "52c03e6adf84ea0431354309bb06bca9bb6cc45c",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,46 +10,21 @@
       "status": "M"
     },
     {
-      "path": "backend/Dockerfile",
+      "path": "backend/app/strix_runner_rpc.py",
       "status": "M"
     },
     {
-      "path": "backend/Dockerfile.scanner",
-      "status": "M"
-    },
-    {
-      "path": "backend/Dockerfile.strix-python-runtime",
-      "status": "M"
-    },
-    {
-      "path": "backend/Dockerfile.strix-runner",
-      "status": "M"
-    },
-    {
-      "path": "backend/app/strix_manifest_admission.py",
-      "status": "M"
-    },
-    {
-      "path": "docker-compose.distributed.yml",
-      "status": "M"
-    },
-    {
-      "path": "docker-compose.tls.yml",
-      "status": "M"
-    },
-    {
-      "path": "frontend/Dockerfile",
-      "status": "M"
+      "path": "docs/strix-inert-session-lifecycle.md",
+      "status": "A"
     }
   ],
   "changed_source_files": [
-    "backend/app/strix_manifest_admission.py"
+    "backend/app/strix_runner_rpc.py"
   ],
   "impacted_files": [
     "backend/app/runtime_capabilities.py",
-    "backend/app/strix_manifest_admission.py",
-    "backend/app/strix_remote_session.py",
-    "backend/tests/test_strix_manifest_admission.py"
+    "backend/app/strix_runner_rpc.py",
+    "backend/tests/test_strix_runner_rpc.py"
   ],
   "impacted_symbols": [
     {
@@ -131,361 +106,517 @@
       "line": 565
     },
     {
-      "name": "StrixManifestAdmissionError",
+      "name": "RunnerRpcResponse",
       "kind": "class",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 27
-    },
-    {
-      "name": "StrixManifestEntryPlan",
-      "kind": "class",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 32
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 44
-    },
-    {
-      "name": "StrixManifestEnvironmentPlan",
-      "kind": "class",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 49
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 54
-    },
-    {
-      "name": "StrixManifestAdmissionPlan",
-      "kind": "class",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 59
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 77
-    },
-    {
-      "name": "_safe_text",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 86
-    },
-    {
-      "name": "_normalize_entry_path",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 105
-    },
-    {
-      "name": "_entry_kind",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 138
-    },
-    {
-      "name": "_plan_file",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 147
-    },
-    {
-      "name": "_plan_local_dir",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 173
-    },
-    {
-      "name": "_plan_entries",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 201
-    },
-    {
-      "name": "_plan_environment",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 250
-    },
-    {
-      "name": "_assert_empty_collection",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 314
-    },
-    {
-      "name": "_canonical_payload",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 322
-    },
-    {
-      "name": "build_strix_manifest_admission_plan",
-      "kind": "function",
-      "file": "backend/app/strix_manifest_admission.py",
-      "line": 349
-    },
-    {
-      "name": "StrixRemoteSessionError",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 35
-    },
-    {
-      "name": "StrixRemoteSessionBlocked",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 39
-    },
-    {
-      "name": "PreparedRemoteSessionDescriptor",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 44
-    },
-    {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 56
-    },
-    {
-      "name": "PreparedRemoteOperation",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
+      "file": "backend/app/strix_runner_rpc.py",
       "line": 63
     },
     {
-      "name": "to_dict",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
+      "name": "_PreparedSession",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 70
+    },
+    {
+      "name": "RunnerRpcService",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
       "line": 77
     },
     {
-      "name": "_valid_session_id",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 81
-    },
-    {
-      "name": "_validate_image",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 87
-    },
-    {
-      "name": "_validate_ports",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 97
-    },
-    {
-      "name": "_new_session_id",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 114
-    },
-    {
-      "name": "_new_request_id",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 118
-    },
-    {
-      "name": "_validate_exec",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 122
-    },
-    {
-      "name": "PreparedStrixRemoteSession",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 171
-    },
-    {
       "name": "__init__",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 172
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 78
     },
     {
-      "name": "session_id",
+      "name": "handle",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 191
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 105
     },
     {
-      "name": "plan_exec",
+      "name": "_prune_prepared_sessions",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 194
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 220
     },
     {
-      "name": "exec",
+      "name": "_prepare_session",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 218
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 235
     },
     {
-      "name": "plan_resolve_exposed_port",
+      "name": "_release_session",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 229
-    },
-    {
-      "name": "resolve_exposed_port",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 253
-    },
-    {
-      "name": "PreparedStrixRemoteClient",
-      "kind": "class",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 260
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 261
-    },
-    {
-      "name": "plan_delete",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 264
-    },
-    {
-      "name": "delete",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 284
-    },
-    {
-      "name": "prepare_strix_remote_session",
-      "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
+      "file": "backend/app/strix_runner_rpc.py",
       "line": 291
     },
     {
-      "name": "prepared_remote_session_self_test",
+      "name": "_authenticate",
       "kind": "function",
-      "file": "backend/app/strix_remote_session.py",
-      "line": 340
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 316
     },
     {
-      "name": "_file",
+      "name": "_prune_nonces",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 13
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 369
     },
     {
-      "name": "_local_dir",
+      "name": "_runner_rpc_secret_bytes",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 17
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 378
     },
     {
-      "name": "_manifest",
+      "name": "sign_runner_rpc_request",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 21
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 389
     },
     {
-      "name": "test_manifest_plan_admits_strix_local_dir_and_inline_file_without_raw_content",
+      "name": "configure_runner_rpc_socket",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 35
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 417
     },
     {
-      "name": "test_manifest_digest_is_order_independent",
+      "name": "_error",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 83
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 421
     },
     {
-      "name": "test_manifest_digest_binds_redacted_local_source_path_identity",
+      "name": "_valid_id",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 109
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 432
     },
     {
-      "name": "test_manifest_digest_changes_when_inline_file_changes",
+      "name": "_valid_digest",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 124
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 436
     },
     {
-      "name": "test_manifest_rejects_unsafe_entry_paths",
+      "name": "_valid_port",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 440
+    },
+    {
+      "name": "_exact_keys",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 448
+    },
+    {
+      "name": "_valid_common",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 452
+    },
+    {
+      "name": "_validate_operation_payload",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 459
+    },
+    {
+      "name": "BoundedThreadingHTTPServer",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 582
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 583
+    },
+    {
+      "name": "process_request",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 596
+    },
+    {
+      "name": "process_request_thread",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 610
+    },
+    {
+      "name": "_RunnerRpcHttpHandler",
+      "kind": "class",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 621
+    },
+    {
+      "name": "setup",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 624
+    },
+    {
+      "name": "finish",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 634
+    },
+    {
+      "name": "_start_read_deadline",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 638
+    },
+    {
+      "name": "_cancel_read_deadline",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 647
+    },
+    {
+      "name": "_expire_read_deadline",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 654
+    },
+    {
+      "name": "do_GET",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 658
+    },
+    {
+      "name": "do_POST",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 661
+    },
+    {
+      "name": "_dispatch",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 664
+    },
+    {
+      "name": "_write",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 707
+    },
+    {
+      "name": "log_message",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 722
+    },
+    {
+      "name": "_rpc_secret_from_env",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 726
+    },
+    {
+      "name": "_admission_secret_from_env",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 737
+    },
+    {
+      "name": "serve",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 749
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "backend/app/strix_runner_rpc.py",
+      "line": 768
+    },
+    {
+      "name": "_headers",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 26
+    },
+    {
+      "name": "_service",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 43
+    },
+    {
+      "name": "_payload",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 57
+    },
+    {
+      "name": "_request",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
       "line": 146
     },
     {
-      "name": "test_manifest_rejects_non_path_entry_key",
+      "name": "test_health_is_non_secret_and_execution_stays_disabled",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 153
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 160
     },
     {
-      "name": "test_manifest_rejects_unreviewed_entry_types",
+      "name": "test_ready_requires_rpc_secret",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 161
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 179
     },
     {
-      "name": "test_manifest_rejects_inline_file_above_per_file_limit",
+      "name": "test_ready_requires_exec_admission_secret",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 172
-    },
-    {
-      "name": "test_manifest_rejects_total_inline_content_above_limit",
-      "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 183
-    },
-    {
-      "name": "test_manifest_rejects_dynamic_environment_values",
-      "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
+      "file": "backend/tests/test_strix_runner_rpc.py",
       "line": 191
     },
     {
-      "name": "test_manifest_environment_hides_raw_values",
+      "name": "test_authenticated_session_operations_still_fail_closed",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 200
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 212
     },
     {
-      "name": "test_manifest_rejects_unsupported_manifest_surface",
+      "name": "test_even_active_flag_cannot_enable_unimplemented_rpc",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 226
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 219
     },
     {
-      "name": "test_manifest_local_dir_path_is_never_resolved_or_read",
+      "name": "test_valid_exec_ticket_still_cannot_enable_execution",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 233
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 231
     },
     {
-      "name": "forbidden",
+      "name": "test_valid_manifest_ticket_still_cannot_enable_session_creation",
       "kind": "function",
-      "file": "backend/tests/test_strix_manifest_admission.py",
-      "line": 236
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 243
+    },
+    {
+      "name": "test_create_rejects_tampered_manifest_ticket_before_execution_gate",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 255
+    },
+    {
+      "name": "test_create_rejects_manifest_ticket_bound_to_different_digest",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 266
+    },
+    {
+      "name": "test_exec_rejects_tampered_admission_ticket_before_execution_gate",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 277
+    },
+    {
+      "name": "test_exec_rejects_ticket_bound_to_different_argv",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 288
+    },
+    {
+      "name": "test_missing_auth_is_rejected_before_payload_processing",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 299
+    },
+    {
+      "name": "test_signature_covers_body",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 312
+    },
+    {
+      "name": "test_nonce_replay_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 331
+    },
+    {
+      "name": "test_replay_cache_saturation_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 360
+    },
+    {
+      "name": "test_stale_timestamp_is_rejected",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 411
+    },
+    {
+      "name": "test_unknown_payload_field_fails_closed",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 443
+    },
+    {
+      "name": "test_operation_schema_bounds_are_enforced",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 470
+    },
+    {
+      "name": "test_runner_compose_exposes_rpc_only_internally",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 480
+    },
+    {
+      "name": "test_ci_waits_for_runner_rpc_readiness",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 497
+    },
+    {
+      "name": "test_runner_image_contains_only_required_runner_modules",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 505
+    },
+    {
+      "name": "test_runner_rpc_socket_timeout_is_bounded",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 515
+    },
+    {
+      "name": "FakeSocket",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 521
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 522
+    },
+    {
+      "name": "settimeout",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 525
+    },
+    {
+      "name": "test_runner_rpc_server_rejects_connections_above_cap",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 536
+    },
+    {
+      "name": "test_runner_rpc_server_releases_slot_after_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 558
+    },
+    {
+      "name": "fail_request_thread",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 567
+    },
+    {
+      "name": "test_runner_rpc_signer_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 582
+    },
+    {
+      "name": "test_runner_rpc_service_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 594
+    },
+    {
+      "name": "test_runner_rpc_env_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 604
+    },
+    {
+      "name": "test_runner_admission_env_rejects_short_secret",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 614
+    },
+    {
+      "name": "test_runner_rpc_accepts_exact_minimum_secret_length",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 624
+    },
+    {
+      "name": "test_runner_rpc_read_deadline_is_absolute",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 642
+    },
+    {
+      "name": "FakeTimer",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 652
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 653
+    },
+    {
+      "name": "start",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 661
+    },
+    {
+      "name": "cancel",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 664
+    },
+    {
+      "name": "FakeSocket",
+      "kind": "class",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 667
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 668
+    },
+    {
+      "name": "shutdown",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 671
+    },
+    {
+      "name": "test_runner_rpc_rejects_truncated_body_before_service",
+      "kind": "function",
+      "file": "backend/tests/test_strix_runner_rpc.py",
+      "line": 700
     }
   ],
   "selected_tests": [
-    "backend/tests/test_strix_manifest_admission.py"
+    "backend/tests/test_strix_runner_rpc.py"
   ]
 }

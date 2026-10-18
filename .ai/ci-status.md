@@ -1,18 +1,14 @@
 # CI status
 
-Summary: 4 success / 1 failure / 3 active
+Summary: 4 success / 0 failure / 3 active
 
-- ci: queued / pending (956a8516)
-- security: queued / pending (956a8516)
-- supply-chain: in_progress / pending (956a8516)
-- security: completed / success (d00888c6)
-- ci: completed / success (d00888c6)
-- supply-chain: completed / success (d00888c6)
-- security: completed / success (d00888c6)
-- supply-chain: completed / failure (deff3909)
-
-## Latest failed run structure
-- Job: container-build
-  - Failed step: Build backend without publishing
+- supply-chain: in_progress / pending (52c03e6a)
+- security: in_progress / pending (52c03e6a)
+- ci: in_progress / pending (52c03e6a)
+- ci: completed / success (f1d9e01a)
+- security: completed / success (f1d9e01a)
+- supply-chain: completed / success (f1d9e01a)
+- security: completed / success (f1d9e01a)
+- security: completed / cancelled (5fa79231)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

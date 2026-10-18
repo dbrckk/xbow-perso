@@ -14584,6 +14584,9 @@ RUNNER_RPC_READ_DEADLINE_SECONDS = 10.0
 RUNNER_RPC_MAX_CONCURRENT_CONNECTIONS = 16
 RUNNER_RPC_MIN_SECRET_BYTES = 32
 RUNNER_RPC_MAX_SECRET_BYTES = 4096
+RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
+RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
+RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
 ⋮----
 _MUTATION_PATHS = {
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -14598,7 +14601,18 @@ status: int
 json_body: dict[str, Any]
 headers: dict[str, str] = field(default_factory=dict)
 ⋮----
+@dataclass(frozen=True)
+class _PreparedSession
+⋮----
+session_id: str
+contract_hash: str
+manifest_digest: str
+expires_at: float
+⋮----
 class RunnerRpcService
+⋮----
+# Inert metadata only: no files, subprocesses, ports or target network.
+# State is process-local and expires even if the broker never releases it.
 ⋮----
 normalized_method = str(method).upper()
 normalized_headers = {
@@ -14608,6 +14622,30 @@ auth_error = self._authenticate(
 content_type = normalized_headers.get("content-type", "")
 ⋮----
 payload = json.loads(body.decode("utf-8"))
+⋮----
+def _prune_prepared_sessions(self, now: float) -> None
+⋮----
+# Called only under _prepared_lock. Monotonic time avoids an NTP clock
+# adjustment extending the lifetime of a preparation record.
+expired = [
+⋮----
+def _prepare_session(self, payload: dict[str, Any]) -> RunnerRpcResponse
+⋮----
+ticket = verify_strix_runner_manifest_ticket(
+⋮----
+now = time.monotonic()
+⋮----
+ticket_id = (ticket.contract_hash, ticket.request_id)
+⋮----
+session_id = f"prepared-{secrets.token_hex(16)}"
+⋮----
+expires_at = now + RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS
+⋮----
+# Ticket replay stays rejected even if the session is released.
+⋮----
+def _release_session(self, payload: dict[str, Any]) -> RunnerRpcResponse
+⋮----
+item = self._prepared_sessions.get(payload["session_id"])
 ⋮----
 timestamp_raw = headers.get("x-xbow-runner-timestamp")
 nonce = headers.get("x-xbow-runner-nonce")

@@ -5,49 +5,73 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "StrixManifestAdmissionError": {
+    "RunnerRpcResponse": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 27,
-        "end": 28
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 63,
+        "end": 66
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "StrixManifestEntryPlan": {
+    "_PreparedSession": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 32,
-        "end": 45
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 70,
+        "end": 74
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "to_dict": {
+    "RunnerRpcService": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 44,
-        "end": 164
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 77,
+        "end": 375
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixManifestAdmissionError",
+          "symbol": "RunnerRpcResponse",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StrixRunnerExecTicketError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 65,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrixRunnerManifestTicketError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
               "line": 27,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "StrixManifestAdmissionPlan",
+          "symbol": "_PreparedSession",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 59,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 70,
               "kind": "class",
               "language": "python"
             }
@@ -55,35 +79,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "StrixManifestEntryPlan",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixManifestEnvironmentPlan",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_entry_kind",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 138,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 78,
               "kind": "function",
               "language": "python"
             }
@@ -91,10 +91,106 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_normalize_entry_path",
+          "symbol": "_authenticate",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prepare_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prune_nonces",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prune_prepared_sessions",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 220,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_release_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 291,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runner_rpc_secret_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_validate_operation_payload",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 459,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
               "line": 105,
               "kind": "function",
               "language": "python"
@@ -103,11 +199,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_plan_file",
+          "symbol": "sign_runner_rpc_request",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 147,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 389,
               "kind": "function",
               "language": "python"
             }
@@ -115,200 +211,93 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_safe_text",
+          "symbol": "validate_strix_runner_exec_ticket_secret",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 86,
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 108,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "StrixManifestEnvironmentPlan": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 49,
-        "end": 55
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "StrixManifestAdmissionPlan": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 59,
-        "end": 83
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestEntryPlan",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "StrixManifestEnvironmentPlan",
+          "symbol": "validate_strix_runner_manifest_ticket_secret",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 49,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_safe_text": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 86,
-        "end": 102
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_normalize_entry_path": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 105,
-        "end": 135
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_text",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 86,
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_entry_kind": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 138,
-        "end": 144
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_plan_file": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 147,
-        "end": 170
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "StrixManifestEntryPlan",
+          "symbol": "verify_strix_runner_exec_ticket",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
-              "kind": "class",
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 288,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verify_strix_runner_manifest_ticket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 257,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 19
     },
-    "_plan_local_dir": {
+    "__init__": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 173,
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 78,
         "end": 198
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixManifestAdmissionError",
+          "symbol": "RunnerRpcResponse",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StrixRunnerManifestTicketError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
               "line": 27,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "StrixManifestEntryPlan",
+          "symbol": "_PreparedSession",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 70,
               "kind": "class",
               "language": "python"
             }
@@ -316,57 +305,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_safe_text",
+          "symbol": "_authenticate",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 86,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_plan_entries": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 201,
-        "end": 247
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StrixManifestAdmissionError",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StrixManifestEntryPlan",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_entry_kind",
-          "definitions": [
-            {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 138,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 316,
               "kind": "function",
               "language": "python"
             }
@@ -374,10 +317,70 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_normalize_entry_path",
+          "symbol": "_error",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prepare_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_release_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 291,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runner_rpc_secret_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_validate_operation_payload",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 459,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
               "line": 105,
               "kind": "function",
               "language": "python"
@@ -386,57 +389,196 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_plan_file",
+          "symbol": "validate_strix_runner_exec_ticket_secret",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 147,
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 108,
               "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_strix_runner_manifest_ticket_secret",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verify_strix_runner_manifest_ticket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 257,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "handle": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 105,
+        "end": 218
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "_plan_local_dir",
+          "symbol": "StrixRunnerExecTicketError",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 173,
-              "kind": "function",
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 65,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_plan_environment": {
-      "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 250,
-        "end": 311
-      },
-      "symbol_dependencies": [
+          "relation": "imported_module"
+        },
         {
-          "symbol": "StrixManifestAdmissionError",
+          "symbol": "StrixRunnerManifestTicketError",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_manifest_ticket.py",
               "line": 27,
               "kind": "class",
               "language": "python"
             }
           ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_authenticate",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 316,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
           "relation": "same_file"
         },
         {
-          "symbol": "StrixManifestEnvironmentPlan",
+          "symbol": "_error",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 49,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prepare_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_release_session",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 291,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_validate_operation_payload",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 459,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verify_strix_runner_exec_ticket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 288,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verify_strix_runner_manifest_ticket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 257,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_prune_prepared_sessions": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 220,
+        "end": 233
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_prepare_session": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 235,
+        "end": 289
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
               "kind": "class",
               "language": "python"
             }
@@ -444,11 +586,105 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_safe_text",
+          "symbol": "StrixRunnerManifestTicketError",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 86,
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_PreparedSession",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 70,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prune_prepared_sessions",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 220,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verify_strix_runner_manifest_ticket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 257,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "_release_session": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 291,
+        "end": 314
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prune_prepared_sessions",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 220,
               "kind": "function",
               "language": "python"
             }
@@ -458,19 +694,126 @@
       ],
       "dependency_count": 3
     },
-    "_assert_empty_collection": {
+    "_authenticate": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 314,
-        "end": 319
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 316,
+        "end": 367
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixManifestAdmissionError",
+          "symbol": "RunnerRpcResponse",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 27,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prune_nonces",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sign_runner_rpc_request",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 389,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_prune_nonces": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 369,
+        "end": 375
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_runner_rpc_secret_bytes": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 378,
+        "end": 386
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "sign_runner_rpc_request": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 389,
+        "end": 414
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_runner_rpc_secret_bytes",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "configure_runner_rpc_socket": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 417,
+        "end": 418
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_error": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 421,
+        "end": 429
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
               "kind": "class",
               "language": "python"
             }
@@ -480,19 +823,211 @@
       ],
       "dependency_count": 1
     },
-    "_canonical_payload": {
+    "_valid_id": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 322,
-        "end": 346
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 432,
+        "end": 433
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_valid_digest": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 436,
+        "end": 437
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_valid_port": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 440,
+        "end": 445
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_exact_keys": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 448,
+        "end": 449
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_valid_common": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 452,
+        "end": 456
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixManifestEntryPlan",
+          "symbol": "_valid_id",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 32,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 432,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_validate_operation_payload": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 459,
+        "end": 579
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_exact_keys",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 448,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_valid_common",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 452,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_valid_digest",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 436,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_valid_id",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 432,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_valid_port",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 440,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "BoundedThreadingHTTPServer": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 582,
+        "end": 618
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_request",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 596,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "process_request_thread",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 610,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "process_request": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 596,
+        "end": 608
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "process_request_thread": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 610,
+        "end": 618
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_RunnerRpcHttpHandler": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 621,
+        "end": 723
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
               "kind": "class",
               "language": "python"
             }
@@ -500,11 +1035,411 @@
           "relation": "same_file"
         },
         {
-          "symbol": "StrixManifestEnvironmentPlan",
+          "symbol": "RunnerRpcService",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 49,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 77,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_cancel_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 647,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_dispatch",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 664,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_expire_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 654,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_start_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 638,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_write",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 707,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "configure_runner_rpc_socket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 417,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "do_GET",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 658,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "do_POST",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 661,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "finish",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 634,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "log_message",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 722,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "setup",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 624,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "setup": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 624,
+        "end": 632
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cancel_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 647,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_start_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 638,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "configure_runner_rpc_socket",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 417,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "finish": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 634,
+        "end": 636
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_cancel_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 647,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_start_read_deadline": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 638,
+        "end": 645
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_expire_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 654,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_cancel_read_deadline": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 647,
+        "end": 652
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_expire_read_deadline": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 654,
+        "end": 656
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "do_GET": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 658,
+        "end": 659
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_dispatch",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 664,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "do_POST": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 661,
+        "end": 662
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_dispatch",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 664,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_dispatch": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 664,
+        "end": 705
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcService",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 77,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_cancel_read_deadline",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 647,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_error",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 421,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_write",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 707,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "handle",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_write": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 707,
+        "end": 720
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "RunnerRpcResponse",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 63,
               "kind": "class",
               "language": "python"
             }
@@ -512,33 +1447,110 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 1
     },
-    "build_strix_manifest_admission_plan": {
+    "log_message": {
       "source": {
-        "file": "backend/app/strix_manifest_admission.py",
-        "start": 349,
-        "end": 405
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 722,
+        "end": 723
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_rpc_secret_from_env": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 726,
+        "end": 734
       },
       "symbol_dependencies": [
         {
-          "symbol": "StrixManifestAdmissionError",
+          "symbol": "_runner_rpc_secret_bytes",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 378,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_admission_secret_from_env": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 737,
+        "end": 746
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StrixRunnerExecTicketError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 65,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrixRunnerManifestTicketError",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
               "line": 27,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "StrixManifestAdmissionPlan",
+          "symbol": "validate_strix_runner_exec_ticket_secret",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 59,
+              "file": "backend/app/strix_runner_exec_ticket.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_strix_runner_manifest_ticket_secret",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_manifest_ticket.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "serve": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 749,
+        "end": 765
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "BoundedThreadingHTTPServer",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 582,
               "kind": "class",
               "language": "python"
             }
@@ -546,11 +1558,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_assert_empty_collection",
+          "symbol": "RunnerRpcService",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 314,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 77,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_RunnerRpcHttpHandler",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 621,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_admission_secret_from_env",
+          "definitions": [
+            {
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 737,
               "kind": "function",
               "language": "python"
             }
@@ -558,11 +1594,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_canonical_payload",
+          "symbol": "_rpc_secret_from_env",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 322,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 726,
               "kind": "function",
               "language": "python"
             }
@@ -570,23 +1606,33 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_plan_entries",
+          "symbol": "attest_strix_runner",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 201,
+              "file": "backend/app/strix_runner_attestation.py",
+              "line": 121,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "_main": {
+      "source": {
+        "file": "backend/app/strix_runner_rpc.py",
+        "start": 768,
+        "end": 775
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "_plan_environment",
+          "symbol": "serve",
           "definitions": [
             {
-              "file": "backend/app/strix_manifest_admission.py",
-              "line": 250,
+              "file": "backend/app/strix_runner_rpc.py",
+              "line": 749,
               "kind": "function",
               "language": "python"
             }
@@ -594,7 +1640,7 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 1
     }
   }
 }

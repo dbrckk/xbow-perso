@@ -1,24 +1,17 @@
 # Change impact
 
-Base: d33dd562cad9201274841f3db61fe0a1800d6866
-Head: 956a8516e67963d391a09fc47f254c879dfa87c9
+Base: c03c2f741c3f38ee7ba3cf1b1d10b0c77a175a85
+Head: 52c03e6adf84ea0431354309bb06bca9bb6cc45c
 
 ## Changed files
 - M .github/workflows/ci.yml
-- M backend/Dockerfile
-- M backend/Dockerfile.scanner
-- M backend/Dockerfile.strix-python-runtime
-- M backend/Dockerfile.strix-runner
-- M backend/app/strix_manifest_admission.py
-- M docker-compose.distributed.yml
-- M docker-compose.tls.yml
-- M frontend/Dockerfile
+- M backend/app/strix_runner_rpc.py
+- A docs/strix-inert-session-lifecycle.md
 
 ## Affected areas
 - .github
 - backend
-- (root)
-- frontend
+- docs
 
 ## Related test candidates
 - No direct filename-based test match detected.
