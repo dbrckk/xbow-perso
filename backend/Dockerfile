@@ -1,4 +1,4 @@
-FROM mirror.gcr.io/library/python:3.12-slim
+FROM mirror.gcr.io/library/python:3.15-slim
 
 ARG TARGETARCH
 ARG KATANA_VERSION=1.7.0
