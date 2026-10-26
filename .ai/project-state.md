@@ -40,7 +40,7 @@ Status: active
 ## Current priority
 - Manifest ticket v2 with signed 120-second expiry was merged as PR #674 after CI, security and supply-chain success.
 - PR #675 merged after CI, security, supply-chain, 2,743 Python tests and a real runner restart proof rejecting previously consumed tickets.
-- Plan-receipt endpoint under validation. Only inert canonical metadata is accepted; no file content or execution.
+- PR #677 merged after CI, security and supply-chain success: the inert runner verifies canonical manifest-plan bytes, SHA-256 digest, signed counts and one-shot session receipt; no file contents or execution.
 - Next implement bounded content-addressed actual file-byte transfer without host bind mounts; retain fail-closed active Strix execution until scope and egress are proven.
 
 ## Validation
