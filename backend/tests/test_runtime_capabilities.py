@@ -333,7 +333,7 @@ def test_strix_runtime_capability_stays_blocked_when_cli_exists(monkeypatch):
     assert result["strix_runner_exec_ticket_schema"] == "strix-runner-exec-ticket-v1"
     assert result["strix_runner_exec_ticket_required"] is True
     assert result["strix_runner_exec_ticket_enforced"] is True
-    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v1"
+    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v2"
     assert result["strix_runner_manifest_ticket_required"] is True
     assert result["strix_runner_manifest_ticket_enforced"] is True
     assert result["strix_runner_exec_process_launch_enabled"] is False
@@ -439,7 +439,7 @@ def test_strix_capability_preflight_state_stays_fail_closed(monkeypatch):
 
     assert result["strix_runner_exec_ticket_required"] is True
     assert result["strix_runner_exec_ticket_enforced"] is True
-    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v1"
+    assert result["strix_runner_manifest_ticket_schema"] == "strix-runner-manifest-ticket-v2"
     assert result["strix_runner_manifest_ticket_required"] is True
     assert result["strix_runner_manifest_ticket_enforced"] is True
     assert result["strix_runner_exec_process_launch_enabled"] is False

@@ -13,7 +13,7 @@ nonce. The request body is covered by the RPC signature.
 
 | Endpoint | Success | Requirements |
 | --- | --- | --- |
-| `/v1/session/prepare` | 201 `prepared` | Signed runner manifest admission ticket bound to request id, image, exposed ports and manifest digest |
+| `/v1/session/prepare` | 201 `prepared` | Signed v2 ticket bound to request id, image, exposed ports, manifest digest and validity window |
 | `/v1/session/release` | 200 `released` | Existing random prepared session id and matching contract hash, signed with runner RPC key |
 
 A preparation records **only** the random session id, signed execution-contract
@@ -24,6 +24,8 @@ or send traffic to a target. It is not a runnable Strix session.
 Preparation admission:
 - Maximum 128 simultaneous preparations.
 - Each record automatically expires after 900 seconds.
+- Signed tickets expire after 120 seconds, with only 5 seconds of future-clock
+  tolerance; altered or expired claims are rejected.
 - Maximum 1,024 recent preparation ticket identities (bounded and pruned
   after expiration); the same `(contract_hash, request_id)` is rejected on
   retry even after a session is released within its retention interval.
@@ -51,9 +53,9 @@ remains blocked even with a correctly signed ticket.
 This API is deliberately an intermediate integration step. The signed
 manifest admission ticket describes digests and metadata but does not prove
 the actual uploaded bytes were received or verified; no upload or
-materialization is implemented. The ticket format currently has no explicit
-expiration claim, so used-ticket memory provides only a bounded, process-local
-replay guard. Do **not** enable active scan dispatch from prepared records.
-Future work must add expiring, single-use, broker-bound admission tickets;
+materialization is implemented. The v2 ticket format includes signed expiration,
+but used-ticket memory is still process-local and cannot prevent a replay of an
+unexpired ticket after runner restart. Do **not** enable active scan dispatch.
+Future work must add durable single-use admission ownership;
 content-addressed upload with byte verification; persistent session ownership
 if needed; and egress policy enforcement before any scanner process runs.

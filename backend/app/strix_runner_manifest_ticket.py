@@ -3,7 +3,9 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import math
 import re
+import time
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -11,11 +13,13 @@ from typing import Any
 STRIX_MANIFEST_ADMISSION_SCHEMA = "strix-manifest-admission-v1"
 
 
-STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v1"
+STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v2"
+STRIX_RUNNER_MANIFEST_TICKET_TTL_SECONDS = 120
+STRIX_RUNNER_MANIFEST_TICKET_CLOCK_SKEW_SECONDS = 5
 STRIX_RUNNER_MANIFEST_TICKET_MIN_SECRET_BYTES = 32
 STRIX_RUNNER_MANIFEST_TICKET_MAX_SECRET_BYTES = 4096
 
-_SIGNATURE_DOMAIN = b"xbow:strix-runner-manifest-ticket:v1\x00"
+_SIGNATURE_DOMAIN = b"xbow:strix-runner-manifest-ticket:v2\x00"
 _ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -34,6 +38,8 @@ class StrixRunnerManifestTicket:
     manifest_schema: str
     contract_hash: str
     request_id: str
+    issued_at: int
+    expires_at: int
     image: str
     exposed_ports: tuple[int, ...]
     manifest_digest: str
@@ -205,12 +211,45 @@ def _validate_descriptor(values: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _ticket_clock(now: float | None) -> float:
+    value = time.time() if now is None else now
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not math.isfinite(value)
+        or not 1 <= value <= 253402300799
+    ):
+        raise StrixRunnerManifestTicketError("runner manifest ticket clock is invalid")
+    return float(value)
+
+
+def _validate_ticket_times(issued_at: object, expires_at: object, now: float) -> None:
+    if (
+        not isinstance(issued_at, int)
+        or isinstance(issued_at, bool)
+        or not isinstance(expires_at, int)
+        or isinstance(expires_at, bool)
+        or not 1 <= issued_at <= 253402300799
+        or not 1 <= expires_at <= 253402300799
+        or not 0 < expires_at - issued_at <= STRIX_RUNNER_MANIFEST_TICKET_TTL_SECONDS
+    ):
+        raise StrixRunnerManifestTicketError(
+            "runner manifest ticket validity interval is invalid"
+        )
+    if issued_at > now + STRIX_RUNNER_MANIFEST_TICKET_CLOCK_SKEW_SECONDS:
+        raise StrixRunnerManifestTicketError("runner manifest ticket is not yet valid")
+    if now >= expires_at:
+        raise StrixRunnerManifestTicketError("runner manifest ticket has expired")
+
+
 def _canonical_bytes(values: Mapping[str, Any]) -> bytes:
     payload = {
         "schema": values["schema"],
         "manifest_schema": values["manifest_schema"],
         "contract_hash": values["contract_hash"],
         "request_id": values["request_id"],
+        "issued_at": values["issued_at"],
+        "expires_at": values["expires_at"],
         "image": values["image"],
         "exposed_ports": list(values["exposed_ports"]),
         "manifest_digest": values["manifest_digest"],
@@ -239,8 +278,17 @@ def build_strix_runner_manifest_ticket(
     manifest_descriptor: Mapping[str, Any],
     *,
     signing_secret: str,
+    now: float | None = None,
 ) -> StrixRunnerManifestTicket:
-    unsigned = _validate_descriptor(manifest_descriptor)
+    issued_at = int(_ticket_clock(now))
+    unsigned = {
+        **_validate_descriptor(manifest_descriptor),
+        "issued_at": issued_at,
+        "expires_at": issued_at + STRIX_RUNNER_MANIFEST_TICKET_TTL_SECONDS,
+    }
+    _validate_ticket_times(
+        unsigned["issued_at"], unsigned["expires_at"], float(issued_at)
+    )
     secret = _secret_bytes(signing_secret)
     signature = hmac.new(
         secret,
@@ -262,12 +310,15 @@ def verify_strix_runner_manifest_ticket(
     exposed_ports: Sequence[int],
     manifest_digest: str,
     verification_secret: str,
+    now: float | None = None,
 ) -> StrixRunnerManifestTicket:
     expected_keys = {
         "schema",
         "manifest_schema",
         "contract_hash",
         "request_id",
+        "issued_at",
+        "expires_at",
         "image",
         "exposed_ports",
         "manifest_digest",
@@ -326,7 +377,15 @@ def verify_strix_runner_manifest_ticket(
         "upload_enabled": ticket_payload["upload_enabled"],
         "active_execution_enabled": ticket_payload["active_execution_enabled"],
     }
-    unsigned = _validate_descriptor(descriptor)
+    unsigned = {
+        **_validate_descriptor(descriptor),
+        "issued_at": ticket_payload["issued_at"],
+        "expires_at": ticket_payload["expires_at"],
+    }
+    # Enforce the bounded interval before signature computation.
+    _validate_ticket_times(
+        unsigned["issued_at"], unsigned["expires_at"], float(unsigned["issued_at"])
+    )
 
     secret = _secret_bytes(verification_secret)
     expected_signature = hmac.new(
@@ -339,6 +398,9 @@ def verify_strix_runner_manifest_ticket(
             "runner manifest ticket signature mismatch"
         )
 
+    _validate_ticket_times(
+        unsigned["issued_at"], unsigned["expires_at"], _ticket_clock(now)
+    )
     expected_ports = _valid_ports(exposed_ports)
     if (
         ticket_payload["request_id"] != request_id

@@ -173,10 +173,12 @@ class BrokerManifestTicketRequest(BaseModel):
 class BrokerRunnerManifestTicketDocument(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    schema: Literal["strix-runner-manifest-ticket-v1"]
+    schema: Literal["strix-runner-manifest-ticket-v2"]
     manifest_schema: Literal["strix-manifest-admission-v1"]
     contract_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     request_id: str = Field(min_length=1, max_length=128)
+    issued_at: int = Field(ge=1, le=253402300799)
+    expires_at: int = Field(ge=1, le=253402300799)
     image: str = Field(min_length=1, max_length=512)
     exposed_ports: list[int] = Field(default_factory=list, max_length=16)
     manifest_digest: str = Field(pattern=r"^[0-9a-f]{64}$")

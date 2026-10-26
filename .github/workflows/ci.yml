@@ -410,6 +410,33 @@ jobs:
           assert prepared["active_execution_enabled"] is False
           assert prepared["expires_in_seconds"] == 900
 
+          # Prove signed expiration and future-date rejection against the actual runner.
+          expired_descriptor = dict(descriptor, request_id="ci-inert-expired")
+          expired_ticket = build_strix_runner_manifest_ticket(
+              expired_descriptor, signing_secret=signing_key,
+              now=int(time.time()) - 180,
+          ).to_dict()
+          expired_prepare = dict(
+              prepare, request_id=expired_descriptor["request_id"],
+              admission=expired_ticket,
+          )
+          status, expired = invoke(path, expired_prepare)
+          assert status == 403, (status, expired)
+          assert expired["error"] == "manifest_admission_rejected"
+
+          future_descriptor = dict(descriptor, request_id="ci-inert-future")
+          future_ticket = build_strix_runner_manifest_ticket(
+              future_descriptor, signing_secret=signing_key,
+              now=int(time.time()) + 60,
+          ).to_dict()
+          future_prepare = dict(
+              prepare, request_id=future_descriptor["request_id"],
+              admission=future_ticket,
+          )
+          status, future = invoke(path, future_prepare)
+          assert status == 403, (status, future)
+          assert future["error"] == "manifest_admission_rejected"
+
           status, repeated = invoke(path, prepare)
           assert status == 409, (status, repeated)
           assert repeated["error"] == "preparation_ticket_replayed"
