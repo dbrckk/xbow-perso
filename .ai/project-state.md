@@ -27,6 +27,7 @@ Status: active
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
 - The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
 - The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session and manifests cannot be uploaded/materialized.
+- Process-local single-use protection cannot survive a runner restart, even with signed ticket expiration.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Manifest-admission hardening (2026-10-18)
@@ -35,7 +36,8 @@ Status: active
 - The CI workflow validates malformed manifests against the real admission module; existing Python, Docker, security and supply-chain gates remain required before merge.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed; next add content-addressed manifest upload verification and expiring broker-issued session tickets before any executable session lifecycle.
+- Keep Strix active dispatch fail-closed. PR for manifest ticket v2 introduces signed 120-second expiry, future-skew rejection and a real broker-network integration proof; verify all CI gates before merge.
+- Next implement durable single-use ticket ownership and content-addressed manifest transfer verification before enabling any executable session.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-18",
-  "task": "Implement broker-signed bounded inert runner session preparation and release",
+  "updated_at": "2026-10-26",
+  "task": "Enforce signed expiration on inert Strix manifest tickets",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -87,14 +87,15 @@
     "New workflow-level functional preflight verifies malicious manifest input is rejected without any execution or uploads.",
     "PR #670 merged after 2,743 tests, CI image builds, supply-chain and security: manifest overlap/NUL/UTF-8/size checks and Google mirror recovery.",
     "Implemented separate signed /v1/session/prepare and /v1/session/release operations storing only inert metadata with random IDs and bounded TTL/capacity.",
-    "Existing upstream-compatible runner RPC create/exec/resolve/delete remain disabled; added real Compose broker-network integration proof for prepare/replay/release."
+    "Existing upstream-compatible runner RPC create/exec/resolve/delete remain disabled; added real Compose broker-network integration proof for prepare/replay/release.",
+    "Prepared ticket v2 with signed 120-second validity and 5-second future-skew; extended existing real isolated runner CI integration proof for expired/future tickets (CI pending)."
   ],
-  "current_branch": "codex/strix-inert-session-lifecycle-20261018",
-  "current_priority": "Validate and merge signed inert prepare/release, then implement content-verified, broker-approved manifest transfers and ticket expiration without activating Strix scans.",
+  "current_branch": "codex/strix-manifest-ticket-expiry-20261026",
+  "current_priority": "Validate and merge expiring signed ticket v2; then implement durable ticket ownership and verified inert transfers.",
   "blockers": [
     "Manifest bytes are still not transferred or materialized; the inert preparation holds digest metadata only.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
-    "Broker manifest tickets lack signed expiration and a persistent single-use store; inert ticket replay window is bounded to the runner process lifetime and a 900-second retention.",
+    "Manifest tickets have signed 120-second validity, but single-use ownership is not durable across restarts.",
     "Strix real pinned Python modules import but the upstream scan entrypoint is not invoked, nor are runnable sessions available.",
     "Active scanning needs broker-enforced target scope, request budgets, isolated process execution and independent validation.",
     "Only read-only GET/HEAD broker egress is currently supported; scanner network tool surface is incomplete."
@@ -106,9 +107,9 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Verify all CI, security and supply-chain checks of inert signed session lifecycle and merge on success.",
-    "Add expiring signed broker manifest tickets and persistent-or-durable nonce ownership before any executable session.",
-    "Implement bounded content-addressed file upload with byte verification, no host mount and no path collisions.",
-    "Wire an explicitly authorized execution lifecycle only after broker-only egress/rate enforcement and an end-to-end isolated local-lab proof."
+    "Wait for required CI/security/supply-chain checks of the signed ticket v2 PR, and merge only if green.",
+    "Implement durable single-use ticket ownership across runner restarts.",
+    "Implement bounded content-addressed uploads without host mounts.",
+    "Retain fail-closed active execution until scope and isolated egress are proven in local authorized lab."
   ]
 }

@@ -194,6 +194,7 @@ class RunnerRpcService:
                     exposed_ports=payload["exposed_ports"],
                     manifest_digest=payload["manifest_digest"],
                     verification_secret=self._admission_secret,
+                    now=self._now(),
                 )
             except StrixRunnerManifestTicketError:
                 return _error(403, "manifest_admission_rejected")
@@ -245,6 +246,7 @@ class RunnerRpcService:
                 exposed_ports=payload["exposed_ports"],
                 manifest_digest=payload["manifest_digest"],
                 verification_secret=self._admission_secret,
+                now=self._now(),
             )
         except StrixRunnerManifestTicketError:
             return _error(403, "manifest_admission_rejected")
