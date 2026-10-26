@@ -327,6 +327,7 @@ jobs:
           # Exercise signed inert lifecycle against the actual runner over the
           # isolated broker network. No manifest bytes or processes are created.
           docker compose exec -T strix-broker python - <<'PY'
+          import hashlib
           import json
           import os
           import secrets
@@ -341,13 +342,29 @@ jobs:
           rpc_secret = "ci-runner-proof-key-at-least-32-bytes"
           signing_key = os.environ["XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY"]
           image = "ghcr.io/example/test-sandbox@sha256:" + "a" * 64
+          plan = {
+              "schema": "strix-manifest-admission-v1",
+              "manifest_version": 1,
+              "root": "/workspace",
+              "entries": [],
+              "environment": [],
+              "host_paths_included": False,
+              "raw_file_content_included": False,
+              "filesystem_io_performed": False,
+              "manifest_materialized": False,
+              "upload_enabled": False,
+          }
+          plan_json = json.dumps(
+              plan, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+          )
+          plan_digest = hashlib.sha256(plan_json.encode("utf-8")).hexdigest()
           descriptor = {
               "schema": "strix-manifest-admission-v1",
               "contract_hash": "c" * 64,
               "request_id": "ci-inert-prepare-1",
               "image": image,
               "exposed_ports": [],
-              "manifest_digest": "b" * 64,
+              "manifest_digest": plan_digest,
               "entry_count": 0,
               "inline_file_count": 0,
               "local_dir_count": 0,
@@ -410,6 +427,65 @@ jobs:
           assert prepared["manifest_materialized"] is False
           assert prepared["active_execution_enabled"] is False
           assert prepared["expires_in_seconds"] == 900
+          receipt_path = "/v1/session/plan-receipt"
+          receipt = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-inert-plan-receipt-1",
+              "session_id": prepared["session_id"],
+              "contract_hash": descriptor["contract_hash"],
+              "manifest_digest": plan_digest,
+              "plan_json": plan_json,
+          }
+          status, verified = invoke(receipt_path, receipt)
+          assert status == 200, (status, verified)
+          assert verified["status"] == "plan_verified"
+          assert verified["plan_bytes_verified"] == len(plan_json.encode("utf-8"))
+          assert verified["file_contents_received"] is False
+          assert verified["manifest_materialized"] is False
+          assert verified["active_execution_enabled"] is False
+          status, repeated_plan = invoke(receipt_path, receipt)
+          assert status == 409, (status, repeated_plan)
+          assert repeated_plan["error"] == "manifest_plan_already_verified"
+          status, bad_digest = invoke(
+              receipt_path, dict(receipt, manifest_digest="f" * 64)
+          )
+          assert status == 403, (status, bad_digest)
+          status, wrong_contract = invoke(
+              receipt_path, dict(receipt, contract_hash="d" * 64)
+          )
+          assert status == 403, (status, wrong_contract)
+          status, missing_session = invoke(
+              receipt_path, dict(receipt, session_id="prepared-missing")
+          )
+          assert status == 404, (status, missing_session)
+
+          # A signed digest of unsafe canonical metadata does not authorize it.
+          bad_plan = dict(plan, host_paths_included=True)
+          bad_json = json.dumps(
+              bad_plan, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+          )
+          bad_sha = hashlib.sha256(bad_json.encode("utf-8")).hexdigest()
+          bad_descriptor = dict(
+              descriptor, request_id="ci-inert-malformed-plan",
+              manifest_digest=bad_sha,
+          )
+          bad_ticket = build_strix_runner_manifest_ticket(
+              bad_descriptor, signing_secret=signing_key
+          ).to_dict()
+          bad_prepare = dict(
+              prepare, request_id=bad_descriptor["request_id"],
+              manifest_digest=bad_sha, admission=bad_ticket,
+          )
+          status, another = invoke(path, bad_prepare)
+          assert status == 201, (status, another)
+          bad_receipt = dict(
+              receipt, request_id="ci-inert-malformed-receipt",
+              session_id=another["session_id"], manifest_digest=bad_sha,
+              plan_json=bad_json,
+          )
+          status, malformed = invoke(receipt_path, bad_receipt)
+          assert status == 400, (status, malformed)
+          assert malformed["error"] == "manifest_plan_rejected"
 
           # Prove signed expiration and future-date rejection against the actual runner.
           expired_descriptor = dict(descriptor, request_id="ci-inert-expired")
