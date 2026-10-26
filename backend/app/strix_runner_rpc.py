@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import contextlib
 import hashlib
 import hmac
@@ -46,6 +48,7 @@ RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
 RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
 RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
 RUNNER_RPC_REPLAY_DB_PATH = "/var/lib/strix-runner/preparation-replay.sqlite3"
+RUNNER_RPC_MAX_FILE_CHUNK_BYTES = 64 * 1024
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -55,6 +58,7 @@ _MUTATION_PATHS = {
     "/v1/session/prepare",
     "/v1/session/release",
     "/v1/session/plan-receipt",
+    "/v1/session/file-chunk",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -69,6 +73,16 @@ class RunnerRpcResponse:
     headers: dict[str, str] = field(default_factory=dict)
 
 
+@dataclass
+class _InertFileProof:
+    expected_digest: str
+    expected_bytes: int
+    received_bytes: int = 0
+    hash_state: Any = field(default_factory=hashlib.sha256)
+    verified: bool = False
+    failed: bool = False
+
+
 @dataclass(frozen=True)
 class _PreparedSession:
     session_id: str
@@ -81,6 +95,7 @@ class _PreparedSession:
     inline_file_bytes: int
     environment_value_bytes: int
     plan_verified: bool = False
+    file_proofs: dict[str, _InertFileProof] = field(default_factory=dict)
 
 
 class _DurablePreparationReplay:
@@ -238,7 +253,9 @@ class RunnerRpcService:
                     "manifest_admission_required": True,
                     "manifest_admission_configured": True,
                     "implemented_operations": [],
-                    "inert_preparation_operations": ["prepare", "release", "plan-receipt"],
+                    "inert_preparation_operations": [
+                        "prepare", "release", "plan-receipt", "file-chunk",
+                    ],
                     "durable_preparation_replay": True,
                 },
             )
@@ -278,6 +295,8 @@ class RunnerRpcService:
             return self._release_session(payload)
         if path == "/v1/session/plan-receipt":
             return self._receive_plan(payload)
+        if path == "/v1/session/file-chunk":
+            return self._receive_file_chunk(payload)
 
         if path == "/v1/session/create":
             if not self._admission_secret:
@@ -435,8 +454,18 @@ class RunnerRpcService:
                 )
             except ValueError:
                 return _error(400, "manifest_plan_rejected")
+            # Only signed metadata is retained. Actual file bytes never survive
+            # beyond the current authenticated request.
+            plan = json.loads(payload["plan_json"])
+            file_proofs = {
+                entry["path"]: _InertFileProof(
+                    expected_digest=entry["content_sha256"],
+                    expected_bytes=entry["content_bytes"],
+                )
+                for entry in plan["entries"] if entry["kind"] == "file"
+            }
             self._prepared_sessions[item.session_id] = replace(
-                item, plan_verified=True,
+                item, plan_verified=True, file_proofs=file_proofs,
             )
         return RunnerRpcResponse(
             status=200,
@@ -451,6 +480,73 @@ class RunnerRpcService:
                 "active_execution_enabled": False,
             },
         )
+
+    def _receive_file_chunk(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        """Inert, ordered, digest-verified byte transfer; never materialize."""
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._prepared_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "prepared_session_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            if not hmac.compare_digest(item.manifest_digest, payload["manifest_digest"]):
+                return _error(403, "manifest_digest_mismatch")
+            if not item.plan_verified:
+                return _error(409, "manifest_plan_not_verified")
+            proof = item.file_proofs.get(payload["file_path"])
+            if proof is None:
+                return _error(404, "manifest_file_not_found")
+            if not hmac.compare_digest(proof.expected_digest, payload["content_sha256"]):
+                return _error(403, "manifest_file_digest_mismatch")
+            if proof.verified or proof.failed:
+                return _error(409, "manifest_file_already_finalized")
+            if payload["offset"] != proof.received_bytes:
+                return _error(409, "manifest_file_offset_mismatch")
+            try:
+                content = _decode_inert_chunk(payload["chunk_base64"])
+            except ValueError:
+                return _error(400, "manifest_file_chunk_invalid")
+            next_bytes = proof.received_bytes + len(content)
+            if next_bytes > proof.expected_bytes:
+                return _error(413, "manifest_file_size_exceeded")
+            is_last = payload["final"]
+            if (not content and not is_last) or (
+                is_last != (next_bytes == proof.expected_bytes)
+            ):
+                return _error(400, "manifest_file_finalization_invalid")
+            proof.hash_state.update(content)
+            proof.received_bytes = next_bytes
+            if is_last:
+                if not hmac.compare_digest(
+                    proof.hash_state.hexdigest(), proof.expected_digest
+                ):
+                    proof.failed = True
+                    return _error(422, "manifest_file_content_mismatch")
+                proof.verified = True
+            verified_files = sum(record.verified for record in item.file_proofs.values())
+            return RunnerRpcResponse(
+                status=200,
+                json_body={
+                    "status": "file_verified" if is_last else "chunk_received",
+                    "protocol": RUNNER_RPC_PROTOCOL,
+                    "session_id": item.session_id,
+                    "file_path": payload["file_path"],
+                    "file_bytes_received": proof.received_bytes,
+                    "file_sha256_verified": proof.verified,
+                    "verified_inline_files": verified_files,
+                    "all_inline_files_verified": (
+                        verified_files == item.inline_file_count
+                    ),
+                    "manifest_materialized": False,
+                    "active_execution_enabled": False,
+                },
+            )
 
     def _release_session(self, payload: dict[str, Any]) -> RunnerRpcResponse:
         if self._active_execution:
@@ -781,6 +877,24 @@ def verify_canonical_manifest_plan(
     return len(raw)
 
 
+def _decode_inert_chunk(encoded: str) -> bytes:
+    """Decode canonical Base64 with a strict pre-allocation size bound."""
+    if not isinstance(encoded, str):
+        raise ValueError("file chunk must be base64")
+    if len(encoded) > ((RUNNER_RPC_MAX_FILE_CHUNK_BYTES + 2) // 3) * 4:
+        raise ValueError("file chunk exceeds limit")
+    try:
+        content = base64.b64decode(encoded, validate=True)
+    except (ValueError, binascii.Error) as exc:
+        raise ValueError("file chunk is not valid base64") from exc
+    if (
+        len(content) > RUNNER_RPC_MAX_FILE_CHUNK_BYTES
+        or base64.b64encode(content).decode("ascii") != encoded
+    ):
+        raise ValueError("file chunk is not canonical base64")
+    return content
+
+
 def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
     if not _valid_common(payload):
         return False
@@ -871,6 +985,29 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             )
             and _valid_id(payload.get("session_id"))
             and _valid_port(payload.get("port"))
+        )
+
+    if path == "/v1/session/file-chunk":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "session_id", "contract_hash",
+                    "manifest_digest", "file_path", "content_sha256",
+                    "offset", "chunk_base64", "final",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
+            and _plan_path(payload.get("file_path"))
+            and _valid_digest(payload.get("content_sha256"))
+            and _plan_count(payload.get("offset"), 1024 * 1024)
+            and isinstance(payload.get("chunk_base64"), str)
+            and len(payload["chunk_base64"]) <= (
+                (RUNNER_RPC_MAX_FILE_CHUNK_BYTES + 2) // 3
+            ) * 4
+            and type(payload.get("final")) is bool
         )
 
     if path == "/v1/session/plan-receipt":

@@ -307,6 +307,7 @@ jobs:
               "/v1/session/exec",
               "/v1/session/resolve-port",
               "/v1/session/delete",
+              "/v1/session/file-chunk",
           ):
               request = Request(
                   f"{runner}{endpoint}",
@@ -325,8 +326,9 @@ jobs:
           print("Runner live fail-closed readiness and unauthenticated RPC verified")
           PY
           # Exercise signed inert lifecycle against the actual runner over the
-          # isolated broker network. No manifest bytes or processes are created.
+          # isolated broker network. File bytes may be verified in memory only.
           docker compose exec -T strix-broker python - <<'PY'
+          import base64
           import hashlib
           import json
           import os
@@ -486,6 +488,139 @@ jobs:
           status, malformed = invoke(receipt_path, bad_receipt)
           assert status == 400, (status, malformed)
           assert malformed["error"] == "manifest_plan_rejected"
+
+          # Transfer actual inline file bytes in two authenticated, ordered
+          # fragments; only digest states are retained, never file contents.
+          file_data = b"authenticated-byte-stream" * 4500
+          file_digest = hashlib.sha256(file_data).hexdigest()
+          file_path = "fixtures/bounded.dat"
+          file_plan = dict(plan, entries=[{
+              "path": file_path,
+              "kind": "file",
+              "content_bytes": len(file_data),
+              "content_sha256": file_digest,
+              "local_source_present": False,
+              "local_source_path_redacted": False,
+              "local_source_path_sha256": None,
+              "local_source_content_sha256": None,
+              "local_source_content_inspected": False,
+              "content_uploaded": False,
+          }])
+          file_plan_json = json.dumps(
+              file_plan, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+          )
+          file_plan_sha = hashlib.sha256(file_plan_json.encode()).hexdigest()
+          file_descriptor = dict(
+              descriptor, request_id="ci-inert-file-stream",
+              manifest_digest=file_plan_sha,
+              entry_count=1, inline_file_count=1,
+              inline_file_bytes=len(file_data),
+          )
+          file_ticket = build_strix_runner_manifest_ticket(
+              file_descriptor, signing_secret=signing_key
+          ).to_dict()
+          file_prepare = dict(
+              prepare, request_id=file_descriptor["request_id"],
+              manifest_digest=file_plan_sha, admission=file_ticket,
+          )
+          status, file_session = invoke(path, file_prepare)
+          assert status == 201, (status, file_session)
+          file_receipt = dict(
+              receipt, request_id="ci-inert-file-plan",
+              session_id=file_session["session_id"],
+              manifest_digest=file_plan_sha, plan_json=file_plan_json,
+          )
+          status, accepted_file_plan = invoke(receipt_path, file_receipt)
+          assert status == 200, (status, accepted_file_plan)
+          chunk_path = "/v1/session/file-chunk"
+          part1 = file_data[:65536]
+          chunk = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-inert-file-chunk-1",
+              "session_id": file_session["session_id"],
+              "contract_hash": descriptor["contract_hash"],
+              "manifest_digest": file_plan_sha,
+              "file_path": file_path,
+              "content_sha256": file_digest,
+              "offset": 0,
+              "chunk_base64": base64.b64encode(part1).decode("ascii"),
+              "final": False,
+          }
+          status, wrong_offset = invoke(chunk_path, dict(chunk, offset=1))
+          assert status == 409, (status, wrong_offset)
+          assert wrong_offset["error"] == "manifest_file_offset_mismatch"
+          status, invalid_encoding = invoke(
+              chunk_path, dict(chunk, chunk_base64="not base64!")
+          )
+          assert status == 400, (status, invalid_encoding)
+          status, wrong_file_digest = invoke(
+              chunk_path, dict(chunk, content_sha256="f" * 64)
+          )
+          assert status == 403, (status, wrong_file_digest)
+          status, first_chunk = invoke(chunk_path, chunk)
+          assert status == 200, (status, first_chunk)
+          assert first_chunk["status"] == "chunk_received"
+          assert first_chunk["file_bytes_received"] == len(part1)
+          assert first_chunk["file_sha256_verified"] is False
+          rest = file_data[len(part1):]
+          last_chunk = dict(
+              chunk, request_id="ci-inert-file-chunk-2",
+              offset=len(part1),
+              chunk_base64=base64.b64encode(rest).decode("ascii"),
+              final=True,
+          )
+          status, file_verified = invoke(chunk_path, last_chunk)
+          assert status == 200, (status, file_verified)
+          assert file_verified["status"] == "file_verified"
+          assert file_verified["file_sha256_verified"] is True
+          assert file_verified["all_inline_files_verified"] is True
+          assert file_verified["manifest_materialized"] is False
+          assert file_verified["active_execution_enabled"] is False
+          status, duplicate = invoke(chunk_path, last_chunk)
+          assert status == 409, (status, duplicate)
+          assert duplicate["error"] == "manifest_file_already_finalized"
+          # A wrong byte stream is permanently rejected for that session.
+          poisoned_descriptor = dict(
+              file_descriptor, request_id="ci-inert-file-tampered"
+          )
+          poisoned_ticket = build_strix_runner_manifest_ticket(
+              poisoned_descriptor, signing_secret=signing_key
+          ).to_dict()
+          status, poisoned_session = invoke(
+              path, dict(
+                  file_prepare, request_id=poisoned_descriptor["request_id"],
+                  admission=poisoned_ticket,
+              )
+          )
+          assert status == 201, (status, poisoned_session)
+          status, _ = invoke(
+              receipt_path, dict(
+                  file_receipt, session_id=poisoned_session["session_id"],
+              )
+          )
+          assert status == 200
+          tampered_chunk = dict(
+              chunk, session_id=poisoned_session["session_id"],
+              chunk_base64=base64.b64encode(
+                  b"x" + file_data[1:65536]
+              ).decode("ascii"),
+          )
+          status, _ = invoke(chunk_path, tampered_chunk)
+          assert status == 200
+          status, tampered_end = invoke(
+              chunk_path, dict(
+                  last_chunk, session_id=poisoned_session["session_id"],
+              )
+          )
+          assert status == 422, (status, tampered_end)
+          assert tampered_end["error"] == "manifest_file_content_mismatch"
+          status, blocked_retry = invoke(
+              chunk_path, dict(
+                  last_chunk, session_id=poisoned_session["session_id"],
+              )
+          )
+          assert status == 409, (status, blocked_retry)
+          print("Runner verified bounded file chunks; tampered bytes rejected")
 
           # Prove signed expiration and future-date rejection against the actual runner.
           expired_descriptor = dict(descriptor, request_id="ci-inert-expired")
