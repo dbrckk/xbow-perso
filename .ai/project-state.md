@@ -29,7 +29,7 @@ Status: active
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
 - The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
 - The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session and manifests cannot be uploaded/materialized.
-- Durable SQLite replay protection is proposed on a private named volume; volume deletion/rollback remains an operational risk while active execution stays disabled.
+- Durable SQLite replay protection was merged via PR #675 on a private named volume; deletion or rollback of this volume remains an operational risk, with active execution still disabled.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Manifest-admission hardening (2026-10-18)
@@ -39,8 +39,8 @@ Status: active
 
 ## Current priority
 - Manifest ticket v2 with signed 120-second expiry was merged as PR #674 after CI, security and supply-chain success.
-- Validate the dedicated runner-only SQLite replay journal and real Docker restart proof before merging the next PR.
-- Next implement content-addressed manifest transfer verification before any executable session.
+- PR #675 merged after CI, security, supply-chain, 2,743 Python tests and a real runner restart proof rejecting previously consumed tickets.
+- Next implement content-addressed manifest transfer verification without host bind mounts; retain fail-closed active Strix execution until isolated authorization and egress are proven.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
