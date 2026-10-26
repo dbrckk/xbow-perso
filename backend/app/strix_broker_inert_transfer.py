@@ -353,48 +353,95 @@ def verify_inert_manifest_files(
         for number, entry in enumerate(ordered_entries, start=1):
             data = files[entry.path]
             offsets = range(0, len(data), RUNNER_RPC_MAX_FILE_CHUNK_BYTES)
+            # A prefix digest makes lost-response reconciliation exact:
+            # a later offset alone cannot prove which bytes were accepted.
+            sent_prefix = hashlib.sha256()
             for offset in offsets if data else (0,):
                 chunk = data[offset:offset + RUNNER_RPC_MAX_FILE_CHUNK_BYTES]
                 final = offset + len(chunk) == len(data)
-                response = _post_runner(
-                    "/v1/session/file-chunk",
-                    {
-                        **base,
-                        "request_id": "chunk-" + secrets.token_hex(16),
-                        "file_path": entry.path,
-                        "content_sha256": entry.content_sha256,
-                        "offset": offset,
-                        "chunk_base64": base64.b64encode(chunk).decode("ascii"),
-                        "final": final,
-                    },
-                    key=rpc_key, status=200,
-                )
+                sent_prefix.update(chunk)
+                try:
+                    response = _post_runner(
+                        "/v1/session/file-chunk",
+                        {
+                            **base,
+                            "request_id": "chunk-" + secrets.token_hex(16),
+                            "file_path": entry.path,
+                            "content_sha256": entry.content_sha256,
+                            "offset": offset,
+                            "chunk_base64": base64.b64encode(chunk).decode("ascii"),
+                            "final": final,
+                        },
+                        key=rpc_key, status=200,
+                    )
+                except StrixInertTransportUncertain:
+                    # No mutation replays: one authenticated status query must
+                    # independently prove the exact submitted content prefix.
+                    response = _verification_snapshot(
+                        base=base, file_path=entry.path, key=rpc_key,
+                    )
+                    if (
+                        response.get("plan_verified") is not True
+                        or response.get("inline_file_count") != plan.inline_file_count
+                        or response.get("file_failed") is not False
+                    ):
+                        raise StrixInertTransferError(
+                            "runner file outcome uncertain"
+                        ) from None
+                else:
+                    if response.get("status") != (
+                        "file_verified" if final else "chunk_received"
+                    ):
+                        raise StrixInertTransferError("runner file receipt invalid")
                 if (
                     response.get("session_id") != session_id
                     or response.get("file_path") != entry.path
                     or response.get("file_bytes_received") != offset + len(chunk)
+                    or response.get("file_prefix_sha256") != sent_prefix.hexdigest()
                     or response.get("file_sha256_verified") is not final
-                    or response.get("verified_inline_files") != (number if final else number - 1)
+                    or response.get("verified_inline_files") != (
+                        number if final else number - 1
+                    )
                     or response.get("all_inline_files_verified") is not (
                         final and number == plan.inline_file_count
-                    )
-                    or response.get("status") != (
-                        "file_verified" if final else "chunk_received"
                     )
                 ):
                     raise StrixInertTransferError("runner file receipt invalid")
     finally:
-        released = _post_runner(
-            "/v1/session/release",
-            {
-                "schema": RUNNER_RPC_PROTOCOL,
-                "request_id": "release-" + secrets.token_hex(16),
-                "session_id": session_id,
-                "contract_hash": contract.contract_hash,
-            },
-            key=rpc_key, status=200,
-        )
-        if released.get("status") != "released" or released.get("session_id") != session_id:
+        release_id = "release-" + secrets.token_hex(16)
+        try:
+            released = _post_runner(
+                "/v1/session/release",
+                {
+                    "schema": RUNNER_RPC_PROTOCOL,
+                    "request_id": release_id,
+                    "session_id": session_id,
+                    "contract_hash": contract.contract_hash,
+                },
+                key=rpc_key, status=200,
+            )
+        except StrixInertTransportUncertain:
+            # Session absence (404) is not proof of explicit release.
+            # Require a matching ephemeral release receipt, not a retry.
+            released = _post_runner(
+                "/v1/session/release-status",
+                {
+                    **base,
+                    "request_id": "release-proof-" + secrets.token_hex(16),
+                    "release_request_id": release_id,
+                },
+                key=rpc_key, status=200,
+            )
+            if (
+                released.get("release_request_id") != release_id
+                or released.get("contract_hash") != contract.contract_hash
+                or released.get("manifest_digest") != plan.manifest_digest
+            ):
+                raise StrixInertTransferError("runner release proof invalid")
+        if (
+            released.get("status") != "released"
+            or released.get("session_id") != session_id
+        ):
             raise StrixInertTransferError("runner release receipt invalid")
     return InertManifestVerificationReceipt(
         contract_hash=contract.contract_hash,
