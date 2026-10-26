@@ -15,7 +15,7 @@ import threading
 import time
 from collections import OrderedDict
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
@@ -54,6 +54,7 @@ _MUTATION_PATHS = {
     "/v1/session/delete",
     "/v1/session/prepare",
     "/v1/session/release",
+    "/v1/session/plan-receipt",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -74,6 +75,12 @@ class _PreparedSession:
     contract_hash: str
     manifest_digest: str
     expires_at: float
+    entry_count: int
+    inline_file_count: int
+    local_dir_count: int
+    inline_file_bytes: int
+    environment_value_bytes: int
+    plan_verified: bool = False
 
 
 class _DurablePreparationReplay:
@@ -231,7 +238,7 @@ class RunnerRpcService:
                     "manifest_admission_required": True,
                     "manifest_admission_configured": True,
                     "implemented_operations": [],
-                    "inert_preparation_operations": ["prepare", "release"],
+                    "inert_preparation_operations": ["prepare", "release", "plan-receipt"],
                     "durable_preparation_replay": True,
                 },
             )
@@ -269,6 +276,8 @@ class RunnerRpcService:
             return self._prepare_session(payload)
         if path == "/v1/session/release":
             return self._release_session(payload)
+        if path == "/v1/session/plan-receipt":
+            return self._receive_plan(payload)
 
         if path == "/v1/session/create":
             if not self._admission_secret:
@@ -374,6 +383,11 @@ class RunnerRpcService:
                 contract_hash=ticket.contract_hash,
                 manifest_digest=ticket.manifest_digest,
                 expires_at=expires_at,
+                entry_count=ticket.entry_count,
+                inline_file_count=ticket.inline_file_count,
+                local_dir_count=ticket.local_dir_count,
+                inline_file_bytes=ticket.inline_file_bytes,
+                environment_value_bytes=ticket.environment_value_bytes,
             )
             # Ticket replay stays rejected even if the session is released.
             self._preparation_tickets[ticket_id] = expires_at
@@ -387,6 +401,52 @@ class RunnerRpcService:
                 "contract_hash": ticket.contract_hash,
                 "manifest_digest": ticket.manifest_digest,
                 "expires_in_seconds": RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS,
+                "manifest_materialized": False,
+                "active_execution_enabled": False,
+            },
+        )
+
+    def _receive_plan(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._prepared_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "prepared_session_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            if not hmac.compare_digest(item.manifest_digest, payload["manifest_digest"]):
+                return _error(403, "manifest_digest_mismatch")
+            if item.plan_verified:
+                return _error(409, "manifest_plan_already_verified")
+            try:
+                verified_bytes = verify_canonical_manifest_plan(
+                    payload["plan_json"],
+                    manifest_digest=item.manifest_digest,
+                    entry_count=item.entry_count,
+                    inline_file_count=item.inline_file_count,
+                    local_dir_count=item.local_dir_count,
+                    inline_file_bytes=item.inline_file_bytes,
+                    environment_value_bytes=item.environment_value_bytes,
+                )
+            except ValueError:
+                return _error(400, "manifest_plan_rejected")
+            self._prepared_sessions[item.session_id] = replace(
+                item, plan_verified=True,
+            )
+        return RunnerRpcResponse(
+            status=200,
+            json_body={
+                "status": "plan_verified",
+                "protocol": RUNNER_RPC_PROTOCOL,
+                "session_id": item.session_id,
+                "manifest_digest": item.manifest_digest,
+                "plan_bytes_verified": verified_bytes,
+                "file_contents_received": False,
                 "manifest_materialized": False,
                 "active_execution_enabled": False,
             },
@@ -560,6 +620,167 @@ def _valid_common(payload: dict[str, Any]) -> bool:
     )
 
 
+_PLAN_SCHEMA = "strix-manifest-admission-v1"
+_PLAN_MAX_BYTES = 256 * 1024
+_PLAN_KEYS = {
+    "schema", "manifest_version", "root", "entries", "environment",
+    "host_paths_included", "raw_file_content_included",
+    "filesystem_io_performed", "manifest_materialized", "upload_enabled",
+}
+_PLAN_ENTRY_KEYS = {
+    "path", "kind", "content_bytes", "content_sha256",
+    "local_source_present", "local_source_path_redacted",
+    "local_source_path_sha256", "local_source_content_sha256",
+    "local_source_content_inspected", "content_uploaded",
+}
+_PLAN_ENV_KEYS = {"key", "value_bytes", "value_sha256"}
+_PLAN_ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+
+
+def _plan_count(value: object, upper: int) -> bool:
+    return type(value) is int and 0 <= value <= upper
+
+
+def _plan_path(value: object) -> bool:
+    if not isinstance(value, str) or not value or len(value) > 512:
+        return False
+    if (
+        value.startswith("/") or value.endswith("/") or "\\" in value
+        or any(part in ("", ".", "..") for part in value.split("/"))
+        or any(ord(char) < 0x20 or ord(char) == 0x7F for char in value)
+    ):
+        return False
+    try:
+        return len(value.encode("utf-8")) <= 512
+    except UnicodeEncodeError:
+        return False
+
+
+def verify_canonical_manifest_plan(
+    plan_json: str,
+    *,
+    manifest_digest: str,
+    entry_count: int,
+    inline_file_count: int,
+    local_dir_count: int,
+    inline_file_bytes: int,
+    environment_value_bytes: int,
+) -> int:
+    """Check exact received canonical metadata bytes; never load file contents."""
+    if not isinstance(plan_json, str) or len(plan_json) > _PLAN_MAX_BYTES:
+        raise ValueError("manifest plan length exceeds limit")
+    try:
+        raw = plan_json.encode("utf-8")
+        if len(raw) > _PLAN_MAX_BYTES:
+            raise ValueError("manifest plan length exceeds limit")
+        plan = json.loads(raw)
+        canonical = json.dumps(
+            plan, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        ).encode("utf-8")
+    except (ValueError, UnicodeError, TypeError, RecursionError) as exc:
+        raise ValueError("manifest plan must be canonical UTF-8 JSON") from exc
+    if not isinstance(plan, dict) or set(plan) != _PLAN_KEYS or canonical != raw:
+        raise ValueError("manifest plan shape or encoding invalid")
+    if (
+        not _valid_digest(manifest_digest)
+        or not hmac.compare_digest(hashlib.sha256(raw).hexdigest(), manifest_digest)
+    ):
+        raise ValueError("manifest plan does not match signed digest")
+    if (
+        plan["schema"] != _PLAN_SCHEMA
+        or type(plan["manifest_version"]) is not int
+        or plan["manifest_version"] != 1
+        or plan["root"] != "/workspace"
+        or any(plan[key] is not False for key in (
+            "host_paths_included", "raw_file_content_included",
+            "filesystem_io_performed", "manifest_materialized", "upload_enabled",
+        ))
+    ):
+        raise ValueError("unsafe manifest plan invariants")
+
+    entries = plan["entries"]
+    env = plan["environment"]
+    if not isinstance(entries, list) or len(entries) > 128:
+        raise ValueError("invalid manifest plan entries")
+    if not isinstance(env, list) or len(env) > 64:
+        raise ValueError("invalid manifest plan environment")
+
+    paths: set[str] = set()
+    files, local_dirs, file_bytes = 0, 0, 0
+    for item in entries:
+        if not isinstance(item, dict) or set(item) != _PLAN_ENTRY_KEYS:
+            raise ValueError("invalid plan entry metadata")
+        path = item["path"]
+        if not _plan_path(path) or path in paths:
+            raise ValueError("invalid plan entry path")
+        parts = path.split("/")
+        if any("/".join(parts[:i]) in paths for i in range(1, len(parts))):
+            raise ValueError("plan entry paths overlap")
+        paths.add(path)
+        if (
+            item["local_source_content_inspected"] is not False
+            or item["content_uploaded"] is not False
+            or item["local_source_content_sha256"] is not None
+        ):
+            raise ValueError("unsafe plan entry metadata")
+        if item["kind"] == "file":
+            if (
+                not _plan_count(item["content_bytes"], 1024 * 1024)
+                or not _valid_digest(item["content_sha256"])
+                or item["local_source_present"] is not False
+                or item["local_source_path_redacted"] is not False
+                or item["local_source_path_sha256"] is not None
+            ):
+                raise ValueError("invalid inline file metadata")
+            files += 1
+            file_bytes += item["content_bytes"]
+        elif item["kind"] == "local_dir":
+            if (
+                item["content_bytes"] is not None
+                or item["content_sha256"] is not None
+                or item["local_source_present"] is not True
+                or item["local_source_path_redacted"] is not True
+                or not _valid_digest(item["local_source_path_sha256"])
+            ):
+                raise ValueError("invalid local directory metadata")
+            local_dirs += 1
+        else:
+            raise ValueError("unsupported manifest entry type")
+    if (
+        [item["path"] for item in entries] != sorted(paths)
+        or file_bytes > 4 * 1024 * 1024
+    ):
+        raise ValueError("manifest entry order or byte limit invalid")
+
+    env_keys: set[str] = set()
+    env_bytes = 0
+    for item in env:
+        if not isinstance(item, dict) or set(item) != _PLAN_ENV_KEYS:
+            raise ValueError("invalid environment metadata")
+        key = item["key"]
+        if (
+            not isinstance(key, str) or not _PLAN_ENV_KEY_RE.fullmatch(key)
+            or key in env_keys
+            or not _plan_count(item["value_bytes"], 4096)
+            or not _valid_digest(item["value_sha256"])
+        ):
+            raise ValueError("invalid environment metadata")
+        env_keys.add(key)
+        env_bytes += item["value_bytes"]
+    if (
+        [item["key"] for item in env] != sorted(env_keys)
+        or env_bytes > 16 * 1024
+    ):
+        raise ValueError("environment order or byte limit invalid")
+    if (
+        len(entries) != entry_count or files != inline_file_count
+        or local_dirs != local_dir_count or file_bytes != inline_file_bytes
+        or env_bytes != environment_value_bytes
+    ):
+        raise ValueError("manifest plan differs from signed ticket counts")
+    return len(raw)
+
+
 def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
     if not _valid_common(payload):
         return False
@@ -650,6 +871,22 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             )
             and _valid_id(payload.get("session_id"))
             and _valid_port(payload.get("port"))
+        )
+
+    if path == "/v1/session/plan-receipt":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "session_id",
+                    "contract_hash", "manifest_digest", "plan_json",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
+            and isinstance(payload.get("plan_json"), str)
+            and len(payload["plan_json"]) <= 256 * 1024
         )
 
     if path == "/v1/session/release":

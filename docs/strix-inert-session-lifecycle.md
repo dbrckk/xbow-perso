@@ -15,9 +15,10 @@ nonce. The request body is covered by the RPC signature.
 | --- | --- | --- |
 | `/v1/session/prepare` | 201 `prepared` | Signed v2 ticket bound to request id, image, exposed ports, manifest digest and validity window |
 | `/v1/session/release` | 200 `released` | Existing random prepared session id and matching contract hash, signed with runner RPC key |
+| `/v1/session/plan-receipt` | 200 `plan_verified` | Session-bound HMAC request carrying the exact canonical metadata JSON; SHA-256 and signed counters must match |
 
 A preparation records **only** the random session id, signed execution-contract
-hash, manifest digest, and monotonic expiry. It does **not** retain manifests,
+hash, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
 copy files, mount local paths, open ports, create containers, spawn processes,
 or send traffic to a target. It is not a runnable Strix session.
 
@@ -46,7 +47,7 @@ host bind mounts, Docker socket, exposed host ports or external networks
 are introduced. A single named volume contains only replay metadata.
 
 The runner readiness response advertises
-`inert_preparation_operations: ["prepare", "release"]` while
+`inert_preparation_operations: ["prepare", "release", "plan-receipt"]` while
 `implemented_operations: []` continues to mean **no executable upstream
 lifecycle operations are implemented**.
 
@@ -60,13 +61,9 @@ remains blocked even with a correctly signed ticket.
 
 ### Security limitations before active execution
 
-This API is deliberately an intermediate integration step. The signed
-manifest admission ticket describes digests and metadata but does not prove
-the actual uploaded bytes were received or verified; no upload or
-materialization is implemented. The v2 ticket format includes signed expiration,
+This API is deliberately an intermediate integration step. The new receipt verifies the exact **canonical manifest-plan metadata** received in memory (at most 256 KiB), against the signed SHA-256 digest and signed counts. It rejects duplicate receipts, unsafe path metadata and noncanonical JSON. **No inline file content or local directory bytes have been transmitted or verified**, and no file materialization is implemented. The endpoint does not accept raw file contents. The v2 ticket format includes signed expiration,
 and the private journal prevents reuse of an unexpired ticket after runner
 restart. Deleting or rolling back the Docker volume erases that history;
 volume retention and backup policy matter. Do **not** enable active scan
-dispatch. Future work must add content-addressed upload with byte verification;
-persistent session ownership
+dispatch. Future work must add bounded content-addressed transport and verification of actual inline file bytes; persistent session ownership
 if needed; and egress policy enforcement before any scanner process runs.

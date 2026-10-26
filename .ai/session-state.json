@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-26",
-  "task": "Validated and merged bounded SQLite Strix ticket replay journal",
+  "task": "Add verified, session-bound canonical Strix admission-plan receipt while active execution remains disabled",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -91,17 +91,19 @@
     "Prepared ticket v2 with signed 120-second validity and 5-second future-skew; extended existing real isolated runner CI integration proof for expired/future tickets (CI pending).",
     "Merged #674 after CI, security and supply-chain success: signed 120-second v2 manifest tickets.",
     "Proposed runner-only SQLite journal with bounded, transactional, expiration-pruned ticket replay protection; production runner has a dedicated private named volume.",
-    "PR #675 merged into main after 2,743 tests, Ruff, CI Docker builds, security and supply-chain, and real broker/runner restart rejection proof."
+    "PR #675 merged into main after 2,743 tests, Ruff, CI Docker builds, security and supply-chain, and real broker/runner restart rejection proof.",
+    "Proposed inert HMAC-authenticated plan-receipt endpoint with exact canonical metadata bytes, SHA-256 signed-digest matching, path constraints, counts, and duplicate rejection; zero file content received."
   ],
-  "current_branch": "main",
-  "current_priority": "Next implement bounded content-addressed, digest-verified inert manifest transfer without host socket or target I/O.",
+  "current_branch": "codex/strix-inert-plan-receipt-20261026",
+  "current_priority": "CI + security + supply-chain + Docker broker-runner proof for canonical metadata receipt; do not merge if failures.",
   "blockers": [
     "Manifest bytes are still not transferred or materialized; the inert preparation holds digest metadata only.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
     "Strix real pinned Python modules import but the upstream scan entrypoint is not invoked, nor are runnable sessions available.",
     "Active scanning needs broker-enforced target scope, request budgets, isolated process execution and independent validation.",
     "Only read-only GET/HEAD broker egress is currently supported; scanner network tool surface is incomplete.",
-    "Deleting or rolling back the private replay volume erases consumed identities; active execution stays disabled."
+    "Deleting or rolling back the private replay volume erases consumed identities; active execution stays disabled.",
+    "A valid plan receipt does not transfer or verify inline file content; no executable Strix session is enabled."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -110,7 +112,8 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Define digest-verified bounded inert manifest content transfer without enabling execution.",
-    "Retain broker-enforced scope and rate ceilings; demonstrate isolated local lab before any future active Strix execution."
+    "Verify real Docker broker-runner metadata receipt and malformed-metadata rejection in CI; merge if all checks green.",
+    "Add separate bounded per-file content-addressed byte transfer and digest checking without host mounts.",
+    "Complete scope/egress/authorization before any active Strix execution."
   ]
 }
