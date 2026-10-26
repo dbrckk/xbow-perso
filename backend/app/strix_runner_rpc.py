@@ -47,6 +47,7 @@ RUNNER_RPC_MAX_SECRET_BYTES = 4096
 RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
 RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
 RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
+RUNNER_RPC_MAX_RELEASE_RECEIPTS = 1024
 RUNNER_RPC_REPLAY_DB_PATH = "/var/lib/strix-runner/preparation-replay.sqlite3"
 RUNNER_RPC_MAX_FILE_CHUNK_BYTES = 64 * 1024
 
@@ -60,6 +61,8 @@ _MUTATION_PATHS = {
     "/v1/session/plan-receipt",
     "/v1/session/file-chunk",
     "/v1/session/preparation-status",
+    "/v1/session/verification-status",
+    "/v1/session/release-status",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -98,6 +101,15 @@ class _PreparedSession:
     environment_value_bytes: int
     plan_verified: bool = False
     file_proofs: dict[str, _InertFileProof] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class _ReleasedSession:
+    session_id: str
+    release_request_id: str
+    contract_hash: str
+    manifest_digest: str
+    expires_at: float
 
 
 class _DurablePreparationReplay:
@@ -201,6 +213,9 @@ class RunnerRpcService:
         # Inert metadata only: no files, subprocesses, ports or target network.
         # State is process-local and expires even if the broker never releases it.
         self._prepared_sessions: dict[str, _PreparedSession] = {}
+        # Bounded, ephemeral receipts for lost release responses. Never
+        # persist session identities, upload data, or extend session TTLs.
+        self._released_sessions: OrderedDict[str, _ReleasedSession] = OrderedDict()
         self._preparation_tickets: OrderedDict[tuple[str, str], float] = (
             OrderedDict()
         )
@@ -257,7 +272,8 @@ class RunnerRpcService:
                     "implemented_operations": [],
                     "inert_preparation_operations": [
                         "prepare", "release", "plan-receipt", "file-chunk",
-                        "preparation-status",
+                        "preparation-status", "verification-status",
+                        "release-status",
                     ],
                     "durable_preparation_replay": True,
                 },
@@ -296,6 +312,10 @@ class RunnerRpcService:
             return self._prepare_session(payload)
         if path == "/v1/session/preparation-status":
             return self._preparation_status(payload)
+        if path == "/v1/session/verification-status":
+            return self._verification_status(payload)
+        if path == "/v1/session/release-status":
+            return self._release_status(payload)
         if path == "/v1/session/release":
             return self._release_session(payload)
         if path == "/v1/session/plan-receipt":
@@ -347,6 +367,9 @@ class RunnerRpcService:
         ]
         for key in expired:
             del self._prepared_sessions[key]
+        for key, receipt in list(self._released_sessions.items()):
+            if now >= receipt.expires_at:
+                del self._released_sessions[key]
         while self._preparation_tickets:
             key, expiry = next(iter(self._preparation_tickets.items()))
             if now < expiry:
@@ -399,7 +422,7 @@ class RunnerRpcService:
             if outcome == "capacity":
                 return _error(503, "preparation_ticket_capacity_reached")
             session_id = f"prepared-{secrets.token_hex(16)}"
-            while session_id in self._prepared_sessions:
+            while session_id in self._prepared_sessions or session_id in self._released_sessions:
                 session_id = f"prepared-{secrets.token_hex(16)}"
             expires_at = now + RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS
             self._prepared_sessions[session_id] = _PreparedSession(
@@ -529,6 +552,57 @@ class RunnerRpcService:
             },
         )
 
+    def _verification_status(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        """Attest only the accepted byte prefix; no raw content leaves memory."""
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._prepared_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "prepared_session_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            if not hmac.compare_digest(item.manifest_digest, payload["manifest_digest"]):
+                return _error(403, "manifest_digest_mismatch")
+            path = payload["file_path"]
+            proof = None
+            if path is not None:
+                if not item.plan_verified:
+                    return _error(409, "manifest_plan_not_verified")
+                proof = item.file_proofs.get(path)
+                if proof is None:
+                    return _error(404, "manifest_file_not_found")
+            verified_files = sum(p.verified for p in item.file_proofs.values())
+            return RunnerRpcResponse(
+                status=200,
+                json_body={
+                    "status": "verification_status",
+                    "protocol": RUNNER_RPC_PROTOCOL,
+                    "session_id": item.session_id,
+                    "contract_hash": item.contract_hash,
+                    "manifest_digest": item.manifest_digest,
+                    "plan_verified": item.plan_verified,
+                    "inline_file_count": item.inline_file_count,
+                    "verified_inline_files": verified_files,
+                    "all_inline_files_verified": (
+                        item.plan_verified and verified_files == item.inline_file_count
+                    ),
+                    "file_path": path,
+                    "file_bytes_received": proof.received_bytes if proof else None,
+                    "file_prefix_sha256": (
+                        proof.hash_state.hexdigest() if proof else None
+                    ),
+                    "file_sha256_verified": proof.verified if proof else None,
+                    "file_failed": proof.failed if proof else None,
+                    "manifest_materialized": False,
+                    "active_execution_enabled": False,
+                },
+            )
+
     def _receive_file_chunk(self, payload: dict[str, Any]) -> RunnerRpcResponse:
         """Inert, ordered, digest-verified byte transfer; never materialize."""
         if self._active_execution:
@@ -586,6 +660,7 @@ class RunnerRpcService:
                     "session_id": item.session_id,
                     "file_path": payload["file_path"],
                     "file_bytes_received": proof.received_bytes,
+                    "file_prefix_sha256": proof.hash_state.hexdigest(),
                     "file_sha256_verified": proof.verified,
                     "verified_inline_files": verified_files,
                     "all_inline_files_verified": (
@@ -610,6 +685,17 @@ class RunnerRpcService:
             if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
                 return _error(403, "prepared_session_contract_mismatch")
             del self._prepared_sessions[item.session_id]
+            if len(self._released_sessions) >= RUNNER_RPC_MAX_RELEASE_RECEIPTS:
+                # A lost receipt can then fail closed; resource release itself
+                # must never be blocked by a saturated evidence cache.
+                self._released_sessions.popitem(last=False)
+            self._released_sessions[item.session_id] = _ReleasedSession(
+                session_id=item.session_id,
+                release_request_id=payload["request_id"],
+                contract_hash=item.contract_hash,
+                manifest_digest=item.manifest_digest,
+                expires_at=item.expires_at,
+            )
         return RunnerRpcResponse(
             status=200,
             json_body={
@@ -620,6 +706,40 @@ class RunnerRpcService:
                 "active_execution_enabled": False,
             },
         )
+
+    def _release_status(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        """Prove an exact release, not mere absence or natural expiry."""
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._released_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "release_receipt_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            if not hmac.compare_digest(item.manifest_digest, payload["manifest_digest"]):
+                return _error(403, "manifest_digest_mismatch")
+            if not hmac.compare_digest(
+                item.release_request_id, payload["release_request_id"]
+            ):
+                return _error(404, "release_receipt_not_found")
+            return RunnerRpcResponse(
+                status=200,
+                json_body={
+                    "status": "released",
+                    "protocol": RUNNER_RPC_PROTOCOL,
+                    "session_id": item.session_id,
+                    "release_request_id": item.release_request_id,
+                    "contract_hash": item.contract_hash,
+                    "manifest_digest": item.manifest_digest,
+                    "manifest_materialized": False,
+                    "active_execution_enabled": False,
+                },
+            )
 
     def _authenticate(
         self,
@@ -1033,6 +1153,39 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             )
             and _valid_id(payload.get("session_id"))
             and _valid_port(payload.get("port"))
+        )
+
+    if path == "/v1/session/verification-status":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "session_id",
+                    "contract_hash", "manifest_digest", "file_path",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
+            and (
+                payload.get("file_path") is None
+                or _plan_path(payload.get("file_path"))
+            )
+        )
+
+    if path == "/v1/session/release-status":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "session_id",
+                    "release_request_id", "contract_hash", "manifest_digest",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_id(payload.get("release_request_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
         )
 
     if path == "/v1/session/preparation-status":
