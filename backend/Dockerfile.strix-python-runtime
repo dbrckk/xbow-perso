@@ -1,4 +1,4 @@
-FROM mirror.gcr.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS builder
+FROM mirror.gcr.io/library/python:3.15-slim@sha256:533b0b2f9b5d46fd097091cf826f27902f1d6c3bca714b6dc74551356aa97a51 AS builder
 
 ARG TARGETARCH
 ARG UV_VERSION=0.12.10
@@ -89,7 +89,7 @@ RUN PYTHONPATH=/app /opt/strix-src/.venv/bin/python \
       -m app.strix_python_bootstrap_runtime --self-test
 
 
-FROM mirror.gcr.io/library/python:3.12.14-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f AS runtime
+FROM mirror.gcr.io/library/python:3.15-slim@sha256:533b0b2f9b5d46fd097091cf826f27902f1d6c3bca714b6dc74551356aa97a51 AS runtime
 
 RUN groupadd --system --gid 65532 strix-python \
     && useradd --system --uid 65532 --gid 65532 --home-dir /nonexistent \
