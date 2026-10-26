@@ -308,6 +308,7 @@ jobs:
               "/v1/session/resolve-port",
               "/v1/session/delete",
               "/v1/session/file-chunk",
+              "/v1/session/preparation-status",
           ):
               request = Request(
                   f"{runner}{endpoint}",
@@ -429,6 +430,30 @@ jobs:
           assert prepared["manifest_materialized"] is False
           assert prepared["active_execution_enabled"] is False
           assert prepared["expires_in_seconds"] == 900
+          lookup_path = "/v1/session/preparation-status"
+          lookup = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-inert-lookup-1",
+              "preparation_request_id": descriptor["request_id"],
+              "contract_hash": descriptor["contract_hash"],
+              "manifest_digest": plan_digest,
+          }
+          status, found = invoke(lookup_path, lookup)
+          assert status == 200, (status, found)
+          assert found["status"] == "prepared"
+          assert found["session_id"] == prepared["session_id"]
+          assert found["contract_hash"] == descriptor["contract_hash"]
+          assert 1 <= found["expires_in_seconds"] <= 900
+          assert found["active_execution_enabled"] is False
+          assert found["manifest_materialized"] is False
+          status, denied = invoke(
+              lookup_path, dict(lookup, contract_hash="d" * 64)
+          )
+          assert status == 403, (status, denied)
+          status, denied = invoke(
+              lookup_path, dict(lookup, manifest_digest="d" * 64)
+          )
+          assert status == 403, (status, denied)
           receipt_path = "/v1/session/plan-receipt"
           receipt = {
               "schema": RUNNER_RPC_PROTOCOL,
@@ -708,6 +733,80 @@ jobs:
           finally:
               transfer._post_runner = original_post
           assert seen == ["interrupted", "released"], seen
+
+          # A lost *response* to a successful prepare can be reconciled by
+          # a read-only, scoped status lookup: do NOT re-send the ticket.
+          seen = []
+          def lost_prepare_response(path, payload, *, key, status):
+              if path == "/v1/session/prepare":
+                  original_post(path, payload, key=key, status=status)
+                  seen.append("prepared-once")
+                  raise transfer.StrixInertTransportUncertain("response lost")
+              if path == "/v1/session/preparation-status":
+                  seen.append("looked-up")
+              result = original_post(path, payload, key=key, status=status)
+              if path == "/v1/session/release":
+                  seen.append("released")
+              return result
+          transfer._post_runner = lost_prepare_response
+          try:
+              recovered = transfer.verify_inert_manifest_files(
+                  contract=signed, image=image, exposed_ports=[],
+                  files={"recovery/verified.dat": b"recover-after-lost-response"},
+              )
+          finally:
+              transfer._post_runner = original_post
+          assert recovered.session_released is True
+          assert recovered.verified_inline_files == 1
+          assert seen == ["prepared-once", "looked-up", "released"], seen
+
+          # No request reached the runner: lookup 404 must not trigger a
+          # second ticket issuance, fallback session, or false success.
+          seen = []
+          def missing_prepare(path, payload, *, key, status):
+              if path == "/v1/session/prepare":
+                  seen.append("prepare-not-delivered")
+                  raise transfer.StrixInertTransportUncertain("not delivered")
+              if path == "/v1/session/preparation-status":
+                  seen.append("looked-up")
+              return original_post(path, payload, key=key, status=status)
+          transfer._post_runner = missing_prepare
+          try:
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[],
+                      files={"recovery/missing": b"never-prepared"},
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("missing preparation recovered incorrectly")
+          finally:
+              transfer._post_runner = original_post
+          assert seen == ["prepare-not-delivered", "looked-up"], seen
+
+          # Runner and broker accept the 4 MiB aggregate limit exactly.
+          boundary_files = {
+              f"limits/file-{i}": bytes([65 + i]) * (1024 * 1024)
+              for i in range(4)
+          }
+          boundary = transfer.verify_inert_manifest_files(
+              contract=signed, image=image, exposed_ports=[],
+              files=boundary_files,
+          )
+          assert boundary.verified_inline_files == 4
+          assert boundary.verified_inline_bytes == 4 * 1024 * 1024
+          assert boundary.session_released is True
+          try:
+              transfer.verify_inert_manifest_files(
+                  contract=signed, image=image, exposed_ports=[],
+                  files={**boundary_files, "limits/overflow": b"x"},
+              )
+          except transfer.StrixInertTransferError:
+              pass
+          else:
+              raise AssertionError("broker accepted >4 MiB inline content")
+          print("Broker recovery, missing-prepare fail-closed and 4MiB cap verified")
           print("Broker authenticated orchestration, empty-file proof and cleanup verified")
 
           # Prove signed expiration and future-date rejection against the actual runner.
@@ -758,6 +857,9 @@ jobs:
           status, closed = invoke("/v1/session/release", release)
           assert status == 200, (status, closed)
           assert closed["active_execution_enabled"] is False
+          status, stale = invoke(lookup_path, lookup)
+          assert status == 404, (status, stale)
+          assert stale["error"] == "prepared_session_not_found"
           status, missing = invoke("/v1/session/release", release)
           assert status == 404, (status, missing)
 
@@ -765,6 +867,61 @@ jobs:
           # caller with valid authentication and a signed manifest ticket.
           status, blocked = invoke("/v1/session/create", prepare)
           assert status == 503, (status, blocked)
+          # Inject monotonic elapsed time into a separate service instance:
+          # status must never refresh the 900-second expiry.
+          from unittest.mock import patch
+          from app.strix_runner_rpc import RunnerRpcService
+          local_service = RunnerRpcService(
+              secret=rpc_secret, admission_secret=signing_key,
+              active_execution=False, replay_db_path=":memory:",
+          )
+          local_descriptor = dict(
+              descriptor, request_id="ci-inert-local-expiry"
+          )
+          local_ticket = build_strix_runner_manifest_ticket(
+              local_descriptor, signing_secret=signing_key
+          ).to_dict()
+          local_prepare = dict(
+              prepare, request_id=local_descriptor["request_id"],
+              admission=local_ticket,
+          )
+          local_lookup = dict(
+              lookup, preparation_request_id=local_descriptor["request_id"],
+          )
+          def local_invoke(path, payload):
+              raw = json.dumps(
+                  payload, sort_keys=True, separators=(",", ":")
+              ).encode("utf-8")
+              timestamp = int(time.time())
+              nonce = secrets.token_hex(16)
+              signature = sign_runner_rpc_request(
+                  method="POST", path=path, body=raw, timestamp=timestamp,
+                  nonce=nonce, secret=rpc_secret,
+              )
+              return local_service.handle(
+                  method="POST", path=path, body=raw,
+                  headers={
+                      "content-type": "application/json",
+                      "x-xbow-runner-timestamp": str(timestamp),
+                      "x-xbow-runner-nonce": nonce,
+                      "x-xbow-runner-signature": signature,
+                  },
+              )
+          with patch("app.strix_runner_rpc.time.monotonic", return_value=1000.0):
+              local = local_invoke("/v1/session/prepare", local_prepare)
+              assert local.status == 201, local.json_body
+              live = local_invoke(lookup_path, local_lookup)
+              assert live.status == 200
+              assert live.json_body["expires_in_seconds"] == 900
+          with patch("app.strix_runner_rpc.time.monotonic", return_value=1899.0):
+              live = local_invoke(lookup_path, local_lookup)
+              assert live.status == 200
+              assert live.json_body["expires_in_seconds"] == 1
+          with patch("app.strix_runner_rpc.time.monotonic", return_value=1900.0):
+              expired = local_invoke(lookup_path, local_lookup)
+              assert expired.status == 404, expired.json_body
+              assert expired.json_body["error"] == "prepared_session_not_found"
+          print("Recovery lookup expiry is monotonic and never extended")
           print("Signed inert runner prepare/release lifecycle verified")
           PY
           # Restart the real runner and prove that a fresh signature cannot
