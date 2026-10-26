@@ -126,7 +126,6 @@ def _payload(path: str) -> dict:
             "admission": build_strix_runner_exec_ticket(
                 descriptor,
                 signing_secret=ADMISSION_SECRET,
-                now=NOW,
             ).to_dict(),
         }
     if path == "/v1/session/resolve-port":
