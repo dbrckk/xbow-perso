@@ -60,6 +60,7 @@ _MUTATION_PATHS = {
     "/v1/session/plan-receipt",
     "/v1/session/file-chunk",
     "/v1/session/preparation-status",
+    "/v1/session/receipt-status",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -257,7 +258,7 @@ class RunnerRpcService:
                     "implemented_operations": [],
                     "inert_preparation_operations": [
                         "prepare", "release", "plan-receipt", "file-chunk",
-                        "preparation-status",
+                        "preparation-status", "receipt-status",
                     ],
                     "durable_preparation_replay": True,
                 },
@@ -296,6 +297,8 @@ class RunnerRpcService:
             return self._prepare_session(payload)
         if path == "/v1/session/preparation-status":
             return self._preparation_status(payload)
+        if path == "/v1/session/receipt-status":
+            return self._receipt_status(payload)
         if path == "/v1/session/release":
             return self._release_session(payload)
         if path == "/v1/session/plan-receipt":
@@ -472,6 +475,64 @@ class RunnerRpcService:
                     },
                 )
         return _error(404, "prepared_session_not_found")
+
+    def _receipt_status(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        """Read only bounded proof metadata after an ambiguous runner reply.
+
+        Neither refreshes the session TTL nor changes receipt or hash state.
+        No raw data or execution capability is returned.
+        """
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            item = self._prepared_sessions.get(payload["session_id"])
+            if item is None:
+                return _error(404, "prepared_session_not_found")
+            if not hmac.compare_digest(item.contract_hash, payload["contract_hash"]):
+                return _error(403, "prepared_session_contract_mismatch")
+            if not hmac.compare_digest(item.manifest_digest, payload["manifest_digest"]):
+                return _error(403, "manifest_digest_mismatch")
+            path = payload["file_path"]
+            if path is not None and not item.plan_verified:
+                return _error(409, "manifest_plan_not_verified")
+            proof = item.file_proofs.get(path) if path is not None else None
+            if path is not None and proof is None:
+                return _error(404, "manifest_file_not_found")
+            verified_count = sum(file.verified for file in item.file_proofs.values())
+            return RunnerRpcResponse(
+                status=200,
+                json_body={
+                    "status": "receipt_status",
+                    "protocol": RUNNER_RPC_PROTOCOL,
+                    "session_id": item.session_id,
+                    "contract_hash": item.contract_hash,
+                    "manifest_digest": item.manifest_digest,
+                    "plan_verified": item.plan_verified,
+                    "file_path": path,
+                    "file_bytes_received": (
+                        proof.received_bytes if proof is not None else None
+                    ),
+                    "file_sha256_prefix": (
+                        proof.hash_state.copy().hexdigest()
+                        if proof is not None else None
+                    ),
+                    "file_sha256_verified": (
+                        proof.verified if proof is not None else False
+                    ),
+                    "file_failed": proof.failed if proof is not None else False,
+                    "verified_inline_files": verified_count,
+                    "all_inline_files_verified": (
+                        item.plan_verified and verified_count == item.inline_file_count
+                    ),
+                    "expires_in_seconds": math.ceil(item.expires_at - now),
+                    "manifest_materialized": False,
+                    "active_execution_enabled": False,
+                },
+            )
 
     def _receive_plan(self, payload: dict[str, Any]) -> RunnerRpcResponse:
         if self._active_execution:
@@ -1047,6 +1108,24 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             and _valid_id(payload.get("preparation_request_id"))
             and _valid_digest(payload.get("contract_hash"))
             and _valid_digest(payload.get("manifest_digest"))
+        )
+
+    if path == "/v1/session/receipt-status":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "session_id", "contract_hash",
+                    "manifest_digest", "file_path",
+                },
+            )
+            and _valid_id(payload.get("session_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
+            and (
+                payload.get("file_path") is None
+                or _plan_path(payload.get("file_path"))
+            )
         )
 
     if path == "/v1/session/file-chunk":
