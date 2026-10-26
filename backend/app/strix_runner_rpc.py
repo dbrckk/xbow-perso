@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import base64
+import binascii
 import hashlib
 import hmac
 import json
@@ -46,6 +48,7 @@ RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
 RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
 RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
 RUNNER_RPC_REPLAY_DB_PATH = "/var/lib/strix-runner/preparation-replay.sqlite3"
+RUNNER_RPC_MAX_INERT_PROOF_BYTES = 64 * 1024
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -558,6 +561,26 @@ def _valid_common(payload: dict[str, Any]) -> bool:
         payload.get("schema") == RUNNER_RPC_PROTOCOL
         and _valid_id(payload.get("request_id"))
     )
+
+
+def verify_inert_content_digest(*, encoded: str, expected_digest: str) -> int:
+    """Verify a small in-memory byte sample without storing or executing it.
+
+    This helper deliberately does not implement a runner upload endpoint.
+    """
+    if not _valid_digest(expected_digest) or not isinstance(encoded, str):
+        raise ValueError("invalid content proof")
+    if len(encoded) > ((RUNNER_RPC_MAX_INERT_PROOF_BYTES + 2) // 3) * 4:
+        raise ValueError("content proof exceeds size limit")
+    try:
+        content = base64.b64decode(encoded, validate=True)
+    except (ValueError, binascii.Error) as exc:
+        raise ValueError("invalid content proof encoding") from exc
+    if len(content) > RUNNER_RPC_MAX_INERT_PROOF_BYTES:
+        raise ValueError("content proof exceeds size limit")
+    if not hmac.compare_digest(hashlib.sha256(content).hexdigest(), expected_digest):
+        raise ValueError("content proof digest mismatch")
+    return len(content)
 
 
 def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
