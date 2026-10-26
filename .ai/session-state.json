@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-26",
-  "task": "Add verified, session-bound canonical Strix admission-plan receipt while active execution remains disabled",
+  "task": "Merged inert signed canonical Strix plan receipt after full CI validation",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -92,10 +92,11 @@
     "Merged #674 after CI, security and supply-chain success: signed 120-second v2 manifest tickets.",
     "Proposed runner-only SQLite journal with bounded, transactional, expiration-pruned ticket replay protection; production runner has a dedicated private named volume.",
     "PR #675 merged into main after 2,743 tests, Ruff, CI Docker builds, security and supply-chain, and real broker/runner restart rejection proof.",
-    "Proposed inert HMAC-authenticated plan-receipt endpoint with exact canonical metadata bytes, SHA-256 signed-digest matching, path constraints, counts, and duplicate rejection; zero file content received."
+    "Proposed inert HMAC-authenticated plan-receipt endpoint with exact canonical metadata bytes, SHA-256 signed-digest matching, path constraints, counts, and duplicate rejection; zero file content received.",
+    "PR #677 merged into main after passing full CI, security and supply-chain, including real isolated broker/runner receipt validation and replay/unsafe-metadata rejection."
   ],
-  "current_branch": "codex/strix-inert-plan-receipt-20261026",
-  "current_priority": "CI + security + supply-chain + Docker broker-runner proof for canonical metadata receipt; do not merge if failures.",
+  "current_branch": "main",
+  "current_priority": "Next implement byte-bounded content-addressed inline-file transfer and independent SHA-256 verification without enabling active Strix execution.",
   "blockers": [
     "Manifest bytes are still not transferred or materialized; the inert preparation holds digest metadata only.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
@@ -112,8 +113,8 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Verify real Docker broker-runner metadata receipt and malformed-metadata rejection in CI; merge if all checks green.",
-    "Add separate bounded per-file content-addressed byte transfer and digest checking without host mounts.",
-    "Complete scope/egress/authorization before any active Strix execution."
+    "Implement bounded authenticated transfer of actual inline file bytes by their SHA-256 digests, never host bind mounts.",
+    "Verify content in runner with strict per-file/aggregate quotas before any materialization; preserve no-execution readiness.",
+    "Require live isolated broker/egress policy proof before enabling active Strix runtime."
   ]
 }
