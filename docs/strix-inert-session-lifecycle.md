@@ -163,3 +163,64 @@ same-length content prefix, a release that never reached the runner, and
 **exactly 128 empty inline files** versus 129 (rejected). The runner returns
 SHA-256 digests and counters only, never received file bytes or materialized
 paths. Ambiguous results are not replayed.
+
+## Outstanding integrity risk: unsigned runner HTTP responses
+
+**Audit finding (2026-10-26):** Runner requests are authenticated with
+`strix-runner-rpc-v1` HMAC signatures that cover the request method, path,
+timestamp, nonce and body digest. However, the HTTP **response body and
+status code are not themselves authenticated**. The broker currently checks
+the returned JSON structure, session IDs, byte counters, SHA-256 prefixes,
+contract/digest identifiers, and explicit non-execution flags, but these
+checks cannot prove that the real runner generated the reply. The isolated
+Docker network significantly limits exposure; it is not a replacement for
+cryptographic response provenance if another network participant or
+intermediate is compromised.
+
+**Consequence:** A party capable of altering responses on the internal
+broker–runner network could forge progress/verification replies matching the
+broker's expected prefix digest, and potentially cause false success claims.
+This does **not** enable Strix execution by itself: the runner still does not
+materialize files, execute commands or contact targets.
+
+### Required hardening before any materialization
+
+1. Authenticate every successful session RPC response, including read-only
+   recovery evidence and release receipts, with a domain-separated HMAC.
+   Bind the signature to the original request method, path, timestamp,
+   unique nonce, request-body SHA-256, **actual HTTP status**, and exact
+   serialized response-body SHA-256. Reuse only the dedicated runner RPC
+   secret and never print it.
+2. Generate the response signature at the runner's HTTP serialization
+   boundary, after producing the final JSON bytes. Verify the response
+   signature in the trusted broker **before trusting any JSON fields or
+   acknowledging a completed transfer**. Require a signature on every 2xx
+   session response and reject missing, malformed or inconsistent evidence.
+   Unsigned health and explicit rejection responses must never be used as
+   successful transfer evidence.
+3. Handle ambiguous transport results without retrying prepare, plan, chunk,
+   or release mutations. A single read-only reconciliation must itself be
+   response-authenticated. Wrong or absent proof must fail closed and perform
+   best-effort session cleanup; failure to prove release must not return
+   success.
+4. Extend the real isolated Docker integration gate to verify correct
+   response signatures and reject a changed status, changed body, wrong
+   nonce, different request body, path mismatch, missing signature, and
+   replayed signature. Verify the disabled active-operation endpoints
+   remain disabled. Also test an interrupted response followed by a valid,
+   independently signed status lookup.
+5. Roll out runner and broker changes together. Do not silently fall back to
+   unsigned replies during a version mismatch. Treat the receipt-authentication
+   requirement as a readiness/compatibility prerequisite before enabling
+   any future isolated file materialization.
+
+**Scope of this finding:** It requires a position capable of tampering with
+the private runner HTTP response path. If the broker itself is compromised,
+the attacker may already possess the shared RPC key, so this HMAC mechanism
+alone cannot restore trust; container isolation, key control, process
+separation and independent scope enforcement remain separate requirements.
+
+**Current disposition:** Documented, **not yet mitigated in code**. The
+accepted-file digest checks and replay controls are still useful, but they
+do not independently authenticate the runner's response. Scanner execution,
+host socket access, disk materialization and target egress remain blocked.
