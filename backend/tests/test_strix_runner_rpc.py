@@ -51,6 +51,7 @@ def _service(
         admission_secret=admission_secret,
         active_execution=active_execution,
         now=lambda: NOW,
+        replay_db_path=":memory:",
     )
 
 
@@ -630,6 +631,7 @@ def test_runner_rpc_accepts_exact_minimum_secret_length():
         admission_secret=ADMISSION_SECRET,
         active_execution=False,
         now=lambda: NOW,
+        replay_db_path=":memory:",
     )
 
     assert service.handle(

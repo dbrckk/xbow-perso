@@ -300,6 +300,7 @@ jobs:
           assert ready["implemented_operations"] == []
           assert ready["exec_admission_configured"] is True
           assert ready["manifest_admission_configured"] is True
+          assert ready["durable_preparation_replay"] is True
 
           for endpoint in (
               "/v1/session/create",
@@ -466,6 +467,93 @@ jobs:
           status, blocked = invoke("/v1/session/create", prepare)
           assert status == 503, (status, blocked)
           print("Signed inert runner prepare/release lifecycle verified")
+          PY
+          # Restart the real runner and prove that a fresh signature cannot
+          # reuse the already-consumed contract/request identity. The broker
+          # and its signing keys are not restarted.
+          docker compose --profile strix-runner restart strix-runner
+          runner_ready=0
+          for _ in $(seq 1 30); do
+            if docker compose exec -T strix-broker python -c \
+              "import urllib.request; urllib.request.urlopen('http://strix-runner:8092/readyz', timeout=2).read()"; then
+              runner_ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$runner_ready" -ne 1 ]; then
+            docker compose --profile strix-runner logs --no-color strix-runner
+            exit 1
+          fi
+          docker compose exec -T strix-broker python - <<'PY'
+          import json
+          import os
+          import secrets
+          import time
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+          from app.strix_runner_manifest_ticket import build_strix_runner_manifest_ticket
+          from app.strix_runner_rpc import RUNNER_RPC_PROTOCOL, sign_runner_rpc_request
+
+          descriptor = {
+              "schema": "strix-manifest-admission-v1",
+              "contract_hash": "c" * 64,
+              "request_id": "ci-inert-prepare-1",
+              "image": "ghcr.io/example/test-sandbox@sha256:" + "a" * 64,
+              "exposed_ports": [],
+              "manifest_digest": "b" * 64,
+              "entry_count": 0,
+              "inline_file_count": 0,
+              "local_dir_count": 0,
+              "inline_file_bytes": 0,
+              "environment_value_bytes": 0,
+              "host_paths_included": False,
+              "raw_file_content_included": False,
+              "filesystem_io_performed": False,
+              "manifest_materialized": False,
+              "upload_enabled": False,
+              "active_execution_enabled": False,
+          }
+          ticket = build_strix_runner_manifest_ticket(
+              descriptor,
+              signing_secret=os.environ["XBOW_STRIX_RUNNER_ADMISSION_HMAC_KEY"],
+          )
+          payload = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": descriptor["request_id"],
+              "image": descriptor["image"],
+              "exposed_ports": [],
+              "manifest_digest": descriptor["manifest_digest"],
+              "admission": ticket.to_dict(),
+          }
+          body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+          nonce = secrets.token_hex(16)
+          timestamp = int(time.time())
+          signature = sign_runner_rpc_request(
+              method="POST", path="/v1/session/prepare",
+              body=body, secret="ci-runner-proof-key-at-least-32-bytes",
+              nonce=nonce, timestamp=timestamp,
+          )
+          request = Request(
+              "http://strix-runner:8092/v1/session/prepare",
+              data=body, method="POST",
+              headers={
+                  "Content-Type": "application/json",
+                  "X-Xbow-Runner-Timestamp": str(timestamp),
+                  "X-Xbow-Runner-Nonce": nonce,
+                  "X-Xbow-Runner-Signature": signature,
+              },
+          )
+          try:
+              with urlopen(request, timeout=4) as response:
+                  raise AssertionError(
+                      f"replayed ticket accepted after restart: {response.status}"
+                  )
+          except HTTPError as exc:
+              result = json.load(exc)
+              assert exc.code == 409, (exc.code, result)
+              assert result["error"] == "preparation_ticket_replayed"
+          print("Durable replay rejection across real runner restart verified")
           PY
 
   strix-python-runtime:

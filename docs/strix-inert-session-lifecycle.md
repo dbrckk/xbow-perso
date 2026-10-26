@@ -29,11 +29,21 @@ Preparation admission:
 - Maximum 1,024 recent preparation ticket identities (bounded and pruned
   after expiration); the same `(contract_hash, request_id)` is rejected on
   retry even after a session is released within its retention interval.
-- Preparations are held in a process-local, concurrency-protected store.
-  Restarting the runner discards them.
+- Prepared sessions remain process-local and disappear on restart.
+  Consumed ticket identities persist transactionally in a private SQLite
+  journal on the dedicated `strix-runner-replay` named Docker volume.
+  New preparations fail closed if the journal is unavailable or invalid.
+  The journal stores only contract hashes, request IDs and expirations;
+  it never contains manifest bytes, host paths or credentials.
+- The journal is bounded to 1,024 live ticket identities, removes expired
+  records and uses synchronous SQLite transactions with a 4 MiB page cap.
 - Released or expired sessions cannot be released again.
 - Different contract hashes cannot release another contract's session.
 - `active_execution=True` rejects inert prepare/release operations.
+
+The root filesystem stays read-only, the process stays non-root, and no
+host bind mounts, Docker socket, exposed host ports or external networks
+are introduced. A single named volume contains only replay metadata.
 
 The runner readiness response advertises
 `inert_preparation_operations: ["prepare", "release"]` while
@@ -54,8 +64,9 @@ This API is deliberately an intermediate integration step. The signed
 manifest admission ticket describes digests and metadata but does not prove
 the actual uploaded bytes were received or verified; no upload or
 materialization is implemented. The v2 ticket format includes signed expiration,
-but used-ticket memory is still process-local and cannot prevent a replay of an
-unexpired ticket after runner restart. Do **not** enable active scan dispatch.
-Future work must add durable single-use admission ownership;
-content-addressed upload with byte verification; persistent session ownership
+and the private journal prevents reuse of an unexpired ticket after runner
+restart. Deleting or rolling back the Docker volume erases that history;
+volume retention and backup policy matter. Do **not** enable active scan
+dispatch. Future work must add content-addressed upload with byte verification;
+persistent session ownership
 if needed; and egress policy enforcement before any scanner process runs.
