@@ -70,3 +70,14 @@ volume retention and backup policy matter. Do **not** enable active scan
 dispatch. Future work must add content-addressed upload with byte verification;
 persistent session ownership
 if needed; and egress policy enforcement before any scanner process runs.
+
+## Bounded byte-integrity primitive (not an upload)
+
+The runner module includes `verify_inert_content_digest` to validate a
+strict Base64-encoded, at-most-64-KiB in-memory byte sample against an
+expected lowercase SHA-256 digest using constant-time digest comparison.
+Malformed encoding, excessive length and digest mismatches fail closed.
+The helper returns only the verified byte length and does not persist the
+bytes, open files, register an RPC endpoint, materialize a manifest or run
+any scanner. A full manifest transfer still requires a separately reviewed
+content-addressed protocol and an isolated integration proof.
