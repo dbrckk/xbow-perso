@@ -622,6 +622,91 @@ jobs:
           assert status == 409, (status, blocked_retry)
           print("Runner verified bounded file chunks; tampered bytes rejected")
 
+          # Exercise the actual broker orchestration, including release on
+          # success and on an injected mid-transfer transport interruption.
+          from dataclasses import replace
+          from app.main import Campaign, ProgramRules, TargetInput
+          from app.strix_execution_contract import build_strix_execution_contract
+          import app.strix_broker_inert_transfer as transfer
+
+          os.environ["XBOW_AUDIT_HMAC_KEY"] = os.environ["XBOW_STRIX_BROKER_HMAC_KEY"]
+          campaign = Campaign(
+              id="ci-broker-inert-manifest",
+              target=TargetInput(
+                  name="fixture", primary_url="https://app.example.test",
+                  rules=ProgramRules(
+                      authorization_reference="CI-INERT-1",
+                      allowed_targets=["*.example.test"],
+                      denied_targets=["admin.example.test"],
+                      max_requests_per_second=1.5,
+                  ),
+              ),
+          )
+          signed = build_strix_execution_contract(
+              campaign, job_id="ci-inert-broker-job"
+          )
+          broker_bytes = b"bounded-broker-verified-content" * 5000
+          broker_files = {
+              "fixtures/broker.dat": broker_bytes,
+              "fixtures/empty": b"",
+              "fixtures/tail": b"third file",
+          }
+          verified_receipt = transfer.verify_inert_manifest_files(
+              contract=signed, image=image, exposed_ports=[],
+              files=broker_files,
+          )
+          assert verified_receipt.verified_inline_files == len(broker_files)
+          assert verified_receipt.verified_inline_bytes == sum(
+              len(data) for data in broker_files.values()
+          )
+          assert verified_receipt.session_released is True
+          assert verified_receipt.active_execution_enabled is False
+          assert verified_receipt.manifest_materialized is False
+
+          # Invalid signing and unsafe paths must fail before preparing a runner session.
+          for unsafe_contract, unsafe_files in (
+              (replace(signed, signature="0" * 64), broker_files),
+              (signed, {"../escape": b"untrusted"}),
+              (signed, {"oversize": b"x" * (1024 * 1024 + 1)}),
+          ):
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=unsafe_contract, image=image,
+                      exposed_ports=[], files=unsafe_files,
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("invalid broker inert transfer admitted")
+
+          original_post = transfer._post_runner
+          seen = []
+          def interrupted_post(path, payload, *, key, status):
+              if path == "/v1/session/file-chunk":
+                  seen.append("interrupted")
+                  raise transfer.StrixInertTransferError(
+                      "simulated transport interruption"
+                  )
+              result = original_post(path, payload, key=key, status=status)
+              if path == "/v1/session/release":
+                  seen.append("released")
+              return result
+          transfer._post_runner = interrupted_post
+          try:
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[],
+                      files={"interrupted": b"untrusted-in-transit"},
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("interrupted transfer returned success")
+          finally:
+              transfer._post_runner = original_post
+          assert seen == ["interrupted", "released"], seen
+          print("Broker authenticated orchestration, empty-file proof and cleanup verified")
+
           # Prove signed expiration and future-date rejection against the actual runner.
           expired_descriptor = dict(descriptor, request_id="ci-inert-expired")
           expired_ticket = build_strix_runner_manifest_ticket(
