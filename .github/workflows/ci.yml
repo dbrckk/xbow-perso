@@ -309,6 +309,7 @@ jobs:
               "/v1/session/delete",
               "/v1/session/file-chunk",
               "/v1/session/preparation-status",
+              "/v1/session/receipt-status",
           ):
               request = Request(
                   f"{runner}{endpoint}",
@@ -587,6 +588,36 @@ jobs:
           assert first_chunk["status"] == "chunk_received"
           assert first_chunk["file_bytes_received"] == len(part1)
           assert first_chunk["file_sha256_verified"] is False
+          # Read-only authenticated digest proof of actual committed prefix.
+          receipt_status_path = "/v1/session/receipt-status"
+          receipt_status_request = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-receipt-progress-1",
+              "session_id": file_session["session_id"],
+              "contract_hash": descriptor["contract_hash"],
+              "manifest_digest": file_plan_sha,
+              "file_path": file_path,
+          }
+          status, progress = invoke(receipt_status_path, receipt_status_request)
+          assert status == 200, (status, progress)
+          assert progress["plan_verified"] is True
+          assert progress["file_bytes_received"] == len(part1)
+          assert progress["file_sha256_prefix"] == hashlib.sha256(part1).hexdigest()
+          assert progress["file_sha256_verified"] is False
+          assert progress["file_failed"] is False
+          assert progress["verified_inline_files"] == 0
+          assert progress["manifest_materialized"] is False
+          assert progress["active_execution_enabled"] is False
+          status, denied = invoke(
+              receipt_status_path,
+              dict(receipt_status_request, contract_hash="d" * 64),
+          )
+          assert status == 403, (status, denied)
+          status, denied = invoke(
+              receipt_status_path,
+              dict(receipt_status_request, manifest_digest="d" * 64),
+          )
+          assert status == 403, (status, denied)
           rest = file_data[len(part1):]
           last_chunk = dict(
               chunk, request_id="ci-inert-file-chunk-2",
@@ -601,6 +632,14 @@ jobs:
           assert file_verified["all_inline_files_verified"] is True
           assert file_verified["manifest_materialized"] is False
           assert file_verified["active_execution_enabled"] is False
+          status, complete_proof = invoke(
+              receipt_status_path, receipt_status_request,
+          )
+          assert status == 200, (status, complete_proof)
+          assert complete_proof["file_sha256_prefix"] == file_digest
+          assert complete_proof["file_bytes_received"] == len(file_data)
+          assert complete_proof["file_sha256_verified"] is True
+          assert complete_proof["all_inline_files_verified"] is True
           status, duplicate = invoke(chunk_path, last_chunk)
           assert status == 409, (status, duplicate)
           assert duplicate["error"] == "manifest_file_already_finalized"
@@ -806,6 +845,29 @@ jobs:
               pass
           else:
               raise AssertionError("broker accepted >4 MiB inline content")
+          # 128 is the actual manifest file ceiling; 129 must fail before
+          # an admission ticket, network call or runner allocation.
+          limit_files = {
+              f"limits/count-{i:03}": b""
+              for i in range(128)
+          }
+          maximum = transfer.verify_inert_manifest_files(
+              contract=signed, image=image, exposed_ports=[],
+              files=limit_files,
+          )
+          assert maximum.verified_inline_files == 128
+          assert maximum.verified_inline_bytes == 0
+          assert maximum.session_released is True
+          try:
+              transfer.verify_inert_manifest_files(
+                  contract=signed, image=image, exposed_ports=[],
+                  files={**limit_files, "limits/count-over": b""},
+              )
+          except transfer.StrixInertTransferError:
+              pass
+          else:
+              raise AssertionError("129 manifest files incorrectly accepted")
+          print("Broker enforced exactly 128 files and rejected the 129th")
           print("Broker recovery, missing-prepare fail-closed and 4MiB cap verified")
           print("Broker authenticated orchestration, empty-file proof and cleanup verified")
 
