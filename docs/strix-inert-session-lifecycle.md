@@ -7,7 +7,7 @@ which remain **disabled**.
 
 ## Internal protocol
 
-Both endpoints require `POST`, `Content-Type: application/json`, and
+All mutation and recovery endpoints require `POST`, `Content-Type: application/json`, and
 `strix-runner-rpc-v1` HMAC headers with a fresh timestamp and 128-bit
 nonce. The request body is covered by the RPC signature.
 
@@ -17,9 +17,10 @@ nonce. The request body is covered by the RPC signature.
 | `/v1/session/release` | 200 `released` | Existing random prepared session id and matching contract hash, signed with runner RPC key |
 | `/v1/session/plan-receipt` | 200 `plan_verified` | Session-bound HMAC request carrying the exact canonical metadata JSON; SHA-256 and signed counters must match |
 | `/v1/session/file-chunk` | 200 `chunk_received` / `file_verified` | Ordered, HMAC-authenticated Base64 bytes bound to a verified plan entry, its SHA-256, contract, session and offset |
+| `/v1/session/preparation-status` | 200 `prepared` or 404 | Read-only recovery of a live prepared session by original request ID, contract hash and manifest digest; no TTL refresh or new ticket |
 
 A preparation records **only** the random session id, signed execution-contract
-hash, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
+hash, original preparation request ID, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
 copy files, mount local paths, open ports, create containers, spawn processes,
 or send traffic to a target. It is not a runnable Strix session.
 
@@ -48,7 +49,7 @@ host bind mounts, Docker socket, exposed host ports or external networks
 are introduced. A single named volume contains only replay metadata.
 
 The runner readiness response advertises
-`inert_preparation_operations: ["prepare", "release", "plan-receipt", "file-chunk"]` while
+`inert_preparation_operations: ["prepare", "release", "plan-receipt", "file-chunk", "preparation-status"]` while
 `implemented_operations: []` continues to mean **no executable upstream
 lifecycle operations are implemented**.
 
@@ -112,16 +113,30 @@ acknowledged preparation, including when a later chunk or network request
 fails. Only a verified release permits a success receipt, which contains
 counts and digests, not file bytes.
 
-The protocol intentionally **does not retry** an ambiguous timeout: the
-runner may have consumed a ticket or advanced a chunk even if its response
-was lost. If the initial preparation response is lost, the broker has no
-session identifier to release; the runner's 900-second session TTL then
-expires the inert state. A failed cleanup likewise fails closed. Neither
-condition enables file materialization, a runnable Strix session or target
-egress. The runner RPC signing key is available to the trusted broker through
-its Compose environment; it is not supplied to scanner workloads.
+The broker **never retransmits a preparation ticket** after an ambiguous
+network failure. Instead it makes **one** authenticated, read-only
+`/v1/session/preparation-status` request bound to the original preparation
+request ID, signed contract hash and manifest digest. The runner returns the
+session ID only while it is live, without creating a new ticket, modifying its
+replay journal, or extending the monotonic 900-second expiry.
+
+If preparation never arrived, the lookup returns 404 and the broker fails
+without replaying the ticket. If both requests fail, the runner's original
+900-second TTL cleans any orphaned **inert** state. Chunk calls, plan
+receipts and releases still **do not retry** ambiguous results: they fail
+closed, with best-effort cleanup if the broker knows the session ID.
+Unknown or failed release outcomes never produce a success receipt.
+Neither case enables file materialization, a runnable Strix session or
+target egress. The runner RPC signing key is available only to the
+trusted broker and runner, never scanner workloads.
 
 CI invokes the trusted broker helper *inside the real broker container* over
 the isolated Compose network, checking valid multi-file and empty-file
 content, scope/signature rejection, oversized/unsafe paths and release after
 a deliberately injected mid-stream transport interruption.
+
+CI verifies a 4 MiB aggregate multi-file transfer and rejects even one byte
+above the quota. It proves recovery after a lost successful preparation
+response, no ticket replay when preparation never arrived, and an in-process
+monotonic-time check showing 1 second remaining after 899 seconds and a
+404 after 900 seconds. No executable Strix operation is introduced.
