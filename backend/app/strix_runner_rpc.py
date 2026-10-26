@@ -59,6 +59,7 @@ _MUTATION_PATHS = {
     "/v1/session/release",
     "/v1/session/plan-receipt",
     "/v1/session/file-chunk",
+    "/v1/session/preparation-status",
 }
 _NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _SIGNATURE_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -86,6 +87,7 @@ class _InertFileProof:
 @dataclass(frozen=True)
 class _PreparedSession:
     session_id: str
+    preparation_request_id: str
     contract_hash: str
     manifest_digest: str
     expires_at: float
@@ -255,6 +257,7 @@ class RunnerRpcService:
                     "implemented_operations": [],
                     "inert_preparation_operations": [
                         "prepare", "release", "plan-receipt", "file-chunk",
+                        "preparation-status",
                     ],
                     "durable_preparation_replay": True,
                 },
@@ -291,6 +294,8 @@ class RunnerRpcService:
 
         if path == "/v1/session/prepare":
             return self._prepare_session(payload)
+        if path == "/v1/session/preparation-status":
+            return self._preparation_status(payload)
         if path == "/v1/session/release":
             return self._release_session(payload)
         if path == "/v1/session/plan-receipt":
@@ -399,6 +404,7 @@ class RunnerRpcService:
             expires_at = now + RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS
             self._prepared_sessions[session_id] = _PreparedSession(
                 session_id=session_id,
+                preparation_request_id=ticket.request_id,
                 contract_hash=ticket.contract_hash,
                 manifest_digest=ticket.manifest_digest,
                 expires_at=expires_at,
@@ -424,6 +430,48 @@ class RunnerRpcService:
                 "active_execution_enabled": False,
             },
         )
+
+    def _preparation_status(self, payload: dict[str, Any]) -> RunnerRpcResponse:
+        """Recover a live inert session after a lost prepare response.
+
+        Does not consume a ticket, issue a new ticket, or refresh the TTL.
+        The caller must know the fresh preparation request id as well as the
+        exact signed contract and manifest digests.
+        """
+        if self._active_execution:
+            return _error(409, "inert_session_required")
+        now = time.monotonic()
+        if not math.isfinite(now):
+            return _error(503, "clock_unavailable")
+        with self._prepared_lock:
+            self._prune_prepared_sessions(now)
+            for item in self._prepared_sessions.values():
+                if not hmac.compare_digest(
+                    item.preparation_request_id, payload["preparation_request_id"]
+                ):
+                    continue
+                if not hmac.compare_digest(
+                    item.contract_hash, payload["contract_hash"]
+                ):
+                    return _error(403, "prepared_session_contract_mismatch")
+                if not hmac.compare_digest(
+                    item.manifest_digest, payload["manifest_digest"]
+                ):
+                    return _error(403, "manifest_digest_mismatch")
+                return RunnerRpcResponse(
+                    status=200,
+                    json_body={
+                        "status": "prepared",
+                        "protocol": RUNNER_RPC_PROTOCOL,
+                        "session_id": item.session_id,
+                        "contract_hash": item.contract_hash,
+                        "manifest_digest": item.manifest_digest,
+                        "expires_in_seconds": math.ceil(item.expires_at - now),
+                        "manifest_materialized": False,
+                        "active_execution_enabled": False,
+                    },
+                )
+        return _error(404, "prepared_session_not_found")
 
     def _receive_plan(self, payload: dict[str, Any]) -> RunnerRpcResponse:
         if self._active_execution:
@@ -985,6 +1033,20 @@ def _validate_operation_payload(path: str, payload: dict[str, Any]) -> bool:
             )
             and _valid_id(payload.get("session_id"))
             and _valid_port(payload.get("port"))
+        )
+
+    if path == "/v1/session/preparation-status":
+        return (
+            _exact_keys(
+                payload,
+                {
+                    "schema", "request_id", "preparation_request_id",
+                    "contract_hash", "manifest_digest",
+                },
+            )
+            and _valid_id(payload.get("preparation_request_id"))
+            and _valid_digest(payload.get("contract_hash"))
+            and _valid_digest(payload.get("manifest_digest"))
         )
 
     if path == "/v1/session/file-chunk":
