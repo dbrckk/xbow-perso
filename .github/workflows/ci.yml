@@ -625,20 +625,23 @@ jobs:
           # Exercise the actual broker orchestration, including release on
           # success and on an injected mid-transfer transport interruption.
           from dataclasses import replace
-          from app.main import Campaign, ProgramRules, TargetInput
+          from types import SimpleNamespace
           from app.strix_execution_contract import build_strix_execution_contract
           import app.strix_broker_inert_transfer as transfer
 
           os.environ["XBOW_AUDIT_HMAC_KEY"] = os.environ["XBOW_STRIX_BROKER_HMAC_KEY"]
-          campaign = Campaign(
+          campaign = SimpleNamespace(
               id="ci-broker-inert-manifest",
-              target=TargetInput(
-                  name="fixture", primary_url="https://app.example.test",
-                  rules=ProgramRules(
+              target=SimpleNamespace(
+                  primary_url="https://app.example.test",
+                  rules=SimpleNamespace(
                       authorization_reference="CI-INERT-1",
                       allowed_targets=["*.example.test"],
                       denied_targets=["admin.example.test"],
                       max_requests_per_second=1.5,
+                      automated_scanning=True, destructive_testing=False,
+                      denial_of_service=False, social_engineering=False,
+                      credential_attacks=False,
                   ),
               ),
           )
