@@ -383,8 +383,14 @@ def verify_strix_runner_manifest_ticket(
         "expires_at": ticket_payload["expires_at"],
     }
     # Enforce the bounded interval before signature computation.
+    if not isinstance(unsigned["issued_at"], int) or isinstance(
+        unsigned["issued_at"], bool
+    ):
+        raise StrixRunnerManifestTicketError(
+            "runner manifest ticket validity interval is invalid"
+        )
     _validate_ticket_times(
-        unsigned["issued_at"], unsigned["expires_at"], float(unsigned["issued_at"])
+        unsigned["issued_at"], unsigned["expires_at"], unsigned["issued_at"]
     )
 
     secret = _secret_bytes(verification_secret)
