@@ -29,6 +29,12 @@ Status: active
   only incremental hashes and metadata remain in memory, never file bytes.
 - CI proves real broker-to-runner two-chunk verification and fail-closed
   rejection of offset errors, invalid encoding, wrong digests and tampering.
+- The trusted broker now internally orchestrates signed-contract validation,
+  canonical manifest planning, a fresh signed runner ticket, chunk delivery,
+  verified receipts and explicit release on success/error. It exposes no new
+  public upload endpoint and does not retain or materialize file contents.
+- A real Docker broker-to-runner CI proof verifies multi-file and empty-file
+  content, invalid contract/path/size rejection and release after interruption.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
@@ -47,7 +53,8 @@ Status: active
 - PR #675 merged after CI, security, supply-chain, 2,743 Python tests and a real runner restart proof rejecting previously consumed tickets.
 - PR #677 merged after CI, security and supply-chain success: the inert runner verifies canonical manifest-plan bytes, SHA-256 digest, signed counts and one-shot session receipt; no file contents or execution.
 - PR #678 merged after 2,743 Python tests, Ruff, Docker broker-to-runner chunk-integrity proof, security and supply-chain success. PR #676 was closed as superseded by the integrated implementation.
-- Next implement broker-side orchestration for authenticated manifest plan/file streaming, with per-session lifecycle cleanup and no host bind mounts; keep execution fail-closed until scope and egress enforcement are verified.
+- PR #679 merged after 2,743 existing Python tests, Ruff, Docker broker-to-runner integration, security and supply-chain success. Commit `2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d`.
+- Next harden recovery for ambiguous RPC outcomes and session expiry, and ensure all broker-runner proof boundaries are reviewed before isolated materialization. Active Strix execution remains disabled until enforceable scope and egress policy exist.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
