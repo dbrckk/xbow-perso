@@ -147,7 +147,9 @@ def test_runner_compose_service_is_internal_and_inert():
     assert "dockerfile: Dockerfile.strix-runner" in block
     assert "networks: [strix-broker]" in block
     assert "\n    ports:" not in block
-    assert "\n    volumes:" not in block
+    assert block.count("\n    volumes:") == 1
+    assert "volumes:\n      - strix-runner-replay:/var/lib/strix-runner\n" in block
+    assert "/var/run/docker.sock" not in block
     assert "docker.sock" not in block
     assert "read_only: true" in block
     assert "no-new-privileges:true" in block
