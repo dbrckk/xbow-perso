@@ -72,7 +72,9 @@ Status: active
 - PR #679 merged after 2,743 existing Python tests, Ruff, Docker broker-to-runner integration, security and supply-chain success. Commit `2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d`.
 - PR #680 merged after CI, security, supply-chain, 2,743 existing Python tests, Ruff and live Docker proof of one-shot recovery, 4 MiB content bounds and monotonic 900-second expiry. Merge commit `aaae3709c653b646f3992b01c1abf0716fca2c78`.
 - PR #681 merged after 2,743 existing tests, Ruff, all GitHub security and supply-chain gates and real Docker broker-runner proof for lost plan/chunk/release outcomes and 128-file limit. Merge commit `7f669921cab6cecb5c1ce48f861b03ab60a3640f`.
-- Next undertake a threat-focused review of the byte-proof boundary, ensure robust and bounded diagnostics for failed sessions, and design **separate** isolated file materialization without exposing a host socket or enabling scanner execution. Scope, rate and egress enforcement remain prerequisites.
+- PR #683 merged as a documentation-only security audit after CI, security and supply-chain success. It records that runner HTTP responses are not cryptographically authenticated even though RPC requests are HMAC-signed; this blocks trustworthy byte-proof claims under internal-network compromise. Merge commit `5364dde2c419ad531c98d00f07b287972421e704`.
+- **Next implementation gate:** HMAC-authenticate the exact runner HTTP success response status and body bound to the original signed request, and require broker verification before trusting any plan, chunk, verification or release evidence. PR #683 documents the threat and live tamper-proof CI acceptance criteria. The implementation remains outstanding.
+- Only afterward design **separate** isolated file materialization, without exposing a host socket or enabling scanner execution. Scope, rate and egress enforcement remain prerequisites.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
