@@ -35,6 +35,13 @@ Status: active
   public upload endpoint and does not retain or materialize file contents.
 - A real Docker broker-to-runner CI proof verifies multi-file and empty-file
   content, invalid contract/path/size rejection and release after interruption.
+- A read-only, signed `/v1/session/preparation-status` lookup now lets the
+  broker recover the identity of a **live** inert session after an ambiguous
+  prepare response, without replaying its ticket or resetting its 900-second
+  monotonic TTL. Failed lookup remains fail-closed.
+- The real runner CI proof verifies exactly 4 MiB across four inline files,
+  rejects 4 MiB + 1 byte, exercises lost-prepare recovery and verifies expiry
+  at 899/900 simulated monotonic seconds.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
@@ -54,7 +61,8 @@ Status: active
 - PR #677 merged after CI, security and supply-chain success: the inert runner verifies canonical manifest-plan bytes, SHA-256 digest, signed counts and one-shot session receipt; no file contents or execution.
 - PR #678 merged after 2,743 Python tests, Ruff, Docker broker-to-runner chunk-integrity proof, security and supply-chain success. PR #676 was closed as superseded by the integrated implementation.
 - PR #679 merged after 2,743 existing Python tests, Ruff, Docker broker-to-runner integration, security and supply-chain success. Commit `2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d`.
-- Next harden recovery for ambiguous RPC outcomes and session expiry, and ensure all broker-runner proof boundaries are reviewed before isolated materialization. Active Strix execution remains disabled until enforceable scope and egress policy exist.
+- PR #680 merged after CI, security, supply-chain, 2,743 existing Python tests, Ruff and live Docker proof of one-shot recovery, 4 MiB content bounds and monotonic 900-second expiry. Merge commit `aaae3709c653b646f3992b01c1abf0716fca2c78`.
+- Next strengthen fail-closed behavior around ambiguous chunk/release outcomes and test 128-entry limits; only after those controls, design a separate isolated materialization boundary. Active Strix execution remains disabled until enforceable scope and egress policy exist.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
