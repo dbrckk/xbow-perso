@@ -55,6 +55,7 @@ _ALLOWED_PATHS = frozenset({
     "/v1/session/prepare", "/v1/session/plan-receipt",
     "/v1/session/file-chunk", "/v1/session/release",
     "/v1/session/preparation-status",
+    "/v1/session/receipt-status",
 })
 
 
