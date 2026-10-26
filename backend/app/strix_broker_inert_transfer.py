@@ -54,11 +54,16 @@ _PLAN_KEYS = (
 _ALLOWED_PATHS = frozenset({
     "/v1/session/prepare", "/v1/session/plan-receipt",
     "/v1/session/file-chunk", "/v1/session/release",
+    "/v1/session/preparation-status",
 })
 
 
 class StrixInertTransferError(RuntimeError):
     """A fail-closed, deliberately non-executing broker transfer error."""
+
+
+class StrixInertTransportUncertain(StrixInertTransferError):
+    """The runner may have processed an RPC before the reply was lost."""
 
 
 @dataclass(frozen=True)
@@ -134,8 +139,8 @@ def _post_runner(
             f"runner rejected {path} (HTTP {exc.code})"
         ) from exc
     except (OSError, TimeoutError, urllib.error.URLError) as exc:
-        raise StrixInertTransferError(
-            f"runner transport unavailable at {path}"
+        raise StrixInertTransportUncertain(
+            f"runner outcome unknown at {path}"
         ) from exc
     if code != status or len(data) > _MAX_REPLY_BYTES:
         raise StrixInertTransferError("runner reply status or size invalid")
@@ -239,24 +244,43 @@ def verify_inert_manifest_files(
     except (StrixRunnerManifestTicketError, TypeError, ValueError) as exc:
         raise StrixInertTransferError("manifest admission rejected") from exc
 
-    prepared = _post_runner(
-        "/v1/session/prepare",
-        {
-            "schema": RUNNER_RPC_PROTOCOL,
-            "request_id": request_id,
-            "image": image,
-            "exposed_ports": list(exposed_ports),
-            "manifest_digest": plan.manifest_digest,
-            "admission": ticket,
-        },
-        key=rpc_key, status=201,
-    )
+    # Never re-send an ambiguous preparation ticket. A transport error may
+    # have occurred after the runner atomically consumed it. The read-only
+    # lookup uses the same request identity and cannot extend the session.
+    try:
+        prepared = _post_runner(
+            "/v1/session/prepare",
+            {
+                "schema": RUNNER_RPC_PROTOCOL,
+                "request_id": request_id,
+                "image": image,
+                "exposed_ports": list(exposed_ports),
+                "manifest_digest": plan.manifest_digest,
+                "admission": ticket,
+            },
+            key=rpc_key, status=201,
+        )
+    except StrixInertTransportUncertain:
+        prepared = _post_runner(
+            "/v1/session/preparation-status",
+            {
+                "schema": RUNNER_RPC_PROTOCOL,
+                "request_id": "lookup-" + secrets.token_hex(16),
+                "preparation_request_id": request_id,
+                "contract_hash": contract.contract_hash,
+                "manifest_digest": plan.manifest_digest,
+            },
+            key=rpc_key, status=200,
+        )
     session_id = prepared.get("session_id")
     if (
         not isinstance(session_id, str)
         or not _SESSION_ID_RE.fullmatch(session_id)
         or prepared.get("status") != "prepared"
+        or prepared.get("contract_hash") != contract.contract_hash
         or prepared.get("manifest_digest") != plan.manifest_digest
+        or type(prepared.get("expires_in_seconds")) is not int
+        or not 1 <= prepared["expires_in_seconds"] <= 900
     ):
         raise StrixInertTransferError("runner preparation receipt invalid")
 
