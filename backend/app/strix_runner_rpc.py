@@ -9,6 +9,7 @@ import math
 import os
 import re
 import secrets
+import sqlite3
 import socket
 import threading
 import time
@@ -44,6 +45,7 @@ RUNNER_RPC_MAX_SECRET_BYTES = 4096
 RUNNER_RPC_PREPARED_SESSION_TTL_SECONDS = 900
 RUNNER_RPC_MAX_PREPARED_SESSIONS = 128
 RUNNER_RPC_MAX_PREPARATION_TICKETS = 1024
+RUNNER_RPC_REPLAY_DB_PATH = "/var/lib/strix-runner/preparation-replay.sqlite3"
 
 _MUTATION_PATHS = {
     "/v1/session/create",
@@ -74,6 +76,83 @@ class _PreparedSession:
     expires_at: float
 
 
+class _DurablePreparationReplay:
+    """Durable, bounded, transactional replay journal containing no manifest data."""
+
+    def __init__(self, path: str) -> None:
+        if path != ":memory:" and (not os.path.isabs(path) or os.path.islink(path)):
+            raise ValueError("unsafe runner replay database path")
+        self._conn = sqlite3.connect(
+            path, timeout=2.0, isolation_level=None, check_same_thread=False
+        )
+        try:
+            self._conn.execute("PRAGMA busy_timeout=2000")
+            self._conn.execute("PRAGMA journal_mode=DELETE")
+            self._conn.execute("PRAGMA synchronous=FULL")
+            self._conn.execute("PRAGMA max_page_count=1024")
+            self._conn.execute(
+                "CREATE TABLE IF NOT EXISTS consumed_tickets ("
+                "contract_hash TEXT NOT NULL, request_id TEXT NOT NULL, "
+                "expires_at INTEGER NOT NULL, "
+                "PRIMARY KEY (contract_hash, request_id)) WITHOUT ROWID"
+            )
+            self._conn.execute(
+                "CREATE INDEX IF NOT EXISTS consumed_tickets_expiry "
+                "ON consumed_tickets (expires_at)"
+            )
+            if not self.ready():
+                raise sqlite3.DatabaseError("runner replay database integrity invalid")
+            if path != ":memory:":
+                os.chmod(path, 0o600)
+        except BaseException:
+            self._conn.close()
+            raise
+
+    def ready(self) -> bool:
+        try:
+            return self._conn.execute("PRAGMA quick_check").fetchone() == ("ok",)
+        except sqlite3.Error:
+            return False
+
+    def consume(
+        self, *, contract_hash: str, request_id: str,
+        expires_at: int, now: int,
+    ) -> str:
+        # Called under _prepared_lock; BEGIN IMMEDIATE serializes DB writers.
+        cursor = self._conn.cursor()
+        try:
+            cursor.execute("BEGIN IMMEDIATE")
+            cursor.execute(
+                "DELETE FROM consumed_tickets WHERE expires_at <= ?", (now,)
+            )
+            prior = cursor.execute(
+                "SELECT 1 FROM consumed_tickets "
+                "WHERE contract_hash = ? AND request_id = ?",
+                (contract_hash, request_id),
+            ).fetchone()
+            if prior is not None:
+                outcome = "replayed"
+            elif cursor.execute("SELECT COUNT(*) FROM consumed_tickets").fetchone()[0] >= (
+                RUNNER_RPC_MAX_PREPARATION_TICKETS
+            ):
+                outcome = "capacity"
+            else:
+                cursor.execute(
+                    "INSERT INTO consumed_tickets "
+                    "(contract_hash, request_id, expires_at) VALUES (?, ?, ?)",
+                    (contract_hash, request_id, expires_at),
+                )
+                outcome = "consumed"
+            cursor.execute("COMMIT")
+            return outcome
+        except BaseException:
+            with contextlib.suppress(sqlite3.Error):
+                cursor.execute("ROLLBACK")
+            raise
+        finally:
+            cursor.close()
+
+
 class RunnerRpcService:
     def __init__(
         self,
@@ -82,6 +161,7 @@ class RunnerRpcService:
         admission_secret: str | None,
         active_execution: bool,
         now: Callable[[], float] = time.time,
+        replay_db_path: str | None = None,
     ) -> None:
         if secret:
             _runner_rpc_secret_bytes(secret)
@@ -101,6 +181,10 @@ class RunnerRpcService:
             OrderedDict()
         )
         self._prepared_lock = threading.Lock()
+        self._replay_store = (
+            _DurablePreparationReplay(replay_db_path)
+            if replay_db_path is not None else None
+        )
 
     def handle(
         self,
@@ -134,6 +218,8 @@ class RunnerRpcService:
                 return _error(503, "rpc_key_unavailable")
             if not self._admission_secret:
                 return _error(503, "exec_admission_key_unavailable")
+            if self._replay_store is None or not self._replay_store.ready():
+                return _error(503, "preparation_replay_store_unavailable")
             return RunnerRpcResponse(
                 status=200,
                 json_body={
@@ -146,6 +232,7 @@ class RunnerRpcService:
                     "manifest_admission_configured": True,
                     "implemented_operations": [],
                     "inert_preparation_operations": ["prepare", "release"],
+                    "durable_preparation_replay": True,
                 },
             )
 
@@ -238,6 +325,8 @@ class RunnerRpcService:
             return _error(409, "inert_session_required")
         if not self._admission_secret:
             return _error(503, "manifest_admission_key_unavailable")
+        if self._replay_store is None:
+            return _error(503, "preparation_replay_store_unavailable")
         try:
             ticket = verify_strix_runner_manifest_ticket(
                 payload["admission"],
@@ -262,6 +351,19 @@ class RunnerRpcService:
             if len(self._prepared_sessions) >= RUNNER_RPC_MAX_PREPARED_SESSIONS:
                 return _error(503, "prepared_session_capacity_reached")
             if len(self._preparation_tickets) >= RUNNER_RPC_MAX_PREPARATION_TICKETS:
+                return _error(503, "preparation_ticket_capacity_reached")
+            try:
+                outcome = self._replay_store.consume(
+                    contract_hash=ticket.contract_hash,
+                    request_id=ticket.request_id,
+                    expires_at=ticket.expires_at,
+                    now=int(self._now()),
+                )
+            except (sqlite3.Error, OSError):
+                return _error(503, "preparation_replay_store_unavailable")
+            if outcome == "replayed":
+                return _error(409, "preparation_ticket_replayed")
+            if outcome == "capacity":
                 return _error(503, "preparation_ticket_capacity_reached")
             session_id = f"prepared-{secrets.token_hex(16)}"
             while session_id in self._prepared_sessions:
@@ -757,6 +859,7 @@ def serve() -> None:
         secret=_rpc_secret_from_env(),
         admission_secret=_admission_secret_from_env(),
         active_execution=False,
+        replay_db_path=RUNNER_RPC_REPLAY_DB_PATH,
     )
     server = BoundedThreadingHTTPServer(
         ("0.0.0.0", RUNNER_RPC_PORT),

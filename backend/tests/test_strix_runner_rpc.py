@@ -51,6 +51,7 @@ def _service(
         admission_secret=admission_secret,
         active_execution=active_execution,
         now=lambda: NOW,
+        replay_db_path=":memory:",
     )
 
 
@@ -156,6 +157,29 @@ def _request(service: RunnerRpcService, path: str, payload: dict):
         headers=_headers(path, body),
         body=body,
     )
+
+
+def test_preparation_replay_survives_runner_instance_restart(tmp_path):
+    db_path = str(tmp_path / "ticket-replay.sqlite3")
+    payload = _payload("/v1/session/create")
+    first = RunnerRpcService(
+        secret=SECRET,
+        admission_secret=ADMISSION_SECRET,
+        active_execution=False,
+        now=lambda: NOW,
+        replay_db_path=db_path,
+    )
+    assert _request(first, "/v1/session/prepare", payload).status == 201
+    restarted = RunnerRpcService(
+        secret=SECRET,
+        admission_secret=ADMISSION_SECRET,
+        active_execution=False,
+        now=lambda: NOW,
+        replay_db_path=db_path,
+    )
+    replay = _request(restarted, "/v1/session/prepare", payload)
+    assert replay.status == 409
+    assert replay.json_body["error"] == "preparation_ticket_replayed"
 
 
 def test_health_is_non_secret_and_execution_stays_disabled():
@@ -630,6 +654,7 @@ def test_runner_rpc_accepts_exact_minimum_secret_length():
         admission_secret=ADMISSION_SECRET,
         active_execution=False,
         now=lambda: NOW,
+        replay_db_path=":memory:",
     )
 
     assert service.handle(
