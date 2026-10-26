@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-26",
-  "task": "Merged content-addressed, bounded inert Strix inline-file chunk verification",
+  "task": "Merged trusted broker orchestration of inert content-addressed Strix manifest file streaming",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -97,10 +97,14 @@
     "Closed PR #676 after PR #677 superseded its standalone digest helper; preserved the merged verified canonical plan receipt.",
     "PR #678 merged into main: runner /v1/session/file-chunk accepts authenticated ordered canonical Base64 chunks up to 64 KiB per call, bound to the signed session plan's per-file SHA-256 and length, retaining no file bytes.",
     "PR #678 real broker-runner Docker CI verifies two-chunk success, mismatch/offset/encoding errors, duplicate finalization, permanently failed tampered content, and no scanner execution.",
-    "PR #678 CI passed (2,743 Python tests, Ruff, isolated Docker integration, security and supply-chain); merge commit 7d638393d0f2428863fd392a711a107c68e653fd."
+    "PR #678 CI passed (2,743 Python tests, Ruff, isolated Docker integration, security and supply-chain); merge commit 7d638393d0f2428863fd392a711a107c68e653fd.",
+    "PR #679 merged: trusted broker validates signed execution contract scope, canonicalizes and bounds in-memory inline files, signs runner manifest ticket, prepares session, verifies plan and 64KiB file chunks, verifies receipts, and releases sessions on success or post-preparation failures.",
+    "Broker Compose now carries runner RPC HMAC signing key only inside trusted broker; no new public HTTP upload route, host socket, scanner execution or target traffic.",
+    "PR #679 passed CI 2,743 tests, Ruff, pinned runtime, live broker-to-runner Docker proof including empty file, invalid signed contract, unsafe path, oversized file, simulated transfer interruption with verified session cleanup, plus security and supply-chain checks.",
+    "PR #679 squash merge commit 2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d."
   ],
   "current_branch": "main",
-  "current_priority": "Build a broker-side typed orchestration flow for verified metadata receipt plus file chunk transfer, preserving no-execution posture.",
+  "current_priority": "Next harden ambiguous transfer outcomes and session expiry before any future isolated materialization; do not enable active Strix scanner or target network access.",
   "blockers": [
     "Inline file bytes are received only in the inert runner's memory and digested; no file contents are retained, materialized, or accessible to a runnable Strix session.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
@@ -108,7 +112,7 @@
     "Active scanning needs broker-enforced target scope, request budgets, isolated process execution and independent validation.",
     "Only read-only GET/HEAD broker egress is currently supported; scanner network tool surface is incomplete.",
     "Deleting or rolling back the private replay volume erases consumed identities; active execution stays disabled.",
-    "Inline file bytes may now be verified, but local directories and environment literal values are not transferred, and active sessions remain blocked."
+    "The broker now automatically transports and verifies inline bytes, but local directory contents/environment literal values are intentionally excluded; no filesystem materialization or active Strix sessions are enabled."
   ],
   "safety_invariants": [
     "Authorized targets only.",
@@ -117,8 +121,8 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Introduce broker-mediated, authenticated and bounded client orchestration for the existing runner plan/file receipt endpoints.",
-    "Verify chunk retry/resume semantics, empty files, per-session aggregate limits and connection failures through real isolated integration.",
-    "Keep execution disabled pending scope enforcement, isolated materialization and egress policy verification."
+    "Review one-shot ticket/nonce lifetime and interrupted-prepare failure semantics; quantify TTL-bound resource risk.",
+    "Extend real broker-to-runner CI proof with full 4MiB limits, duplicate/ambiguous RPC and expiry fail-closed verification.",
+    "Design strictly isolated, separately reviewed materialization of validated manifest content before considering any active Strix execution; enforce scope/rate/egress first."
   ]
 }
