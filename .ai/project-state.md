@@ -24,11 +24,16 @@ Status: active
   execution blocking.
 - A private named Docker volume holds a bounded transactional SQLite journal
   of consumed ticket identities across runner restarts; no manifests are stored.
+- The inert runner now checks authenticated, ordered 64 KiB inline file chunks
+  against the SHA-256 digests and sizes in the already verified manifest plan;
+  only incremental hashes and metadata remain in memory, never file bytes.
+- CI proves real broker-to-runner two-chunk verification and fail-closed
+  rejection of offset errors, invalid encoding, wrong digests and tampering.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
 - The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
-- The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session and manifests cannot be uploaded/materialized.
+- The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session. Inline file bytes can be streamed and checked in memory, but manifests are never materialized or executed.
 - Durable SQLite replay protection was merged via PR #675 on a private named volume; deletion or rollback of this volume remains an operational risk, with active execution still disabled.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
@@ -41,7 +46,8 @@ Status: active
 - Manifest ticket v2 with signed 120-second expiry was merged as PR #674 after CI, security and supply-chain success.
 - PR #675 merged after CI, security, supply-chain, 2,743 Python tests and a real runner restart proof rejecting previously consumed tickets.
 - PR #677 merged after CI, security and supply-chain success: the inert runner verifies canonical manifest-plan bytes, SHA-256 digest, signed counts and one-shot session receipt; no file contents or execution.
-- Next implement bounded content-addressed actual file-byte transfer without host bind mounts; retain fail-closed active Strix execution until scope and egress are proven.
+- PR #678 merged after 2,743 Python tests, Ruff, Docker broker-to-runner chunk-integrity proof, security and supply-chain success. PR #676 was closed as superseded by the integrated implementation.
+- Next implement broker-side orchestration for authenticated manifest plan/file streaming, with per-session lifecycle cleanup and no host bind mounts; keep execution fail-closed until scope and egress enforcement are verified.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
