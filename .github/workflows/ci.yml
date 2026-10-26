@@ -309,6 +309,8 @@ jobs:
               "/v1/session/delete",
               "/v1/session/file-chunk",
               "/v1/session/preparation-status",
+              "/v1/session/verification-status",
+              "/v1/session/release-status",
           ):
               request = Request(
                   f"{runner}{endpoint}",
@@ -806,6 +808,161 @@ jobs:
               pass
           else:
               raise AssertionError("broker accepted >4 MiB inline content")
+
+          # Recovery proofs are real read-only requests against the isolated
+          # runner. A lost reply may not trigger a second mutation attempt.
+          def exercise_lost_result(missing_path, files, *, mutate_after=False):
+              events = []
+              def lose_once(path, payload, *, key, status):
+                  if path == missing_path and "lost" not in events:
+                      events.append("lost")
+                      original_post(path, payload, key=key, status=status)
+                      raise transfer.StrixInertTransportUncertain("reply lost")
+                  if path in (
+                      "/v1/session/verification-status",
+                      "/v1/session/release-status",
+                  ):
+                      events.append("proof")
+                  if path == "/v1/session/release":
+                      events.append("released")
+                  return original_post(path, payload, key=key, status=status)
+              transfer._post_runner = lose_once
+              try:
+                  value = transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[], files=files,
+                  )
+              finally:
+                  transfer._post_runner = original_post
+              assert value.session_released is True, value
+              assert value.verified_inline_files == len(files)
+              assert events.count("lost") == 1, events
+              assert events.count("proof") == 1, events
+              if missing_path == "/v1/session/release":
+                  assert events == ["lost", "proof"], events
+              else:
+                  assert events[-1] == "released", events
+              return value
+
+          # Plan acceptance, a nonfinal prefix chunk, and a final chunk are
+          # each reconciled exactly once by a signed status proof.
+          exercise_lost_result(
+              "/v1/session/plan-receipt", {"loss/plan": b"plan bytes"},
+          )
+          exercise_lost_result(
+              "/v1/session/file-chunk",
+              {"loss/bytes": b"A" * (64 * 1024 + 4096)},
+          )
+          exercise_lost_result(
+              "/v1/session/file-chunk", {"loss/final": b""},
+          )
+          exercise_lost_result(
+              "/v1/session/release", {"loss/released": b"content"},
+          )
+
+          # A dropped chunk that was NOT accepted cannot be mistaken for a
+          # successful digest, and must trigger explicit session cleanup.
+          failures = []
+          def drop_chunk(path, payload, *, key, status):
+              if path == "/v1/session/file-chunk":
+                  failures.append("lost-before-delivery")
+                  raise transfer.StrixInertTransportUncertain("chunk never sent")
+              if path == "/v1/session/release":
+                  failures.append("released")
+              return original_post(path, payload, key=key, status=status)
+          transfer._post_runner = drop_chunk
+          try:
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[],
+                      files={"loss/missing": b"not received"},
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("a nonexistent chunk was attested")
+          finally:
+              transfer._post_runner = original_post
+          assert failures == ["lost-before-delivery", "released"], failures
+
+          # Attested prefix length without matching bytes must also be
+          # rejected: inject a different same-size chunk before reply loss.
+          mismatches = []
+          def wrong_prefix(path, payload, *, key, status):
+              if path == "/v1/session/file-chunk":
+                  mismatches.append("wrong-prefix")
+                  wrong = dict(
+                      payload,
+                      chunk_base64=base64.b64encode(
+                          b"X" * len(base64.b64decode(payload["chunk_base64"]))
+                      ).decode("ascii"),
+                  )
+                  original_post(path, wrong, key=key, status=status)
+                  raise transfer.StrixInertTransportUncertain("reply lost")
+              if path == "/v1/session/release":
+                  mismatches.append("released")
+              return original_post(path, payload, key=key, status=status)
+          transfer._post_runner = wrong_prefix
+          try:
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[],
+                      files={"loss/mismatch": b"Y" * (64 * 1024 + 32)},
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("tampered same-length prefix accepted")
+          finally:
+              transfer._post_runner = original_post
+          assert mismatches == ["wrong-prefix", "released"], mismatches
+
+          # An unknown or negative release status is never a success proof.
+          # The run remains inert and its original TTL still bounds state.
+          release_events = []
+          def lost_release_before_delivery(path, payload, *, key, status):
+              if path == "/v1/session/release":
+                  release_events.append("release-not-delivered")
+                  raise transfer.StrixInertTransportUncertain("not delivered")
+              if path == "/v1/session/release-status":
+                  release_events.append("proof-missing")
+              return original_post(path, payload, key=key, status=status)
+          transfer._post_runner = lost_release_before_delivery
+          try:
+              try:
+                  transfer.verify_inert_manifest_files(
+                      contract=signed, image=image, exposed_ports=[],
+                      files={"loss/release": b"release was never applied"},
+                  )
+              except transfer.StrixInertTransferError:
+                  pass
+              else:
+                  raise AssertionError("unknown release reported as completed")
+          finally:
+              transfer._post_runner = original_post
+          assert release_events == [
+              "release-not-delivered", "proof-missing",
+          ], release_events
+
+          # 128-entry upper bound, including empty files, verified on the
+          # actual isolated Docker network. A 129th entry fails locally.
+          max_files = {f"max/file-{i:03}": b"" for i in range(128)}
+          max_receipt = transfer.verify_inert_manifest_files(
+              contract=signed, image=image, exposed_ports=[], files=max_files,
+          )
+          assert max_receipt.verified_inline_files == 128
+          assert max_receipt.verified_inline_bytes == 0
+          assert max_receipt.session_released is True
+          try:
+              transfer.verify_inert_manifest_files(
+                  contract=signed, image=image, exposed_ports=[],
+                  files={**max_files, "max/extra": b""},
+              )
+          except transfer.StrixInertTransferError:
+              pass
+          else:
+              raise AssertionError("129 manifest entries were accepted")
+          print("Live runner proof: lost plan/chunk/release outcomes, exact prefixes, 128 entries")
+
           print("Broker recovery, missing-prepare fail-closed and 4MiB cap verified")
           print("Broker authenticated orchestration, empty-file proof and cleanup verified")
 
