@@ -18,6 +18,8 @@ nonce. The request body is covered by the RPC signature.
 | `/v1/session/plan-receipt` | 200 `plan_verified` | Session-bound HMAC request carrying the exact canonical metadata JSON; SHA-256 and signed counters must match |
 | `/v1/session/file-chunk` | 200 `chunk_received` / `file_verified` | Ordered, HMAC-authenticated Base64 bytes bound to a verified plan entry, its SHA-256, contract, session and offset |
 | `/v1/session/preparation-status` | 200 `prepared` or 404 | Read-only recovery of a live prepared session by original request ID, contract hash and manifest digest; no TTL refresh or new ticket |
+| `/v1/session/verification-status` | 200 `verification_status` | Authenticated read-only status for an active session: signed-plan acceptance, per-file received byte count, incremental SHA-256 prefix, finalized/failed flags and total verified count; no content bytes |
+| `/v1/session/release-status` | 200 `released` or 404 | Read-only lookup of the **specific release request identity** and matching session/contract/manifest in a bounded ephemeral cache; does not create or release a session |
 
 A preparation records **only** the random session id, signed execution-contract
 hash, original preparation request ID, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
@@ -49,7 +51,7 @@ host bind mounts, Docker socket, exposed host ports or external networks
 are introduced. A single named volume contains only replay metadata.
 
 The runner readiness response advertises
-`inert_preparation_operations: ["prepare", "release", "plan-receipt", "file-chunk", "preparation-status"]` while
+`inert_preparation_operations: ["prepare", "release", "plan-receipt", "file-chunk", "preparation-status", "verification-status", "release-status"]` while
 `implemented_operations: []` continues to mean **no executable upstream
 lifecycle operations are implemented**.
 
@@ -122,10 +124,24 @@ replay journal, or extending the monotonic 900-second expiry.
 
 If preparation never arrived, the lookup returns 404 and the broker fails
 without replaying the ticket. If both requests fail, the runner's original
-900-second TTL cleans any orphaned **inert** state. Chunk calls, plan
-receipts and releases still **do not retry** ambiguous results: they fail
-closed, with best-effort cleanup if the broker knows the session ID.
-Unknown or failed release outcomes never produce a success receipt.
+900-second TTL cleans any orphaned **inert** state. Ambiguous plan and file-chunk responses are reconciled by at most one
+authenticated, **read-only** verification status request. A lost plan reply
+may be accepted only if the expected signed plan is verified; a chunk reply
+may be accepted only when the exact byte count **and SHA-256 of the complete
+accepted prefix** match what the broker sent, with no failed file state.
+This makes coincidentally correct offsets insufficient for recovery. No
+mutation is retried, no file content is exposed by status, and an absent,
+failed or conflicting proof aborts the transfer.
+
+For an ambiguous release response, the broker queries a bounded,
+process-local release receipt by the **exact original release request ID**,
+session ID, contract hash and manifest digest. A missing session or a
+natural TTL expiry is **not** evidence that an explicit release succeeded.
+Release receipts expire at the original session TTL, require the runner's
+existing HMAC transport authentication, and never retain file contents.
+An unproven release cannot produce a success result. A process restart can
+erase this intentionally ephemeral evidence; the caller must then fail
+closed. No code enables additional scanning or target traffic.
 Neither case enables file materialization, a runnable Strix session or
 target egress. The runner RPC signing key is available only to the
 trusted broker and runner, never scanner workloads.
@@ -140,3 +156,10 @@ above the quota. It proves recovery after a lost successful preparation
 response, no ticket replay when preparation never arrived, and an in-process
 monotonic-time check showing 1 second remaining after 899 seconds and a
 404 after 900 seconds. No executable Strix operation is introduced.
+
+The Compose integration proof also exercises a successfully applied
+plan/chunk/release with a lost response, an unreceived chunk, a corrupted
+same-length content prefix, a release that never reached the runner, and
+**exactly 128 empty inline files** versus 129 (rejected). The runner returns
+SHA-256 digests and counters only, never received file bytes or materialized
+paths. Ambiguous results are not replayed.
