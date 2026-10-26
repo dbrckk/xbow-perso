@@ -42,6 +42,15 @@ Status: active
 - The real runner CI proof verifies exactly 4 MiB across four inline files,
   rejects 4 MiB + 1 byte, exercises lost-prepare recovery and verifies expiry
   at 899/900 simulated monotonic seconds.
+- The runner now provides authenticated, read-only in-memory verification status
+  (exact received byte offset and SHA-256 prefix) and a bounded, session-TTL
+  release receipt tied to the original release request identity.
+- The broker reconciles ambiguous plan/chunk/release responses only through
+  matching read-only proofs; it never blindly resends a mutation, accepts a
+  mismatched prefix, or reports success on a missing release confirmation.
+- Live isolated Docker integration confirms 128 inline files accepted,
+  129 rejected, tampered prefix refusal, lost-response recovery and failure
+  on a release that never reached the runner.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
@@ -62,7 +71,8 @@ Status: active
 - PR #678 merged after 2,743 Python tests, Ruff, Docker broker-to-runner chunk-integrity proof, security and supply-chain success. PR #676 was closed as superseded by the integrated implementation.
 - PR #679 merged after 2,743 existing Python tests, Ruff, Docker broker-to-runner integration, security and supply-chain success. Commit `2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d`.
 - PR #680 merged after CI, security, supply-chain, 2,743 existing Python tests, Ruff and live Docker proof of one-shot recovery, 4 MiB content bounds and monotonic 900-second expiry. Merge commit `aaae3709c653b646f3992b01c1abf0716fca2c78`.
-- Next strengthen fail-closed behavior around ambiguous chunk/release outcomes and test 128-entry limits; only after those controls, design a separate isolated materialization boundary. Active Strix execution remains disabled until enforceable scope and egress policy exist.
+- PR #681 merged after 2,743 existing tests, Ruff, all GitHub security and supply-chain gates and real Docker broker-runner proof for lost plan/chunk/release outcomes and 128-file limit. Merge commit `7f669921cab6cecb5c1ce48f861b03ab60a3640f`.
+- Next undertake a threat-focused review of the byte-proof boundary, ensure robust and bounded diagnostics for failed sessions, and design **separate** isolated file materialization without exposing a host socket or enabling scanner execution. Scope, rate and egress enforcement remain prerequisites.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
