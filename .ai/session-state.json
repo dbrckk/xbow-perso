@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-26",
-  "task": "Persist bounded inert Strix preparation ticket replay across runner restart",
+  "task": "Validated and merged bounded SQLite Strix ticket replay journal",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -90,10 +90,11 @@
     "Existing upstream-compatible runner RPC create/exec/resolve/delete remain disabled; added real Compose broker-network integration proof for prepare/replay/release.",
     "Prepared ticket v2 with signed 120-second validity and 5-second future-skew; extended existing real isolated runner CI integration proof for expired/future tickets (CI pending).",
     "Merged #674 after CI, security and supply-chain success: signed 120-second v2 manifest tickets.",
-    "Proposed runner-only SQLite journal with bounded, transactional, expiration-pruned ticket replay protection; production runner has a dedicated private named volume."
+    "Proposed runner-only SQLite journal with bounded, transactional, expiration-pruned ticket replay protection; production runner has a dedicated private named volume.",
+    "PR #675 merged into main after 2,743 tests, Ruff, CI Docker builds, security and supply-chain, and real broker/runner restart rejection proof."
   ],
-  "current_branch": "codex/strix-durable-replay-20261026",
-  "current_priority": "Check real Docker restart CI replay proof, security and supply-chain; merge only when green.",
+  "current_branch": "main",
+  "current_priority": "Next implement bounded content-addressed, digest-verified inert manifest transfer without host socket or target I/O.",
   "blockers": [
     "Manifest bytes are still not transferred or materialized; the inert preparation holds digest metadata only.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
@@ -109,8 +110,7 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Verify CI/security/supply-chain for persistent replay PR then merge if green.",
-    "Implement bounded digest-verified inert manifest transfers.",
-    "Retain broker-enforced target scope and rate limits before any future active execution."
+    "Define digest-verified bounded inert manifest content transfer without enabling execution.",
+    "Retain broker-enforced scope and rate ceilings; demonstrate isolated local lab before any future active Strix execution."
   ]
 }
