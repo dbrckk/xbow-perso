@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-10-26",
-  "task": "Merged trusted broker orchestration of inert content-addressed Strix manifest file streaming",
+  "task": "Merged secure recovery of lost inert Strix prepare responses without ticket replay or session TTL extension",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -101,10 +101,14 @@
     "PR #679 merged: trusted broker validates signed execution contract scope, canonicalizes and bounds in-memory inline files, signs runner manifest ticket, prepares session, verifies plan and 64KiB file chunks, verifies receipts, and releases sessions on success or post-preparation failures.",
     "Broker Compose now carries runner RPC HMAC signing key only inside trusted broker; no new public HTTP upload route, host socket, scanner execution or target traffic.",
     "PR #679 passed CI 2,743 tests, Ruff, pinned runtime, live broker-to-runner Docker proof including empty file, invalid signed contract, unsafe path, oversized file, simulated transfer interruption with verified session cleanup, plus security and supply-chain checks.",
-    "PR #679 squash merge commit 2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d."
+    "PR #679 squash merge commit 2b4a0ca5f92db2eaf4c9b0df5c7420f12b847a2d.",
+    "PR #680 merged: added internal signed preparation-status lookup by 128-bit preparation request identity, matching contract hash and manifest digest, returning only live inert session metadata and remaining TTL.",
+    "Trusted broker now performs a single read-only status lookup after an ambiguous prepare transport outcome, never resubmits the signed ticket, validates recovered session ID/contract/digest/TTL, and releases the session after verified transfer.",
+    "PR #680 CI proved wrong-contract/digest status denial, missing session after release, successful response-loss recovery, no replay when the request never arrived, full 4 MiB transfer with +1 byte rejection, and simulated monotonic expiry at 899/900 seconds.",
+    "PR #680 merged after all workflow checks green: 2,743 Python tests, Ruff, Docker live broker-runner proof, security and supply-chain; squash aa ae3709 (full aaae3709c653b646f3992b01c1abf0716fca2c78)."
   ],
   "current_branch": "main",
-  "current_priority": "Next harden ambiguous transfer outcomes and session expiry before any future isolated materialization; do not enable active Strix scanner or target network access.",
+  "current_priority": "Harden ambiguous file-chunk/release result handling and prove 128-entry quotas; keep all active Strix lifecycle and target traffic disabled until independent egress/scope enforcement.",
   "blockers": [
     "Inline file bytes are received only in the inert runner's memory and digested; no file contents are retained, materialized, or accessible to a runnable Strix session.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
@@ -121,8 +125,8 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Review one-shot ticket/nonce lifetime and interrupted-prepare failure semantics; quantify TTL-bound resource risk.",
-    "Extend real broker-to-runner CI proof with full 4MiB limits, duplicate/ambiguous RPC and expiry fail-closed verification.",
-    "Design strictly isolated, separately reviewed materialization of validated manifest content before considering any active Strix execution; enforce scope/rate/egress first."
+    "Audit loss-of-response semantics for plan/chunk/release and add bounded fail-closed outcome verification without replaying signed mutations.",
+    "Extend real isolated Docker proof for 128-entry maximum and failures just beyond the bound.",
+    "Only then design separately reviewed isolated materialization; no host socket or bind mounts, and active execution remains blocked until scope/rate/egress controls are enforceable."
   ]
 }
