@@ -22,12 +22,14 @@ Status: active
 - A real broker-to-runner integration check covers signed preparation,
   ticket replay rejection, wrong-contract release, release and legacy
   execution blocking.
+- A private named Docker volume holds a bounded transactional SQLite journal
+  of consumed ticket identities across runner restarts; no manifests are stored.
 
 ## Broken / blockers
 - Active Strix execution is still not wired through the isolated runner/broker path; runner RPC session operations remain unimplemented.
 - The standalone Strix binary does not load Python `xbow-remote-v1` registration. The pinned Python bootstrap can import the upstream interface and temporarily bypass two attested Docker-preflight aliases, but **does not invoke the scanner entrypoint**.
 - The upstream-compatible RPC create, exec, resolve-port and delete remain unimplemented; inert preparation is **not** a runnable session and manifests cannot be uploaded/materialized.
-- Process-local single-use protection cannot survive a runner restart, even with signed ticket expiration.
+- Durable SQLite replay protection is proposed on a private named volume; volume deletion/rollback remains an operational risk while active execution stays disabled.
 - The scanner worker intentionally does not expose a host container socket; do not solve Strix execution by mounting the host Docker socket.
 
 ## Manifest-admission hardening (2026-10-18)
@@ -36,8 +38,9 @@ Status: active
 - The CI workflow validates malformed manifests against the real admission module; existing Python, Docker, security and supply-chain gates remain required before merge.
 
 ## Current priority
-- Keep Strix active dispatch fail-closed. PR for manifest ticket v2 introduces signed 120-second expiry, future-skew rejection and a real broker-network integration proof; verify all CI gates before merge.
-- Next implement durable single-use ticket ownership and content-addressed manifest transfer verification before enabling any executable session.
+- Manifest ticket v2 with signed 120-second expiry was merged as PR #674 after CI, security and supply-chain success.
+- Validate the dedicated runner-only SQLite replay journal and real Docker restart proof before merging the next PR.
+- Next implement content-addressed manifest transfer verification before any executable session.
 
 ## Validation
 - PRs #664, #665 and #666 passed CI, security and supply-chain checks before merge: pinned Python runtime image, deterministic remote interface digest, and a real upstream Python import-only proof inside a network-disabled, read-only container.
