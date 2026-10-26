@@ -18,6 +18,7 @@ nonce. The request body is covered by the RPC signature.
 | `/v1/session/plan-receipt` | 200 `plan_verified` | Session-bound HMAC request carrying the exact canonical metadata JSON; SHA-256 and signed counters must match |
 | `/v1/session/file-chunk` | 200 `chunk_received` / `file_verified` | Ordered, HMAC-authenticated Base64 bytes bound to a verified plan entry, its SHA-256, contract, session and offset |
 | `/v1/session/preparation-status` | 200 `prepared` or 404 | Read-only recovery of a live prepared session by original request ID, contract hash and manifest digest; no TTL refresh or new ticket |
+| `/v1/session/receipt-status` | 200 `receipt_status` or 404 | Authenticated in-memory plan status and per-file SHA-256 prefix/byte count, scoped to contract, manifest and live session; no mutation or TTL refresh |
 
 A preparation records **only** the random session id, signed execution-contract
 hash, original preparation request ID, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
@@ -140,3 +141,25 @@ above the quota. It proves recovery after a lost successful preparation
 response, no ticket replay when preparation never arrived, and an in-process
 monotonic-time check showing 1 second remaining after 899 seconds and a
 404 after 900 seconds. No executable Strix operation is introduced.
+
+## Read-only receipt evidence and file-count boundary
+
+The runner also supports signed `/v1/session/receipt-status` requests for an
+existing live session. The caller supplies a matching contract hash, manifest
+digest and session ID, plus `file_path: null` for plan-only status or one
+previously admitted relative file path. The result includes plan-verified
+status, verified-file count, monotonic seconds remaining and (for a file)
+received byte count, incremental SHA-256 prefix digest, final verification and
+failure flags. No raw file bytes, paths outside the verified plan, or process
+capabilities are returned. A lookup does not advance an offset or replay an
+HMAC-authenticated mutation. A wrong contract/digest is rejected, and a
+released or expired session is unavailable.
+
+This endpoint enables a *future* broker change to check whether a response was
+lost after a committed plan/chunk without resending the operation. The broker
+does not yet automate this form of reconciliation; ambiguous chunk receipts
+remain fail-closed and trigger cleanup. CI proves the prefix evidence across
+a live two-chunk transfer and the session's final digest, including contract
+and digest mismatch rejection. The same real Docker proof now transfers exactly
+128 empty inline files and rejects a 129th file before network I/O. Existing
+4 MiB byte-limit checks remain enforced independently.
