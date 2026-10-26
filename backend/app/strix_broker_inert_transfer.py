@@ -55,6 +55,7 @@ _ALLOWED_PATHS = frozenset({
     "/v1/session/prepare", "/v1/session/plan-receipt",
     "/v1/session/file-chunk", "/v1/session/release",
     "/v1/session/preparation-status",
+    "/v1/session/verification-status", "/v1/session/release-status",
 })
 
 
@@ -193,6 +194,26 @@ def _canonical_plan(files: Mapping[str, bytes]) -> tuple[str, Any]:
     return canonical, plan
 
 
+def _verification_snapshot(
+    *, base: dict[str, Any], file_path: str | None, key: str,
+) -> dict[str, Any]:
+    """Verify signed session and requested path of metadata-only status."""
+    snapshot = _post_runner(
+        "/v1/session/verification-status",
+        {**base, "request_id": "proof-" + secrets.token_hex(16), "file_path": file_path},
+        key=key, status=200,
+    )
+    if (
+        snapshot.get("status") != "verification_status"
+        or snapshot.get("session_id") != base["session_id"]
+        or snapshot.get("contract_hash") != base["contract_hash"]
+        or snapshot.get("manifest_digest") != base["manifest_digest"]
+        or snapshot.get("file_path") != file_path
+    ):
+        raise StrixInertTransferError("runner verification snapshot invalid")
+    return snapshot
+
+
 def verify_inert_manifest_files(
     *,
     contract: StrixExecutionContract,
@@ -291,23 +312,42 @@ def verify_inert_manifest_files(
         "manifest_digest": plan.manifest_digest,
     }
     try:
-        receipt = _post_runner(
-            "/v1/session/plan-receipt",
-            {
-                **base,
-                "request_id": "plan-" + secrets.token_hex(16),
-                "plan_json": plan_json,
-            },
-            key=rpc_key, status=200,
-        )
-        if (
-            receipt.get("status") != "plan_verified"
-            or receipt.get("session_id") != session_id
-            or receipt.get("manifest_digest") != plan.manifest_digest
-            or receipt.get("plan_bytes_verified") != len(plan_json.encode("utf-8"))
-            or receipt.get("file_contents_received") is not False
-        ):
-            raise StrixInertTransferError("runner plan receipt invalid")
+        try:
+            receipt = _post_runner(
+                "/v1/session/plan-receipt",
+                {
+                    **base, "request_id": "plan-" + secrets.token_hex(16),
+                    "plan_json": plan_json,
+                },
+                key=rpc_key, status=200,
+            )
+        except StrixInertTransportUncertain:
+            # A plan may have been received despite a missing RPC reply.
+            # Never send the one-shot plan again: inspect signed state once.
+            snapshot = _verification_snapshot(
+                base=base, file_path=None, key=rpc_key,
+            )
+            if (
+                snapshot.get("plan_verified") is not True
+                or snapshot.get("inline_file_count") != plan.inline_file_count
+                or type(snapshot.get("verified_inline_files")) is not int
+                or snapshot["verified_inline_files"] != 0
+                or snapshot.get("all_inline_files_verified") is not (
+                    plan.inline_file_count == 0
+                )
+                or snapshot.get("file_prefix_sha256") is not None
+                or snapshot.get("file_bytes_received") is not None
+            ):
+                raise StrixInertTransferError("runner plan outcome uncertain") from None
+        else:
+            if (
+                receipt.get("status") != "plan_verified"
+                or receipt.get("session_id") != session_id
+                or receipt.get("manifest_digest") != plan.manifest_digest
+                or receipt.get("plan_bytes_verified") != len(plan_json.encode("utf-8"))
+                or receipt.get("file_contents_received") is not False
+            ):
+                raise StrixInertTransferError("runner plan receipt invalid")
 
         ordered_entries = [entry for entry in plan.entries if entry.kind == "file"]
         for number, entry in enumerate(ordered_entries, start=1):
