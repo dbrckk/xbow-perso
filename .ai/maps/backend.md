@@ -13291,8 +13291,11 @@ manifest: BrokerManifestAdmissionDocument
 ⋮----
 class BrokerRunnerManifestTicketDocument(BaseModel)
 ⋮----
-schema: Literal["strix-runner-manifest-ticket-v1"]
+schema: Literal["strix-runner-manifest-ticket-v2"]
 manifest_schema: Literal["strix-manifest-admission-v1"]
+⋮----
+issued_at: int = Field(ge=1, le=253402300799)
+expires_at: int = Field(ge=1, le=253402300799)
 ⋮----
 class BrokerManifestTicketResponse(BaseModel)
 ⋮----
@@ -14481,11 +14484,13 @@ timeout = float(timeout_seconds)
 ```python
 STRIX_MANIFEST_ADMISSION_SCHEMA = "strix-manifest-admission-v1"
 ⋮----
-STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v1"
+STRIX_RUNNER_MANIFEST_TICKET_SCHEMA = "strix-runner-manifest-ticket-v2"
+STRIX_RUNNER_MANIFEST_TICKET_TTL_SECONDS = 120
+STRIX_RUNNER_MANIFEST_TICKET_CLOCK_SKEW_SECONDS = 5
 STRIX_RUNNER_MANIFEST_TICKET_MIN_SECRET_BYTES = 32
 STRIX_RUNNER_MANIFEST_TICKET_MAX_SECRET_BYTES = 4096
 ⋮----
-_SIGNATURE_DOMAIN = b"xbow:strix-runner-manifest-ticket:v1\x00"
+_SIGNATURE_DOMAIN = b"xbow:strix-runner-manifest-ticket:v2\x00"
 _ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ⋮----
@@ -14502,6 +14507,8 @@ schema: str
 manifest_schema: str
 contract_hash: str
 request_id: str
+issued_at: int
+expires_at: int
 image: str
 exposed_ports: tuple[int, ...]
 manifest_digest: str
@@ -14551,11 +14558,19 @@ local_dir_count = values.get("local_dir_count")
 inline_file_bytes = values.get("inline_file_bytes")
 environment_value_bytes = values.get("environment_value_bytes")
 ⋮----
+def _ticket_clock(now: float | None) -> float
+⋮----
+value = time.time() if now is None else now
+⋮----
+def _validate_ticket_times(issued_at: object, expires_at: object, now: float) -> None
+⋮----
 def _canonical_bytes(values: Mapping[str, Any]) -> bytes
 ⋮----
 payload = {
 ⋮----
-unsigned = _validate_descriptor(manifest_descriptor)
+issued_at = int(_ticket_clock(now))
+unsigned = {
+⋮----
 secret = _secret_bytes(signing_secret)
 signature = hmac.new(
 ⋮----
@@ -14564,7 +14579,8 @@ expected_keys = {
 signature = ticket_payload.get("signature")
 ⋮----
 descriptor = {
-unsigned = _validate_descriptor(descriptor)
+⋮----
+# Enforce the bounded interval before signature computation.
 ⋮----
 secret = _secret_bytes(verification_secret)
 expected_signature = hmac.new(

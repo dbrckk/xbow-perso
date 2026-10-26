@@ -1,12 +1,16 @@
 # Change impact
 
-Base: c03c2f741c3f38ee7ba3cf1b1d10b0c77a175a85
-Head: 52c03e6adf84ea0431354309bb06bca9bb6cc45c
+Base: 697c270ab671faa10503ffdd0097fb6687e8ba16
+Head: e1b738923bc4f69e62cd407e0d5850ed240fe7eb
 
 ## Changed files
 - M .github/workflows/ci.yml
+- M backend/app/strix_broker_models.py
+- M backend/app/strix_runner_manifest_ticket.py
 - M backend/app/strix_runner_rpc.py
-- A docs/strix-inert-session-lifecycle.md
+- M backend/tests/test_runtime_capabilities.py
+- M backend/tests/test_strix_runner_rpc.py
+- M docs/strix-inert-session-lifecycle.md
 
 ## Affected areas
 - .github

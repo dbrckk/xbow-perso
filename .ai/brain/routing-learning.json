@@ -16,28 +16,6 @@
       ],
       "tests": [],
       "useful": [
-        "backend/app/scanner_adaptation.py",
-        "backend/tests/test_htb_lab.py",
-        "backend/tests/test_orchestrator.py",
-        "backend/tests/test_scanner_adaptation.py"
-      ]
-    },
-    {
-      "rejected": [],
-      "task": "Define a pinned Strix-compatible remote client/session interface without enabling remote operations",
-      "terms": [
-        "client/session",
-        "define",
-        "enabling",
-        "interface",
-        "operations",
-        "pinned",
-        "remote",
-        "strix-compatible",
-        "without"
-      ],
-      "tests": [],
-      "useful": [
         "backend/app/adaptive_cycle.py",
         "backend/app/no_finding_recovery.py",
         "backend/app/recon_swarm.py",
@@ -1313,6 +1291,27 @@
       "tests": [],
       "useful": [
         "backend/app/strix_runner_rpc.py"
+      ]
+    },
+    {
+      "rejected": [],
+      "task": "Enforce signed expiration on inert Strix manifest tickets",
+      "terms": [
+        "enforce",
+        "expiration",
+        "inert",
+        "manifest",
+        "signed",
+        "strix",
+        "tickets"
+      ],
+      "tests": [],
+      "useful": [
+        "backend/app/strix_broker_models.py",
+        "backend/app/strix_runner_manifest_ticket.py",
+        "backend/app/strix_runner_rpc.py",
+        "backend/tests/test_runtime_capabilities.py",
+        "backend/tests/test_strix_runner_rpc.py"
       ]
     }
   ],
@@ -3941,7 +3940,12 @@
     },
     "enforce": {
       "backend/app/deployment_preflight.py": 4,
-      "backend/tests/test_deployment_preflight.py": 4
+      "backend/app/strix_broker_models.py": 4,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_deployment_preflight.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "enforceable": {
       "backend/app/runtime_capabilities.py": 4,
@@ -4007,6 +4011,13 @@
       "backend/app/offensive_expansion.py": 4,
       "backend/app/openapi_testgen.py": 4,
       "backend/tests/test_openapi_testgen.py": 4
+    },
+    "expiration": {
+      "backend/app/strix_broker_models.py": 4,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "explain": {
       "backend/tests/test_frontend_auth_proxy.py": 4,
@@ -4678,15 +4689,18 @@
     },
     "inert": {
       "backend/app/runtime_capabilities.py": 12,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/strix_python_bootstrap_plan.py": 4,
       "backend/app/strix_python_preflight_patch_plan.py": 4,
       "backend/app/strix_python_preflight_surface.py": 4,
-      "backend/app/strix_runner_rpc.py": 4,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 8,
       "backend/tests/test_ci_workflow.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 12,
+      "backend/tests/test_runtime_capabilities.py": 16,
       "backend/tests/test_strix_python_bootstrap_plan.py": 4,
       "backend/tests/test_strix_python_preflight_patch_plan.py": 4,
-      "backend/tests/test_strix_python_preflight_surface.py": 4
+      "backend/tests/test_strix_python_preflight_surface.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "integrity": {
       "backend/app/metrics.py": 4,
@@ -5055,8 +5069,13 @@
     },
     "manifest": {
       "backend/app/dr_manifest.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/strix_manifest_admission.py": 4,
-      "backend/tests/test_dr_manifest.py": 4
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
+      "backend/tests/test_dr_manifest.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4
     },
     "memory": {
       "backend/app/htb_lab.py": 4,
@@ -6873,16 +6892,20 @@
       "backend/app/finding_intelligence.py": 4,
       "backend/app/runtime_capabilities.py": 4,
       "backend/app/scanner_normalization.py": 4,
+      "backend/app/strix_broker_models.py": 4,
       "backend/app/strix_command_admission.py": 4,
       "backend/app/strix_python_bootstrap_runtime.py": 4,
       "backend/app/strix_python_preflight_compatibility.py": 4,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 4,
       "backend/app/vulnerability_intelligence.py": 4,
       "backend/tests/test_dr_manifest.py": 4,
       "backend/tests/test_dr_restore_preflight.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 4,
+      "backend/tests/test_runtime_capabilities.py": 8,
       "backend/tests/test_strix_command_admission.py": 4,
       "backend/tests/test_strix_python_bootstrap_runtime.py": 4,
       "backend/tests/test_strix_python_preflight_compatibility.py": 4,
+      "backend/tests/test_strix_runner_rpc.py": 4,
       "backend/tests/test_vulnerability_intelligence.py": 4
     },
     "similarity": {
@@ -7050,7 +7073,7 @@
       "backend/app/strix_backend_hook.py": 4,
       "backend/app/strix_broker.py": 16,
       "backend/app/strix_broker_client.py": 8,
-      "backend/app/strix_broker_models.py": 8,
+      "backend/app/strix_broker_models.py": 12,
       "backend/app/strix_command_admission.py": 4,
       "backend/app/strix_egress.py": 8,
       "backend/app/strix_egress_transport.py": 8,
@@ -7067,7 +7090,8 @@
       "backend/app/strix_run_status.py": 4,
       "backend/app/strix_runner_attestation.py": 8,
       "backend/app/strix_runner_exec_ticket.py": 4,
-      "backend/app/strix_runner_rpc.py": 24,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 28,
       "backend/app/vulnerability_intelligence.py": 4,
       "backend/app/worker.py": 4,
       "backend/tests/test_ci_workflow.py": 4,
@@ -7093,7 +7117,7 @@
       "backend/tests/test_strix_run_status.py": 4,
       "backend/tests/test_strix_runner_attestation.py": 12,
       "backend/tests/test_strix_runner_exec_ticket.py": 4,
-      "backend/tests/test_strix_runner_rpc.py": 24,
+      "backend/tests/test_strix_runner_rpc.py": 28,
       "backend/tests/test_vulnerability_intelligence.py": 4
     },
     "strix-compatible": {
@@ -7296,14 +7320,15 @@
     "tickets": {
       "backend/app/runtime_capabilities.py": 8,
       "backend/app/strix_broker.py": 4,
-      "backend/app/strix_broker_models.py": 4,
+      "backend/app/strix_broker_models.py": 8,
       "backend/app/strix_runner_exec_ticket.py": 4,
-      "backend/app/strix_runner_rpc.py": 4,
-      "backend/tests/test_runtime_capabilities.py": 8,
+      "backend/app/strix_runner_manifest_ticket.py": 4,
+      "backend/app/strix_runner_rpc.py": 8,
+      "backend/tests/test_runtime_capabilities.py": 12,
       "backend/tests/test_strix_broker.py": 4,
       "backend/tests/test_strix_broker_runtime.py": 4,
       "backend/tests/test_strix_runner_exec_ticket.py": 4,
-      "backend/tests/test_strix_runner_rpc.py": 4
+      "backend/tests/test_strix_runner_rpc.py": 8
     },
     "token": {
       "backend/app/auth.py": 4,

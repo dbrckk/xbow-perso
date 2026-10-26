@@ -58,18 +58,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T12:37:57Z
+Generated: 2026-10-26T10:17:05Z
 
 ### Git
 - Branch: `main`
-- Head: `52c03e6adf84`
-- Commit date: 2026-10-18T08:37:48-04:00
-- Commit: feat(strix): signed, bounded inert session prepare/release over runner RPC (#671)
+- Head: `e1b738923bc4`
+- Commit date: 2026-10-26T06:16:55-04:00
+- Commit: security(strix): expire broker-signed manifest admission tickets (#674)
 - Tracked files: 692
 
 ### Recently changed files
 - `.github/workflows/ci.yml`
+- `backend/app/strix_broker_models.py`
+- `backend/app/strix_runner_manifest_ticket.py`
 - `backend/app/strix_runner_rpc.py`
+- `backend/tests/test_runtime_capabilities.py`
+- `backend/tests/test_strix_runner_rpc.py`
 - `docs/strix-inert-session-lifecycle.md`
 - `backend/Dockerfile`
 - `backend/Dockerfile.scanner`
@@ -81,7 +85,6 @@ Generated: 2026-10-18T12:37:57Z
 - `frontend/Dockerfile`
 - `backend/app/strix_python_bootstrap_runtime.py`
 - `docs/strix-python-runtime.md`
-- `.github/workflows/supply-chain.yml`
 
 ### Project signals
 - `pyproject.toml`
