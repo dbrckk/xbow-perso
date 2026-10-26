@@ -16,6 +16,7 @@ nonce. The request body is covered by the RPC signature.
 | `/v1/session/prepare` | 201 `prepared` | Signed v2 ticket bound to request id, image, exposed ports, manifest digest and validity window |
 | `/v1/session/release` | 200 `released` | Existing random prepared session id and matching contract hash, signed with runner RPC key |
 | `/v1/session/plan-receipt` | 200 `plan_verified` | Session-bound HMAC request carrying the exact canonical metadata JSON; SHA-256 and signed counters must match |
+| `/v1/session/file-chunk` | 200 `chunk_received` / `file_verified` | Ordered, HMAC-authenticated Base64 bytes bound to a verified plan entry, its SHA-256, contract, session and offset |
 
 A preparation records **only** the random session id, signed execution-contract
 hash, manifest digest, signed plan entry/byte counts, one-shot verification flag, and monotonic expiry. It does **not** retain manifests,
@@ -47,7 +48,7 @@ host bind mounts, Docker socket, exposed host ports or external networks
 are introduced. A single named volume contains only replay metadata.
 
 The runner readiness response advertises
-`inert_preparation_operations: ["prepare", "release", "plan-receipt"]` while
+`inert_preparation_operations: ["prepare", "release", "plan-receipt", "file-chunk"]` while
 `implemented_operations: []` continues to mean **no executable upstream
 lifecycle operations are implemented**.
 
@@ -61,9 +62,30 @@ remains blocked even with a correctly signed ticket.
 
 ### Security limitations before active execution
 
-This API is deliberately an intermediate integration step. The new receipt verifies the exact **canonical manifest-plan metadata** received in memory (at most 256 KiB), against the signed SHA-256 digest and signed counts. It rejects duplicate receipts, unsafe path metadata and noncanonical JSON. **No inline file content or local directory bytes have been transmitted or verified**, and no file materialization is implemented. The endpoint does not accept raw file contents. The v2 ticket format includes signed expiration,
+This API is deliberately an intermediate integration step. The plan receipt
+verifies **canonical manifest-plan metadata** received in memory (at most
+256 KiB) against the signed digest and counts, and rejects duplicate
+receipts, unsafe paths and noncanonical JSON. After this proof, the separate
+file-chunk operation can accept **actual inline-file bytes** (not local
+directories) in strictly ordered chunks of at most 64 KiB each. Each RPC is
+signed with a fresh nonce, and the complete file SHA-256 must equal the
+content address in the previously verified manifest plan. A file is
+accepted only after its full declared byte count and a final digest check.
+Wrong offsets cannot advance its state; a final digest mismatch permanently
+poisons that file receipt for the session. Empty files require a final empty
+chunk. A session holds only path/digest/length metadata and incremental hash
+states (at most 128 entries and 4 MiB aggregate declared bytes), **never
+the transferred file data**.
+
+The payload's Base64 representation must be canonical; malformed Base64,
+out-of-order bytes, incorrect lengths and contradictory final flags are
+rejected without creating a file. Zero local-directory data is accepted.
+No disk file materialization, process execution or target traffic is
+implemented. Successfully checking all file digests does not enable a runnable
+Strix session. The v2 ticket format includes signed expiration,
 and the private journal prevents reuse of an unexpired ticket after runner
 restart. Deleting or rolling back the Docker volume erases that history;
 volume retention and backup policy matter. Do **not** enable active scan
-dispatch. Future work must add bounded content-addressed transport and verification of actual inline file bytes; persistent session ownership
-if needed; and egress policy enforcement before any scanner process runs.
+dispatch. Future work must separately design secure handling of local-directory sources,
+persistent session ownership if needed, and isolated materialization and
+egress policy enforcement before any scanner process runs.
