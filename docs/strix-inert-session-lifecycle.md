@@ -89,3 +89,39 @@ volume retention and backup policy matter. Do **not** enable active scan
 dispatch. Future work must separately design secure handling of local-directory sources,
 persistent session ownership if needed, and isolated materialization and
 egress policy enforcement before any scanner process runs.
+
+## Trusted broker orchestration (no public upload route)
+
+The broker module `app.strix_broker_inert_transfer` exposes
+`verify_inert_manifest_files(contract=..., image=..., exposed_ports=..., files=...)`
+for **internal trusted code only**; it deliberately adds no HTTP upload
+endpoint and does not start a scan. The broker verifies the signed execution
+contract and primary-target scope before sending anything to the runner.
+Only a mapping of workspace-relative paths to **in-memory immutable bytes** is
+accepted. Local directory sources, environment values, host paths and bind
+mounts are not accepted. The manifest admission module independently validates
+path overlap, UTF-8, per-file 1 MiB, total 4 MiB and 128-entry bounds before
+the broker signs a fresh 120-second preparation ticket.
+
+After preparation the broker sends canonical plan JSON and all inline files as
+64 KiB signed RPC chunks over its fixed `http://strix-runner:8092` internal
+endpoint. Proxies and redirects are disabled. Every runner receipt is checked
+for expected session, offsets, progress counts and explicit no-execution flags.
+The broker **always attempts a signed session release** after a successfully
+acknowledged preparation, including when a later chunk or network request
+fails. Only a verified release permits a success receipt, which contains
+counts and digests, not file bytes.
+
+The protocol intentionally **does not retry** an ambiguous timeout: the
+runner may have consumed a ticket or advanced a chunk even if its response
+was lost. If the initial preparation response is lost, the broker has no
+session identifier to release; the runner's 900-second session TTL then
+expires the inert state. A failed cleanup likewise fails closed. Neither
+condition enables file materialization, a runnable Strix session or target
+egress. The runner RPC signing key is available to the trusted broker through
+its Compose environment; it is not supplied to scanner workloads.
+
+CI invokes the trusted broker helper *inside the real broker container* over
+the isolated Compose network, checking valid multi-file and empty-file
+content, scope/signature rejection, oversized/unsafe paths and release after
+a deliberately injected mid-stream transport interruption.
