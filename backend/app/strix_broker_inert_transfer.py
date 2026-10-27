@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -38,6 +39,7 @@ from .strix_runner_rpc import (
     RUNNER_RPC_MAX_FILE_CHUNK_BYTES,
     RUNNER_RPC_PROTOCOL,
     sign_runner_rpc_request,
+    sign_runner_rpc_response,
 )
 
 
@@ -135,6 +137,9 @@ def _post_runner(
         with opener.open(request, timeout=5) as response:
             data = response.read(_MAX_REPLY_BYTES + 1)
             code = response.status
+            signatures = response.headers.get_all(
+                "X-Xbow-Runner-Response-Signature", [],
+            )
     except urllib.error.HTTPError as exc:
         raise StrixInertTransferError(
             f"runner rejected {path} (HTTP {exc.code})"
@@ -144,18 +149,36 @@ def _post_runner(
             f"runner outcome unknown at {path}"
         ) from exc
     if code != status or len(data) > _MAX_REPLY_BYTES:
-        raise StrixInertTransferError("runner reply status or size invalid")
+        raise StrixInertTransportUncertain("runner reply status or size invalid")
+    if (
+        len(signatures) != 1
+        or not re.fullmatch(r"[0-9a-f]{64}", signatures[0])
+        or not hmac.compare_digest(
+            signatures[0],
+            sign_runner_rpc_response(
+                method="POST",
+                path=path,
+                request_body=body,
+                response_body=data,
+                status=code,
+                secret=key,
+                timestamp=timestamp,
+                nonce=nonce,
+            ),
+        )
+    ):
+        raise StrixInertTransportUncertain("runner response authentication failed")
     try:
         result = json.loads(data.decode("utf-8"))
     except (UnicodeError, ValueError) as exc:
-        raise StrixInertTransferError("runner reply is not JSON") from exc
+        raise StrixInertTransportUncertain("runner reply is not JSON") from exc
     if (
         not isinstance(result, dict)
         or result.get("protocol") != RUNNER_RPC_PROTOCOL
         or result.get("manifest_materialized") is not False
         or result.get("active_execution_enabled") is not False
     ):
-        raise StrixInertTransferError("runner violated inert reply contract")
+        raise StrixInertTransportUncertain("runner violated inert reply contract")
     return result
 
 
