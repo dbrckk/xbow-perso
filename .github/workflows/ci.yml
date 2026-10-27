@@ -709,6 +709,113 @@ jobs:
               else:
                   raise AssertionError("invalid broker inert transfer admitted")
 
+          # Validate real signed runner HTTP evidence before trusting JSON.
+          from app.strix_runner_rpc import sign_runner_rpc_response
+          from email.message import Message
+          from unittest.mock import patch
+
+          proof_path = "/v1/session/verification-status"
+          proof_payload = {
+              "schema": RUNNER_RPC_PROTOCOL,
+              "request_id": "ci-hmac-proof",
+              "session_id": prepared["session_id"],
+              "contract_hash": descriptor["contract_hash"],
+              "manifest_digest": plan_digest,
+              "file_path": None,
+          }
+          authentic = transfer._post_runner(
+              proof_path, proof_payload, key=rpc_secret, status=200,
+          )
+          assert authentic["status"] == "verification_status"
+          assert authentic["plan_verified"] is True
+
+          # Imitate tampering at the HTTP response boundary. Each trial uses
+          # the broker's real verifier with a fresh broker-generated nonce.
+          def spoofed_opener(mode):
+              class FakeResponse:
+                  def __init__(self, body, status, signature):
+                      self.body = body
+                      self.status = status
+                      self.headers = Message()
+                      if signature is not None:
+                          self.headers["X-Xbow-Runner-Response-Signature"] = signature
+                  def __enter__(self):
+                      return self
+                  def __exit__(self, exc_type, exc, tb):
+                      return False
+                  def read(self, limit):
+                      return self.body[:limit]
+
+              class FakeOpener:
+                  def open(self, request, timeout):
+                      del timeout
+                      headers = {
+                          key.lower(): val for key, val in request.header_items()
+                      }
+                      timestamp = int(headers["x-xbow-runner-timestamp"])
+                      nonce = headers["x-xbow-runner-nonce"]
+                      response_body = json.dumps({
+                          "status": "verification_status",
+                          "protocol": RUNNER_RPC_PROTOCOL,
+                          "manifest_materialized": False,
+                          "active_execution_enabled": False,
+                      }, sort_keys=True, separators=(",", ":")).encode()
+                      signature = sign_runner_rpc_response(
+                          method="POST",
+                          path=(
+                              "/v1/session/release-status"
+                              if mode == "path" else proof_path
+                          ),
+                          request_body=(
+                              request.data + b"x"
+                              if mode == "request" else request.data
+                          ),
+                          response_body=response_body,
+                          status=200,
+                          secret=rpc_secret,
+                          timestamp=timestamp,
+                          nonce=("0" * 32 if mode in ("nonce", "replay") else nonce),
+                      )
+                      if mode == "body":
+                          response_body += b" "
+                      if mode == "signature":
+                          signature = "f" * 64 if signature != "f" * 64 else "e" * 64
+                      if mode == "missing":
+                          signature = None
+                      return FakeResponse(
+                          response_body,
+                          201 if mode == "status" else 200,
+                          signature,
+                      )
+              return FakeOpener()
+
+          for mode in (
+              "valid", "body", "status", "nonce", "path", "request",
+              "signature", "missing", "replay",
+          ):
+              with patch.object(
+                  transfer.urllib.request, "build_opener",
+                  return_value=spoofed_opener(mode),
+              ):
+                  if mode == "valid":
+                      accepted = transfer._post_runner(
+                          proof_path, proof_payload, key=rpc_secret, status=200,
+                      )
+                      assert accepted["status"] == "verification_status"
+                  else:
+                      try:
+                          transfer._post_runner(
+                              proof_path, proof_payload,
+                              key=rpc_secret, status=200,
+                          )
+                      except transfer.StrixInertTransferError:
+                          pass
+                      else:
+                          raise AssertionError(
+                              f"untrusted runner response accepted: {mode}"
+                          )
+          print("Runner HTTP evidence HMAC validated; altered body/status/nonce/path/request/signature rejected")
+
           original_post = transfer._post_runner
           seen = []
           def interrupted_post(path, payload, *, key, status):
