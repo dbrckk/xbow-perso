@@ -1424,9 +1424,25 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
             headers={key: value for key, value in self.headers.items()},
             body=body,
         )
-        self._write(result)
+        self._write(
+            result,
+            request_body=body,
+            response_secret=(
+                service._secret
+                if self.command == "POST"
+                and self.path in _MUTATION_PATHS
+                and result.status in (200, 201)
+                else None
+            ),
+        )
 
-    def _write(self, result: RunnerRpcResponse) -> None:
+    def _write(
+        self,
+        result: RunnerRpcResponse,
+        *,
+        request_body: bytes = b"",
+        response_secret: str | None = None,
+    ) -> None:
         payload = json.dumps(
             result.json_body,
             sort_keys=True,
@@ -1436,6 +1452,20 @@ class _RunnerRpcHttpHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(payload)))
         self.send_header("Cache-Control", "no-store")
+        if response_secret is not None:
+            self.send_header(
+                "X-Xbow-Runner-Response-Signature",
+                sign_runner_rpc_response(
+                    method=self.command,
+                    path=self.path,
+                    request_body=request_body,
+                    response_body=payload,
+                    status=result.status,
+                    secret=response_secret,
+                    timestamp=int(self.headers["X-Xbow-Runner-Timestamp"]),
+                    nonce=self.headers["X-Xbow-Runner-Nonce"],
+                ),
+            )
         for name, value in result.headers.items():
             self.send_header(name, value)
         self.end_headers()
