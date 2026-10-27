@@ -164,12 +164,12 @@ same-length content prefix, a release that never reached the runner, and
 SHA-256 digests and counters only, never received file bytes or materialized
 paths. Ambiguous results are not replayed.
 
-## Outstanding integrity risk: unsigned runner HTTP responses
+## HTTP response authenticity: risk and remediation
 
-**Audit finding (2026-10-26):** Runner requests are authenticated with
+**Original audit finding (2026-10-26):** Runner requests were authenticated with
 `strix-runner-rpc-v1` HMAC signatures that cover the request method, path,
-timestamp, nonce and body digest. However, the HTTP **response body and
-status code are not themselves authenticated**. The broker currently checks
+timestamp, nonce and body digest. Previously, the HTTP **response body and
+status code were not themselves authenticated**. The broker currently checks
 the returned JSON structure, session IDs, byte counters, SHA-256 prefixes,
 contract/digest identifiers, and explicit non-execution flags, but these
 checks cannot prove that the real runner generated the reply. The isolated
@@ -220,7 +220,25 @@ the attacker may already possess the shared RPC key, so this HMAC mechanism
 alone cannot restore trust; container isolation, key control, process
 separation and independent scope enforcement remain separate requirements.
 
-**Current disposition:** Documented, **not yet mitigated in code**. The
-accepted-file digest checks and replay controls are still useful, but they
-do not independently authenticate the runner's response. Scanner execution,
-host socket access, disk materialization and target egress remain blocked.
+**Current disposition:** Implemented in the broker and runner in the
+response-HMAC integration. The runner signs each successful (200/201)
+internal session RPC at the HTTP serialization boundary, using a domain
+distinct from request signatures. The HMAC includes request method,
+path, timestamp, nonce, SHA-256 of raw request bytes, the actual HTTP
+status, and SHA-256 of the final serialized response body. It is sent
+as `X-Xbow-Runner-Response-Signature`. The broker requires exactly
+one lowercase 64-character SHA-256 hex signature, checks it with
+constant-time comparison **before decoding or inspecting any returned
+JSON**, and fails closed if the proof is missing or mismatched.
+Unsigned error and public health responses never count as success.
+
+The real isolated Docker CI validates signed runner responses and injects
+changed bodies, HTTP statuses, nonces, paths, request bytes, signatures,
+missing signatures, and replayed proofs; all must fail. Lost-response
+reconciliation remains one read-only RPC with the same mandatory
+response-authentication requirement. The broker and runner changes must
+be deployed together, and there is no legacy unsigned-success fallback.
+This authenticates responses only while the broker and runner retain the
+shared secret and the internal network remains appropriately isolated;
+it does **not** make active Strix execution or materialization safe.
+Those remain blocked pending independent scope, rate and egress controls.
