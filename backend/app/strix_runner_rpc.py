@@ -842,6 +842,35 @@ def sign_runner_rpc_request(
     ).hexdigest()
 
 
+def sign_runner_rpc_response(
+    *,
+    method: str,
+    path: str,
+    request_body: bytes,
+    response_body: bytes,
+    status: int,
+    secret: str,
+    timestamp: int,
+    nonce: str,
+) -> str:
+    """Authenticate exact response bytes and status for a single signed RPC."""
+    fields = (
+        "strix-runner-rpc-response-v1",
+        str(method).upper(),
+        str(path),
+        str(int(timestamp)),
+        str(nonce),
+        hashlib.sha256(request_body).hexdigest(),
+        str(int(status)),
+        hashlib.sha256(response_body).hexdigest(),
+    )
+    return hmac.new(
+        _runner_rpc_secret_bytes(secret),
+        "\n".join(fields).encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+
+
 def configure_runner_rpc_socket(connection: Any) -> None:
     connection.settimeout(RUNNER_RPC_SOCKET_TIMEOUT_SECONDS)
 
