@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-26",
-  "task": "Merged read-only Strix plan/chunk/release proofs with fail-closed ambiguous RPC reconciliation",
+  "updated_at": "2026-10-27",
+  "task": "Merged HMAC-authenticated Strix runner HTTP success responses end to end",
   "completed": [
     "Bound Strix run.json status, vulnerabilities ingestion, and persisted evidence to the same completed run directory.",
     "Added regression coverage preventing cross-run artifact/provenance mixing.",
@@ -109,10 +109,13 @@
     "PR #681 merged: runner exposes authenticated read-only verification-status (plan receipt, file byte count, exact SHA-256 of received prefix, verified/failed flags) and release-status bound to a specific release operation identity in bounded process-local TTL-limited evidence.",
     "Trusted broker reconciles lost plan/chunk/release replies without mutation retries; exact prefix hashing, counters and signed identity guards fail closed on missing/mismatched evidence.",
     "PR #681 real broker-runner Docker CI proves accepted lost-response plan/chunk/release, empty final chunk, tampered same-length SHA-256 prefix denial, unreached chunk/release denial, 128 files accepted/129 rejected.",
-    "PR #681 merged after 2,743 existing Python tests, Ruff, pinned Strix runtime, Docker integration, security and supply-chain passed; squash 7f669921cab6cecb5c1ce48f861b03ab60a3640f."
+    "PR #681 merged after 2,743 existing Python tests, Ruff, pinned Strix runtime, Docker integration, security and supply-chain passed; squash 7f669921cab6cecb5c1ce48f861b03ab60a3640f.",
+    "PR #685 merged as 1643c08a270cd5868393c7ce58de3904d1d2416f: runner domain-separated HMAC signs exact serialized 2xx session responses bound to original request method, path, timestamp, nonce, request digest and actual response status/body digest.",
+    "Broker now verifies exactly one 64-hex response HMAC with constant-time compare before parsing any successful session RPC JSON; unsigned, modified and replayed responses are rejected, with no legacy unsigned fallback.",
+    "PR #685 passed 2,743 existing Python tests, Ruff, all Docker CI including real signed broker-runner HTTP exchanges and tamper probes (body, status, nonce, path, request, signature omission and replay), plus security and supply-chain gates. No unit tests added."
   ],
   "current_branch": "main",
-  "current_priority": "Audit Strix content-addressed in-memory proof boundary and design a separately isolated non-executing materialization stage; retain fail-closed active Strix and egress rules.",
+  "current_priority": "Design independently reviewed, non-executing and strictly quota-bound isolated file materialization, keeping active scanning, host Docker socket, bind mounts and target egress disabled; inspect nonce/cache and release-receipt edge cases first.",
   "blockers": [
     "Inline file bytes are received only in the inert runner's memory and digested; no file contents are retained, materialized, or accessible to a runnable Strix session.",
     "Runner RPC upstream-compatible create, exec, resolve-port and delete remain unimplemented and fail closed.",
@@ -129,8 +132,8 @@
     "Independent validation remains required before confirmed findings."
   ],
   "next_steps": [
-    "Review trusted broker-runner proofs for edge cases such as release receipt expiry, nonce cache saturation, inaccurate plan contents and concurrency.",
-    "Develop separately isolated and strictly quota-bound materialization design with no host bind mounts, Docker socket or target egress; do not enable scanner execution.",
-    "Only advance executable Strix sessions after security review of enforced scope/rate/egress and independent validation."
+    "Review receipt expiry, concurrent session exhaustion and replay nonce capacity; run fault-injection integration checks on bounded resource exhaustion and security posture.",
+    "Develop a separately isolated, quota-bound, no-execution materialization design with no host Docker socket or host bind mount and without prematurely implementing scanning.",
+    "Do not enable active Strix scan execution until independently reviewed enforceable scope, rate and egress restrictions are integrated and verified."
   ]
 }
